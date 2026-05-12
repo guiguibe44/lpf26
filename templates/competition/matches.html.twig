@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matchs | LPF 2026{% endblock %}
+
+{% block body %}
+{#
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">Matchs</h1>
+            <p class="ta-page-subtitle">Pronostique avant le coup d'envoi et consulte les resultats apres match.</p>
+        </div>
+    </section>
+
+    <section class="Xta-card">
+        <div class="ta-dashboard-matchdays-head">
+            <div>
+                <h2 class="ta-card-title">Calendrier dynamique</h2>
+                <p class="ta-card-text">Les pronostics restent modifiables tant que le match n'a pas commence.</p>
+            </div>
+            <a href="{{ path('app_pronostics') }}" class="btn btn-sm">Faire mes pronostics</a>
+        </div>
+    </section>
+    #}
+
+    {% if matchday_nav is not empty %}
+        <nav class="ta-card match-day-nav mt-5" aria-label="Acces rapide aux journees">
+            <p class="match-day-nav-label">Journees</p>
+            <ul class="match-day-nav-list">
+                {% for item in matchday_nav %}
+                    <li>
+                        <a href="#{{ item.anchor }}" class="match-day-nav-link">
+                            {% if item.date_for_label %}
+                                {{ item.date_for_label|date('l d F Y') }}
+                            {% else %}
+                                Date a definir
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+
+    <section class="Xta-card mt-5 {{ prono_access_blocked|default(false) ? 'match-dashboard-wrap--locked' : '' }}">
+        {% if matches is empty %}
+            <p class="ta-card-text">Aucun match disponible pour le moment.</p>
+        {% else %}
+            {% set current_day = null %}
+            {% for match in matches %}
+                {% set match_day = match.dateHeure ? match.dateHeure|date('Y-m-d') : 'date-inconnue' %}
+                {% if match_day != current_day %}
+                    {% if not loop.first %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% set current_day = match_day %}
+                    <div id="{{ match_day == 'date-inconnue' ? 'journee-date-inconnue' : 'journee-' ~ match_day }}" class="match-day-section {{ loop.first ? '' : 'mt-6' }}">
+                        <h2 class="match-day-title">
+                            {{ match.dateHeure ? match.dateHeure|date('l d F Y') : 'Date a definir' }}
+                        </h2>
+                        <div class="match-card-grid">
+                {% endif %}
+
+                {% set pronostic = pronostics_by_match_id[match.id] ?? null %}
+                {% set partner_pronostics = partner_pronostics_by_match_id[match.id] ?? [] %}
+                {% include 'competition/_match_card.html.twig' with {
+                    match: match,
+                    pronostic: pronostic,
+                    partner_pronostics: partner_pronostics,
+                    now: now,
+                    prono_access_blocked: prono_access_blocked|default(false)
+                } only %}
+
+                {% if loop.last %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </section>
+{% endblock %}

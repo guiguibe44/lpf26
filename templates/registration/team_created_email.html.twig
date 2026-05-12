@@ -1,0 +1,12 @@
+<p>Bonjour,</p>
+
+<p>Votre equipe <strong>{{ team.name }}</strong> a bien ete creee sur LPF 2026.</p>
+<p>Votre surnom joueur 1: <strong>{{ owner.nickname }}</strong>.</p>
+
+{% if invitedEmail %}
+    <p>Une invitation a ete envoyee a <strong>{{ invitedEmail }}</strong>.</p>
+{% else %}
+    <p>Aucune invitation n'a encore ete envoyee au joueur 2.</p>
+{% endif %}
+
+<p>Vous pouvez vous connecter et commencer vos pronostics.</p>

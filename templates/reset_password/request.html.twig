@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublie{% endblock %}
+
+{% block body %}
+    <div class="auth-grid ta-auth-grid">
+        <div class="auth-aside ta-auth-aside">
+            <a href="{{ path('app_login') }}" class="ta-auth-back">Retour a la connexion</a>
+            <div class="auth-brand ta-auth-brand">LPF 2026</div>
+            <h2 class="ta-auth-aside-title">Mot de passe oublie</h2>
+            <p class="auth-subtitle">Saisis ton email, on t'enverra les instructions de reinitialisation.</p>
+        </div>
+        <div class="ta-auth-form-wrap">
+            {% for flash_error in app.flashes('reset_password_error') %}
+                <div class="flash flash-danger" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+            <h1 class="section-title ta-auth-title">Reinitialiser le mot de passe</h1>
+            <p class="ta-auth-lead">Entre l'adresse email associee a ton compte.</p>
+            <div class="ta-auth-separator">Recuperation</div>
+            {{ form_start(requestForm, {'attr': {'class': 'ta-auth-form'}}) }}
+                {{ form_row(requestForm.email, {'label': 'Email*'}) }}
+                <button class="ta-auth-submit">Envoyer le lien de reinitialisation</button>
+                <p class="ta-auth-link-row"><a href="{{ path('app_login') }}">Retour a la connexion</a></p>
+            {{ form_end(requestForm) }}
+        </div>
+    </div>
+{% endblock %}

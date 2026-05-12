@@ -1,0 +1,49 @@
+{% set currentRoute = app.request.attributes.get('_route')|default('') %}
+
+<aside class="ta-sidebar">
+    <div class="ta-sidebar-brand">
+        <div class="avatar avatar-placeholder">
+            <div class="ta-logo-placeholder">
+                <span class="text-xs font-semibold">LOGO</span>
+            </div>
+        </div>
+        <div>
+            <p class="text-sm font-semibold">LPF 2026</p>
+            <p class="text-xs text-slate-500">Future identite visuelle</p>
+        </div>
+    </div>
+
+    <ul class="menu w-full p-0">
+        <li>
+            <a href="{{ path('app_homepage') }}" class="ta-menu-link {{ currentRoute == 'app_homepage' ? 'active' : '' }}">
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_matches') }}" class="ta-menu-link {{ currentRoute in ['app_matches', 'app_pronostics'] ? 'active' : '' }}">
+                Matchs
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_groups') }}" class="ta-menu-link {{ currentRoute == 'app_groups' ? 'active' : '' }}">
+                Groupes des pays
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_ranking') }}" class="ta-menu-link {{ currentRoute == 'app_ranking' ? 'active' : '' }}">
+                Classement
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ path('app_account') }}" class="ta-menu-link {{ currentRoute == 'app_account' ? 'active' : '' }}">
+                Compte et équipe
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_logout') }}" class="ta-menu-link">
+                Deconnexion
+            </a>
+        </li>
+    </ul>
+</aside>

@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="auth-grid ta-auth-grid">
+    <div class="auth-aside ta-auth-aside">
+        <a href="{{ path('app_homepage') }}" class="ta-auth-back">Retour au dashboard</a>
+        <div class="auth-brand ta-auth-brand">LPF 2026</div>
+        <h2 class="ta-auth-aside-title">Plateforme pronostics equipe</h2>
+        <p class="auth-subtitle">Template inspire de TailAdmin pour une experience moderne et claire.</p>
+    </div>
+    <div class="ta-auth-form-wrap">
+        <form method="post" class="ta-auth-form">
+            {% if error %}
+                <div class="flash flash-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <h1 class="section-title ta-auth-title">Connexion</h1>
+            <p class="ta-auth-lead">Entre ton email et ton mot de passe pour te connecter.</p>
+            <div class="ta-auth-separator">Ou</div>
+            <label for="inputEmail">Email*</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email" required autofocus>
+            <label for="inputPassword">Mot de passe*</label>
+            <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+            <p class="ta-auth-check"><label><input type="checkbox" name="_remember_me"> Rester connecte</label></p>
+
+            <button type="submit" class="ta-auth-submit">Se connecter</button>
+            <p class="ta-auth-link-row"><a href="{{ path('app_forgot_password_request') }}">Mot de passe oublie ?</a></p>
+            <p class="ta-auth-link-row">Pas encore de compte ? <a href="{{ path('app_register') }}">Creer un compte</a></p>
+        </form>
+    </div>
+</div>
+
+{% if test_users is defined and test_users is not empty %}
+    <hr>
+    <h2>Comptes de test (local)</h2>
+    <ul>
+        {% for test_user in test_users %}
+            <li>
+                <strong>{{ test_user.email }}</strong> - {{ test_user.roles }}
+                <br>
+                Mot de passe de test: <code>{{ test_user.password_hint }}</code>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

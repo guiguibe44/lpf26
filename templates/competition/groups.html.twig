@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groupes des pays | LPF 2026{% endblock %}
+
+{% block body %}
+{#
+    <section class="ta-card p-5">
+        <h1 class="ta-card-title">Groupes des pays</h1>
+        <p class="ta-card-text">
+            Classements calculés à partir des matchs de phase « Group … » (synchronisation ou import).
+            Les colonnes ne comptent que les matchs déjà joués (score renseigné).
+        </p>
+    </section>
+    #}
+    <section class="ta-grid mt-5">
+        {% if standings_by_group is empty %}
+            <article class="ta-card p-5">
+                <p class="ta-card-text">
+                    Aucun classement disponible : il faut des matchs dont la phase commence par « Group »
+                    (ex. Group A) et des pays associés.
+                </p>
+            </article>
+        {% else %}
+            {% for letter, rows in standings_by_group %}
+                <article id="groupe-{{ letter|lower }}" class="ta-card p-5 group-standings-card" tabindex="-1">
+                    <h2 class="ta-card-title mb-3">Groupe {{ letter }}</h2>
+                    <div class="ta-table-wrap">
+                        <table class="ta-table group-standings-table ta-table-mobile-accordion">
+                            <thead>
+                                <tr>
+                                    <th class="ta-num ta-col-primary">#</th>
+                                    <th class="ta-col-primary">Équipe</th>
+                                    <th class="ta-num ta-col-secondary" title="Matchs joués">MJ</th>
+                                    <th class="ta-num ta-col-secondary" title="Victoires">V</th>
+                                    <th class="ta-num ta-col-secondary" title="Nuls">N</th>
+                                    <th class="ta-num ta-col-secondary" title="Défaites">D</th>
+                                    <th class="ta-num ta-col-secondary" title="Buts pour">BP</th>
+                                    <th class="ta-num ta-col-secondary" title="Buts contre">BC</th>
+                                    <th class="ta-num ta-col-secondary" title="Différence de buts">Diff</th>
+                                    <th class="ta-num ta-col-secondary" title="Points">Pts</th>
+                                    <th class="ta-col-mobile-only" scope="col" aria-label="Statistiques">+</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in rows %}
+                                    <tr>
+                                        <td class="ta-num ta-col-primary">{{ loop.index }}</td>
+                                        <td class="ta-col-primary">
+                                            <span class="group-standings-team">
+                                                <span class="group-country-flag-wrap group-country-flag-wrap--compact">
+                                                    {% include 'components/_country_flag_img.html.twig' with { country: row.country } only %}
+                                                </span>
+                                                <span class="group-standings-name">{{ row.country.nom }}</span>
+                                            </span>
+                                        </td>
+                                        <td class="ta-num ta-col-secondary">{{ row.joues }}</td>
+                                        <td class="ta-num ta-col-secondary">{{ row.victoires }}</td>
+                                        <td class="ta-num ta-col-secondary">{{ row.nuls }}</td>
+                                        <td class="ta-num ta-col-secondary">{{ row.defaites }}</td>
+                                        <td class="ta-num ta-col-secondary">{{ row.bp }}</td>
+                                        <td class="ta-num ta-col-secondary">{{ row.bc }}</td>
+                                        <td class="ta-num ta-col-secondary">{% if row.diff > 0 %}+{% endif %}{{ row.diff }}</td>
+                                        <td class="ta-num ta-col-secondary"><strong>{{ row.points }}</strong></td>
+                                        <td class="ta-col-mobile-only">
+                                            <details class="ta-table-row-details">
+                                                <summary>Stats</summary>
+                                                <dl class="ta-table-row-details-dl">
+                                                    <div><dt>MJ</dt><dd>{{ row.joues }}</dd></div>
+                                                    <div><dt>V</dt><dd>{{ row.victoires }}</dd></div>
+                                                    <div><dt>N</dt><dd>{{ row.nuls }}</dd></div>
+                                                    <div><dt>D</dt><dd>{{ row.defaites }}</dd></div>
+                                                    <div><dt>BP</dt><dd>{{ row.bp }}</dd></div>
+                                                    <div><dt>BC</dt><dd>{{ row.bc }}</dd></div>
+                                                    <div><dt>Diff</dt><dd>{% if row.diff > 0 %}+{% endif %}{{ row.diff }}</dd></div>
+                                                    <div><dt>Pts</dt><dd><strong>{{ row.points }}</strong></dd></div>
+                                                </dl>
+                                            </details>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            {% endfor %}
+        {% endif %}
+    </section>
+{% endblock %}

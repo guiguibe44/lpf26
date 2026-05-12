@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pronostics du match | LPF 2026{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">Pronostics du match</h1>
+            <p class="ta-page-subtitle">
+                {{ match.paysDomicile.nom }} - {{ match.paysExterieur.nom }}
+                du {{ match.dateHeure|date('d/m/Y H:i') }}.
+            </p>
+        </div>
+        <a href="{{ path('app_matches') }}" class="btn btn-sm">Retour aux matchs</a>
+    </section>
+
+    <section class="ta-card">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="ta-card-title">Score final</h2>
+                <p class="ta-card-text">
+                    {{ match.paysDomicile.nom }} {{ match.scoreDomicile }} -
+                    {{ match.scoreExterieur }} {{ match.paysExterieur.nom }}
+                </p>
+            </div>
+            {% if match.coteMoyenne is not null %}
+                <span class="ta-badge ta-badge-success">
+                    Cote moyenne {{ match.coteMoyenne|number_format(2, ',', ' ') }}
+                </span>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="ta-card mt-5">
+        <h2 class="ta-card-title">Tous les pronostics</h2>
+
+        {% if pronostics is empty %}
+            <p class="ta-card-text">Aucun pronostic enregistre sur ce match.</p>
+        {% else %}
+            <div class="overflow-x-auto mt-4">
+                <table class="table w-full">
+                    <thead>
+                    <tr>
+                        <th>Joueur</th>
+                        <th>Pronostic</th>
+                        <th>Base</th>
+                        <th>Cote</th>
+                        <th>Points</th>
+                        <th>Prise de risque</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for pronostic in pronostics %}
+                        <tr>
+                            <td>{{ pronostic.joueur.email }}</td>
+                            <td>{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</td>
+                            <td>{{ pronostic.pointsBase is not null ? pronostic.pointsBase : '-' }}</td>
+                            <td>
+                                {{ pronostic.coteCoefficient is not null ? pronostic.coteCoefficient|number_format(2, ',', ' ') : '-' }}
+                            </td>
+                            <td>
+                                {% if pronostic.points is not null %}
+                                    <span class="ta-badge ta-badge-success">
+                                        {{ pronostic.points|number_format(0, ',', ' ') }} pts
+                                    </span>
+                                {% else %}
+                                    <span class="ta-badge">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ pronostic.priseRisque ? 'Oui' : 'Non' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

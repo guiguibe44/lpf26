@@ -1,0 +1,135 @@
+{# picker_id_prefix, cotisation_payee, dashboard_partners, buteurs_pris_par_autres_equipes, form_return optionnel (account) #}
+{% set buteur_block_disabled = not cotisation_payee %}
+{% set listbox_id = picker_id_prefix ~ '-buteur-listbox' %}
+
+<div class="dashboard-buteur-columns">
+    <div class="dashboard-buteur-form-card {{ buteur_block_disabled ? 'dashboard-buteur-form-card--disabled' : '' }}">
+        <h3 class="dashboard-buteur-form-card__title">Choisir mon buteur</h3>
+
+        {% if app.user.buteurChoisi %}
+            <p class="dashboard-current-buteur">
+                Choix actuel : <strong>{{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
+                {% if app.user.buteurChoisi.pays %}<span class="dashboard-partner-buteur-pays">({{ app.user.buteurChoisi.pays.nom }})</span>{% endif %}
+            </p>
+        {% endif %}
+
+        <div
+            class="dashboard-buteur-picker"
+            data-controller="dashboard-buteur"
+            data-dashboard-buteur-search-url-value="{{ path('app_api_buteurs_search') }}"
+            data-dashboard-buteur-listbox-id-value="{{ listbox_id }}"
+        >
+            <div class="dashboard-buteur-combobox" data-dashboard-buteur-target="combobox">
+                <label class="ta-form-label" for="{{ picker_id_prefix }}-buteur-q">Buteur</label>
+                <input
+                    type="search"
+                    id="{{ picker_id_prefix }}-buteur-q"
+                    class="ta-form-input"
+                    placeholder="Nom, prénom ou pays (2 caractères min.)…"
+                    data-dashboard-buteur-target="query"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    aria-controls="{{ listbox_id }}"
+                    {{ buteur_block_disabled ? 'disabled' : '' }}
+                >
+
+                <div class="dashboard-buteur-results" data-dashboard-buteur-target="results" aria-live="polite"></div>
+            </div>
+
+            <form method="post" action="{{ path('app_dashboard_buteur_save') }}" class="dashboard-buteur-save-form">
+                <input type="hidden" name="_token" value="{{ csrf_token('dashboard_buteur') }}">
+                {% if form_return %}
+                    <input type="hidden" name="_return" value="{{ form_return }}">
+                {% endif %}
+                <input type="hidden" name="buteur_id" value="{{ app.user.buteurChoisi ? app.user.buteurChoisi.id : '' }}" data-dashboard-buteur-target="hiddenId">
+
+                <p class="dashboard-buteur-preview-label">Sélection :</p>
+                <div class="dashboard-buteur-preview-row">
+                    {% set current_b = app.user.buteurChoisi %}
+                    <img
+                        class="dashboard-buteur-preview-img"
+                        data-dashboard-buteur-target="previewPhotoImg"
+                        src="{{ current_b and current_b.photo ? current_b.photo : '' }}"
+                        width="40"
+                        height="40"
+                        alt=""
+                        {% if not current_b or not current_b.photo %}hidden{% endif %}
+                        loading="lazy"
+                        decoding="async"
+                    >
+                    <span
+                        class="dashboard-buteur-preview-photo dashboard-buteur-preview-photo--placeholder"
+                        data-dashboard-buteur-target="previewPhotoPlaceholder"
+                        {% if current_b and current_b.photo %}hidden{% endif %}
+                        aria-hidden="true"
+                    >{% if current_b and not current_b.photo %}{{- (current_b.prenom|slice(0, 1) ~ current_b.nom|slice(0, 1))|upper -}}{% elseif not current_b %}?{% endif %}</span>
+                    <span class="dashboard-buteur-preview" data-dashboard-buteur-target="preview">{% if current_b %}{{ current_b.prenom }} {{ current_b.nom }}{% if current_b.pays %} — {{ current_b.pays.nom }}{% endif %}{% else %}—{% endif %}</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm" {{ buteur_block_disabled ? 'disabled' : '' }}>Enregistrer mon buteur</button>
+            </form>
+        </div>
+
+        {% if dashboard_partners is not empty %}
+            <div class="dashboard-buteur-card-footer" role="group" aria-label="Partenaire et son buteur">
+                {% for partner in dashboard_partners %}
+                    <div class="dashboard-buteur-card-footer__pair">
+                        <div class="dashboard-buteur-card-footer__stack">
+                            <div class="dashboard-buteur-footer-slot dashboard-buteur-footer-slot--partner" title="{{ partner.userIdentifier }}">
+                                {% if partner.avatar %}
+                                    <img class="dashboard-buteur-footer-avatar" src="{{ partner.avatar }}" alt="" width="44" height="44" loading="lazy" decoding="async">
+                                {% else %}
+                                    <span class="dashboard-buteur-footer-avatar dashboard-buteur-footer-avatar--placeholder" aria-hidden="true">{{ partner.email|first|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="dashboard-buteur-footer-slot dashboard-buteur-footer-slot--buteur" title="{% if partner.buteurChoisi %}{{ partner.buteurChoisi.prenom }} {{ partner.buteurChoisi.nom }}{% else %}Buteur non choisi{% endif %}">
+                                {% if partner.buteurChoisi and partner.buteurChoisi.photo %}
+                                    <img class="dashboard-buteur-footer-buteur-photo" src="{{ partner.buteurChoisi.photo }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                                {% elseif partner.buteurChoisi %}
+                                    <span class="dashboard-buteur-footer-buteur-photo dashboard-buteur-footer-buteur-photo--placeholder" aria-hidden="true">
+                                        {{- (partner.buteurChoisi.prenom|slice(0, 1) ~ partner.buteurChoisi.nom|slice(0, 1))|upper -}}
+                                    </span>
+                                {% else %}
+                                    <span class="dashboard-buteur-footer-buteur-photo dashboard-buteur-footer-buteur-photo--empty" aria-hidden="true">?</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <aside class="dashboard-buteur-taken-card" aria-labelledby="{{ picker_id_prefix }}-buteur-taken-title">
+        <h3 class="dashboard-buteur-taken-card__title" id="{{ picker_id_prefix }}-buteur-taken-title">Pris par d'autres équipes</h3>
+        <p class="dashboard-buteur-taken-card__intro">Joueurs de foot concernés uniquement : aucune équipe ni membre du jeu n'est indiqué.</p>
+        {% if buteurs_pris_par_autres_equipes is empty %}
+            <p class="dashboard-buteur-taken-card__empty">Aucun pour le moment.</p>
+        {% else %}
+            <ul class="dashboard-buteur-taken-list">
+                {% for b in buteurs_pris_par_autres_equipes %}
+                    <li class="dashboard-buteur-taken-row">
+                        {% if b.photo %}
+                            <img class="dashboard-buteur-taken-photo" src="{{ b.photo }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+                        {% else %}
+                            <span class="dashboard-buteur-taken-photo dashboard-buteur-taken-photo--placeholder" aria-hidden="true">{{ (b.prenom|slice(0, 1) ~ b.nom|slice(0, 1))|upper }}</span>
+                        {% endif %}
+                        <span class="dashboard-buteur-taken-body">
+                            <span class="dashboard-buteur-taken-name">{{ b.prenom }} {{ b.nom }}</span>
+                            {% if b.pays %}
+                                <span class="dashboard-buteur-taken-pays">
+                                    {% if b.pays.drapeau %}
+                                        <img class="dashboard-buteur-taken-flag" src="{{ b.pays.drapeau }}" alt="" width="18" height="12" loading="lazy" decoding="async">
+                                    {% endif %}
+                                    {{ b.pays.nom }}
+                                </span>
+                            {% endif %}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </aside>
+</div>

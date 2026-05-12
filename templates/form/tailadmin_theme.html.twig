@@ -1,0 +1,61 @@
+{% block form_row %}
+    <div class="ta-form-row">
+        {{ form_label(form) }}
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{% block form_label %}
+    {% if label is not same as(false) %}
+        <label for="{{ id }}" class="ta-form-label">{{ label|default(name|humanize) }}</label>
+    {% endif %}
+{% endblock %}
+
+{% block form_widget_simple %}
+    {% set type = type|default('text') %}
+    {% if type == 'file' %}
+        <input type="file" {{ block('widget_attributes') }} class="ta-form-input ta-form-file" />
+    {% else %}
+        <input type="{{ type }}" {{ block('widget_attributes') }} class="ta-form-input" value="{{ value }}" />
+    {% endif %}
+{% endblock %}
+
+{% block textarea_widget %}
+    <textarea {{ block('widget_attributes') }} class="ta-form-input ta-form-textarea">{{ value }}</textarea>
+{% endblock %}
+
+{% block choice_widget_collapsed %}
+    <select {{ block('widget_attributes') }} class="ta-form-input ta-form-select">
+        {% if placeholder is not none %}
+            <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>
+        {% endif %}
+        {% if preferred_choices|length > 0 %}
+            {% set options = preferred_choices %}
+            {{ block('choice_widget_options') }}
+            {% if choices|length > 0 and separator is not none %}
+                <option disabled="disabled">{{ separator }}</option>
+            {% endif %}
+        {% endif %}
+        {% set options = choices %}
+        {{ block('choice_widget_options') }}
+    </select>
+{% endblock %}
+
+{% block checkbox_widget %}
+    <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} class="checkbox checkbox-primary" />
+{% endblock %}
+
+{% block radio_widget %}
+    <input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} class="radio radio-primary" />
+{% endblock %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <ul class="ta-form-errors">
+            {% for error in errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

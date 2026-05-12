@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">Dashboard</h1>
+        </div>
+        <div class="ta-user-badge">
+            {{ app.user ? app.user.userIdentifier : 'Invite' }}
+        </div>
+    </section>
+
+    {% if not competition_started %}
+        {% include 'home/_dashboard_buteur.html.twig' with {
+            cotisation_payee: cotisation_payee,
+            dashboard_partners: dashboard_partners,
+            buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
+        } only %}
+    {% endif %}
+
+    <section class="Xta-card mt-5 {{ prono_access_blocked ? 'match-dashboard-wrap--locked' : '' }}">
+        {% if last_completed_matchday is null and next_matchday is null %}
+            <p class="ta-card-text mt-3">Aucun match à afficher pour le moment.</p>
+        {% else %}
+            {% if last_completed_matchday %}
+                <div class="match-day-section">
+                    <h2 class="match-day-title">Dernière journée  — {{ last_completed_matchday.date|date('l d F Y') }}</h2>
+                    <div class="match-card-grid">
+                        {% for match in last_completed_matchday.matches %}
+                            {% include 'competition/_match_card.html.twig' with {
+                                match: match,
+                                pronostic: pronostics_by_match_id[match.id] ?? null,
+                                partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
+                                now: now,
+                                prono_access_blocked: prono_access_blocked
+                            } only %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if next_matchday %}
+                <div class="match-day-section {{ last_completed_matchday ? 'mt-6' : '' }}">
+                    <h2 class="match-day-title">Prochaine journée — {{ next_matchday.date|date('l d F Y') }}</h2>
+                    <div class="match-card-grid">
+                        {% for match in next_matchday.matches %}
+                            {% include 'competition/_match_card.html.twig' with {
+                                match: match,
+                                pronostic: pronostics_by_match_id[match.id] ?? null,
+                                partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
+                                now: now,
+                                prono_access_blocked: prono_access_blocked
+                            } only %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </section>
+{% endblock %}

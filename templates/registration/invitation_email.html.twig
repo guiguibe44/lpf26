@@ -1,0 +1,4 @@
+<p>Bonjour,</p>
+<p>Vous avez ete invite a rejoindre l'equipe <strong>{{ team.name }}</strong> sur LPF 2026.</p>
+<p><a href="{{ url('app_team_invitation_accept', {token: invitation.token}) }}">Accepter l'invitation</a></p>
+<p>Ce lien expire le {{ invitation.expiresAt|date('d/m/Y H:i') }}.</p>

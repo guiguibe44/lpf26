@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+{% form_theme profile_form 'form/tailadmin_theme.html.twig' %}
+{% form_theme password_form 'form/tailadmin_theme.html.twig' %}
+{% form_theme team_form 'form/tailadmin_theme.html.twig' %}
+
+{% block title %}Compte et équipe{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">Compte et équipe</h1>
+            <p class="ta-page-subtitle">Profil, mot de passe, buteur et paramètres de l’équipe</p>
+        </div>
+    </section>
+
+    <div class="account-page space-y-6">
+        <div class="tabs tabs-box account-tabs-nav" role="tablist" aria-label="Sections compte et équipe">
+            <button type="button" role="tab" id="tab-btn-compte" class="tab tab-active" aria-selected="true" aria-controls="panel-compte" data-account-tab="compte">
+                Mon compte
+            </button>
+            <button type="button" role="tab" id="tab-btn-equipe" class="tab" aria-selected="false" aria-controls="panel-equipe" data-account-tab="equipe">
+                Mon équipe
+            </button>
+        </div>
+
+        <div id="panel-compte" role="tabpanel" aria-labelledby="tab-btn-compte" class="account-tab-panel space-y-6">
+            <section class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                    {% if app.user.avatar %}
+                        <img src="{{ app.user.avatar }}" alt="" class="h-20 w-20 rounded-full object-cover">
+                    {% else %}
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-primary text-primary-content flex h-20 w-20 items-center justify-center rounded-full">
+                                <span class="text-xl">{{ app.user.userIdentifier|slice(0, 1)|upper }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="text-lg font-semibold">Résumé</h2>
+                        <p class="text-sm text-base-content/70">{{ app.user.userIdentifier }}</p>
+                        <p class="mt-2 text-sm"><span class="text-base-content/70">Buteur :</span>
+                            {% if app.user.buteurChoisi %}
+                                <strong>{{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
+                                {% if app.user.buteurChoisi.pays %}<span class="text-base-content/70">({{ app.user.buteurChoisi.pays.nom }})</span>{% endif %}
+                            {% else %}
+                                <span class="text-base-content/70">—</span>
+                            {% endif %}
+                        </p>
+                        <p class="text-sm">
+                            <span class="text-base-content/70">Cotisation :</span>
+                            {% if app.user.cotisationPayee %}
+                                <span class="ta-badge ta-badge-success">Payée</span>
+                            {% else %}
+                                <span class="ta-badge ta-badge-warning">En attente</span>
+                            {% endif %}
+                        </p>
+                        {% if not app.user.cotisationPayee %}
+                            <div class="alert alert-warning mt-3 text-sm">
+                                <span>Accès aux pronostics bloqué tant que la cotisation n’est pas réglée.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="grid gap-6 xl:grid-cols-3">
+                <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm xl:col-span-2">
+                    <h2 class="mb-4 text-lg font-semibold">Profil joueur</h2>
+                    {{ form_start(profile_form, {'attr': {'class': 'space-y-3'}}) }}
+                        {{ form_row(profile_form.email) }}
+                        {{ form_row(profile_form.nickname) }}
+                        {{ form_row(profile_form.avatarFile) }}
+                        <img
+                            src="{{ app.user.avatar ?: '' }}"
+                            alt=""
+                            class="h-16 w-16 rounded-full object-cover {{ app.user.avatar ? '' : 'hidden' }}"
+                            data-live-preview-target="avatar"
+                        >
+                        {{ form_row(profile_form.removeAvatar) }}
+                        <button type="submit" class="btn btn-primary">Enregistrer mon profil</button>
+                    {{ form_end(profile_form) }}
+                </article>
+            </section>
+
+            {% if not competition_started %}
+                <section class="Xta-card dashboard-buteur-block account-buteur-section">
+                    <h2 class="ta-card-title">Mon buteur</h2>
+                    {% if not cotisation_payee %}
+                        <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur (identique au tableau de bord).</p>
+                    {% endif %}
+                    {% include 'buteur/_picker_stack.html.twig' with {
+                        picker_id_prefix: 'acc',
+                        cotisation_payee: cotisation_payee,
+                        dashboard_partners: dashboard_partners,
+                        buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
+                        form_return: 'account',
+                    } only %}
+                </section>
+            {% else %}
+                <section class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h2 class="mb-2 text-lg font-semibold">Mon buteur</h2>
+                    <p class="text-sm text-base-content/70">Le choix du buteur est verrouillé depuis le début de la compétition.</p>
+                </section>
+            {% endif %}
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-4 text-lg font-semibold">Mot de passe</h2>
+                {{ form_start(password_form, {'attr': {'class': 'space-y-3'}}) }}
+                    {{ form_row(password_form.plainPassword) }}
+                    <button type="submit" class="btn btn-outline btn-primary">Modifier mon mot de passe</button>
+                {{ form_end(password_form) }}
+            </section>
+        </div>
+
+        <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
+            <section class="grid gap-6 xl:grid-cols-3">
+                <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm xl:col-span-1">
+                    <h2 class="mb-3 text-lg font-semibold">Aperçu</h2>
+                    {% if team.logo %}
+                        <img src="{{ team.logo }}" alt="" class="mb-3 h-20 w-20 rounded-xl object-cover">
+                    {% endif %}
+                    <p class="text-sm"><span class="text-base-content/70">Nom :</span> {{ team.name ?: '—' }}</p>
+                    <p class="mt-1 text-sm"><span class="text-base-content/70">Slogan :</span> {{ team.slogan ?: '—' }}</p>
+                    {% if name_locked %}
+                        <div class="alert alert-warning mt-4 text-sm">
+                            <span>
+                                Le nom de l’équipe est verrouillé depuis le début de la compétition{% if competition_start_at %} ({{ competition_start_at|date('d/m/Y H:i') }}){% endif %}.
+                            </span>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm xl:col-span-2">
+                    <h2 class="mb-4 text-lg font-semibold">Modifier l’équipe</h2>
+                    {{ form_start(team_form, {'attr': {'class': 'space-y-3'}}) }}
+                        {{ form_row(team_form.name) }}
+                        {{ form_row(team_form.logoFile) }}
+                        <img
+                            src="{{ team.logo ?: '' }}"
+                            alt=""
+                            class="h-16 w-16 rounded-xl object-cover {{ team.logo ? '' : 'hidden' }}"
+                            data-live-preview-target="logo"
+                        >
+                        {{ form_row(team_form.removeLogo) }}
+                        {{ form_row(team_form.slogan) }}
+                        <button type="submit" class="btn btn-primary">Enregistrer mon équipe</button>
+                    {{ form_end(team_form) }}
+                </article>
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h3 class="mb-4 text-lg font-semibold">Joueurs de l’équipe</h3>
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Pseudo</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in team_members %}
+                                <tr>
+                                    <td>{{ member.nickname }}</td>
+                                    <td>{{ member.player.email }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="2">Aucun joueur trouvé.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnCompte = document.getElementById('tab-btn-compte');
+            const btnEquipe = document.getElementById('tab-btn-equipe');
+            const panelCompte = document.getElementById('panel-compte');
+            const panelEquipe = document.getElementById('panel-equipe');
+            if (!btnCompte || !btnEquipe || !panelCompte || !panelEquipe) {
+                return;
+            }
+
+            const showTab = (name) => {
+                const isEquipe = name === 'equipe';
+                btnCompte.classList.toggle('tab-active', !isEquipe);
+                btnEquipe.classList.toggle('tab-active', isEquipe);
+                btnCompte.setAttribute('aria-selected', isEquipe ? 'false' : 'true');
+                btnEquipe.setAttribute('aria-selected', isEquipe ? 'true' : 'false');
+                panelCompte.toggleAttribute('hidden', isEquipe);
+                panelEquipe.toggleAttribute('hidden', !isEquipe);
+            };
+
+            const hashToTab = () => {
+                const h = (window.location.hash || '').toLowerCase();
+                if (h === '#tab-equipe' || h === '#equipe' || h === '#team-section') {
+                    return 'equipe';
+                }
+                return 'compte';
+            };
+
+            showTab(hashToTab());
+
+            btnCompte.addEventListener('click', () => {
+                showTab('compte');
+                history.replaceState(null, '', '#tab-compte');
+            });
+            btnEquipe.addEventListener('click', () => {
+                showTab('equipe');
+                history.replaceState(null, '', '#tab-equipe');
+            });
+
+            window.addEventListener('hashchange', () => showTab(hashToTab()));
+
+            const bindPreview = (inputName, previewKey) => {
+                const input = document.querySelector(`input[name="${inputName}"]`);
+                const preview = document.querySelector(`[data-live-preview-target="${previewKey}"]`);
+                if (!input || !preview) {
+                    return;
+                }
+                input.addEventListener('change', (event) => {
+                    const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
+                    if (!file || !file.type.startsWith('image/')) {
+                        return;
+                    }
+                    preview.src = URL.createObjectURL(file);
+                    preview.classList.remove('hidden');
+                });
+            };
+
+            bindPreview('profile_form[avatarFile]', 'avatar');
+            bindPreview('team_form[logoFile]', 'logo');
+        });
+    </script>
+{% endblock %}

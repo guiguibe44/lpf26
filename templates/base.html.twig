@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% set currentRoute = app.request.attributes.get('_route')|default('') %}
+{% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
+{% set isAppShellPage = (not isAuthPage) %}
+{% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}LPF 2026{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        {% if isAppShellPage %}
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=match-group-link">
+        {% endif %}
+        {% if isAuthPage %}
+            <link rel="stylesheet" href="{{ asset('front-dashboard.css') }}">
+        {% endif %}
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ importmap('app') }}
+        {% endblock %}
+
+        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
+        {% if frankenphpHotReload %}
+        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
+        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
+        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+        {% endif %}
+    </head>
+    <body class="front-body{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
+        {% if isAuthPage %}
+            <main class="auth-wrap">
+                <section class="auth-card">
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {{ block('body') }}
+                </section>
+            </main>
+        {% else %}
+            {% if show_cotisation_banner %}
+                <div class="app-cotisation-banner" role="status">
+                    <p class="app-cotisation-banner__text">
+                        Cotisation de <strong>10&nbsp;€ par joueur</strong> à régler pour pouvoir pronostiquer.
+                    </p>
+                </div>
+            {% endif %}
+            <div class="ta-shell">
+                {% include '_sidebar.html.twig' %}
+                <main class="ta-main">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {{ block('body') }}
+                </main>
+            </div>
+        {% endif %}
+    </body>
+</html>

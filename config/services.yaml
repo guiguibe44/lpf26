@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+parameters:
+    app.competition_start_at: '%env(default::COMPETITION_START_AT)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\CompetitionStatus:
+        arguments:
+            $competitionStartAt: '%app.competition_start_at%'
+
+    App\Service\ApiFootballClient:
+        arguments:
+            $apiKey: '%env(default::API_FOOTBALL_KEY)%'
+            $playerSyncStop: '@App\Service\ApiFootballPlayerSyncStop'
+            $requestDelayMs: '%env(int:API_FOOTBALL_REQUEST_DELAY_MS)%'
+
+    App\Service\ApiFootballPlayerSyncStop:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\Wc2026SyncService:
+        arguments:
+            $apiFootballWorldCupLeagueId: '%env(int:API_FOOTBALL_WC_LEAGUE_ID)%'
+            $apiFootballWorldCupSeason: '%env(int:API_FOOTBALL_WC_SEASON)%'
+            $apiFootballSyncGoalsMaxRequests: '%env(int:API_FOOTBALL_SYNC_GOALS_MAX_REQUESTS)%'
+
+    App\Controller\Admin\DashboardController:
+        arguments:
+            $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
+
+    App\Command\Wc2026SyncCommand:
+        arguments:
+            $syncService: '@App\Service\Wc2026SyncService'
+            $defaultPlayersSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Invitation equipe{% endblock %}
+
+{% block body %}
+    <h1>Rejoindre l'equipe {{ invitation.team.name }}</h1>
+    <p>Email invite: <strong>{{ invitation.invitedEmail }}</strong></p>
+
+    {{ form_start(form) }}
+        {{ form_row(form.nickname) }}
+        {{ form_row(form.plainPassword) }}
+        <button type="submit">Valider mon inscription</button>
+    {{ form_end(form) }}
+{% endblock %}

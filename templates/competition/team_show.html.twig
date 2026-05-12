@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ team.name }} | Equipe | LPF 2026{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <p class="ta-page-subtitle team-show-back">
+                <a href="{{ path('app_ranking') }}" class="ta-link">← Retour au classement</a>
+            </p>
+            <h1 class="ta-page-title">{{ team.name }}</h1>
+        </div>
+    </section>
+
+    <section class="ta-card team-show-identity">
+        {% if team.logo %}
+            <img src="{{ asset(team.logo) }}" alt="" class="ranking-team-logo">
+        {% else %}
+            <span class="ranking-team-logo-placeholder" aria-hidden="true">{{ team.name|first|upper }}</span>
+        {% endif %}
+        <div class="team-show-identity-text">
+            {% if team.slogan %}
+                <p class="team-show-slogan">« {{ team.slogan }} »</p>
+            {% else %}
+                <p class="ta-card-text">Pas de slogan renseigne.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="ta-card mt-5 team-show-ranking-card">
+        <h2 class="ta-card-title">Classement actuel</h2>
+        {% if team_ranking_snapshot %}
+            {% if latest_ranking_match %}
+                <p class="ta-card-text team-show-ranking-meta">
+                    Classement general apres
+                    {{ latest_ranking_match.paysDomicile ? latest_ranking_match.paysDomicile.nom : '?' }}
+                    —
+                    {{ latest_ranking_match.paysExterieur ? latest_ranking_match.paysExterieur.nom : '?' }}
+                    {% if latest_ranking_match.dateHeure %}
+                        ({{ latest_ranking_match.dateHeure|date('d/m/Y') }}).
+                    {% endif %}
+                </p>
+            {% endif %}
+            <p class="team-show-ranking-position">
+                <span class="team-show-ranking-rank">#{{ team_ranking_snapshot.position }}</span>
+                <span class="team-show-ranking-slash">/</span>
+                <span class="team-show-ranking-total">{{ latest_ranking_teams_count }} equipes</span>
+            </p>
+            <dl class="team-show-ranking-dl">
+                <div>
+                    <dt>Points</dt>
+                    <dd>{{ team_ranking_snapshot.totalPoints|number_format(0, ',', ' ') }}</dd>
+                </div>
+                <div>
+                    <dt>Scores exacts</dt>
+                    <dd>{{ team_ranking_snapshot.scoresExacts }}</dd>
+                </div>
+                <div>
+                    <dt>Bons resultats</dt>
+                    <dd>{{ team_ranking_snapshot.bonsResultats }}</dd>
+                </div>
+                <div>
+                    <dt>Resultats faux</dt>
+                    <dd>{{ team_ranking_snapshot.resultatsFaux }}</dd>
+                </div>
+                <div>
+                    <dt>Prises de risques</dt>
+                    <dd>{{ team_ranking_snapshot.prisesRisque }}</dd>
+                </div>
+            </dl>
+            <p class="mt-3">
+                <a href="{{ path('app_ranking') }}" class="ta-link">Voir le classement complet</a>
+            </p>
+        {% elseif latest_ranking_teams_count == 0 %}
+            <p class="ta-card-text">Aucun classement n'a encore ete calcule.</p>
+        {% else %}
+            <p class="ta-card-text">
+                Cette equipe ne figure pas au dernier classement enregistre
+                ({{ latest_ranking_teams_count }} equipes classees).
+            </p>
+            <p class="mt-2">
+                <a href="{{ path('app_ranking') }}" class="ta-link">Voir le classement</a>
+            </p>
+        {% endif %}
+    </section>
+
+    {% if ranking_evolution_by_day is not empty %}
+        <section class="ta-card mt-5 team-show-evolution-card" aria-labelledby="team-evolution-heading">
+            <h2 id="team-evolution-heading" class="ta-card-title">Evolution du classement (par jour de match)</h2>
+            <p class="ta-card-text">
+                Pour chaque <strong>jour calendaire</strong>, on affiche le classement apres le
+                <strong>dernier match classe</strong> de ce jour (plusieurs matchs le meme jour : une seule ligne).
+            </p>
+
+            <div
+                class="team-evolution-chart"
+                role="img"
+                aria-label="Evolution du rang sur {{ ranking_evolution_by_day|length }} jour(s) de match"
+            >
+                {% for ev in ranking_evolution_by_day %}
+                    <div class="team-evolution-bar-wrap" title="#{{ ev.position }} / {{ ev.teams_count }} — {{ ev.total_points|number_format(0, ',', ' ') }} pts le {{ ev.date_display|date('d/m/Y') }}">
+                        <span class="team-evolution-rank-label">#{{ ev.position }}</span>
+                        <span class="team-evolution-bar-track">
+                            <span class="team-evolution-bar" style="height: {{ ev.rank_bar_percent }}%;"></span>
+                        </span>
+                        <span class="team-evolution-day">{{ ev.date_display|date('d/m') }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="ta-table-wrap mt-4">
+                <table class="ta-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th class="ta-num">Rang</th>
+                            <th class="ta-num">Equipes</th>
+                            <th class="ta-num">Points</th>
+                            <th>Dernier match classe ce jour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ev in ranking_evolution_by_day %}
+                            {% set lm = ev.last_match %}
+                            <tr>
+                                <td>{{ ev.date_display|date('l d F Y') }}</td>
+                                <td class="ta-num"><strong>#{{ ev.position }}</strong></td>
+                                <td class="ta-num">{{ ev.teams_count }}</td>
+                                <td class="ta-num">{{ ev.total_points|number_format(0, ',', ' ') }}</td>
+                                <td>
+                                    {{ lm.paysDomicile ? lm.paysDomicile.nom : '?' }}
+                                    —
+                                    {{ lm.paysExterieur ? lm.paysExterieur.nom : '?' }}
+                                    {% if lm.dateHeure %}
+                                        <span class="team-evolution-match-time">({{ lm.dateHeure|date('H:i') }})</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="ta-card mt-5">
+        <h2 class="ta-card-title">Joueurs</h2>
+        {% if team_members is empty %}
+            <p class="ta-card-text">Aucun joueur dans cette equipe.</p>
+        {% else %}
+            <div class="team-show-members">
+                {% for member in team_members %}
+                    <div class="team-show-member-card">
+                        <p class="team-show-member-nick">{{ member.nickname }}</p>
+                        {% if member.player %}
+                            <p class="team-show-member-mail">{{ member.player.email }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="ta-card mt-5">
+        <h2 class="ta-card-title">Matchs joues et points par joueur</h2>
+        <p class="ta-card-text">Matchs avec score final enregistre ; points issus du barème LPF (apres notation).</p>
+
+        {% if played_rows is empty %}
+            <p class="ta-card-text mt-3">Aucun match joue avec pronostic note pour les membres de cette equipe.</p>
+        {% else %}
+            <div class="ta-table-wrap mt-4">
+                <table class="ta-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Affiche</th>
+                            <th>Score</th>
+                            {% for member in team_members %}
+                                <th class="ta-num">{{ member.nickname }}<br><span class="team-show-th-sub">prono · pts</span></th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in played_rows %}
+                            {% set m = row.match %}
+                            <tr>
+                                <td>{{ m.dateHeure ? m.dateHeure|date('d/m/Y H:i') : '—' }}</td>
+                                <td>
+                                    {{ m.paysDomicile ? m.paysDomicile.nom : '?' }}
+                                    —
+                                    {{ m.paysExterieur ? m.paysExterieur.nom : '?' }}
+                                </td>
+                                <td class="ta-num">{{ m.scoreDomicile }} - {{ m.scoreExterieur }}</td>
+                                {% for prono in row.pronostics %}
+                                    <td class="ta-num team-show-prono-cell">
+                                        {% if prono %}
+                                            <span class="team-show-prono-line">
+                                                <span class="team-show-prono-score">{{ prono.scoreDomicile }} - {{ prono.scoreExterieur }}</span>
+                                                {% if prono.points is not null %}
+                                                    <span class="team-show-prono-sep" aria-hidden="true">·</span>
+                                                    <span class="team-show-prono-pts">{{ prono.points|number_format(2, ',', ' ') }} pts</span>
+                                                {% endif %}
+                                            </span>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

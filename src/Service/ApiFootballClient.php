@@ -1,0 +1,339 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Service;
+
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+/**
+ * Client pour API-Sports Football v3 (https://v3.football.api-sports.io).
+ *
+ * Authentification : en-tête x-apisports-key (voir tableau de bord api-sports.io).
+ *
+ * Coupe du monde 2026 : voir le guide officiel API-Football / API-Sports
+ * https://www.api-football.com/news/post/fifa-world-cup-2026-guide-to-using-data-with-api-sports
+ * (identifiants CDM : league et saison via API_FOOTBALL_WC_LEAGUE_ID / API_FOOTBALL_WC_SEASON, voir {@see Wc2026SyncService}.)
+ */
+final class ApiFootballClient
+{
+    private const BASE_URL = 'https://v3.football.api-sports.io';
+
+    public function __construct(
+        private readonly HttpClientInterface $httpClient,
+        private readonly ?string $apiKey,
+        private readonly ApiFootballPlayerSyncStop $playerSyncStop,
+        /** Délai entre deux requêtes consécutives (ms), pour respecter les quotas « par minute » (plans gratuits). 0 = aucune pause. */
+        private readonly int $requestDelayMs = 4000,
+    ) {
+    }
+
+    public function isConfigured(): bool
+    {
+        return null !== $this->apiKey && '' !== trim($this->apiKey);
+    }
+
+    /**
+     * Pause entre appels API (synchro matchs / buts / joueurs).
+     */
+    public function applyInterRequestDelay(): void
+    {
+        $this->throttleBeforeNextRequest();
+    }
+
+    /**
+     * @return list<array<string, mixed>> lignes brutes API (chaque élément contient souvent la clé "team").
+     */
+    public function fetchTeamsRowsForLeague(int $leagueId, int $season): array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException('API_FOOTBALL_KEY manquante.');
+        }
+
+        $data = $this->requestJson('/teams', ['league' => $leagueId, 'season' => $season]);
+        $rows = $data['response'] ?? [];
+
+        return \is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * @return list<array<string, mixed>> lignes brutes "fixture" (objet complet par match).
+     */
+    public function fetchFixturesForLeague(int $leagueId, int $season, int $maxHttpRequests): array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException('API_FOOTBALL_KEY manquante.');
+        }
+
+        if ($maxHttpRequests < 1) {
+            return [];
+        }
+
+        $out = [];
+
+        // L’API-Sports v3 rejette le paramètre `page` sur GET /fixtures avec league+season
+        // (erreur : « The Page field do not exist. »). Une seule requête renvoie la liste
+        // (pagination interne côté API sans ce paramètre).
+        $data = $this->requestJson('/fixtures', [
+            'league' => $leagueId,
+            'season' => $season,
+        ]);
+
+        $batch = $data['response'] ?? [];
+        if (!\is_array($batch)) {
+            return [];
+        }
+        foreach ($batch as $row) {
+            if (\is_array($row)) {
+                $out[] = $row;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function fetchFixtureEvents(int $fixtureId): array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException('API_FOOTBALL_KEY manquante.');
+        }
+
+        $data = $this->requestJson('/fixtures/events', ['fixture' => $fixtureId]);
+        $rows = $data['response'] ?? [];
+
+        return \is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * Récupère les joueurs des équipes d'une compétition (ex. CDM league=1, season=2026).
+     * Chaque ligne est normalisée pour {@see Wc2026SyncService::syncButeurs} (firstname, lastname, name, photo, team_name).
+     *
+     * @param int|null $maxPlayersPerTeam plafond de joueurs importés par équipe (pays) ; null = sans limite
+     *
+     * @return array{rows: list<array<string, mixed>>, cancelled: bool}
+     */
+    public function fetchSquadPlayersForLeague(int $leagueId, int $season, int $maxHttpRequests, ?int $maxPlayersPerTeam = null): array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException(
+                'API_FOOTBALL_KEY manquante. Ajoutez-la dans .env.local (ne commitez jamais la clé).'
+            );
+        }
+
+        if ($maxHttpRequests < 2) {
+            throw new \InvalidArgumentException('maxHttpRequests doit être au moins 2 (équipes + au moins une page joueurs).');
+        }
+
+        $calls = 0;
+        $teamsJson = $this->requestJson('/teams', ['league' => $leagueId, 'season' => $season]);
+        ++$calls;
+
+        $teams = $teamsJson['response'] ?? [];
+        if (!\is_array($teams)) {
+            throw new \UnexpectedValueException('Réponse API Football /teams invalide.');
+        }
+
+        $out = [];
+        $cancelled = false;
+
+        foreach ($teams as $row) {
+            if ($this->playerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            if ($calls >= $maxHttpRequests) {
+                break;
+            }
+
+            if (!\is_array($row)) {
+                continue;
+            }
+
+            $team = $row['team'] ?? null;
+            if (!\is_array($team)) {
+                continue;
+            }
+
+            $rawTeamId = $team['id'] ?? null;
+            $teamName = $this->normalizeString($team['name'] ?? null);
+            if (!is_numeric($rawTeamId) || null === $teamName || '' === $teamName) {
+                continue;
+            }
+
+            $teamId = (int) $rawTeamId;
+            $page = 1;
+            $totalPages = 1;
+            $playersAddedForTeam = 0;
+
+            if (null !== $maxPlayersPerTeam && $maxPlayersPerTeam <= 0) {
+                continue;
+            }
+
+            do {
+                if ($this->playerSyncStop->isStopRequested()) {
+                    $cancelled = true;
+                    break 2;
+                }
+
+                if ($calls >= $maxHttpRequests) {
+                    break 2;
+                }
+
+                $this->throttleBeforeNextRequest();
+
+                if ($this->playerSyncStop->isStopRequested()) {
+                    $cancelled = true;
+                    break 2;
+                }
+
+                $playersJson = $this->requestJson('/players', [
+                    'team' => $teamId,
+                    'season' => $season,
+                    'page' => $page,
+                ]);
+                ++$calls;
+
+                $paging = $playersJson['paging'] ?? null;
+                if (\is_array($paging)) {
+                    $current = (int) ($paging['current'] ?? $page);
+                    $totalPages = max(1, (int) ($paging['total'] ?? 1));
+                    if ($current !== $page) {
+                        $page = $current;
+                    }
+                }
+
+                $items = $playersJson['response'] ?? [];
+                if (!\is_array($items) || [] === $items) {
+                    break;
+                }
+
+                foreach ($items as $item) {
+                    if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
+                        break 2;
+                    }
+
+                    if (!\is_array($item)) {
+                        continue;
+                    }
+
+                    $player = $item['player'] ?? null;
+                    if (!\is_array($player)) {
+                        continue;
+                    }
+
+                    $pid = $player['id'] ?? null;
+                    $out[] = [
+                        'firstname' => $this->normalizeString($player['firstname'] ?? null),
+                        'lastname' => $this->normalizeString($player['lastname'] ?? null),
+                        'name' => $this->normalizeString($player['name'] ?? null),
+                        'photo' => $this->normalizeString($player['photo'] ?? null),
+                        'team_name' => $teamName,
+                        'api_sports_player_id' => is_numeric($pid) ? (int) $pid : null,
+                    ];
+                    ++$playersAddedForTeam;
+                }
+
+                if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
+                    break;
+                }
+
+                ++$page;
+            } while ($page <= $totalPages);
+        }
+
+        return ['rows' => $out, 'cancelled' => $cancelled];
+    }
+
+    private function throttleBeforeNextRequest(): void
+    {
+        if ($this->requestDelayMs <= 0) {
+            return;
+        }
+
+        usleep($this->requestDelayMs * 1000);
+    }
+
+    /**
+     * @param array<string, scalar|null> $query
+     *
+     * @return array<string, mixed>
+     */
+    private function requestJson(string $path, array $query): array
+    {
+        $lastException = null;
+        $maxAttempts = 4;
+
+        for ($i = 0; $i < $maxAttempts; ++$i) {
+            if ($i > 0) {
+                sleep(5 * $i);
+            }
+
+            try {
+                return $this->performRequestJson($path, $query);
+            } catch (\RuntimeException $e) {
+                $lastException = $e;
+                $msg = $e->getMessage();
+                if (!str_contains($msg, 'rateLimit') && !str_contains($msg, 'Too many requests')) {
+                    throw $e;
+                }
+            }
+        }
+
+        throw $lastException ?? new \RuntimeException('API Football : échec après plusieurs tentatives (rate limit).');
+    }
+
+    /**
+     * @param array<string, scalar|null> $query
+     *
+     * @return array<string, mixed>
+     */
+    private function performRequestJson(string $path, array $query): array
+    {
+        $response = $this->httpClient->request('GET', self::BASE_URL.$path, [
+            'headers' => [
+                'x-apisports-key' => trim((string) $this->apiKey),
+                'Accept' => 'application/json',
+            ],
+            'query' => $query,
+        ]);
+
+        $data = $response->toArray(false);
+        if (!\is_array($data)) {
+            throw new \UnexpectedValueException(sprintf('Réponse non-JSON sur API Football %s.', $path));
+        }
+
+        $errors = $data['errors'] ?? [];
+        if ([] !== $errors && null !== $errors) {
+            $message = \is_array($errors) ? json_encode($errors, JSON_UNESCAPED_UNICODE) : (string) $errors;
+
+            $hint = '';
+            if (str_contains($message, 'Free plans') || str_contains($message, 'do not have access to this season')) {
+                $hint = ' Les offres gratuites n’ont en général pas la saison 2026 : pour tester la synchro, ajoutez dans .env.local '
+                    .'API_FOOTBALL_WC_SEASON=2022 (Coupe du monde 2022), ou passez au plan payant pour la CDM 2026. '
+                    .'Puis : php bin/console cache:clear.';
+            }
+            if (str_contains($message, 'rateLimit') || str_contains($message, 'Too many requests')) {
+                $hint = ' Augmentez API_FOOTBALL_REQUEST_DELAY_MS (ex. 6000 ou 8000 dans .env.local), attendez une minute, ou passez à un plan avec une limite par minute plus haute.';
+            }
+
+            throw new \RuntimeException(sprintf('Erreur API Football %s: %s%s', $path, $message, $hint));
+        }
+
+        return $data;
+    }
+
+    private function normalizeString(mixed $value): ?string
+    {
+        if (!\is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return '' === $value ? null : $value;
+    }
+}

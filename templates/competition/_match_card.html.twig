@@ -1,0 +1,109 @@
+{# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false #}
+{% set prono_access_blocked = prono_access_blocked ?? false %}
+{% set has_final_score = match.scoreDomicile is not null and match.scoreExterieur is not null %}
+{% set is_finished = match.statut == 'FINISHED' or (has_final_score and match.dateHeure < now) %}
+{% set can_pronostic = match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_access_blocked %}
+{% set match_prono_blocked_cotisation = prono_access_blocked and match.statut == 'SCHEDULED' and match.dateHeure > now %}
+
+<article class="match-card">
+    <div class="match-card-head">
+        {% if is_finished %}
+            <span class="ta-badge ta-badge-success">Termine</span>
+        {% elseif can_pronostic %}
+            <span class="ta-badge ta-badge-warning">A venir</span>
+        {% else %}
+            <span class="ta-badge">En cours</span>
+        {% endif %}
+    </div>
+
+    <div class="match-fixture">
+        <div class="match-team match-team-home">
+            <span>{{ match.paysDomicile ? match.paysDomicile.nom : '-' }}</span>
+            {% include 'components/_country_flag_img.html.twig' with { country: match.paysDomicile } only %}
+        </div>
+
+        <time class="match-time" datetime="{{ match.dateHeure ? match.dateHeure|date('c') : '' }}">
+            {{ match.dateHeure ? match.dateHeure|date('H:i') : '-' }}
+        </time>
+
+        <div class="match-team match-team-away">
+            {% include 'components/_country_flag_img.html.twig' with { country: match.paysExterieur } only %}
+            <span>{{ match.paysExterieur ? match.paysExterieur.nom : '-' }}</span>
+        </div>
+    </div>
+
+    <p class="match-meta">
+        {% set group_letter = match.groupStandingLetter %}
+        {% if group_letter %}
+            <a href="{{ path('app_groups') }}#groupe-{{ group_letter|lower }}" class="match-group-link">{{ match.phase ?: ('Groupe ' ~ group_letter) }}</a>
+        {% else %}
+            {{ match.phase ?: 'Phase a definir' }}
+        {% endif %}
+        {% if match.venueName %}
+            <span class="match-venue"> · {{ match.venueName }}</span>
+        {% endif %}
+        {% if match.coteMoyenne is not null %}
+            · Cote {{ match.coteMoyenne|number_format(2, ',', ' ') }}
+        {% endif %}
+    </p>
+
+    <div class="match-pronostic">
+        {% if match_prono_blocked_cotisation %}
+            <p class="match-prono-cotisation-msg">Pronostics disponibles après réglage de la cotisation (10&nbsp;€ par joueur).</p>
+        {% elseif can_pronostic %}
+            <form method="post" action="{{ path('app_match_pronostic_save', { id: match.id }) }}" class="match-pronostic-form">
+                <input
+                    type="number"
+                    name="score_domicile"
+                    min="0"
+                    value="{{ pronostic ? pronostic.scoreDomicile : '' }}"
+                    class="ta-form-input match-score-input"
+                    required
+                >
+                <span>-</span>
+                <input
+                    type="number"
+                    name="score_exterieur"
+                    min="0"
+                    value="{{ pronostic ? pronostic.scoreExterieur : '' }}"
+                    class="ta-form-input match-score-input"
+                    required
+                >
+                <button type="submit" class="btn btn-primary btn-sm">
+                    {{ pronostic ? 'Modifier' : 'Pronostiquer' }}
+                </button>
+            </form>
+        {% elseif is_finished %}
+            <div class="match-final-score">
+                {{ match.scoreDomicile }} - {{ match.scoreExterieur }}
+            </div>
+            <a href="{{ path('app_match_pronostics', { id: match.id }) }}" class="match-link">
+                Voir tous les pronos
+            </a>
+        {% elseif pronostic %}
+            <span class="match-locked-pronostic">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
+        {% else %}
+            <span class="ta-badge">Non joue</span>
+        {% endif %}
+    </div>
+
+    <div class="match-partner">
+        {% if partner_pronostics is empty %}
+            <span class="match-partner-empty">—</span>
+        {% else %}
+            {% for partner_pronostic in partner_pronostics %}
+                {% set partner_user = partner_pronostic.joueur %}
+                <div class="match-partner-row" aria-label="Pronostic partenaire {{ partner_pronostic.scoreDomicile }} à {{ partner_pronostic.scoreExterieur }}">
+                    <div class="match-partner-avatar-slot" aria-hidden="true">
+                        {% if partner_user.avatar %}
+                            <img class="match-partner-avatar" src="{{ partner_user.avatar }}" alt="" width="50" height="50" loading="lazy" decoding="async">
+                        {% else %}
+                            <span class="match-partner-avatar--placeholder">{{ partner_user.email|first|upper }}</span>
+                        {% endif %}
+                    </div>
+                    <span class="match-partner-score">{{ partner_pronostic.scoreDomicile }} - {{ partner_pronostic.scoreExterieur }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</article>

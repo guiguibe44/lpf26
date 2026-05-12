@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription equipe{% endblock %}
+
+{% block body %}
+    <div class="auth-grid ta-auth-grid">
+        <div class="auth-aside ta-auth-aside">
+            <a href="{{ path('app_login') }}" class="ta-auth-back">Retour a la connexion</a>
+            <div class="auth-brand ta-auth-brand">LPF 2026</div>
+            <h2 class="ta-auth-aside-title">Inscription equipe</h2>
+            <p class="auth-subtitle">Cree ton equipe et commence les pronostics.</p>
+        </div>
+        <div class="ta-auth-form-wrap">
+            <h1 class="section-title ta-auth-title">Inscription</h1>
+            <p class="ta-auth-lead">Entre tes informations pour creer ton compte.</p>
+
+            <div class="ta-auth-separator">Ou</div>
+            {{ form_errors(registrationForm) }}
+            {{ form_start(registrationForm, {'attr': {'class': 'ta-auth-form'}}) }}
+                {{ form_row(registrationForm.email, {'label': 'Email*'}) }}
+                {{ form_row(registrationForm.teamName, {'label': 'Nom equipe*'}) }}
+                {{ form_row(registrationForm.nickname, {'label': 'Pseudo joueur 1*'}) }}
+                {{ form_row(registrationForm.teammateEmail, {'label': 'Email joueur 2'}) }}
+                {{ form_row(registrationForm.plainPassword, {'label': 'Mot de passe*'}) }}
+                <button type="submit" class="ta-auth-submit">Creer mon compte</button>
+                <p class="ta-auth-link-row">Deja un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

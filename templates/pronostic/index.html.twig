@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pronostics{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">Mes pronostics</h1>
+            <p class="ta-page-subtitle">Pronostique les scores des matchs.</p>
+        </div>
+    </section>
+
+    <section class="ta-card {{ prono_access_blocked|default(false) ? 'match-dashboard-wrap--locked' : '' }}">
+        <div class="ta-table-wrap">
+            <table class="ta-table">
+                <thead>
+                    <tr>
+                        <th>Match</th>
+                        <th>Date</th>
+                        <th>Pronostic</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in matches %}
+                        {% set pronostic = pronostics_by_match_id[match.id] ?? null %}
+                        {% set prono_blocked = prono_access_blocked|default(false) %}
+                        {% set can_pronostic = match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_blocked %}
+                        {% set match_prono_blocked_cotisation = prono_blocked and match.statut == 'SCHEDULED' and match.dateHeure > now %}
+                        <tr>
+                            <td>{{ match.paysDomicile.nom }} - {{ match.paysExterieur.nom }}</td>
+                            <td>{{ match.dateHeure|date('d/m/Y H:i') }}</td>
+                            <td>
+                                {% if match_prono_blocked_cotisation %}
+                                    <span class="match-prono-cotisation-msg">Cotisation requise (10&nbsp;€).</span>
+                                {% elseif can_pronostic %}
+                                    <form method="post" class="flex items-center gap-2">
+                                        <input type="hidden" name="match_id" value="{{ match.id }}">
+                                        <input
+                                            type="number"
+                                            name="score_domicile"
+                                            min="0"
+                                            value="{{ pronostic ? pronostic.scoreDomicile : '' }}"
+                                            class="ta-form-input"
+                                            style="max-width: 80px;"
+                                            required
+                                        >
+                                        <span>-</span>
+                                        <input
+                                            type="number"
+                                            name="score_exterieur"
+                                            min="0"
+                                            value="{{ pronostic ? pronostic.scoreExterieur : '' }}"
+                                            class="ta-form-input"
+                                            style="max-width: 80px;"
+                                            required
+                                        >
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </form>
+                                {% elseif pronostic %}
+                                    <span class="font-semibold">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
+                                {% else %}
+                                    <span class="ta-badge">Verrouille</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pronostic and pronostic.points is not null %}
+                                    <span class="ta-badge ta-badge-success">
+                                        {{ pronostic.points|number_format(0, ',', ' ') }} pts
+                                    </span>
+                                    {% if pronostic.coteCoefficient is not null and pronostic.pointsBase is not null %}
+                                        <div class="text-xs text-slate-500 mt-1">
+                                            Base: {{ pronostic.pointsBase }} x Cote: {{ pronostic.coteCoefficient|number_format(2, ',', ' ') }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="ta-badge ta-badge-warning">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4">Aucun match disponible pour le moment.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}
