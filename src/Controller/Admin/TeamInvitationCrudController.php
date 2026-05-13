@@ -9,7 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -19,11 +18,22 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
-class TeamInvitationCrudController extends AbstractCrudController
+class TeamInvitationCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return TeamInvitation::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'invitedEmail',
+            'token',
+            'team.name',
+            'invitedBy.email',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

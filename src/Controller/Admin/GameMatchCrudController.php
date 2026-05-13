@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\GameMatch;
 use App\Service\PronosticScoringService;
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -14,7 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class GameMatchCrudController extends AbstractCrudController
+class GameMatchCrudController extends AbstractAppCrudController
 {
     public function __construct(
         private readonly PronosticScoringService $pronosticScoringService,
@@ -24,6 +23,28 @@ class GameMatchCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return GameMatch::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'paysDomicile.nom',
+            'paysExterieur.nom',
+            'statut',
+            'phase',
+            'venueName',
+            'referee',
+            'apiFootballFixtureId',
+            'scoreDomicile',
+            'scoreExterieur',
+            'pointsScoreExact',
+            'pointsBonResultat',
+            'pointsMauvaisResultat',
+            'coteMin',
+            'coteMoyenne',
+            'coteMax',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

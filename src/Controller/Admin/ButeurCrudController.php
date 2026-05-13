@@ -4,17 +4,28 @@ namespace App\Controller\Admin;
 
 use App\Entity\Buteur;
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class ButeurCrudController extends AbstractCrudController
+class ButeurCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return Buteur::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'prenom',
+            'nom',
+            'photo',
+            'apiSportsPlayerId',
+            'pays.nom',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

@@ -3,18 +3,37 @@
 namespace App\Controller\Admin;
 
 use App\Entity\TeamRankingSnapshot;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 
-class TeamRankingSnapshotCrudController extends AbstractCrudController
+class TeamRankingSnapshotCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return TeamRankingSnapshot::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'position',
+            'totalPoints',
+            'scoresExacts',
+            'bonsResultats',
+            'prisesRisque',
+            'resultatsFaux',
+            'team.name',
+            'matchRef.id',
+            'matchRef.apiFootballFixtureId',
+            'matchRef.phase',
+            'matchRef.statut',
+            'matchRef.paysDomicile.nom',
+            'matchRef.paysExterieur.nom',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

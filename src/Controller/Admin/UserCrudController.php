@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -11,11 +10,22 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Doctrine\ORM\EntityManagerInterface;
 
-class UserCrudController extends AbstractCrudController
+class UserCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return User::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'email',
+            'avatar',
+            'buteurChoisi.prenom',
+            'buteurChoisi.nom',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

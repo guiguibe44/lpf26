@@ -4,16 +4,24 @@ namespace App\Controller\Admin;
 
 use App\Entity\Country;
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class CountryCrudController extends AbstractCrudController
+class CountryCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return Country::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'nom',
+            'drapeau',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

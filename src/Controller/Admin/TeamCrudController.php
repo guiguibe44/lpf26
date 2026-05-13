@@ -3,16 +3,25 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Team;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class TeamCrudController extends AbstractCrudController
+class TeamCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return Team::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'name',
+            'logo',
+            'slogan',
+        ];
     }
 
     public function configureFields(string $pageName): iterable

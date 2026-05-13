@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Pronostic;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -11,11 +10,31 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 
-class PronosticCrudController extends AbstractCrudController
+class PronosticCrudController extends AbstractAppCrudController
 {
     public static function getEntityFqcn(): string
     {
         return Pronostic::class;
+    }
+
+    protected function getAdminSearchFields(): array
+    {
+        return [
+            'id',
+            'scoreDomicile',
+            'scoreExterieur',
+            'points',
+            'pointsBase',
+            'coteCoefficient',
+            'joueur.email',
+            'match.id',
+            'match.apiFootballFixtureId',
+            'match.statut',
+            'match.phase',
+            'match.venueName',
+            'match.paysDomicile.nom',
+            'match.paysExterieur.nom',
+        ];
     }
 
     public function configureFields(string $pageName): iterable
