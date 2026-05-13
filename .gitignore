@@ -18,3 +18,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> deploy OVH (Cursor / script) ###
+/.env.deploy
+/.env.deploy.*
+!.env.deploy.example
+###< deploy OVH ###
