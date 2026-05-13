@@ -225,6 +225,88 @@ final class Wc2026SyncService
     }
 
     /**
+     * Synchronise les joueurs d’un seul pays (équipe CDM) via l’API. Le nom du pays en base doit correspondre à une équipe /teams de la ligue (ex. après sync pays).
+     *
+     * @param int|null $maxPlayersPerTeam null = tous les joueurs renvoyés par l’API pour cette équipe
+     *
+     * @return array{created:int, updated:int, skipped:int, cancelled:bool}
+     */
+    public function syncButeursForCountry(int $countryId, int $maxHttpRequests, ?int $maxPlayersPerTeam = null): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $this->apiFootballPlayerSyncStop->clear();
+
+        $country = $this->countryRepository->find($countryId);
+        if (!$country instanceof Country) {
+            throw new \InvalidArgumentException('Pays introuvable.');
+        }
+
+        $rows = $this->apiFootballClient->fetchTeamsRowsForLeague(
+            $this->apiFootballWorldCupLeagueId,
+            $this->apiFootballWorldCupSeason
+        );
+
+        $targetKey = $this->normalizeNameKey((string) $country->getNom());
+        $teamId = null;
+        $teamName = null;
+
+        foreach ($rows as $row) {
+            if (!\is_array($row)) {
+                continue;
+            }
+
+            $team = $row['team'] ?? $row;
+            if (!\is_array($team)) {
+                continue;
+            }
+
+            $name = trim((string) ($team['name'] ?? ''));
+            if ('' === $name) {
+                continue;
+            }
+
+            if ($this->normalizeNameKey($name) !== $targetKey) {
+                continue;
+            }
+
+            $rawId = $team['id'] ?? null;
+            if (!is_numeric($rawId)) {
+                throw new \RuntimeException(sprintf('Réponse API invalide pour l’équipe « %s ».', $name));
+            }
+
+            $teamId = (int) $rawId;
+            $teamName = $name;
+            break;
+        }
+
+        if (null === $teamId || null === $teamName) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Aucune équipe de la compétition ne correspond au pays « %s ». Vérifiez le nom (création manuelle) ou lancez d’abord la synchro des pays.',
+                    $country->getNom()
+                )
+            );
+        }
+
+        $cap = max(5, min($maxHttpRequests, 5000));
+        $result = $this->apiFootballClient->fetchSquadPlayersForTeam(
+            $teamId,
+            $teamName,
+            $this->apiFootballWorldCupSeason,
+            $cap,
+            $maxPlayersPerTeam
+        );
+
+        $import = $this->importButeursFromNormalizedList($result['rows']);
+        if ($result['cancelled']) {
+            $this->apiFootballPlayerSyncStop->clear();
+        }
+
+        return array_merge($import, ['cancelled' => $result['cancelled']]);
+    }
+
+    /**
      * Importe les buts depuis /fixtures/events (types Goal). Requiert des buteurs avec api_sports_player_id renseigné.
      *
      * @return array{created:int, skipped:int, api_calls:int}

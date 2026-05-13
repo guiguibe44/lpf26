@@ -165,87 +165,160 @@ final class ApiFootballClient
             }
 
             $teamId = (int) $rawTeamId;
-            $page = 1;
-            $totalPages = 1;
-            $playersAddedForTeam = 0;
 
             if (null !== $maxPlayersPerTeam && $maxPlayersPerTeam <= 0) {
                 continue;
             }
 
-            do {
-                if ($this->playerSyncStop->isStopRequested()) {
-                    $cancelled = true;
-                    break 2;
-                }
-
-                if ($calls >= $maxHttpRequests) {
-                    break 2;
-                }
-
-                $this->throttleBeforeNextRequest();
-
-                if ($this->playerSyncStop->isStopRequested()) {
-                    $cancelled = true;
-                    break 2;
-                }
-
-                $playersJson = $this->requestJson('/players', [
-                    'team' => $teamId,
-                    'season' => $season,
-                    'page' => $page,
-                ]);
-                ++$calls;
-
-                $paging = $playersJson['paging'] ?? null;
-                if (\is_array($paging)) {
-                    $current = (int) ($paging['current'] ?? $page);
-                    $totalPages = max(1, (int) ($paging['total'] ?? 1));
-                    if ($current !== $page) {
-                        $page = $current;
-                    }
-                }
-
-                $items = $playersJson['response'] ?? [];
-                if (!\is_array($items) || [] === $items) {
-                    break;
-                }
-
-                foreach ($items as $item) {
-                    if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
-                        break 2;
-                    }
-
-                    if (!\is_array($item)) {
-                        continue;
-                    }
-
-                    $player = $item['player'] ?? null;
-                    if (!\is_array($player)) {
-                        continue;
-                    }
-
-                    $pid = $player['id'] ?? null;
-                    $out[] = [
-                        'firstname' => $this->normalizeString($player['firstname'] ?? null),
-                        'lastname' => $this->normalizeString($player['lastname'] ?? null),
-                        'name' => $this->normalizeString($player['name'] ?? null),
-                        'photo' => $this->normalizeString($player['photo'] ?? null),
-                        'team_name' => $teamName,
-                        'api_sports_player_id' => is_numeric($pid) ? (int) $pid : null,
-                    ];
-                    ++$playersAddedForTeam;
-                }
-
-                if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
-                    break;
-                }
-
-                ++$page;
-            } while ($page <= $totalPages);
+            $chunk = $this->collectSquadPlayerRowsForTeam(
+                $teamId,
+                $teamName,
+                $season,
+                $calls,
+                $maxHttpRequests,
+                $maxPlayersPerTeam
+            );
+            $out = array_merge($out, $chunk['rows']);
+            $calls = $chunk['calls'];
+            if ($chunk['cancelled']) {
+                $cancelled = true;
+                break;
+            }
         }
 
         return ['rows' => $out, 'cancelled' => $cancelled];
+    }
+
+    /**
+     * Joueurs d’une seule équipe (pagination /players), sans requête /teams préalable.
+     *
+     * @param int|null $maxPlayersPerTeam null = toutes les pages renvoyées par l’API pour cette équipe
+     *
+     * @return array{rows: list<array<string, mixed>>, cancelled: bool}
+     */
+    public function fetchSquadPlayersForTeam(
+        int $teamId,
+        string $teamDisplayName,
+        int $season,
+        int $maxHttpRequests,
+        ?int $maxPlayersPerTeam = null,
+    ): array {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException(
+                'API_FOOTBALL_KEY manquante. Ajoutez-la dans .env.local (ne commitez jamais la clé).'
+            );
+        }
+
+        if ($maxHttpRequests < 1) {
+            throw new \InvalidArgumentException('maxHttpRequests doit être au moins 1 pour la pagination /players.');
+        }
+
+        if (null !== $maxPlayersPerTeam && $maxPlayersPerTeam <= 0) {
+            return ['rows' => [], 'cancelled' => false];
+        }
+
+        $chunk = $this->collectSquadPlayerRowsForTeam(
+            $teamId,
+            $teamDisplayName,
+            $season,
+            0,
+            $maxHttpRequests,
+            $maxPlayersPerTeam
+        );
+
+        return ['rows' => $chunk['rows'], 'cancelled' => $chunk['cancelled']];
+    }
+
+    /**
+     * @return array{rows: list<array<string, mixed>>, cancelled: bool, calls: int}
+     */
+    private function collectSquadPlayerRowsForTeam(
+        int $teamId,
+        string $teamName,
+        int $season,
+        int $callsSoFar,
+        int $maxHttpRequests,
+        ?int $maxPlayersPerTeam,
+    ): array {
+        $out = [];
+        $cancelled = false;
+        $calls = $callsSoFar;
+        $page = 1;
+        $totalPages = 1;
+        $playersAddedForTeam = 0;
+
+        do {
+            if ($this->playerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            if ($calls >= $maxHttpRequests) {
+                break;
+            }
+
+            $this->throttleBeforeNextRequest();
+
+            if ($this->playerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            $playersJson = $this->requestJson('/players', [
+                'team' => $teamId,
+                'season' => $season,
+                'page' => $page,
+            ]);
+            ++$calls;
+
+            $paging = $playersJson['paging'] ?? null;
+            if (\is_array($paging)) {
+                $current = (int) ($paging['current'] ?? $page);
+                $totalPages = max(1, (int) ($paging['total'] ?? 1));
+                if ($current !== $page) {
+                    $page = $current;
+                }
+            }
+
+            $items = $playersJson['response'] ?? [];
+            if (!\is_array($items) || [] === $items) {
+                break;
+            }
+
+            foreach ($items as $item) {
+                if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
+                    break 2;
+                }
+
+                if (!\is_array($item)) {
+                    continue;
+                }
+
+                $player = $item['player'] ?? null;
+                if (!\is_array($player)) {
+                    continue;
+                }
+
+                $pid = $player['id'] ?? null;
+                $out[] = [
+                    'firstname' => $this->normalizeString($player['firstname'] ?? null),
+                    'lastname' => $this->normalizeString($player['lastname'] ?? null),
+                    'name' => $this->normalizeString($player['name'] ?? null),
+                    'photo' => $this->normalizeString($player['photo'] ?? null),
+                    'team_name' => $teamName,
+                    'api_sports_player_id' => is_numeric($pid) ? (int) $pid : null,
+                ];
+                ++$playersAddedForTeam;
+            }
+
+            if (null !== $maxPlayersPerTeam && $playersAddedForTeam >= $maxPlayersPerTeam) {
+                break;
+            }
+
+            ++$page;
+        } while ($page <= $totalPages);
+
+        return ['rows' => $out, 'cancelled' => $cancelled, 'calls' => $calls];
     }
 
     private function throttleBeforeNextRequest(): void

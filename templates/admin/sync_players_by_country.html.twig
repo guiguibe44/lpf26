@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Synchro joueurs par pays · LPF 2026{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl">
+        <h1 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Synchroniser tous les joueurs (un pays)</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            Importe l’effectif complet renvoyé par API-Football pour l’équipe dont le nom correspond au pays sélectionné (même appariement que la synchro pays). La liste des pays vient de la base locale.
+        </p>
+
+        <form method="post" action="{{ path('admin_wc2026_sync_players_country_submit') }}" class="space-y-4">
+            <input type="hidden" name="_token" value="{{ csrf_token('sync_wc2026_players_country') }}">
+
+            <div>
+                <label for="country" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Pays</label>
+                <select id="country" name="country" required
+                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    <option value="" disabled {% if countries is empty %}selected{% endif %}>— Choisir —</option>
+                    {% for c in countries %}
+                        <option value="{{ c.id }}">{{ c.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 inline-flex items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">Lancer la synchro</button>
+                <a href="{{ path('admin') }}" class="text-sm text-gray-600 hover:text-brand-500 dark:text-gray-400">Retour admin</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
