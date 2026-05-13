@@ -39,6 +39,9 @@ services:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
 
+    App\Mailer\Transport\PhpMailTransportFactory:
+        tags: ['mailer.transport_factory']
+
     App\Command\Wc2026SyncCommand:
         arguments:
             $syncService: '@App\Service\Wc2026SyncService'
