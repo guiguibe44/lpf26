@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -161,7 +160,6 @@ class ResetPasswordController extends AbstractController
         ]);
 
         $email = (new Email())
-            ->from(new Address('no-reply@lpf2026.local', 'LPF 2026'))
             ->to((string) $user->getEmail())
             ->subject('Reinitialisation de votre mot de passe')
             ->html($emailHtml)

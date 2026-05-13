@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -72,7 +71,6 @@ class RegistrationController extends AbstractController
                 ]);
 
                 $invitationEmail = (new Email())
-                    ->from(new Address('no-reply@lpf2026.local', 'LPF 2026'))
                     ->to((string) $invitation->getInvitedEmail())
                     ->subject('Invitation a rejoindre votre equipe')
                     ->html($invitationHtml);
@@ -86,7 +84,6 @@ class RegistrationController extends AbstractController
             ]);
 
             $ownerEmail = (new Email())
-                ->from(new Address('no-reply@lpf2026.local', 'LPF 2026'))
                 ->to((string) $user->getEmail())
                 ->subject('Votre equipe LPF 2026 est creee')
                 ->html($ownerHtml);

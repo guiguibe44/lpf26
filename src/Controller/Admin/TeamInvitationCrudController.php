@@ -15,7 +15,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 class TeamInvitationCrudController extends AbstractAppCrudController
@@ -93,7 +92,6 @@ class TeamInvitationCrudController extends AbstractAppCrudController
         ]);
 
         $email = (new Email())
-            ->from(new Address('no-reply@lpf2026.local', 'LPF 2026'))
             ->to((string) $invitation->getInvitedEmail())
             ->subject('Relance: invitation a rejoindre votre equipe')
             ->html($invitationHtml);

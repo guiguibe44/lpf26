@@ -2,3 +2,6 @@ framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
         message_bus: false
+        headers:
+            From:
+                value: '%env(MAILER_FROM)%'
