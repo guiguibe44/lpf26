@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -43,6 +44,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?Buteur $buteurChoisi = null;
+
+    /** Non mappé : saisie EasyAdmin / formulaires, jamais persisté tel quel. */
+    private ?string $plainPassword = null;
+
+    /** Non mappé : reflète ROLE_ADMIN en base pour les formulaires (voir {@see syncGrantAdminFromStoredRoles}). */
+    private bool $grantAdmin = false;
 
     public function getId(): ?int
     {
@@ -144,11 +151,43 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function isGrantAdmin(): bool
+    {
+        return $this->grantAdmin;
+    }
+
+    public function setGrantAdmin(bool $grantAdmin): static
+    {
+        $this->grantAdmin = $grantAdmin;
+
+        return $this;
+    }
+
+    #[ORM\PostLoad]
+    public function syncGrantAdminFromStoredRoles(): void
+    {
+        $this->grantAdmin = \in_array('ROLE_ADMIN', $this->roles, true);
+    }
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
     public function __serialize(): array
     {
+        $this->plainPassword = null;
+
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
