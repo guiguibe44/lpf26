@@ -21,7 +21,7 @@ class AccountPasswordType extends AbstractType
             'second_options' => ['label' => 'Confirmer le mot de passe'],
             'invalid_message' => 'Les mots de passe ne correspondent pas.',
             'constraints' => [
-                new Length(min: 8, max: 4096, minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caracteres.'),
+                new Length(min: 8, max: 4096, minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.'),
             ],
         ]);
     }

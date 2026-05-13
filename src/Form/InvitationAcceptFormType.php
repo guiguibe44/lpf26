@@ -27,7 +27,11 @@ class InvitationAcceptFormType extends AbstractType
                 'label' => 'Mot de passe',
                 'constraints' => [
                     new NotBlank(message: 'Le mot de passe est obligatoire.'),
-                    new Length(min: 8, max: 4096),
+                    new Length(
+                        min: 8,
+                        max: 4096,
+                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                    ),
                 ],
             ]);
     }
