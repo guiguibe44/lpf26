@@ -72,6 +72,14 @@ Le fichier **`.github/workflows/deploy-ovh-ftp.yml`** :
 
 En cas de **403** ou listing vide, ajuster `OVH_FTP_SERVER_DIR` (chemin racine vu par le compte FTP).
 
+### Erreur GitHub Actions : `Input required and not supplied: server`
+
+L’action FTP attend l’entrée `server`, alimentée par le secret **`OVH_FTP_HOST`**. Si ce secret n’existe pas ou est vide, le job échoue avec ce message.
+
+**À faire** : dans le dépôt GitHub → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**, créer ou corriger les quatre secrets listés dans le tableau ci-dessus (noms **exactement** `OVH_FTP_HOST`, `OVH_FTP_USER`, `OVH_FTP_PASSWORD`, `OVH_FTP_SERVER_DIR`).
+
+Si tu utilises des **secrets d’environnement** (Environment) au lieu des secrets du dépôt, il faut soit les dupliquer au niveau du dépôt, soit ajouter `environment: …` au job du workflow pour que ces secrets soient injectés.
+
 ### Fichiers non envoyés (uploads, cache, Git)
 
 Le workflow **exclut** notamment `public/uploads` pour **ne pas effacer** les fichiers utilisateurs déjà en prod. Les chemins exclus sont listés dans le YAML ; adapte si tu utilises d’autres répertoires persistants.

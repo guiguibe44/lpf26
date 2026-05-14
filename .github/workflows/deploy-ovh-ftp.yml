@@ -38,6 +38,37 @@ jobs:
               run: php bin/console asset-map:compile --env=prod --no-interaction
               continue-on-error: false
 
+            # Message explicite si un secret manque (sinon FTP-Deploy-Action : « Input required and not supplied: server »)
+            - name: Vérifier les secrets FTP OVH
+              env:
+                  OVH_FTP_HOST: ${{ secrets.OVH_FTP_HOST }}
+                  OVH_FTP_USER: ${{ secrets.OVH_FTP_USER }}
+                  OVH_FTP_PASSWORD: ${{ secrets.OVH_FTP_PASSWORD }}
+                  OVH_FTP_SERVER_DIR: ${{ secrets.OVH_FTP_SERVER_DIR }}
+              run: |
+                  set -e
+                  ok=1
+                  if [ -z "$OVH_FTP_HOST" ]; then
+                    echo "::error::Secret GitHub OVH_FTP_HOST manquant ou vide (hôte FTP, ex. ftp.clusterXXX.hosting.ovh.net). Réglages : dépôt → Settings → Secrets and variables → Actions."
+                    ok=0
+                  fi
+                  if [ -z "$OVH_FTP_USER" ]; then
+                    echo "::error::Secret OVH_FTP_USER manquant ou vide."
+                    ok=0
+                  fi
+                  if [ -z "$OVH_FTP_PASSWORD" ]; then
+                    echo "::error::Secret OVH_FTP_PASSWORD manquant ou vide."
+                    ok=0
+                  fi
+                  if [ -z "$OVH_FTP_SERVER_DIR" ]; then
+                    echo "::error::Secret OVH_FTP_SERVER_DIR manquant ou vide (dossier distant avec / final, ex. www/)."
+                    ok=0
+                  fi
+                  if [ "$ok" -ne 1 ]; then
+                    exit 1
+                  fi
+                  echo "Les quatre secrets OVH_FTP_* sont renseignés."
+
             - name: Deploy via FTPS
               uses: SamKirkland/FTP-Deploy-Action@v4.3.6
               with:
