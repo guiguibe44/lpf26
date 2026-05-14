@@ -64,9 +64,12 @@ class AccountController extends AbstractController
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
             $nickname = (string) $profileForm->get('nickname')->getData();
 
-            $existingNickname = $teamMemberRepository->findOneBy(['nickname' => $nickname]);
+            $existingNickname = $teamMemberRepository->findOneBy([
+                'team' => $teamMember->getTeam(),
+                'nickname' => $nickname,
+            ]);
             if (null !== $existingNickname && $existingNickname->getId() !== $teamMember->getId()) {
-                $profileForm->get('nickname')->addError(new FormError('Ce surnom est deja utilise.'));
+                $profileForm->get('nickname')->addError(new FormError('Ce surnom est deja utilise dans cette equipe.'));
             } else {
                 $user->setEmail(mb_strtolower((string) $user->getEmail()));
                 $teamMember->setNickname($nickname);

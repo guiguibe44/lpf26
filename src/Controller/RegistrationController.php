@@ -89,6 +89,21 @@ class RegistrationController extends AbstractController
                 ->html($ownerHtml);
             $mailer->send($ownerEmail);
 
+            if ($invitation instanceof TeamInvitation) {
+                $this->addFlash(
+                    'success',
+                    sprintf(
+                        'Une invitation a été envoyée par e-mail à %s. Ton partenaire devra ouvrir ce message et suivre le lien pour terminer son inscription. Toi, tu peux dès maintenant te connecter avec l’e-mail et le mot de passe que tu as choisis.',
+                        (string) $invitation->getInvitedEmail()
+                    )
+                );
+            } else {
+                $this->addFlash(
+                    'success',
+                    'Ton compte et ton équipe sont créés. Un e-mail de confirmation t’a été envoyé. Tu peux dès maintenant te connecter avec ton e-mail et ton mot de passe.'
+                );
+            }
+
             return $this->redirectToRoute('app_login');
         }
 

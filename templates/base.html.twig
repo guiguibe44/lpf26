@@ -16,7 +16,7 @@
             <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=match-group-link">
         {% endif %}
         {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('front-dashboard.css') }}">
+            <link rel="stylesheet" href="{{ asset('front-dashboard.css') }}?v=3">
         {% endif %}
         {% block stylesheets %}
         {% endblock %}
@@ -48,11 +48,7 @@
             </main>
         {% else %}
             {% if show_cotisation_banner %}
-                <div class="app-cotisation-banner" role="status">
-                    <p class="app-cotisation-banner__text">
-                        Cotisation de <strong>10&nbsp;€ par joueur</strong> à régler pour pouvoir pronostiquer.
-                    </p>
-                </div>
+                {% include '_cotisation_banner.html.twig' %}
             {% endif %}
             <div class="ta-shell">
                 {% include '_sidebar.html.twig' %}

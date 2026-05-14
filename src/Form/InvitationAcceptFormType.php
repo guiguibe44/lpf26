@@ -19,18 +19,25 @@ class InvitationAcceptFormType extends AbstractType
                 'label' => 'Votre surnom (joueur 2)',
                 'constraints' => [
                     new NotBlank(message: 'Le surnom est obligatoire.'),
-                    new Length(min: 3, max: 50),
+                    new Length(
+                        min: 3,
+                        max: 50,
+                        minMessage: 'Le surnom doit faire au moins {{ limit }} caractères.',
+                        maxMessage: 'Le surnom ne peut pas dépasser {{ limit }} caractères.',
+                    ),
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
                 'label' => 'Mot de passe',
+                'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank(message: 'Le mot de passe est obligatoire.'),
                     new Length(
                         min: 8,
                         max: 4096,
                         minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        maxMessage: 'Le mot de passe est trop long.',
                     ),
                 ],
             ]);

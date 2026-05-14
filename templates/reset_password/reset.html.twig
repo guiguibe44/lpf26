@@ -5,10 +5,7 @@
 {% block body %}
     <div class="auth-grid ta-auth-grid">
         <div class="auth-aside ta-auth-aside">
-            <a href="{{ path('app_login') }}" class="ta-auth-back">Retour a la connexion</a>
-            <div class="auth-brand ta-auth-brand">LPF 2026</div>
-            <h2 class="ta-auth-aside-title">Nouveau mot de passe</h2>
-            <p class="auth-subtitle">Definis un nouveau mot de passe securise pour ton compte.</p>
+            {% include 'auth/_aside_brand.html.twig' %}
         </div>
         <div class="ta-auth-form-wrap">
             <h1 class="section-title ta-auth-title">Mise a jour du mot de passe</h1>

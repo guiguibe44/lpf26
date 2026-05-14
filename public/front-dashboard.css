@@ -64,6 +64,7 @@ body.front-body {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr);
     gap: 0;
     align-items: stretch;
 }
@@ -74,42 +75,57 @@ body.front-body {
     border-radius: 0;
     border-right: 1px solid #334155;
     padding: 48px;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
-.ta-auth-back {
-    display: inline-block;
-    text-decoration: none;
-    font-size: 13px;
+.ta-auth-brand-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 24rem;
+    margin: 0;
+    gap: 1rem;
+}
+
+.ta-auth-logo {
+    display: block;
+    width: min(280px, 78vw);
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.ta-auth-slogan {
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.45;
     color: #cbd5e1;
-    margin-bottom: 14px;
-}
-
-.ta-auth-back:hover {
-    color: #ffffff;
-}
-
-.ta-auth-brand {
-    margin-top: 0;
-    margin-bottom: 8px;
-    color: #ffffff;
-}
-
-.ta-auth-aside-title {
-    margin: 0 0 8px;
-    font-size: 28px;
-    line-height: 1.2;
-    color: #ffffff;
+    margin: 0;
+    text-align: center;
+    max-width: 20rem;
 }
 
 .ta-auth-form-wrap {
     background: #ffffff;
+    color: #0f172a;
     padding: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.ta-auth-form-wrap .section-title,
+.ta-auth-form-wrap .ta-auth-title {
+    color: #0f172a;
 }
 
 .ta-auth-title {
@@ -120,6 +136,10 @@ body.front-body {
 .ta-auth-lead {
     margin: 0 0 14px;
     color: var(--muted);
+}
+
+.ta-auth-form-wrap .ta-auth-lead {
+    color: #64748b;
 }
 
 .ta-auth-form {
@@ -145,6 +165,12 @@ body.front-body {
     font-weight: 600;
 }
 
+.ta-auth-form-wrap .ta-auth-social {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
 .ta-auth-separator {
     display: flex;
     align-items: center;
@@ -162,9 +188,22 @@ body.front-body {
     background: #e2e8f0;
 }
 
+.ta-auth-form-wrap .ta-auth-separator {
+    color: #64748b;
+}
+
+.ta-auth-form-wrap .ta-auth-separator::before,
+.ta-auth-form-wrap .ta-auth-separator::after {
+    background: #e2e8f0;
+}
+
 .ta-auth-check {
     margin: 8px 0 2px;
     font-size: 14px;
+}
+
+.ta-auth-form-wrap .ta-auth-check {
+    color: #334155;
 }
 
 .ta-auth-submit {
@@ -189,6 +228,18 @@ body.front-body {
 
 .ta-auth-link-row a:hover {
     text-decoration: underline;
+}
+
+.ta-auth-form-wrap .ta-auth-link-row {
+    color: var(--muted);
+}
+
+.ta-auth-form-wrap .ta-auth-link-row a {
+    color: #1d4ed8;
+}
+
+.ta-auth-form-wrap .ta-auth-link-row a:hover {
+    color: #1e40af;
 }
 
 .app-shell {
@@ -278,11 +329,32 @@ body.front-body {
 .flash-danger { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
 .flash-info { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
 
+/* Erreurs de formulaire (pages auth, thème tailadmin) */
+.flash .ta-form-errors,
+.ta-form-errors.ta-form-errors--alert {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.flash .ta-form-errors li + li,
+.ta-form-errors.ta-form-errors--alert li + li {
+    margin-top: 0.35em;
+}
+
+.ta-auth-form .flash.flash-danger.mt-2 {
+    font-size: 0.9rem;
+}
+
 form label {
     display: block;
     margin-top: 12px;
     margin-bottom: 4px;
     font-weight: 600;
+}
+
+.ta-auth-form-wrap form label {
+    color: #1e293b;
 }
 
 form input[type="text"],
@@ -294,6 +366,98 @@ form input[type="password"] {
     height: 40px;
     padding: 0 12px;
     background: #fff;
+}
+
+.ta-auth-form-wrap form input[type="text"],
+.ta-auth-form-wrap form input[type="email"],
+.ta-auth-form-wrap form input[type="password"] {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.ta-auth-form-wrap form input[type="text"]::placeholder,
+.ta-auth-form-wrap form input[type="email"]::placeholder,
+.ta-auth-form-wrap form input[type="password"]::placeholder {
+    color: #94a3b8;
+}
+
+.ta-auth-form-wrap form input[type="text"]:focus,
+.ta-auth-form-wrap form input[type="email"]:focus,
+.ta-auth-form-wrap form input[type="password"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Formulaires Symfony sur le panneau clair (auth) */
+.ta-auth-form-wrap .ta-form-row {
+    margin-bottom: 0.9rem;
+}
+
+.ta-auth-form-wrap .ta-form-label {
+    display: inline-block;
+    margin-bottom: 0.45rem;
+    color: #1e293b;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ta-auth-form-wrap .ta-form-input {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.625rem;
+    background: #ffffff;
+    padding: 0.65rem 0.8rem;
+    color: #0f172a;
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ta-auth-form-wrap .ta-form-input::placeholder {
+    color: #94a3b8;
+}
+
+.ta-auth-form-wrap .ta-form-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ta-auth-form-wrap .ta-form-file {
+    padding: 0.45rem 0.55rem;
+    cursor: pointer;
+}
+
+.ta-auth-form-wrap .ta-form-file::file-selector-button {
+    margin-right: 0.65rem;
+    border: 0;
+    border-radius: 0.45rem;
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ta-auth-form-wrap .ta-form-textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.ta-auth-form-wrap .ta-form-select {
+    appearance: none;
+    background-color: #ffffff;
+    background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1em + 1px), calc(100% - 13px) calc(1em + 1px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.ta-auth-form-wrap .ta-form-errors {
+    color: #dc2626;
 }
 
 button {

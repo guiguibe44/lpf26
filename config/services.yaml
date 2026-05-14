@@ -2,6 +2,7 @@
 
 parameters:
     app.competition_start_at: '%env(default::COMPETITION_START_AT)%'
+    app.cotisation_wire_phone: '%env(default::COTISATION_WIRE_PHONE)%'
 
 services:
     _defaults:
@@ -38,6 +39,12 @@ services:
     App\Controller\Admin\DashboardController:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
+
+    # EasyAdmin instancie chaque CRUD via le conteneur ; sans entrée explicite, le cache prod
+    # génère `new UserCrudController()` sans argument (ArgumentCountError sur toute page admin).
+    App\Controller\Admin\UserCrudController:
+        arguments:
+            $passwordHasher: '@security.user_password_hasher'
 
     App\Mailer\Transport\PhpMailTransportFactory:
         tags: ['mailer.transport_factory']

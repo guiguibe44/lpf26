@@ -46,8 +46,12 @@ security:
         - { path: ^/inscription, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/invitation, roles: PUBLIC_ACCESS }
+        # API JSON : cookie « se souvenir de moi » (évite une réponse HTML sur fetch / JSON).
+        - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        # Front : IS_AUTHENTICATED inclut « remember me ». Avec FULLY, un admin en REMEMBERED
+        # était refusé sur /accueil puis renvoyé vers /login, qui le redirigeait vers EasyAdmin.
+        - { path: ^/, roles: IS_AUTHENTICATED }
 
 when@test:
     security:

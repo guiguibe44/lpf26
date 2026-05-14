@@ -30,7 +30,12 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Nom de l\'equipe',
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'equipe est obligatoire.'),
-                    new Length(min: 2, max: 255),
+                    new Length(
+                        min: 2,
+                        max: 255,
+                        minMessage: 'Le nom de l\'équipe doit faire au moins {{ limit }} caractères.',
+                        maxMessage: 'Le nom de l\'équipe ne peut pas dépasser {{ limit }} caractères.',
+                    ),
                 ],
             ])
             ->add('nickname', TextType::class, [
@@ -38,7 +43,12 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Votre surnom (joueur 1)',
                 'constraints' => [
                     new NotBlank(message: 'Le surnom est obligatoire.'),
-                    new Length(min: 3, max: 50),
+                    new Length(
+                        min: 3,
+                        max: 50,
+                        minMessage: 'Le surnom doit faire au moins {{ limit }} caractères.',
+                        maxMessage: 'Le surnom ne peut pas dépasser {{ limit }} caractères.',
+                    ),
                 ],
             ])
             ->add('teammateEmail', EmailType::class, [
@@ -62,6 +72,7 @@ class RegistrationFormType extends AbstractType
                         min: 8,
                         minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
                         max: 4096,
+                        maxMessage: 'Le mot de passe est trop long.',
                     ),
                 ],
             ])

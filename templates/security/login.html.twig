@@ -5,10 +5,7 @@
 {% block body %}
 <div class="auth-grid ta-auth-grid">
     <div class="auth-aside ta-auth-aside">
-        <a href="{{ path('app_homepage') }}" class="ta-auth-back">Retour au dashboard</a>
-        <div class="auth-brand ta-auth-brand">LPF 2026</div>
-        <h2 class="ta-auth-aside-title">Plateforme pronostics equipe</h2>
-        <p class="auth-subtitle">Template inspire de TailAdmin pour une experience moderne et claire.</p>
+        {% include 'auth/_aside_brand.html.twig' %}
     </div>
     <div class="ta-auth-form-wrap">
         <form method="post" class="ta-auth-form">

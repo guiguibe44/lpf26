@@ -52,10 +52,12 @@
 
 {% block form_errors %}
     {% if errors|length > 0 %}
-        <ul class="ta-form-errors">
-            {% for error in errors %}
-                <li>{{ error.message }}</li>
-            {% endfor %}
-        </ul>
+        <div class="flash flash-danger mt-2" role="alert">
+            <ul class="ta-form-errors ta-form-errors--alert">
+                {% for error in errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
 {% endblock %}

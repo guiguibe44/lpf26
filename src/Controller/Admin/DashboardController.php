@@ -49,6 +49,7 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::linkToRoute('Interface joueurs (front)', 'fa fa-globe', 'app_homepage');
 
         yield MenuItem::section('Gestion');
         yield MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index');

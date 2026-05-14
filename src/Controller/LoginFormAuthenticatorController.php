@@ -15,7 +15,7 @@ class LoginFormAuthenticatorController extends AbstractController
     public function entrypoint(): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute($this->isGranted('ROLE_ADMIN') ? 'admin' : 'app_homepage');
+            return $this->redirectToRoute('app_homepage');
         }
 
         return $this->redirectToRoute('app_login');
@@ -25,7 +25,7 @@ class LoginFormAuthenticatorController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute($this->isGranted('ROLE_ADMIN') ? 'admin' : 'app_homepage');
+            return $this->redirectToRoute('app_homepage');
         }
 
         $error = $authenticationUtils->getLastAuthenticationError();

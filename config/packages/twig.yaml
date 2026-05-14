@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        cotisation_wire_phone: '%app.cotisation_wire_phone%'
 
 when@test:
     twig:

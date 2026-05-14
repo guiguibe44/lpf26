@@ -51,8 +51,11 @@ class InvitationController extends AbstractController
             $nickname = (string) $form->get('nickname')->getData();
             $plainPassword = (string) $form->get('plainPassword')->getData();
 
-            if (null !== $teamMemberRepository->findOneBy(['nickname' => $nickname])) {
-                $this->addFlash('danger', 'Ce surnom est deja utilise.');
+            if (null !== $teamMemberRepository->findOneBy([
+                'team' => $invitation->getTeam(),
+                'nickname' => $nickname,
+            ])) {
+                $this->addFlash('danger', 'Ce surnom est deja utilise dans cette equipe.');
 
                 return $this->redirectToRoute('app_team_invitation_accept', ['token' => $token]);
             }

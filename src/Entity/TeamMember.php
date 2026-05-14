@@ -8,7 +8,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TeamMemberRepository::class)]
-#[UniqueEntity(fields: ['nickname'], message: 'Ce surnom est deja utilise.')]
+#[ORM\UniqueConstraint(name: 'UNIQ_team_member_team_id_nickname', columns: ['team_id', 'nickname'])]
+#[UniqueEntity(fields: ['team', 'nickname'], message: 'Ce surnom est deja utilise dans cette equipe.')]
 class TeamMember
 {
     #[ORM\Id]
@@ -24,7 +25,7 @@ class TeamMember
     #[ORM\JoinColumn(nullable: false, unique: true)]
     private ?User $player = null;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: 'Le surnom est obligatoire.')]
     #[Assert\Length(min: 3, max: 50)]
     private ?string $nickname = null;
