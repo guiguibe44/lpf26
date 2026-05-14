@@ -50,7 +50,7 @@ Règle d’or : **ne jamais committer** `.env.local`, mots de passe, ni clés. E
    php bin/console cache:warmup --env=prod
    ```
 
-7. **Assets** : le workflow GitHub (ci-dessous) exécute `asset-map:compile` avant l’envoi FTP. En déploiement manuel, lancer la même commande avant upload ou sur le serveur si PHP CLI disponible.
+7. **Assets** : le workflow GitHub exécute **`tailwind:build`** puis **`asset-map:compile`** avant l’envoi FTP (sans build Tailwind, `asset-map:compile` échoue sur un clone nu). En déploiement manuel, lancer les deux commandes avant upload ou sur le serveur si PHP CLI disponible.
 
 ## 4. Déploiement automatique : GitHub Actions → FTP OVH
 
@@ -58,7 +58,7 @@ Le fichier **`.github/workflows/deploy-ovh-ftp.yml`** :
 
 - se déclenche sur **push** vers `main` et en **manuel** (*Run workflow*) ;
 - installe les dépendances Composer (**actuellement sans `--no-dev`**, car plusieurs bundles de prod sont encore dans `require-dev` — à corriger pour une prod stricte, voir § 8) ;
-- compile les assets Symfony ;
+- exécute **`tailwind:build`** (bundle Symfonycasts) puis **`asset-map:compile`** en environnement `prod` ;
 - synchronise le dépôt vers ton FTP OVH (**FTPS** recommandé).
 
 ### Secrets à configurer (dépôt GitHub → *Settings* → *Secrets and variables* → *Actions*)

@@ -30,6 +30,10 @@ jobs:
             - name: Composer install
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+            # Requis par symfonycasts/tailwind-bundle avant asset-map:compile (fichier généré absent sur checkout nu)
+            - name: Build Tailwind CSS (prod)
+              run: php bin/console tailwind:build --env=prod --no-interaction --minify
+
             - name: Compile asset map (prod)
               run: php bin/console asset-map:compile --env=prod --no-interaction
               continue-on-error: false
