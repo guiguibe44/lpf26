@@ -55,7 +55,7 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'label' => 'Email du joueur 2',
-                'help' => 'Optionnel, invitation immediate.',
+                'help' => 'une invitation est envoyée à cette personne pour qu’elle rejoigne ton équipe.',
                 'constraints' => [
                     new Email(message: 'Adresse email invalide.'),
                 ],

@@ -1,0 +1,184 @@
+/**
+ * Couche optionnelle : typographie (Plus Jakarta Sans / Inter), menus et boutons.
+ * Pour désactiver : supprimer le <link> vers ce fichier dans templates/base.html.twig
+ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap");
+
+:root {
+    --th-ui-font-body: "Inter", "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --th-ui-font-heading: "Plus Jakarta Sans", "Inter", "Public Sans", system-ui, sans-serif;
+    --th-ui-primary: #2563eb;
+    --th-ui-primary-hover: #1d4ed8;
+    --th-ui-menu-muted: #475569;
+}
+
+body.front-body,
+.ta-shell {
+    font-family: var(--th-ui-font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.ta-page-title,
+.ta-card-title,
+.ta-kpi-value,
+.auth-brand {
+    font-family: var(--th-ui-font-heading);
+}
+
+.ta-page-subtitle,
+.ta-card-text,
+.ta-form-label,
+.ta-form-help,
+.ta-form-input,
+.ta-form-select,
+.ta-form-textarea,
+.ta-table {
+    font-family: var(--th-ui-font-body);
+}
+
+/* --- Pages visiteur / auth (sans tailadmin : login, inscription, reset, invitation) --- */
+.auth-wrap,
+.ta-auth-form-wrap,
+.ta-auth-aside {
+    font-family: var(--th-ui-font-body);
+}
+
+.section-title,
+.ta-auth-title {
+    font-family: var(--th-ui-font-heading);
+}
+
+.ta-auth-lead,
+.ta-auth-form-wrap form label,
+.ta-auth-form-wrap form input[type="text"],
+.ta-auth-form-wrap form input[type="email"],
+.ta-auth-form-wrap form input[type="password"],
+.ta-auth-check {
+    font-family: var(--th-ui-font-body);
+}
+
+.ta-auth-submit,
+.auth-wrap button[type="submit"] {
+    font-family: var(--th-ui-font-body);
+    font-weight: 600;
+    border: 1px solid var(--th-ui-primary);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ta-auth-submit:hover:not(:disabled),
+.auth-wrap button[type="submit"]:hover:not(:disabled) {
+    background: var(--th-ui-primary-hover);
+    border-color: var(--th-ui-primary-hover);
+}
+
+.ta-auth-submit:focus-visible,
+.auth-wrap button[type="submit"]:focus-visible {
+    outline: 2px solid var(--th-ui-primary);
+    outline-offset: 2px;
+}
+
+.ta-auth-submit:disabled,
+.auth-wrap button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Titres de sections dashboard (accueil connecté + cohérence) */
+.match-day-title {
+    font-family: var(--th-ui-font-heading);
+}
+
+/* --- Sidebar / menu --- */
+.ta-sidebar .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.ta-sidebar .menu > li:last-child {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.ta-sidebar .ta-menu-link {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--th-ui-menu-muted);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ta-sidebar .ta-menu-link:hover {
+    background: #f1f5f9;
+    color: var(--th-ui-primary-hover);
+}
+
+.ta-sidebar .ta-menu-link.active {
+    background: #eff6ff;
+    color: var(--th-ui-primary);
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--th-ui-primary);
+}
+
+/* --- Boutons --- */
+.btn {
+    font-family: var(--th-ui-font-body);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--th-ui-primary);
+    outline-offset: 2px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--th-ui-primary-hover);
+    border-color: var(--th-ui-primary-hover);
+}
+
+.btn-primary:disabled,
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-outline.btn-primary:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #60a5fa;
+    color: var(--th-ui-primary-hover);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #e2e8f0;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--th-ui-primary);
+    border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: #eff6ff;
+    color: var(--th-ui-primary-hover);
+}
+
+/* Onglets (même famille que le corps) */
+.tab {
+    font-family: var(--th-ui-font-body);
+}

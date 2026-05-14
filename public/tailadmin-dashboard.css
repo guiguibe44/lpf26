@@ -1045,6 +1045,13 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     font-weight: 600;
 }
 
+.ta-form-help {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: #64748b;
+}
+
 .ta-form-input {
     width: 100%;
     border: 1px solid #cbd5e1;

@@ -2,8 +2,15 @@
     <div class="ta-form-row">
         {{ form_label(form) }}
         {{ form_widget(form) }}
+        {{ form_help(form) }}
         {{ form_errors(form) }}
     </div>
+{% endblock %}
+
+{% block form_help %}
+    {% if help is not empty %}
+        <p id="{{ id }}_help" class="ta-form-help">{{ help|trans(help_translation_parameters, translation_domain) }}</p>
+    {% endif %}
 {% endblock %}
 
 {% block form_label %}

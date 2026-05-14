@@ -147,6 +147,20 @@ body.front-body {
     gap: 6px;
 }
 
+/* Inscription : deux champs par ligne sur desktop */
+.ta-auth-form .ta-auth-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+}
+
+@media (min-width: 768px) {
+    .ta-auth-form .ta-auth-form-row-2 {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1rem;
+    }
+}
+
 .ta-auth-socials {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -401,6 +415,13 @@ form input[type="password"] {
     color: #1e293b;
     font-size: 0.875rem;
     font-weight: 600;
+}
+
+.ta-auth-form-wrap .ta-form-help {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: #64748b;
 }
 
 .ta-auth-form-wrap .ta-form-input {

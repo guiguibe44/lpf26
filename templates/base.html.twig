@@ -18,6 +18,8 @@
         {% if isAuthPage %}
             <link rel="stylesheet" href="{{ asset('front-dashboard.css') }}?v=3">
         {% endif %}
+        {# Option typographie / boutons / menu : supprimer ce lien (+ fichier public/theme-typography-ui.css) pour revenir au style par défaut #}
+        <link rel="stylesheet" href="{{ asset('theme-typography-ui.css') }}?v=2">
         {% block stylesheets %}
         {% endblock %}
 
