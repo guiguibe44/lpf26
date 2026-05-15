@@ -1,7 +1,17 @@
 {% extends 'base.html.twig' %}
-{% form_theme profile_form 'form/tailadmin_theme.html.twig' %}
+{% if profile_form %}
+    {% form_theme profile_form 'form/tailadmin_theme.html.twig' %}
+{% endif %}
 {% form_theme password_form 'form/tailadmin_theme.html.twig' %}
-{% form_theme team_form 'form/tailadmin_theme.html.twig' %}
+{% if team_form %}
+    {% form_theme team_form 'form/tailadmin_theme.html.twig' %}
+{% endif %}
+{% if invitation_form %}
+    {% form_theme invitation_form 'form/tailadmin_theme.html.twig' %}
+{% endif %}
+{% if team_setup_form %}
+    {% form_theme team_setup_form 'form/tailadmin_theme.html.twig' %}
+{% endif %}
 
 {% block title %}Compte et équipe{% endblock %}
 
@@ -14,18 +24,38 @@
     </section>
 
     <div class="account-page space-y-6">
+        {% if needs_profile_setup %}
+            <div class="alert alert-warning text-sm" role="status">
+                <span>
+                    Votre compte existe mais votre <strong>profil joueur</strong> n’est pas encore enregistré.
+                    Complétez le formulaire ci-dessous, puis invitez votre partenaire si besoin.
+                </span>
+            </div>
+        {% elseif team is null and not team_setup_form %}
+            <div class="alert alert-warning text-sm" role="status">
+                <span>
+                    Aucune équipe n’est associée à ce compte. Contactez un administrateur si le problème persiste.
+                </span>
+            </div>
+        {% endif %}
+
         <div class="tabs tabs-box account-tabs-nav" role="tablist" aria-label="Sections compte et équipe">
             <button type="button" role="tab" id="tab-btn-compte" class="tab tab-active" aria-selected="true" aria-controls="panel-compte" data-account-tab="compte">
                 Mon compte
             </button>
+            {% if team %}
             <button type="button" role="tab" id="tab-btn-equipe" class="tab" aria-selected="false" aria-controls="panel-equipe" data-account-tab="equipe">
                 Mon équipe
             </button>
+            {% endif %}
         </div>
 
         <div id="panel-compte" role="tabpanel" aria-labelledby="tab-btn-compte" class="account-tab-panel space-y-6">
+            {% if profile_form %}
             <section class="account-card-profile rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h2 class="mb-4 text-lg font-semibold">Profil joueur</h2>
+                <h2 class="mb-4 text-lg font-semibold">
+                    {% if needs_profile_setup %}Créer mon profil joueur{% else %}Profil joueur{% endif %}
+                </h2>
                 {{ form_start(profile_form, {'attr': {'class': 'space-y-3'}}) }}
                     {{ form_row(profile_form.email) }}
                     {{ form_row(profile_form.nickname) }}
@@ -38,15 +68,15 @@
                     >
                     {{ form_row(profile_form.removeAvatar) }}
                     <button type="submit" class="btn btn-primary">
-                        Enregistrer mon profil
+                        {% if needs_profile_setup %}Créer mon profil{% else %}Enregistrer mon profil{% endif %}
                         <i class="ti ti-device-floppy" aria-hidden="true"></i>
                     </button>
                 {{ form_end(profile_form) }}
             </section>
+            {% endif %}
 
-            {% if not competition_started %}
-                <section class="Xta-card dashboard-buteur-block account-buteur-section w-full md:mx-auto md:w-1/2">
-                    <h2 class="ta-card-title">Mon buteur</h2>
+            {% if has_team_member and not competition_started %}
+                <div class="account-buteur-section">
                     {% if not cotisation_payee %}
                         <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur (identique au tableau de bord).</p>
                     {% endif %}
@@ -57,12 +87,53 @@
                         buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
                         form_return: 'account',
                     } only %}
-                </section>
-            {% else %}
-                <section class="w-full rounded-box border border-base-300 bg-base-100 p-5 shadow-sm md:mx-auto md:w-1/2">
-                    <h2 class="mb-2 text-lg font-semibold">Mon buteur</h2>
-                    <p class="text-sm text-base-content/70">Le choix du buteur est verrouillé depuis le début de la compétition.</p>
-                </section>
+                </div>
+            {% elseif has_team_member and competition_started %}
+                <p class="ta-card-text">Le choix du buteur est verrouillé depuis le début de la compétition.</p>
+            {% endif %}
+
+            {% if team_setup_form %}
+            <section id="team-setup" class="account-card-team-setup rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-2 text-lg font-semibold">Créer mon équipe et inviter mon partenaire</h2>
+                <p class="ta-card-text mb-3">
+                    Vous n’avez pas encore d’équipe. Choisissez un nom d’équipe et envoyez une invitation par e-mail à votre coéquipier.
+                </p>
+                {{ form_start(team_setup_form, {'attr': {'class': 'space-y-3'}}) }}
+                    {{ form_row(team_setup_form.teamName) }}
+                    {{ form_row(team_setup_form.teammateEmail) }}
+                    <button type="submit" class="btn btn-primary">
+                        Créer l’équipe et envoyer l’invitation
+                        <i class="ti ti-send" aria-hidden="true"></i>
+                    </button>
+                {{ form_end(team_setup_form) }}
+            </section>
+            {% endif %}
+
+            {% if invitation_form and not has_team_member %}
+            <section id="invitation" class="account-card-invitation rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-2 text-lg font-semibold">Inviter mon partenaire</h2>
+                {% if team_is_full %}
+                    <p class="ta-card-text">Votre équipe est complète (2 joueurs).</p>
+                {% else %}
+                    {% if pending_invitation %}
+                        <p class="ta-card-text mb-3">
+                            Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
+                            (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
+                        </p>
+                    {% else %}
+                        <p class="ta-card-text mb-3">
+                            Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
+                        </p>
+                    {% endif %}
+                    {{ form_start(invitation_form, {'attr': {'class': 'space-y-3'}}) }}
+                        {{ form_row(invitation_form.teammateEmail) }}
+                        <button type="submit" class="btn btn-primary">
+                            {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
+                            <i class="ti ti-send" aria-hidden="true"></i>
+                        </button>
+                    {{ form_end(invitation_form) }}
+                {% endif %}
+            </section>
             {% endif %}
 
             <section class="account-card-password rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
@@ -75,9 +146,47 @@
                     </button>
                 {{ form_end(password_form) }}
             </section>
+
+            {% include 'account/_push_notifications_card.html.twig' %}
         </div>
 
+        {% if team %}
         <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
+            <section class="account-card-team-info rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-2 text-lg font-semibold">Équipe {{ team.name }}</h2>
+                {% if team.slogan %}
+                    <p class="ta-card-text m-0">{{ team.slogan }}</p>
+                {% endif %}
+            </section>
+
+            {% if invitation_form and has_team_member %}
+            <section id="invitation-equipe" class="account-card-invitation rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-2 text-lg font-semibold">Inviter mon partenaire</h2>
+                {% if team_is_full %}
+                    <p class="ta-card-text">Votre équipe est complète (2 joueurs).</p>
+                {% else %}
+                    {% if pending_invitation %}
+                        <p class="ta-card-text mb-3">
+                            Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
+                            (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
+                        </p>
+                    {% else %}
+                        <p class="ta-card-text mb-3">
+                            Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
+                        </p>
+                    {% endif %}
+                    {{ form_start(invitation_form, {'attr': {'class': 'space-y-3'}}) }}
+                        {{ form_row(invitation_form.teammateEmail) }}
+                        <button type="submit" class="btn btn-primary">
+                            {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
+                            <i class="ti ti-send" aria-hidden="true"></i>
+                        </button>
+                    {{ form_end(invitation_form) }}
+                {% endif %}
+            </section>
+            {% endif %}
+
+            {% if team_form %}
             <section class="account-card-team-edit rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-4 text-lg font-semibold">Modifier l’équipe</h2>
                 {% if name_locked %}
@@ -88,22 +197,23 @@
                     </div>
                 {% endif %}
                 {{ form_start(team_form, {'attr': {'class': 'space-y-3'}}) }}
-                        {{ form_row(team_form.name) }}
-                        {{ form_row(team_form.logoFile) }}
-                        <img
-                            src="{{ team.logo ?: '' }}"
-                            alt=""
-                            class="h-16 w-16 rounded-xl object-cover {{ team.logo ? '' : 'hidden' }}"
-                            data-live-preview-target="logo"
-                        >
-                        {{ form_row(team_form.removeLogo) }}
-                        {{ form_row(team_form.slogan) }}
-                        <button type="submit" class="btn btn-primary">
-                            Enregistrer mon équipe
-                            <i class="ti ti-device-floppy" aria-hidden="true"></i>
-                        </button>
-                    {{ form_end(team_form) }}
+                    {{ form_row(team_form.name) }}
+                    {{ form_row(team_form.logoFile) }}
+                    <img
+                        src="{{ team.logo ?: '' }}"
+                        alt=""
+                        class="h-16 w-16 rounded-xl object-cover {{ team.logo ? '' : 'hidden' }}"
+                        data-live-preview-target="logo"
+                    >
+                    {{ form_row(team_form.removeLogo) }}
+                    {{ form_row(team_form.slogan) }}
+                    <button type="submit" class="btn btn-primary">
+                        Enregistrer mon équipe
+                        <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                    </button>
+                {{ form_end(team_form) }}
             </section>
+            {% endif %}
 
             <section class="account-card-team-players rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h3 class="mb-4 text-lg font-semibold">Joueurs de l’équipe</h3>
@@ -123,7 +233,7 @@
                                 </tr>
                             {% else %}
                                 <tr>
-                                    <td colspan="2">Aucun joueur trouvé.</td>
+                                    <td colspan="2">Aucun joueur inscrit pour le moment.</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -131,6 +241,7 @@
                 </div>
             </section>
         </div>
+        {% endif %}
     </div>
 
     <script>
@@ -140,7 +251,7 @@
                 const btnEquipe = document.getElementById('tab-btn-equipe');
                 const panelCompte = document.getElementById('panel-compte');
                 const panelEquipe = document.getElementById('panel-equipe');
-                if (!btnCompte || !btnEquipe || !panelCompte || !panelEquipe) {
+                if (!btnCompte || !panelCompte) {
                     return;
                 }
                 if (btnCompte.dataset.accountTabsBound === '1') {
@@ -149,35 +260,61 @@
                 btnCompte.dataset.accountTabsBound = '1';
 
                 const showTab = (name) => {
-                    const isEquipe = name === 'equipe';
+                    const isEquipe = name === 'equipe' && btnEquipe && panelEquipe;
                     btnCompte.classList.toggle('tab-active', !isEquipe);
-                    btnEquipe.classList.toggle('tab-active', isEquipe);
+                    if (btnEquipe) {
+                        btnEquipe.classList.toggle('tab-active', isEquipe);
+                        btnEquipe.setAttribute('aria-selected', isEquipe ? 'true' : 'false');
+                    }
                     btnCompte.setAttribute('aria-selected', isEquipe ? 'false' : 'true');
-                    btnEquipe.setAttribute('aria-selected', isEquipe ? 'true' : 'false');
                     panelCompte.toggleAttribute('hidden', isEquipe);
-                    panelEquipe.toggleAttribute('hidden', !isEquipe);
+                    if (panelEquipe) {
+                        panelEquipe.toggleAttribute('hidden', !isEquipe);
+                    }
+                };
+
+                const scrollToAnchor = (id) => {
+                    const block = document.getElementById(id);
+                    if (block) {
+                        window.setTimeout(() => {
+                            block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 50);
+                    }
                 };
 
                 const hashToTab = () => {
                     const h = (window.location.hash || '').toLowerCase();
-                    if (h === '#tab-equipe' || h === '#equipe' || h === '#team-section') {
+                    if (h === '#tab-equipe' || h === '#equipe' || h === '#team-section' || h === '#invitation') {
                         return 'equipe';
                     }
                     return 'compte';
                 };
 
-                showTab(hashToTab());
+                const applyHash = () => {
+                    const h = (window.location.hash || '').toLowerCase();
+                    showTab(hashToTab());
+                    if (h === '#notifications') {
+                        scrollToAnchor('notifications');
+                    }
+                    if (h === '#invitation') {
+                        scrollToAnchor('invitation');
+                    }
+                };
+
+                applyHash();
 
                 btnCompte.addEventListener('click', () => {
                     showTab('compte');
                     history.replaceState(null, '', '#tab-compte');
                 });
-                btnEquipe.addEventListener('click', () => {
-                    showTab('equipe');
-                    history.replaceState(null, '', '#tab-equipe');
-                });
+                if (btnEquipe) {
+                    btnEquipe.addEventListener('click', () => {
+                        showTab('equipe');
+                        history.replaceState(null, '', '#tab-equipe');
+                    });
+                }
 
-                window.addEventListener('hashchange', () => showTab(hashToTab()));
+                window.addEventListener('hashchange', applyHash);
 
                 const bindPreview = (inputName, previewKey) => {
                     const input = document.querySelector(`input[name="${inputName}"]`);

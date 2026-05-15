@@ -8,16 +8,14 @@
             <h1 class="ta-page-title">Classement general</h1>
             <p class="ta-page-subtitle">
                 Classement des equipes par total de points, scores exacts et resultats.
+                {% if ranking_match %}
+                    — Maj. après {{ ranking_match.paysDomicile.nom }} - {{ ranking_match.paysExterieur.nom }}
+                {% endif %}
             </p>
         </div>
-        {% if ranking_match %}
-            <div class="ta-user-badge">
-                Maj apres {{ ranking_match.paysDomicile.nom }} - {{ ranking_match.paysExterieur.nom }}
-            </div>
-        {% endif %}
     </section>
 
-    <section class="ta-card">
+    <section class="ta-card ranking-page-card">
         <div class="ta-dashboard-matchdays-head">
             <div>
                 <h2 class="ta-card-title">Tableau des equipes</h2>
@@ -25,68 +23,24 @@
                     <p class="ta-card-text">
                         Dernier calcul le {{ ranking_match.dateHeure|date('d/m/Y') }}.
                     </p>
+                {% elseif teams_preview is not empty %}
+                    <p class="ta-card-text">
+                        Aucun match n’a encore été noté. Équipes inscrites (ordre alphabétique) — les points apparaîtront après les premiers résultats.
+                    </p>
                 {% else %}
                     <p class="ta-card-text">
-                        Le classement apparaitra quand les premiers matchs seront notes.
+                        Le classement apparaîtra quand les premiers matchs seront notés.
                     </p>
                 {% endif %}
             </div>
-            <span class="ta-badge ta-badge-success">{{ ranking|length }} equipes</span>
+            <span class="ta-badge ta-badge-success">{{ ranking is not empty ? ranking|length : teams_preview|length }} équipes</span>
         </div>
 
-        {% if ranking is not empty %}
-            <div class="ta-table-wrap mt-5">
-                <table class="table ta-table-mobile-accordion">
-                    <thead>
-                    <tr>
-                        <th class="ta-col-primary">Position</th>
-                        <th class="ta-col-primary">Equipe</th>
-                        <th class="ta-col-secondary">Points</th>
-                        <th class="ta-col-secondary">Scores exacts</th>
-                        <th class="ta-col-secondary">Bons resultats</th>
-                        <th class="ta-col-secondary">Resultats faux</th>
-                        <th class="ta-col-secondary">Prises de risques</th>
-                        <th class="ta-col-mobile-only" scope="col" aria-label="Statistiques">+</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for row in ranking %}
-                        <tr>
-                            <td class="ta-col-primary">#{{ row.position }}</td>
-                            <td class="ta-col-primary">
-                                <a href="{{ path('app_team_show', { id: row.team.id }) }}" class="ranking-team-link">
-                                    <div class="ranking-team-row">
-                                        {% if row.team.logo %}
-                                            <img src="{{ asset(row.team.logo) }}" alt="" class="ranking-team-logo">
-                                        {% else %}
-                                            <span class="ranking-team-logo-placeholder" aria-hidden="true">{{ row.team.name|first|upper }}</span>
-                                        {% endif %}
-                                        <span class="ranking-team-name">{{ row.team.name }}</span>
-                                    </div>
-                                </a>
-                            </td>
-                            <td class="ta-col-secondary">{{ row.totalPoints|number_format(0, ',', ' ') }}</td>
-                            <td class="ta-col-secondary">{{ row.scoresExacts }}</td>
-                            <td class="ta-col-secondary">{{ row.bonsResultats }}</td>
-                            <td class="ta-col-secondary">{{ row.resultatsFaux }}</td>
-                            <td class="ta-col-secondary">{{ row.prisesRisque }}</td>
-                            <td class="ta-col-mobile-only">
-                                <details class="ta-table-row-details">
-                                    <summary>Stats</summary>
-                                    <dl class="ta-table-row-details-dl">
-                                        <div><dt>Points</dt><dd>{{ row.totalPoints|number_format(0, ',', ' ') }}</dd></div>
-                                        <div><dt>Scores exacts</dt><dd>{{ row.scoresExacts }}</dd></div>
-                                        <div><dt>Bons resultats</dt><dd>{{ row.bonsResultats }}</dd></div>
-                                        <div><dt>Resultats faux</dt><dd>{{ row.resultatsFaux }}</dd></div>
-                                        <div><dt>Prises de risques</dt><dd>{{ row.prisesRisque }}</dd></div>
-                                    </dl>
-                                </details>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        {% if ranking is not empty or teams_preview is not empty %}
+            {% include 'competition/_ranking_table.html.twig' with {
+                ranking_rows: ranking,
+                teams_preview: teams_preview,
+            } only %}
         {% endif %}
     </section>
 {% endblock %}

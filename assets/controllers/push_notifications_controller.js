@@ -10,7 +10,7 @@ export default class extends Controller {
         swScope: { type: String, default: '/' },
     };
 
-    static targets = ['status', 'enableBtn', 'disableBtn', 'testBtn', 'chromeMacHelp'];
+    static targets = ['status', 'enableBtn', 'disableBtn', 'testBtn'];
 
     connect() {
         this.boundEnable = (event) => this.enable(event);
@@ -29,10 +29,6 @@ export default class extends Controller {
 
         this.isIos = /iPad|iPhone|iPod/.test(navigator.userAgent)
             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        this.isChromeMac = !this.isIos
-            && /Mac/.test(navigator.userAgent)
-            && /Chrome\//.test(navigator.userAgent)
-            && !/Edg\//.test(navigator.userAgent);
         this.isStandalone = window.matchMedia('(display-mode: standalone)').matches
             || window.navigator.standalone === true;
 
@@ -46,7 +42,7 @@ export default class extends Controller {
 
         if (!this.supported) {
             this.setStatus(
-                'Ce navigateur ne prend pas en charge les notifications push web. Essayez Chrome ou Firefox sur Mac.',
+                'Ce navigateur ne prend pas en charge les notifications push web.',
                 'warning',
             );
             this.hideActions();
@@ -58,10 +54,6 @@ export default class extends Controller {
                 'Sur iPhone : ajoutez d’abord LPF’26 à l’écran d’accueil, ouvrez l’icône, puis activez les notifications.',
                 'warning',
             );
-        }
-
-        if (this.isChromeMac && this.hasChromeMacHelpTarget) {
-            this.chromeMacHelpTarget.hidden = false;
         }
 
         this.refreshUi();
@@ -120,7 +112,7 @@ export default class extends Controller {
 
             if (permission !== 'granted') {
                 this.setStatus(
-                    'Autorisation refusée. Chrome : icône cadenas → Notifications → Autoriser. Puis rechargez la page.',
+                    'Autorisation refusée. Autorisez les notifications pour ce site dans le navigateur.',
                     'warning',
                 );
                 this.unlockStatus();
@@ -167,14 +159,7 @@ export default class extends Controller {
                 throw new Error(err.error || 'Enregistrement impossible (' + response.status + ').');
             }
 
-            if (this.isChromeMac) {
-                this.setStatus(
-                    'Abonnement Chrome enregistré. Ouvrez Réglages Système → Notifications → Google Chrome, puis cliquez « Tester l’affichage ».',
-                    'success',
-                );
-            } else {
-                this.setStatus('Notifications activées sur cet appareil.', 'success');
-            }
+            this.setStatus('Notifications activées sur cet appareil.', 'success');
             this.unlockStatus();
             await this.refreshUi();
         } catch (error) {
@@ -248,14 +233,7 @@ export default class extends Controller {
             }
 
             if (subscribed && this.hasStatusTarget && !this.statusTarget.dataset.locked) {
-                if (this.isChromeMac) {
-                    this.setStatus(
-                        'Chrome abonné. Si rien n’apparaît : Réglages Système → Notifications → Google Chrome, puis « Tester l’affichage ».',
-                        'success',
-                    );
-                } else {
-                    this.setStatus('Vous recevrez les alertes LPF’26 sur cet appareil.', 'success');
-                }
+                this.setStatus('Vous recevrez les alertes LPF’26 sur cet appareil.', 'success');
             }
         } catch (error) {
             console.error('[push-notifications] refreshUi', error);
@@ -308,21 +286,14 @@ export default class extends Controller {
             await navigator.serviceWorker.register(this.swScriptUrl(), { scope: '/' });
             const registration = await navigator.serviceWorker.ready;
             await registration.showNotification('LPF\'26 — test', {
-                body: 'Si vous voyez cette alerte, l’affichage local fonctionne. Les push serveur devraient aussi passer.',
+                body: 'Si vous voyez cette alerte, l’affichage local fonctionne.',
                 icon: '/images/lpf26-logo-color.png',
                 tag: 'lpf26-push-test',
             });
-            this.setStatus('Notification de test affichée (sans passer par le serveur).', 'success');
+            this.setStatus('Notification de test affichée.', 'success');
         } catch (error) {
             console.error('[push-notifications] testLocal', error);
-            if (this.isChromeMac) {
-                this.setStatus(
-                    'Test bloqué : Réglages Système → Notifications → Google Chrome (bannières activées), puis réessayez.',
-                    'danger',
-                );
-            } else {
-                this.setStatus('Test local impossible : ' + (error.message || 'erreur inconnue'), 'danger');
-            }
+            this.setStatus('Test local impossible : ' + (error.message || 'erreur inconnue'), 'danger');
         }
     }
 

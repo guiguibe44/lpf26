@@ -1,63 +1,77 @@
 {% set currentRoute = app.request.attributes.get('_route')|default('') %}
 
-<aside class="ta-sidebar">
-    <div class="ta-sidebar-brand">
-        <a href="{{ path('app_homepage') }}" class="ta-sidebar-logo-link" title="Accueil LPF'26">
-            <img
-                src="{{ asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png') }}"
-                alt="LPF'26"
-                class="ta-sidebar-logo"
-                loading="lazy"
-                decoding="async"
+<aside id="ta-sidebar" class="ta-sidebar" data-mobile-nav-target="sidebar">
+    <div class="ta-sidebar-inner">
+        <div class="ta-sidebar-brand">
+            <a href="{{ path('app_homepage') }}" class="ta-sidebar-logo-link" title="Accueil LPF'26">
+                <img
+                    src="{{ asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png') }}"
+                    alt="LPF'26"
+                    class="ta-sidebar-logo"
+                    loading="lazy"
+                    decoding="async"
+                >
+            </a>
+        </div>
+
+        <nav class="ta-sidebar-nav" aria-label="Navigation principale">
+            <ul class="menu w-full p-0">
+                <li>
+                    <a href="{{ path('app_homepage') }}" class="ta-menu-link {{ currentRoute == 'app_homepage' ? 'active' : '' }}">
+                        <i class="ti ti-home" aria-hidden="true"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('app_matches') }}" class="ta-menu-link {{ currentRoute in ['app_matches', 'app_pronostics'] ? 'active' : '' }}">
+                        <i class="ti ti-ball-football" aria-hidden="true"></i>
+                        Matchs
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('app_groups') }}" class="ta-menu-link {{ currentRoute == 'app_groups' ? 'active' : '' }}">
+                        <i class="ti ti-flag" aria-hidden="true"></i>
+                        Groupes des pays
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('app_ranking') }}" class="ta-menu-link {{ currentRoute == 'app_ranking' ? 'active' : '' }}">
+                        <i class="ti ti-trophy" aria-hidden="true"></i>
+                        Classement
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('app_account') }}" class="ta-menu-link {{ currentRoute == 'app_account' ? 'active' : '' }}">
+                        <i class="ti ti-user" aria-hidden="true"></i>
+                        Compte et équipe
+                    </a>
+                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}">
+                        <i class="ti ti-settings" aria-hidden="true"></i>
+                        Administration
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{{ path('app_logout') }}" class="ta-menu-link">
+                        <i class="ti ti-logout" aria-hidden="true"></i>
+                        Deconnexion
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="ta-sidebar-footer">
+            <a
+                href="{{ path('app_account') }}#notifications"
+                class="ta-sidebar-notify {{ currentRoute == 'app_account' ? 'ta-sidebar-notify--current' : '' }}"
+                title="Notifications"
+                aria-label="Notifications — mon compte"
             >
-        </a>
+                <i class="ti ti-bell" aria-hidden="true"></i>
+            </a>
+        </div>
     </div>
-
-    <ul class="menu w-full p-0">
-        <li>
-            <a href="{{ path('app_homepage') }}" class="ta-menu-link {{ currentRoute == 'app_homepage' ? 'active' : '' }}">
-                <i class="ti ti-home" aria-hidden="true"></i>
-                Dashboard
-            </a>
-        </li>
-        <li>
-            <a href="{{ path('app_matches') }}" class="ta-menu-link {{ currentRoute in ['app_matches', 'app_pronostics'] ? 'active' : '' }}">
-                <i class="ti ti-ball-football" aria-hidden="true"></i>
-                Matchs
-            </a>
-        </li>
-        <li>
-            <a href="{{ path('app_groups') }}" class="ta-menu-link {{ currentRoute == 'app_groups' ? 'active' : '' }}">
-                <i class="ti ti-flag" aria-hidden="true"></i>
-                Groupes des pays
-            </a>
-        </li>
-        <li>
-            <a href="{{ path('app_ranking') }}" class="ta-menu-link {{ currentRoute == 'app_ranking' ? 'active' : '' }}">
-                <i class="ti ti-trophy" aria-hidden="true"></i>
-                Classement
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ path('app_account') }}" class="ta-menu-link {{ currentRoute == 'app_account' ? 'active' : '' }}">
-                <i class="ti ti-user" aria-hidden="true"></i>
-                Compte et équipe
-            </a>
-        </li>
-        {% if is_granted('ROLE_ADMIN') %}
-        <li>
-            <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}">
-                <i class="ti ti-settings" aria-hidden="true"></i>
-                Administration
-            </a>
-        </li>
-        {% endif %}
-        <li>
-            <a href="{{ path('app_logout') }}" class="ta-menu-link">
-                <i class="ti ti-logout" aria-hidden="true"></i>
-                Deconnexion
-            </a>
-        </li>
-    </ul>
 </aside>

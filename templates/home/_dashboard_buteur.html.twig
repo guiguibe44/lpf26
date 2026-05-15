@@ -1,13 +1,8 @@
 {# competition_started, cotisation_payee, dashboard_partners, buteurs_pris_par_autres_equipes #}
-
-<section class="Xta-card dashboard-buteur-block">
-    <h2 class="ta-card-title">Mon buteur</h2>
-
-    {% include 'buteur/_picker_stack.html.twig' with {
-        picker_id_prefix: 'db',
-        cotisation_payee: cotisation_payee,
-        dashboard_partners: dashboard_partners,
-        buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
-        form_return: null,
-    } only %}
-</section>
+{% include 'buteur/_picker_stack.html.twig' with {
+    picker_id_prefix: 'db',
+    cotisation_payee: cotisation_payee,
+    dashboard_partners: dashboard_partners,
+    buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
+    form_return: null,
+} only %}

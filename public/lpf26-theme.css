@@ -137,8 +137,11 @@ html body .ta-page-subtitle {
 }
 
 html body .ta-card-title {
+    font-family: "Fredoka", system-ui, sans-serif;
+    font-size: 22px;
     font-weight: 600;
     color: var(--lpf-navy);
+    line-height: 1.25;
 }
 
 /* =============================================================================
@@ -598,4 +601,170 @@ html body .font-title {
 
 html body .font-body {
     font-family: "DM Sans", system-ui, sans-serif;
+}
+
+/* =============================================================================
+ * Fond de page & cartes (crème LPF)
+ * ============================================================================= */
+html body.front-body,
+html body .ta-shell {
+    background-color: var(--lpf-cream);
+    color: var(--lpf-text);
+}
+
+html body .ta-card,
+html body article.ta-card {
+    background-color: var(--lpf-white);
+    border-color: var(--lpf-border);
+}
+
+html body .ta-menu-link {
+    color: var(--lpf-navy);
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+html body .ta-menu-link:hover,
+html body .ta-menu-link.active {
+    color: var(--lpf-navy);
+}
+
+/* =============================================================================
+ * Burger menu — « Ballon + lignes » (.lpf-burger)
+ * ============================================================================= */
+html body .lpf-burger {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* Annule le style .ta-burger (tailadmin) quand les deux classes sont combinées */
+html body .ta-burger.lpf-burger {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+}
+
+html body .ta-burger.lpf-burger .ti {
+    display: none;
+}
+
+html body.ta-nav-open .ta-burger.lpf-burger {
+    background: transparent;
+    border: none;
+    color: inherit;
+}
+
+html body .lpf-burger__line {
+    display: block;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--lpf-navy);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+html body .lpf-burger__line:nth-child(1) {
+    width: 28px;
+}
+
+html body .lpf-burger__line:nth-child(2) {
+    width: 18px;
+}
+
+html body .lpf-burger__line:nth-child(3) {
+    width: 28px;
+}
+
+html body .lpf-burger__ball {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    margin-top: -4.5px;
+    border-radius: 50%;
+    background-color: var(--lpf-red);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+html body .lpf-burger:not(.open):hover .lpf-burger__ball {
+    transform: scale(1.3);
+}
+
+html body .lpf-burger.open .lpf-burger__line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+html body .lpf-burger.open .lpf-burger__line:nth-child(2) {
+    opacity: 0;
+    width: 0;
+    transform: translateX(-10px);
+}
+
+html body .lpf-burger.open .lpf-burger__line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+html body .lpf-burger.open .lpf-burger__ball {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+}
+
+html body .lpf-burger--light .lpf-burger__line {
+    background-color: var(--lpf-white);
+}
+
+html body .lpf-burger--light .lpf-burger__ball {
+    background-color: var(--lpf-red);
+}
+
+/* =============================================================================
+ * Barre mobile — logo plus visible (surcharge tailadmin)
+ * ============================================================================= */
+@media (max-width: 1024px) {
+    html body .ta-mobile-bar {
+        height: 4.25rem;
+    }
+
+    html body .ta-mobile-bar__logo-link {
+        align-items: center;
+        height: 100%;
+    }
+
+    html body .ta-mobile-bar__logo {
+        display: block;
+        width: auto;
+        height: 3.5rem;
+        min-height: 3.5rem;
+        max-width: min(320px, 90vw);
+        object-fit: contain;
+        object-position: left center;
+    }
+
+    html body .ta-main {
+        padding-top: 5.15rem;
+    }
+
+    html body.front-body--cotisation-banner .ta-main {
+        padding-top: 8rem;
+    }
 }

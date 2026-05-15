@@ -355,12 +355,87 @@
     font-weight: 600;
 }
 
+.ta-sidebar-wrap {
+    flex-shrink: 0;
+}
+
 .ta-sidebar {
+    display: flex;
+    flex-direction: column;
     width: 280px;
     min-height: 100vh;
     border-right: 1px solid #e2e8f0;
     background: #ffffff;
     padding: 1.25rem 1rem;
+}
+
+.ta-sidebar-inner {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ta-sidebar-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.ta-sidebar-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.ta-sidebar-notify {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1b2d4f;
+    text-decoration: none;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.ta-sidebar-notify:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1b2d4f;
+    text-decoration: none;
+    transform: scale(1.05);
+}
+
+.ta-sidebar-notify--current,
+.ta-sidebar-notify:focus-visible {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.ta-sidebar-notify .ti {
+    font-size: 1.35rem;
+}
+
+.ta-mobile-bar {
+    display: none;
+}
+
+.ta-burger {
+    display: none;
+}
+
+.ta-sidebar-backdrop {
+    display: none;
 }
 
 .ta-sidebar-brand {
@@ -471,6 +546,17 @@
     border-radius: 0.85rem;
     background: #ffffff;
     padding: 1rem;
+}
+
+/* Listes de matchs par journée (dashboard, page matchs) : sans cadre blanc global */
+.match-dashboard-wrap {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .ta-kpi-label {
@@ -738,7 +824,9 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
         user-select: none;
     }
 
-    table.ta-table-mobile-accordion .ta-table-row-details summary::-webkit-details-marker {
+    table.ta-table-mobile-accordion
+        .ta-table-row-details
+        summary::-webkit-details-marker {
         display: none;
     }
 
@@ -1006,13 +1094,156 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 @media (max-width: 1024px) {
+    .ta-mobile-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2500;
+        height: 4.25rem;
+        padding: 0 0.65rem 0 0.85rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: #ffffff;
+        box-sizing: border-box;
+    }
+
+    .front-body--cotisation-banner .ta-mobile-bar {
+        top: 2.85rem;
+    }
+
+    .ta-mobile-bar__logo-link {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        align-items: center;
+        line-height: 0;
+    }
+
+    .ta-mobile-bar__logo {
+        display: block;
+        width: auto;
+        max-width: min(320px, 90vw);
+        height: 3.5rem;
+        min-height: 3.5rem;
+        object-fit: contain;
+        object-position: left center;
+    }
+
+    .ta-burger {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        margin: 0;
+        padding: 0;
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        background: #ffffff;
+        color: #1b2d4f;
+        cursor: pointer;
+    }
+
+    .ta-burger .ti {
+        font-size: 1.35rem;
+    }
+
+    body.ta-nav-open .ta-burger {
+        background: #1b2d4f;
+        border-color: #1b2d4f;
+        color: #ffffff;
+    }
+
+    .ta-sidebar-brand {
+        display: none;
+    }
+
+    .ta-sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: rgba(15, 23, 42, 0.45);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+            opacity 0.2s ease,
+            visibility 0.2s ease;
+        cursor: pointer;
+    }
+
+    body.ta-nav-open .ta-sidebar-backdrop {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
     .ta-shell {
         flex-direction: column;
     }
 
+    .ta-sidebar-wrap {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 110;
+        width: min(280px, 88vw);
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        pointer-events: none;
+    }
+
+    body.ta-nav-open .ta-sidebar-wrap {
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+
     .ta-sidebar {
         width: 100%;
-        min-height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15);
+    }
+
+    .ta-main {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 5.15rem 1rem 1.25rem;
+        box-sizing: border-box;
+        overflow-x: clip;
+    }
+
+    .front-body--cotisation-banner .ta-main {
+        padding-top: 8rem;
+    }
+
+    .ta-main .ta-card,
+    .ta-main section.ta-card,
+    .ta-main .match-dashboard-wrap,
+    .ta-main section.match-dashboard-wrap,
+    .ta-main .account-page > section,
+    .ta-main .account-page .account-tab-panel > section,
+    .ta-main .account-page .push-notifications-card,
+    .account-page .account-card-profile,
+    .account-page .account-card-password,
+    .account-page .account-card-team-edit,
+    .account-page .account-card-team-players,
+    .account-page .account-card-notifications,
+    .account-page .account-buteur-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box;
     }
 
     .ta-kpis,
@@ -1024,12 +1255,9 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
         grid-template-columns: 1fr;
     }
 
-    .dashboard-buteur-columns {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-buteur-form-card {
+    .account-tabs-nav {
         width: 100%;
+        flex-wrap: wrap;
     }
 }
 
@@ -1062,7 +1290,9 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     font-size: 0.9rem;
     line-height: 1.2rem;
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .ta-form-input:focus {
@@ -1094,9 +1324,15 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 
 .ta-form-select {
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%);
-    background-position: calc(100% - 18px) calc(1em + 1px), calc(100% - 13px) calc(1em + 1px);
-    background-size: 5px 5px, 5px 5px;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(1em + 1px),
+        calc(100% - 13px) calc(1em + 1px);
+    background-size:
+        5px 5px,
+        5px 5px;
     background-repeat: no-repeat;
 }
 
@@ -1132,7 +1368,9 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     box-shadow: 0 2px 10px rgba(234, 88, 12, 0.18);
     cursor: pointer;
     color: #7c2d12;
-    transition: background 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .app-cotisation-banner.app-cotisation-banner--alert:hover {
@@ -1280,19 +1518,41 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .front-body--cotisation-banner .ta-shell {
-    padding-top: 2.85rem;
+    padding-top: 0;
 }
 
-.dashboard-buteur-block {
-    margin-top: 1.25rem;
+@media (min-width: 1025px) {
+    .front-body--cotisation-banner .ta-shell {
+        padding-top: 2.85rem;
+    }
+}
+
+.account-buteur-section {
+    width: 100%;
+    max-width: 100%;
 }
 
 .dashboard-buteur-columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     align-items: start;
-    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 1.25rem;
+}
+
+.dashboard-buteur-form-card,
+.dashboard-buteur-taken-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1025px) {
+    .dashboard-buteur-columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .dashboard-buteur-taken-card {
@@ -1402,7 +1662,7 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 .dashboard-buteur-form-card {
     margin-top: 0;
     margin-left: 0;
-    margin-right: auto;
+    margin-right: 0;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -1786,6 +2046,95 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 
 .group-standings-card {
     scroll-margin-top: 1.5rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.group-standings-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.group-standings-table {
+    width: 100%;
+}
+
+/* Page classement — scroll horizontal dans le tableau uniquement */
+.ranking-page-card {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.ranking-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.ranking-table {
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .ta-grid > .group-standings-card,
+    .ta-grid > .ta-card {
+        min-width: 0;
+    }
+
+    .group-standings-card {
+        overflow: hidden;
+    }
+
+    .ranking-page-card {
+        overflow: hidden;
+    }
+
+    .ranking-table {
+        width: max-content;
+        min-width: 40rem;
+    }
+
+    .ranking-table th,
+    .ranking-table td {
+        white-space: nowrap;
+    }
+
+    .ranking-table th:nth-child(2),
+    .ranking-table td:nth-child(2) {
+        min-width: 9rem;
+    }
+
+    .ranking-table .ranking-team-name {
+        white-space: nowrap;
+    }
+
+    .group-standings-table {
+        width: max-content;
+        min-width: 34rem;
+    }
+
+    .group-standings-table th,
+    .group-standings-table td {
+        white-space: nowrap;
+    }
+
+    .group-standings-table th:nth-child(2),
+    .group-standings-table td:nth-child(2) {
+        min-width: 8.5rem;
+    }
+
+    .group-standings-table th.ta-num,
+    .group-standings-table td.ta-num {
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+    }
 }
 
 .match-prono-cotisation-msg {
@@ -1827,12 +2176,30 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 .account-page .account-card-profile,
 .account-page .account-card-password,
 .account-page .account-card-team-edit,
-.account-page .account-card-team-players {
+.account-page .account-card-team-players,
+.account-page .account-card-team-info,
+.account-page .account-card-invitation,
+.account-page .account-card-team-setup,
+.account-page .account-card-notifications {
     box-sizing: border-box;
     width: 50%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
+}
+
+#notifications {
+    scroll-margin-top: 6rem;
+}
+
+@media (max-width: 1024px) {
+    #notifications {
+        scroll-margin-top: 8rem;
+    }
+
+    .front-body--cotisation-banner #notifications {
+        scroll-margin-top: 11rem;
+    }
 }
 
 /* Dashboard — carte notifications push */
@@ -1881,29 +2248,6 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 1rem;
-}
-
-.push-notifications-card__chrome-mac {
-    margin-top: 1rem;
-    padding: 0.85rem 1rem;
-    border: 1px solid #fde68a;
-    border-radius: 0.65rem;
-    background: #fffbeb;
-}
-
-.push-notifications-card__chrome-mac-title {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin: 0 0 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #92400e;
-}
-
-.push-notifications-card__list--compact {
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
 }
 
 /* Admin — page envoi push */
@@ -2037,13 +2381,13 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .admin-push-form__back:hover {
-    color: #1B2D4F;
+    color: #1b2d4f;
     text-decoration: none;
 }
 
 .admin-push-preview-device {
     border-radius: 1rem;
-    background: linear-gradient(160deg, #1B2D4F 0%, #2d4a7a 100%);
+    background: linear-gradient(160deg, #1b2d4f 0%, #2d4a7a 100%);
     padding: 1.25rem 1rem 1.5rem;
 }
 
@@ -2174,7 +2518,7 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .admin-push-history-table__url a {
-    color: #1B2D4F;
+    color: #1b2d4f;
     font-weight: 600;
     text-decoration: none;
 }

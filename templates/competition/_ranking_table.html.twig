@@ -1,0 +1,66 @@
+{# @var ranking_rows \App\Entity\TeamRankingSnapshot[]|null #}
+{# @var teams_preview \App\Entity\Team[]|null #}
+<div class="ta-table-wrap ranking-table-wrap mt-5">
+    <table class="table ta-table ranking-table">
+        <thead>
+        <tr>
+            <th class="ta-num">#</th>
+            <th>Équipe</th>
+            <th class="ta-num">Points</th>
+            <th class="ta-num" title="Scores exacts">Exact</th>
+            <th class="ta-num" title="Bons résultats">Bons</th>
+            <th class="ta-num" title="Résultats faux">Faux</th>
+            <th class="ta-num" title="Prises de risques">Risque</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if ranking_rows is not empty %}
+            {% for row in ranking_rows %}
+                <tr>
+                    <td class="ta-num">#{{ row.position }}</td>
+                    <td>
+                        <a href="{{ path('app_team_show', { id: row.team.id }) }}" class="ranking-team-link">
+                            <div class="ranking-team-row">
+                                {% if row.team.logo %}
+                                    <img src="{{ asset(row.team.logo) }}" alt="" class="ranking-team-logo">
+                                {% else %}
+                                    <span class="ranking-team-logo-placeholder" aria-hidden="true">{{ row.team.name|first|upper }}</span>
+                                {% endif %}
+                                <span class="ranking-team-name">{{ row.team.name }}</span>
+                            </div>
+                        </a>
+                    </td>
+                    <td class="ta-num">{{ row.totalPoints|number_format(0, ',', ' ') }}</td>
+                    <td class="ta-num">{{ row.scoresExacts }}</td>
+                    <td class="ta-num">{{ row.bonsResultats }}</td>
+                    <td class="ta-num">{{ row.resultatsFaux }}</td>
+                    <td class="ta-num">{{ row.prisesRisque }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% for team in teams_preview %}
+                <tr>
+                    <td class="ta-num">#{{ loop.index }}</td>
+                    <td>
+                        <a href="{{ path('app_team_show', { id: team.id }) }}" class="ranking-team-link">
+                            <div class="ranking-team-row">
+                                {% if team.logo %}
+                                    <img src="{{ asset(team.logo) }}" alt="" class="ranking-team-logo">
+                                {% else %}
+                                    <span class="ranking-team-logo-placeholder" aria-hidden="true">{{ team.name|first|upper }}</span>
+                                {% endif %}
+                                <span class="ranking-team-name">{{ team.name }}</span>
+                            </div>
+                        </a>
+                    </td>
+                    <td class="ta-num">0</td>
+                    <td class="ta-num">0</td>
+                    <td class="ta-num">0</td>
+                    <td class="ta-num">0</td>
+                    <td class="ta-num">0</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>

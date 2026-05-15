@@ -108,14 +108,18 @@ class CompetitionController extends AbstractController
     }
 
     #[Route('/classement', name: 'app_ranking', methods: ['GET'])]
-    public function ranking(TeamRankingSnapshotRepository $teamRankingSnapshotRepository): Response
-    {
+    public function ranking(
+        TeamRankingSnapshotRepository $teamRankingSnapshotRepository,
+        TeamRepository $teamRepository,
+    ): Response {
         $ranking = $teamRankingSnapshotRepository->findLatestRanking();
         $rankingMatch = [] !== $ranking ? $ranking[0]->getMatchRef() : null;
+        $teamsPreview = [] === $ranking ? $teamRepository->findAllOrderedByName() : [];
 
         return $this->render('competition/ranking.html.twig', [
             'ranking' => $ranking,
             'ranking_match' => $rankingMatch,
+            'teams_preview' => $teamsPreview,
         ]);
     }
 

@@ -1,0 +1,51 @@
+<section id="notifications" class="ta-card push-notifications-card account-card-notifications" data-controller="push-notifications"
+    data-push-notifications-subscribe-url-value="{{ path('api_push_subscribe') }}"
+    data-push-notifications-unsubscribe-url-value="{{ path('api_push_unsubscribe') }}"
+    data-push-notifications-csrf-token-value="{{ csrf_token('push_subscribe') }}"
+    data-push-notifications-sw-url-value="/sw.js"
+    data-push-notifications-sw-scope-value="/">
+    <h2 class="ta-card-title">
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        Notifications
+    </h2>
+
+    <div class="push-notifications-card__steps">
+        <p class="ta-card-text">
+            Recevez les alertes LPF'26 (rappels de pronos, annonces) <strong>même sans ouvrir le site</strong>.
+        </p>
+        <ol class="push-notifications-card__list">
+            <li>
+                <strong>Mac / PC</strong> : autorisez les notifications pour ce site et pour votre navigateur dans les réglages système.
+            </li>
+            <li>
+                <strong>iPhone</strong> : <em>Partager → Sur l’écran d’accueil</em>, puis ouvrir le site depuis l’icône installée.
+            </li>
+            <li>
+                <strong>Android</strong> : Chrome → <em>Installer l’application</em> ou <em>Ajouter à l’écran d’accueil</em>.
+            </li>
+        </ol>
+    </div>
+
+    <p class="push-notifications-card__status push-notifications-card__status--muted" data-push-notifications-target="status">
+        {% if push_vapid_configured %}
+            Prêt à s'abonner depuis cet appareil.
+        {% else %}
+            Configuration serveur en cours : les notifications seront bientôt disponibles.
+        {% endif %}
+    </p>
+
+    <div class="push-notifications-card__actions">
+        <button type="button" class="btn btn-primary btn-sharp" data-push-notifications-target="enableBtn" {{ not push_vapid_configured ? 'disabled' : '' }}>
+            Activer les notifications
+            <i class="ti ti-bell" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-outline btn-primary btn-sharp" data-push-notifications-target="testBtn" hidden>
+            Tester l’affichage
+            <i class="ti ti-bell-ringing" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-outline btn-primary btn-sharp" data-push-notifications-target="disableBtn" hidden>
+            Désactiver sur cet appareil
+            <i class="ti ti-bell-off" aria-hidden="true"></i>
+        </button>
+    </div>
+</section>

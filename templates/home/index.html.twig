@@ -3,17 +3,6 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <section class="ta-topbar">
-        <div>
-            <h1 class="ta-page-title">Dashboard</h1>
-        </div>
-        <div class="ta-user-badge">
-            {{ app.user ? app.user.userIdentifier : 'Invite' }}
-        </div>
-    </section>
-
-    {% include 'home/_push_notifications_card.html.twig' %}
-
     {% if not competition_started %}
         {% include 'home/_dashboard_buteur.html.twig' with {
             cotisation_payee: cotisation_payee,
@@ -22,7 +11,7 @@
         } only %}
     {% endif %}
 
-    <section class="Xta-card mt-5 {{ prono_access_blocked ? 'match-dashboard-wrap--locked' : '' }}">
+    <section class="match-dashboard-wrap mt-5 {{ prono_access_blocked ? 'match-dashboard-wrap--locked' : '' }}">
         {% if last_completed_matchday is null and next_matchday is null %}
             <p class="ta-card-text mt-3">Aucun match à afficher pour le moment.</p>
         {% else %}
