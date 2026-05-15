@@ -1,0 +1,151 @@
+{# Documentation fonctionnelle — visible uniquement pour ROLE_ADMIN #}
+<section class="ta-card lpf-admin-guide" aria-labelledby="lpf-admin-guide-title">
+    <header class="lpf-admin-guide__header">
+        <h2 id="lpf-admin-guide-title" class="ta-card-title">
+            <i class="ti ti-book-2" aria-hidden="true"></i>
+            Guide du site LPF'26
+        </h2>
+        <p class="ta-card-text lpf-admin-guide__intro">
+            Référence réservée aux administrateurs : règles métier, parcours joueurs et outils back-office.
+            Cette section n’est pas visible par les autres joueurs.
+        </p>
+    </header>
+
+<div class="lpf-admin-guide__accordion">
+        <details class="lpf-admin-guide__item" open>
+            <summary>Inscription, équipes et invitations</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li><strong>Inscription</strong> (<code>/inscription</code>) : le joueur 1 crée son compte, son équipe (nom), son surnom et peut indiquer l’e-mail du partenaire.</li>
+                    <li>Un <strong>e-mail de confirmation</strong> est envoyé au joueur 1 ; une <strong>invitation</strong> part au joueur 2 si l’e-mail est renseigné (lien valable 3 jours, renouvelable depuis l’admin).</li>
+                    <li><strong>Invitation</strong> (<code>/invitation/{token}</code>) : le joueur 2 crée son compte et rejoint l’équipe existante.</li>
+                    <li><strong>Compte</strong> (<code>/mon-compte</code>) : profil, mot de passe, logo d’équipe, invitation d’un partenaire si l’équipe n’est pas complète (2 joueurs max.).</li>
+                    <li>Depuis le début de la compétition : nom d’équipe et buteur <strong>verrouillés</strong> pour les joueurs.</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Cotisation (10&nbsp;€ / joueur)</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Chaque joueur doit avoir <code>cotisationPayee</code> activé en admin (utilisateur EasyAdmin) pour pronostiquer.</li>
+                    <li>Sans cotisation : bandeau rouge, formulaires de prono grisés, message sur les cartes match.</li>
+                    <li>Le choix du <strong>buteur</strong> sur l’accueil est aussi bloqué tant que la cotisation n’est pas validée.</li>
+                    <li>Contact virement : variable <code>COTISATION_WIRE_PHONE</code> (modale du bandeau).</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Buteur (avant le coup d’envoi de la compétition)</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Sur l’<strong>accueil</strong>, avant le début officiel de la compétition : chaque joueur choisit un buteur (recherche API, un buteur par joueur dans l’équipe).</li>
+                    <li>Un buteur déjà pris par une autre équipe est signalé ; le partenaire voit le choix de l’autre sur le dashboard.</li>
+                    <li>Le buteur sert au suivi personnel — il n’entre pas dans le calcul des points de pronos.</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Pronostics</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li><strong>Accueil</strong> : dernière journée terminée + prochaine journée (cartes match).</li>
+                    <li><strong>Matchs</strong> (<code>/matchs</code>) : tous les matchs par journée ; saisie directe du score domicile / extérieur.</li>
+                    <li><strong>Pronos</strong> (<code>/pronostics</code>) : vue liste de tous les matchs et pronos du joueur.</li>
+                    <li>Modification possible tant que le match est <code>SCHEDULED</code> et que l’heure de coup d’envoi n’est pas passée.</li>
+                    <li>Sur chaque carte : le joueur voit aussi le/les <strong>pronos de son partenaire</strong> (même équipe).</li>
+                    <li>Match terminé : lien «&nbsp;Voir tous les pronos&nbsp;» → détail public des pronos du match.</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Cotes</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Calculées à chaque enregistrement de prono pour un match (tous joueurs ayant pronostiqué).</li>
+                    <li><strong>Coefficient</strong> = nombre total de pronos ÷ nombre de pronos sur le même score (plafonné à <strong>5,0</strong>).</li>
+                    <li>Plus un score est original, plus la cote est haute ; score très populaire → cote proche de 1.</li>
+                    <li>Affichage sur la carte match : <strong>cote moyenne</strong> du match (<code>coteMin</code>, <code>coteMoyenne</code>, <code>coteMax</code> en base).</li>
+                    <li>Points finaux = <strong>points de base × coefficient</strong> (arrondi à l’entier).</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Points de base (par match)</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li><strong>Score exact</strong> : par défaut <strong>3 pts</strong> (modifiable par match en admin : <code>pointsScoreExact</code>).</li>
+                    <li><strong>Bon résultat</strong> (1N2 correct, pas le bon score) : par défaut <strong>1 pt</strong> (<code>pointsBonResultat</code>).</li>
+                    <li><strong>Mauvais résultat</strong> : <strong>0 pt</strong> (<code>pointsMauvaisResultat</code>).</li>
+                    <li>Recalcul automatique quand un prono est saisi/modifié ou quand le score réel du match est renseigné (sync / admin).</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Prise de risque</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Si les <strong>deux joueurs d’une même équipe</strong> pronostiquent le <strong>même score</strong> sur un match, chacun est marqué «&nbsp;prise de risque&nbsp;» sur ce match.</li>
+                    <li>Compteur équipe = nombre de <strong>matchs</strong> où au moins une prise de risque a eu lieu (pas le nombre de joueurs).</li>
+                    <li>En cas d’égalité au classement : critère de départage après les scores exacts et bons résultats (plus de prises de risque = mieux classé).</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Classement</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li><strong>Classement</strong> (<code>/classement</code>) : snapshots par match terminé, ordre : points totaux → scores exacts → bons résultats → prises de risque → nom d’équipe.</li>
+                    <li>Fiche équipe : historique, membres, stats agrégées.</li>
+                    <li><strong>Groupes des pays</strong> (<code>/groupes</code>) : classements de poules calculés à partir des matchs de groupe.</li>
+                    <li>Les snapshots sont reconstruits à chaque rescoring d’un match.</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Relances pronostic automatiques</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Commande cron : <code>php bin/console app:push:pronostic-reminders</code> (ex. toutes les 5–10 min, fuseau <strong>Europe/Paris</strong>).</li>
+                    <li>Cible : joueurs <strong>cotisation payée</strong>, sans prono sur le match, match pas encore commencé, relance pas déjà envoyée avec succès.</li>
+                    <li>Heure d’envoi : coup d’envoi entre <strong>10h et minuit</strong> → relance <strong>1 h avant</strong> ; entre <strong>0h et 10h</strong> → relance la veille à <strong>22h</strong>.</li>
+                    <li>Canal : <strong>push</strong> si abonnement actif, sinon <strong>e-mail</strong> (layout LPF'26).</li>
+                    <li>Historique : <a href="{{ path('admin_pronostic_reminders_history') }}">Relances pronostic</a> (admin).</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Messages manuels (push / e-mail)</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li>Page <a href="{{ path('admin_manual_messages') }}">Messages manuels</a> : envoi à tous les joueurs actifs ou à une sélection.</li>
+                    <li>Canaux : push et/ou e-mail ; titre, corps, lien optionnel.</li>
+                    <li>Push : nécessite clés VAPID (<code>app:generate-vapid-keys</code>) et abonnements joueurs (compte → notifications).</li>
+                    <li>Historique des envois sur la même page.</li>
+                </ul>
+</div>
+        </details>
+
+        <details class="lpf-admin-guide__item">
+            <summary>Administration EasyAdmin</summary>
+<div class="lpf-admin-guide__body">
+                <ul>
+                    <li><a href="{{ path('admin') }}">Back-office</a> : utilisateurs (rôles, cotisation), équipes, matchs, pronos, pays, buteurs, invitations.</li>
+                    <li><strong>Sync CDM 2026</strong> : pays, matchs, buteurs, buts (API Football) depuis le menu admin.</li>
+                    <li>Scores réels saisis ou synchronisés → déclenchement du rescoring et du classement.</li>
+                    <li>Rôles : <code>ROLE_ADMIN</code> (admin + ce guide), <code>ROLE_SUPER_ADMIN</code> pour la synchro avancée.</li>
+                </ul>
+</div>
+        </details>
+
+</div>
+</section>

@@ -2860,3 +2860,107 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
         white-space: normal;
     }
 }
+
+/* Guide admin — dashboard accueil (ROLE_ADMIN uniquement) */
+.lpf-admin-guide {
+    margin-bottom: 1.75rem;
+    border: 1px solid rgba(27, 45, 79, 0.14);
+    background: linear-gradient(180deg, #fafbfd 0%, #fff 100%);
+}
+
+.lpf-admin-guide__header {
+    margin-bottom: 0.75rem;
+}
+
+.lpf-admin-guide__intro {
+    margin: 0.35rem 0 0;
+    max-width: 52rem;
+}
+
+.lpf-admin-guide__accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.lpf-admin-guide__item {
+    border: 1px solid #e8e5dd;
+    border-radius: 0.5rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.lpf-admin-guide__item[open] {
+    border-color: rgba(27, 45, 79, 0.28);
+    box-shadow: 0 2px 8px rgba(27, 45, 79, 0.06);
+}
+
+.lpf-admin-guide__item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1b2d4f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.lpf-admin-guide__item > summary::-webkit-details-marker {
+    display: none;
+}
+
+.lpf-admin-guide__item > summary::after {
+    content: "";
+    flex-shrink: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    transform: rotate(-45deg);
+    transition: transform 0.2s ease;
+    margin-top: -0.15rem;
+}
+
+.lpf-admin-guide__item[open] > summary::after {
+    transform: rotate(45deg);
+    margin-top: 0.1rem;
+}
+
+.lpf-admin-guide__body {
+    padding: 0 1rem 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: #2a2a2a;
+}
+
+.lpf-admin-guide__body ul {
+    margin: 0;
+    padding-left: 1.15rem;
+}
+
+.lpf-admin-guide__body li + li {
+    margin-top: 0.45rem;
+}
+
+.lpf-admin-guide__body code {
+    font-size: 0.8em;
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: #f1f5f9;
+    color: #1b2d4f;
+}
+
+.lpf-admin-guide__body a {
+    color: #1b2d4f;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.lpf-admin-guide__body a:hover {
+    color: #e82030;
+}
