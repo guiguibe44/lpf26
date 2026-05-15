@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'form/tailadmin_theme.html.twig' %}
+
+{% block title %}Notifications push · Admin{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-bell" aria-hidden="true"></i>
+                Notifications push
+            </h1>
+            <p class="ta-page-subtitle">Envoi manuel vers les appareils abonnés sur le site</p>
+        </div>
+    </section>
+
+    <div class="admin-push-page">
+        <div class="admin-push-stats" role="list">
+            <div class="admin-push-stat" role="listitem">
+                <span class="admin-push-stat__label">Abonnements actifs</span>
+                <strong class="admin-push-stat__value">{{ subscription_count }}</strong>
+            </div>
+            <div class="admin-push-stat admin-push-stat--{{ vapid_configured ? 'ok' : 'warn' }}" role="listitem">
+                <span class="admin-push-stat__label">Configuration VAPID</span>
+                <strong class="admin-push-stat__value">{{ vapid_configured ? 'Prête' : 'Manquante' }}</strong>
+            </div>
+        </div>
+
+        {% if not vapid_configured %}
+            <div class="flash flash-danger admin-push-alert" role="alert">
+                <p><strong>Clés VAPID manquantes.</strong> Exécutez <code>php bin/console app:generate-vapid-keys</code>, puis renseignez <code>VAPID_PUBLIC_KEY</code>, <code>VAPID_PRIVATE_KEY</code> et <code>VAPID_SUBJECT</code> dans <code>.env</code>.</p>
+            </div>
+        {% endif %}
+
+        <div class="admin-push-grid">
+            <section class="ta-card admin-push-form-card">
+                <h2 class="ta-card-title">
+                    <i class="ti ti-send" aria-hidden="true"></i>
+                    Nouvelle campagne
+                </h2>
+                <p class="ta-card-text admin-push-form-card__lead">
+                    Le titre et le message apparaissent sur l’écran de verrouillage et dans le centre de notifications.
+                </p>
+
+                {{ form_start(form, { attr: { class: 'admin-push-form', id: 'admin-push-form', novalidate: 'novalidate' } }) }}
+                    {{ form_row(form.title) }}
+                    <p class="admin-push-counter" id="admin-push-title-counter" aria-live="polite">0 / 120</p>
+
+                    {{ form_row(form.body) }}
+                    <p class="admin-push-counter" id="admin-push-body-counter" aria-live="polite">0 / 500</p>
+
+                    {{ form_row(form.url) }}
+
+                    <div class="admin-push-form__actions">
+                        <button type="submit" class="btn btn-primary btn-sharp" {{ not vapid_configured ? 'disabled' : '' }}>
+                            Envoyer la notification
+                            <i class="ti ti-send" aria-hidden="true"></i>
+                        </button>
+                        <a href="{{ path('admin') }}" class="admin-push-form__back">
+                            <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                            Retour admin
+                        </a>
+                    </div>
+                {{ form_end(form) }}
+            </section>
+
+            <aside class="ta-card admin-push-preview-card" aria-labelledby="admin-push-preview-heading">
+                <h2 class="ta-card-title" id="admin-push-preview-heading">
+                    <i class="ti ti-device-mobile" aria-hidden="true"></i>
+                    Aperçu
+                </h2>
+                <p class="ta-card-text admin-push-preview-card__lead">Rendu approximatif sur mobile.</p>
+
+                <div class="admin-push-preview-device">
+                    <div class="admin-push-preview-notification" id="admin-push-preview">
+                        <div class="admin-push-preview-notification__app">
+                            <span class="admin-push-preview-notification__icon" aria-hidden="true">⚽</span>
+                            <span>LPF’26</span>
+                            <span class="admin-push-preview-notification__time">maintenant</span>
+                        </div>
+                        <p class="admin-push-preview-notification__title" id="admin-push-preview-title">Titre de la notification</p>
+                        <p class="admin-push-preview-notification__body" id="admin-push-preview-body">Votre message s’affichera ici.</p>
+                    </div>
+                    <p class="admin-push-preview-url" id="admin-push-preview-url" hidden>
+                        <i class="ti ti-link" aria-hidden="true"></i>
+                        <span></span>
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+        <section class="ta-card admin-push-history-card">
+            <h2 class="ta-card-title">
+                <i class="ti ti-history" aria-hidden="true"></i>
+                Historique des envois
+            </h2>
+            <p class="ta-card-text admin-push-history-card__lead">Les 50 dernières campagnes push manuelles.</p>
+
+            {% if push_history is empty %}
+                <p class="admin-push-history-empty">Aucun envoi enregistré pour le moment.</p>
+            {% else %}
+                <div class="admin-push-history-table-wrap">
+                    <table class="admin-push-history-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Titre</th>
+                                <th scope="col">Message</th>
+                                <th scope="col">Lien</th>
+                                <th scope="col">Résultat</th>
+                                <th scope="col">Envoyé par</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in push_history %}
+                                <tr>
+                                    <td data-label="Date">
+                                        <time datetime="{{ entry.sentAt|date('c') }}">{{ entry.sentAt|date('d/m/Y H:i') }}</time>
+                                    </td>
+                                    <td data-label="Titre" class="admin-push-history-table__title" title="{{ entry.title }}">
+                                        {{ entry.title }}
+                                    </td>
+                                    <td data-label="Message" class="admin-push-history-table__body" title="{{ entry.body }}">
+                                        {{ entry.body }}
+                                    </td>
+                                    <td data-label="Lien" class="admin-push-history-table__url">
+                                        {% if entry.url %}
+                                            <a href="{{ entry.url }}" target="_blank" rel="noopener">{{ entry.url }}</a>
+                                        {% else %}
+                                            <span class="admin-push-history-table__muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td data-label="Résultat">
+                                        <span class="admin-push-badge admin-push-badge--ok">{{ entry.sentCount }} ok</span>
+                                        {% if entry.failedCount > 0 %}
+                                            <span class="admin-push-badge admin-push-badge--warn">{{ entry.failedCount }} échec(s)</span>
+                                        {% endif %}
+                                        {% if entry.removedCount > 0 %}
+                                            <span class="admin-push-badge admin-push-badge--muted">{{ entry.removedCount }} expiré(s)</span>
+                                        {% endif %}
+                                        <span class="admin-push-history-table__meta">sur {{ entry.targetCount }} abonnement(s)</span>
+                                    </td>
+                                    <td data-label="Envoyé par">
+                                        {{ entry.sentBy ? entry.sentBy.email : '—' }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const titleInput = document.getElementById('admin_manual_push_title');
+            const bodyInput = document.getElementById('admin_manual_push_body');
+            const urlInput = document.getElementById('admin_manual_push_url');
+            const previewTitle = document.getElementById('admin-push-preview-title');
+            const previewBody = document.getElementById('admin-push-preview-body');
+            const previewUrl = document.getElementById('admin-push-preview-url');
+            const previewUrlText = previewUrl ? previewUrl.querySelector('span') : null;
+            const titleCounter = document.getElementById('admin-push-title-counter');
+            const bodyCounter = document.getElementById('admin-push-body-counter');
+
+            if (!titleInput || !bodyInput || !previewTitle || !previewBody) {
+                return;
+            }
+
+            const defaultTitle = 'Titre de la notification';
+            const defaultBody = 'Votre message s’affichera ici.';
+
+            function updateCounter(input, counter, max) {
+                if (!counter) {
+                    return;
+                }
+                const len = (input.value || '').length;
+                counter.textContent = len + ' / ' + max;
+                counter.classList.toggle('admin-push-counter--limit', len >= max);
+            }
+
+            function syncPreview() {
+                const title = (titleInput.value || '').trim();
+                const body = (bodyInput.value || '').trim();
+                const url = urlInput ? (urlInput.value || '').trim() : '';
+
+                previewTitle.textContent = title || defaultTitle;
+                previewBody.textContent = body || defaultBody;
+
+                if (previewUrl && previewUrlText) {
+                    if (url) {
+                        previewUrl.hidden = false;
+                        previewUrlText.textContent = url;
+                    } else {
+                        previewUrl.hidden = true;
+                        previewUrlText.textContent = '';
+                    }
+                }
+
+                updateCounter(titleInput, titleCounter, 120);
+                updateCounter(bodyInput, bodyCounter, 500);
+            }
+
+            ['input', 'change'].forEach(function (eventName) {
+                titleInput.addEventListener(eventName, syncPreview);
+                bodyInput.addEventListener(eventName, syncPreview);
+                if (urlInput) {
+                    urlInput.addEventListener(eventName, syncPreview);
+                }
+            });
+
+            syncPreview();
+        })();
+    </script>
+{% endblock %}

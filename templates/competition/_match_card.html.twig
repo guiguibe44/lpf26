@@ -70,7 +70,13 @@
                     required
                 >
                 <button type="submit" class="btn btn-primary btn-sm">
-                    {{ pronostic ? 'Modifier' : 'Pronostiquer' }}
+                    {% if pronostic %}
+                        Modifier
+                        <i class="ti ti-edit" aria-hidden="true"></i>
+                    {% else %}
+                        Pronostiquer
+                        <i class="ti ti-target" aria-hidden="true"></i>
+                    {% endif %}
                 </button>
             </form>
         {% elseif is_finished %}

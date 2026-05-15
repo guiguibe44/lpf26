@@ -11,7 +11,10 @@
                 du {{ match.dateHeure|date('d/m/Y H:i') }}.
             </p>
         </div>
-        <a href="{{ path('app_matches') }}" class="btn btn-sm">Retour aux matchs</a>
+        <a href="{{ path('app_matches') }}" class="btn btn-primary btn-sm">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i>
+            Retour aux matchs
+        </a>
     </section>
 
     <section class="ta-card">

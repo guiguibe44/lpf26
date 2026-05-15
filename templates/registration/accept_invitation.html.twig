@@ -28,7 +28,10 @@
             {{ form_start(form, {'attr': {'class': 'ta-auth-form'}}) }}
                 {{ form_row(form.nickname, {'label': 'Surnom*'}) }}
                 {{ form_row(form.plainPassword, {'label': 'Mot de passe*'}) }}
-                <button type="submit" class="ta-auth-submit">Valider mon inscription</button>
+                <button type="submit" class="ta-auth-submit">
+                    Valider mon inscription
+                    <i class="ti ti-check" aria-hidden="true"></i>
+                </button>
                 <p class="ta-auth-link-row">Deja un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
             {{ form_end(form) }}
         </div>

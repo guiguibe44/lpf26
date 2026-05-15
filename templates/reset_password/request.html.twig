@@ -16,7 +16,10 @@
             <div class="ta-auth-separator">Recuperation</div>
             {{ form_start(requestForm, {'attr': {'class': 'ta-auth-form'}}) }}
                 {{ form_row(requestForm.email, {'label': 'Email*'}) }}
-                <button class="ta-auth-submit">Envoyer le lien de reinitialisation</button>
+                <button type="submit" class="ta-auth-submit">
+                    Envoyer le lien de reinitialisation
+                    <i class="ti ti-send" aria-hidden="true"></i>
+                </button>
                 <p class="ta-auth-link-row"><a href="{{ path('app_login') }}">Retour a la connexion</a></p>
             {{ form_end(requestForm) }}
         </div>

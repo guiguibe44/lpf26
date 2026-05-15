@@ -9,6 +9,7 @@ use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Service\CompetitionStatus;
+use App\Service\WebPushService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ class HomeController extends AbstractController
         PronosticRepository $pronosticRepository,
         TeamMemberRepository $teamMemberRepository,
         CompetitionStatus $competitionStatus,
+        WebPushService $webPushService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -61,6 +63,7 @@ class HomeController extends AbstractController
             'prono_access_blocked' => !$user->isCotisationPayee(),
             'dashboard_partners' => $teamMemberRepository->findPartnerUsers($user),
             'buteurs_pris_par_autres_equipes' => $teamMemberRepository->findButeursChoisisParAutresEquipes($user),
+            'push_vapid_configured' => $webPushService->isConfigured(),
         ]);
     }
 

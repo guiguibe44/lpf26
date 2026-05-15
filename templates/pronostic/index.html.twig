@@ -55,7 +55,10 @@
                                             style="max-width: 80px;"
                                             required
                                         >
-                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        <button type="submit" class="btn btn-primary">
+                                            Enregistrer
+                                            <i class="ti ti-check" aria-hidden="true"></i>
+                                        </button>
                                     </form>
                                 {% elseif pronostic %}
                                     <span class="font-semibold">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>

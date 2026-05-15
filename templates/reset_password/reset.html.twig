@@ -11,7 +11,10 @@
             <h1 class="section-title ta-auth-title">Mise a jour du mot de passe</h1>
             {{ form_start(resetForm, {'attr': {'class': 'ta-auth-form'}}) }}
                 {{ form_row(resetForm.plainPassword, {'label': 'Nouveau mot de passe*'}) }}
-                <button class="ta-auth-submit">Mettre a jour le mot de passe</button>
+                <button type="submit" class="ta-auth-submit">
+                    Mettre a jour le mot de passe
+                    <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                </button>
             {{ form_end(resetForm) }}
         </div>
     </div>

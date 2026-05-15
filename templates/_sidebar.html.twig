@@ -16,39 +16,46 @@
     <ul class="menu w-full p-0">
         <li>
             <a href="{{ path('app_homepage') }}" class="ta-menu-link {{ currentRoute == 'app_homepage' ? 'active' : '' }}">
+                <i class="ti ti-home" aria-hidden="true"></i>
                 Dashboard
             </a>
         </li>
         <li>
             <a href="{{ path('app_matches') }}" class="ta-menu-link {{ currentRoute in ['app_matches', 'app_pronostics'] ? 'active' : '' }}">
+                <i class="ti ti-ball-football" aria-hidden="true"></i>
                 Matchs
             </a>
         </li>
         <li>
             <a href="{{ path('app_groups') }}" class="ta-menu-link {{ currentRoute == 'app_groups' ? 'active' : '' }}">
+                <i class="ti ti-flag" aria-hidden="true"></i>
                 Groupes des pays
             </a>
         </li>
         <li>
             <a href="{{ path('app_ranking') }}" class="ta-menu-link {{ currentRoute == 'app_ranking' ? 'active' : '' }}">
+                <i class="ti ti-trophy" aria-hidden="true"></i>
                 Classement
             </a>
         </li>
 
         <li>
             <a href="{{ path('app_account') }}" class="ta-menu-link {{ currentRoute == 'app_account' ? 'active' : '' }}">
+                <i class="ti ti-user" aria-hidden="true"></i>
                 Compte et équipe
             </a>
         </li>
         {% if is_granted('ROLE_ADMIN') %}
         <li>
             <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}">
+                <i class="ti ti-settings" aria-hidden="true"></i>
                 Administration
             </a>
         </li>
         {% endif %}
         <li>
             <a href="{{ path('app_logout') }}" class="ta-menu-link">
+                <i class="ti ti-logout" aria-hidden="true"></i>
                 Deconnexion
             </a>
         </li>

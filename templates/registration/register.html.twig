@@ -32,7 +32,10 @@
                     {{ form_row(registrationForm.teammateEmail, {'label': 'Email joueur 2'}) }}
                 </div>
                 {{ form_row(registrationForm.plainPassword, {'label': 'Mot de passe*'}) }}
-                <button type="submit" class="ta-auth-submit">Creer mon compte</button>
+                <button type="submit" class="ta-auth-submit">
+                    Creer mon compte
+                    <i class="ti ti-user-plus" aria-hidden="true"></i>
+                </button>
                 <p class="ta-auth-link-row">Deja un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
             {{ form_end(registrationForm) }}
         </div>

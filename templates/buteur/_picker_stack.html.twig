@@ -68,7 +68,10 @@
                     <span class="dashboard-buteur-preview" data-dashboard-buteur-target="preview">{% if current_b %}{{ current_b.prenom }} {{ current_b.nom }}{% if current_b.pays %} — {{ current_b.pays.nom }}{% endif %}{% else %}—{% endif %}</span>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-sm" {{ buteur_block_disabled ? 'disabled' : '' }}>Enregistrer mon buteur</button>
+                <button type="submit" class="btn btn-primary btn-sm" {{ buteur_block_disabled ? 'disabled' : '' }}>
+                    Enregistrer mon buteur
+                    <i class="ti ti-check" aria-hidden="true"></i>
+                </button>
             </form>
         </div>
 

@@ -12,6 +12,8 @@
         </div>
     </section>
 
+    {% include 'home/_push_notifications_card.html.twig' %}
+
     {% if not competition_started %}
         {% include 'home/_dashboard_buteur.html.twig' with {
             cotisation_payee: cotisation_payee,

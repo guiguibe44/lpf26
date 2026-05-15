@@ -1,0 +1,17 @@
+{
+    "name": "LPF'26",
+    "short_name": "LPF'26",
+    "description": "Pronostics Coupe du Monde 2026",
+    "start_url": "/accueil",
+    "display": "standalone",
+    "background_color": "#1B2D4F",
+    "theme_color": "#1B2D4F",
+    "icons": [
+        {
+            "src": "/images/lpf26-logo-color.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}

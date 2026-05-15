@@ -3,6 +3,12 @@
 parameters:
     app.competition_start_at: '%env(default::COMPETITION_START_AT)%'
     app.cotisation_wire_phone: '%env(default::COTISATION_WIRE_PHONE)%'
+    env(VAPID_PUBLIC_KEY): ''
+    env(VAPID_PRIVATE_KEY): ''
+    env(VAPID_SUBJECT): ''
+    app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
+    app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
+    app.vapid_subject: '%env(VAPID_SUBJECT)%'
 
 services:
     _defaults:
@@ -19,6 +25,18 @@ services:
     App\Service\CompetitionStatus:
         arguments:
             $competitionStartAt: '%app.competition_start_at%'
+
+    App\Service\WebPushService:
+        arguments:
+            $vapidPublicKey: '%app.vapid_public_key%'
+            $vapidPrivateKey: '%app.vapid_private_key%'
+            $vapidSubject: '%app.vapid_subject%'
+
+    App\Command\PushTestSendCommand:
+        arguments:
+            $vapidPublicKey: '%app.vapid_public_key%'
+            $vapidPrivateKey: '%app.vapid_private_key%'
+            $vapidSubject: '%app.vapid_subject%'
 
     App\Service\ApiFootballClient:
         arguments:

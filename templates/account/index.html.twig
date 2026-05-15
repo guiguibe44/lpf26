@@ -37,7 +37,10 @@
                         data-live-preview-target="avatar"
                     >
                     {{ form_row(profile_form.removeAvatar) }}
-                    <button type="submit" class="btn btn-primary">Enregistrer mon profil</button>
+                    <button type="submit" class="btn btn-primary">
+                        Enregistrer mon profil
+                        <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                    </button>
                 {{ form_end(profile_form) }}
             </section>
 
@@ -66,7 +69,10 @@
                 <h2 class="mb-4 text-lg font-semibold">Mot de passe</h2>
                 {{ form_start(password_form, {'attr': {'class': 'space-y-3'}}) }}
                     {{ form_row(password_form.plainPassword) }}
-                    <button type="submit" class="btn btn-outline btn-primary">Modifier mon mot de passe</button>
+                    <button type="submit" class="btn btn-outline btn-primary">
+                        <i class="ti ti-edit" aria-hidden="true"></i>
+                        Modifier mon mot de passe
+                    </button>
                 {{ form_end(password_form) }}
             </section>
         </div>
@@ -92,7 +98,10 @@
                         >
                         {{ form_row(team_form.removeLogo) }}
                         {{ form_row(team_form.slogan) }}
-                        <button type="submit" class="btn btn-primary">Enregistrer mon équipe</button>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer mon équipe
+                            <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                        </button>
                     {{ form_end(team_form) }}
             </section>
 
