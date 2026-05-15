@@ -167,6 +167,49 @@ class GameMatchRepository extends ServiceEntityRepository
      *
      * @return list<GameMatch>
      */
+    /**
+     * Matchs à venir, non terminés, relance push pas encore envoyée.
+     *
+     * @return list<GameMatch>
+     */
+    /**
+     * @return list<GameMatch>
+     */
+    public function findUpcomingScheduledMatches(?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('m')
+            ->addSelect('hd', 'aw')
+            ->join('m.paysDomicile', 'hd')
+            ->join('m.paysExterieur', 'aw')
+            ->andWhere('m.statut = :scheduled')
+            ->andWhere('m.dateHeure > :now')
+            ->setParameter('scheduled', 'SCHEDULED')
+            ->setParameter('now', $now)
+            ->orderBy('m.dateHeure', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findScheduledMatchesPendingPushReminder(?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('m')
+            ->addSelect('hd', 'aw')
+            ->join('m.paysDomicile', 'hd')
+            ->join('m.paysExterieur', 'aw')
+            ->andWhere('m.statut = :scheduled')
+            ->andWhere('m.dateHeure > :now')
+            ->andWhere('m.pushReminderSentAt IS NULL')
+            ->setParameter('scheduled', 'SCHEDULED')
+            ->setParameter('now', $now)
+            ->orderBy('m.dateHeure', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findMatchesForGroupStanding(): array
     {
         return $this->createQueryBuilder('m')

@@ -1,9 +1,4 @@
-<h1>Bonjour,</h1>
-
-<p>Pour reinitialiser votre mot de passe, cliquez sur le lien suivant :</p>
-
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
-
-<p>Ce lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
-
-<p>A bientot sur LPF 2026.</p>
+{# Déprécié — préférer LpfEmailRenderer + email/content/password_reset.html.twig #}
+{% include 'email/password_reset.html.twig' with {
+    logoUrl: logoUrl|default(absolute_url(asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png'))),
+} %}

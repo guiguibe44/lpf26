@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\TeamInvitation;
+use App\Service\LpfEmailRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -63,7 +64,8 @@ class TeamInvitationCrudController extends AbstractAppCrudController
     public function resendInvitation(
         AdminContext $context,
         MailerInterface $mailer,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        LpfEmailRenderer $lpfEmailRenderer,
     ): RedirectResponse {
         $referrer = $context->getRequest()->headers->get('referer') ?? $this->generateUrl('admin_team_invitation_index');
 
@@ -86,14 +88,16 @@ class TeamInvitationCrudController extends AbstractAppCrudController
             $entityManager->flush();
         }
 
-        $invitationHtml = $this->renderView('registration/invitation_email.html.twig', [
+        $invitationHtml = $lpfEmailRenderer->render('email/content/invitation.html.twig', [
+            'pageTitle' => 'Invitation équipe — LPF\'26',
             'team' => $invitation->getTeam(),
             'invitation' => $invitation,
+            'footerNote' => 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
         ]);
 
         $email = (new Email())
             ->to((string) $invitation->getInvitedEmail())
-            ->subject('Relance: invitation a rejoindre votre equipe')
+            ->subject('Relance : invitation à rejoindre votre équipe — LPF\'26')
             ->html($invitationHtml);
         $mailer->send($email);
 

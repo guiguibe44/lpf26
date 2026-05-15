@@ -1,4 +1,4 @@
-<p>Bonjour,</p>
-<p>Vous avez ete invite a rejoindre l'equipe <strong>{{ team.name }}</strong> sur LPF 2026.</p>
-<p><a href="{{ url('app_team_invitation_accept', {token: invitation.token}) }}">Accepter l'invitation</a></p>
-<p>Ce lien expire le {{ invitation.expiresAt|date('d/m/Y H:i') }}.</p>
+{# Déprécié — préférer LpfEmailRenderer + email/content/invitation.html.twig #}
+{% include 'email/invitation.html.twig' with {
+    logoUrl: logoUrl|default(absolute_url(asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png'))),
+} %}

@@ -1,0 +1,15 @@
+# Relances push pronostic (OVH — tâche planifiée)
+# Copier la ligne ci-dessous dans l’espace client OVH → Hébergement → Tâches planifiées (cron).
+# Adapter le chemin PHP et le répertoire du projet si besoin.
+
+*/5 * * * * cd /homez.1544/lotopou/lpf26 && /usr/local/bin/php8.4 bin/console app:push:pronostic-reminders --env=prod --no-interaction >> var/log/cron-push-reminders.log 2>&1
+
+# Règles d’envoi (heure Europe/Paris) :
+# - Coup d’envoi entre 10h et minuit → relance 1 h avant le match
+# - Coup d’envoi entre 0h et 10h → relance à 22 h la veille
+# - Push si le joueur est abonné, sinon e-mail (MAILER_DSN / MAILER_FROM)
+# - Historique : table match_reminder_log + admin « Relances pronostics »
+#
+# Test manuel (SSH) :
+#   php bin/console app:push:pronostic-reminders --dry-run
+#   php bin/console app:push:pronostic-reminders

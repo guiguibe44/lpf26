@@ -1,0 +1,20 @@
+<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">Bonjour,</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Votre équipe <strong style="color:#1b2d4f;">{{ team.name }}</strong> a bien été créée sur LPF'26.
+</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Votre surnom (joueur 1) : <strong>{{ owner.nickname }}</strong>.
+</p>
+{% if invitedEmail %}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+        Une invitation a été envoyée à <strong>{{ invitedEmail }}</strong> pour rejoindre l'équipe.
+    </p>
+{% else %}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+        Vous pourrez inviter votre partenaire (joueur 2) depuis votre compte.
+    </p>
+{% endif %}
+{% include 'email/content/_cta_button.html.twig' with {
+    actionUrl: absolute_url(path('app_login')),
+    ctaLabel: 'Se connecter',
+} only %}

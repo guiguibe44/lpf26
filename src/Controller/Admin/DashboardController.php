@@ -57,7 +57,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Interface joueurs (front)', 'fa fa-globe', 'app_homepage');
 
         yield MenuItem::section('Communication');
-        yield MenuItem::linkToRoute('Notifications push', 'fas fa-bell', 'admin_push_send');
+        yield MenuItem::linkToRoute('Messages manuels', 'fas fa-paper-plane', 'admin_manual_messages');
+        yield MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history');
 
         yield MenuItem::section('Gestion');
         yield MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index');

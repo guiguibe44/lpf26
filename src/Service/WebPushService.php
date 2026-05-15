@@ -37,11 +37,25 @@ final class WebPushService
      */
     public function sendBroadcast(string $title, string $body, ?string $url = null): array
     {
+        return $this->sendToSubscriptions(
+            $this->pushSubscriptionRepository->findAllForBroadcast(),
+            $title,
+            $body,
+            $url,
+        );
+    }
+
+    /**
+     * @param list<PushSubscription> $subscriptions
+     *
+     * @return array{sent: int, failed: int, removed: int}
+     */
+    public function sendToSubscriptions(array $subscriptions, string $title, string $body, ?string $url = null): array
+    {
         if (!$this->isConfigured()) {
             throw new \RuntimeException('Les clés VAPID ne sont pas configurées (VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT).');
         }
 
-        $subscriptions = $this->pushSubscriptionRepository->findAllForBroadcast();
         if ([] === $subscriptions) {
             return ['sent' => 0, 'failed' => 0, 'removed' => 0];
         }
@@ -52,13 +66,7 @@ final class WebPushService
             'url' => $url,
         ], \JSON_THROW_ON_ERROR);
 
-        $webPush = new WebPush([
-            'VAPID' => [
-                'subject' => $this->vapidSubject,
-                'publicKey' => $this->vapidPublicKey,
-                'privateKey' => $this->vapidPrivateKey,
-            ],
-        ]);
+        $webPush = $this->createWebPush();
 
         foreach ($subscriptions as $entity) {
             $webPush->queueNotification(
@@ -67,6 +75,25 @@ final class WebPushService
             );
         }
 
+        return $this->flushReports($webPush);
+    }
+
+    private function createWebPush(): WebPush
+    {
+        return new WebPush([
+            'VAPID' => [
+                'subject' => $this->vapidSubject,
+                'publicKey' => $this->vapidPublicKey,
+                'privateKey' => $this->vapidPrivateKey,
+            ],
+        ]);
+    }
+
+    /**
+     * @return array{sent: int, failed: int, removed: int}
+     */
+    private function flushReports(WebPush $webPush): array
+    {
         $sent = 0;
         $failed = 0;
         $removed = 0;

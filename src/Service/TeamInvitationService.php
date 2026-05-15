@@ -9,7 +9,6 @@ use App\Repository\TeamInvitationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
-use Twig\Environment;
 
 final class TeamInvitationService
 {
@@ -17,7 +16,7 @@ final class TeamInvitationService
         private readonly TeamInvitationRepository $teamInvitationRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly MailerInterface $mailer,
-        private readonly Environment $twig,
+        private readonly LpfEmailRenderer $lpfEmailRenderer,
     ) {
     }
 
@@ -56,9 +55,11 @@ final class TeamInvitationService
 
         $this->entityManager->flush();
 
-        $html = $this->twig->render('registration/invitation_email.html.twig', [
+        $html = $this->lpfEmailRenderer->render('email/content/invitation.html.twig', [
+            'pageTitle' => 'Invitation équipe — LPF\'26',
             'team' => $team,
             'invitation' => $invitation,
+            'footerNote' => 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
         ]);
 
         $this->mailer->send(

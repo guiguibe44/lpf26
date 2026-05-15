@@ -50,4 +50,25 @@ class PushSubscriptionRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    /**
+     * @param list<int> $userIds
+     *
+     * @return list<PushSubscription>
+     */
+    public function findByUserIds(array $userIds): array
+    {
+        if ([] === $userIds) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('p')
+            ->addSelect('u')
+            ->join('p.user', 'u')
+            ->andWhere('IDENTITY(p.user) IN (:ids)')
+            ->setParameter('ids', $userIds)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

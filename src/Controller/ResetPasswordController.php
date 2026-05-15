@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
+use App\Service\LpfEmailRenderer;
 use App\Form\ResetPasswordRequestFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,8 +35,12 @@ class ResetPasswordController extends AbstractController
      * Display & process form to request a password reset.
      */
     #[Route('', name: 'app_forgot_password_request')]
-    public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
-    {
+    public function request(
+        Request $request,
+        MailerInterface $mailer,
+        TranslatorInterface $translator,
+        LpfEmailRenderer $lpfEmailRenderer,
+    ): Response {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
 
@@ -43,8 +48,7 @@ class ResetPasswordController extends AbstractController
             /** @var string $email */
             $email = $form->get('email')->getData();
 
-            return $this->processSendingPasswordResetEmail($email, $mailer, $translator
-            );
+            return $this->processSendingPasswordResetEmail($email, $mailer, $translator, $lpfEmailRenderer);
         }
 
         return $this->render('reset_password/request.html.twig', [
@@ -128,7 +132,12 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, TranslatorInterface $translator): RedirectResponse
+    private function processSendingPasswordResetEmail(
+        string $emailFormData,
+        MailerInterface $mailer,
+        TranslatorInterface $translator,
+        LpfEmailRenderer $lpfEmailRenderer,
+    ): RedirectResponse
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy([
             'email' => $emailFormData,
@@ -155,13 +164,15 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_check_email');
         }
 
-        $emailHtml = $this->renderView('reset_password/email.html.twig', [
+        $emailHtml = $lpfEmailRenderer->render('email/content/password_reset.html.twig', [
+            'pageTitle' => 'Réinitialisation du mot de passe — LPF\'26',
             'resetToken' => $resetToken,
+            'footerNote' => 'Pour votre sécurité, ne partagez jamais ce lien.',
         ]);
 
         $email = (new Email())
             ->to((string) $user->getEmail())
-            ->subject('Reinitialisation de votre mot de passe')
+            ->subject('Réinitialisation de votre mot de passe — LPF\'26')
             ->html($emailHtml)
         ;
 

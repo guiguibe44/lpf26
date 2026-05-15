@@ -1,0 +1,14 @@
+<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">Bonjour,</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Vous avez été invité à rejoindre l'équipe <strong style="color:#1b2d4f;">{{ team.name }}</strong> sur LPF'26.
+</p>
+<p style="margin:0 0 8px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Acceptez l'invitation pour devenir le joueur 2 de cette équipe et commencer vos pronostics.
+</p>
+{% include 'email/content/_cta_button.html.twig' with {
+    actionUrl: absolute_url(path('app_team_invitation_accept', { token: invitation.token })),
+    ctaLabel: 'Accepter l\'invitation',
+} only %}
+<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#6b7280;">
+    Ce lien expire le {{ invitation.expiresAt|date('d/m/Y à H:i') }}.
+</p>

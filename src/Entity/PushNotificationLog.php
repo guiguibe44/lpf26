@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\AdminRecipientScope;
 use App\Repository\PushNotificationLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,12 +41,43 @@ class PushNotificationLog
     #[ORM\Column]
     private int $removedCount = 0;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $sendPush = true;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $sendEmail = false;
+
+    #[ORM\Column(length: 20, enumType: AdminRecipientScope::class, options: ['default' => 'all'])]
+    private AdminRecipientScope $recipientScope = AdminRecipientScope::All;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $playersTargeted = 0;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $emailsSentCount = 0;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $emailsFailedCount = 0;
+
     #[ORM\Column]
     private \DateTimeImmutable $sentAt;
 
     public function __construct()
     {
         $this->sentAt = new \DateTimeImmutable();
+    }
+
+    public function getChannelsLabel(): string
+    {
+        $parts = [];
+        if ($this->sendPush) {
+            $parts[] = 'Push';
+        }
+        if ($this->sendEmail) {
+            $parts[] = 'E-mail';
+        }
+
+        return [] !== $parts ? implode(' + ', $parts) : '—';
     }
 
     public function getId(): ?int
@@ -152,5 +184,77 @@ class PushNotificationLog
     public function getSentAt(): \DateTimeImmutable
     {
         return $this->sentAt;
+    }
+
+    public function isSendPush(): bool
+    {
+        return $this->sendPush;
+    }
+
+    public function setSendPush(bool $sendPush): static
+    {
+        $this->sendPush = $sendPush;
+
+        return $this;
+    }
+
+    public function isSendEmail(): bool
+    {
+        return $this->sendEmail;
+    }
+
+    public function setSendEmail(bool $sendEmail): static
+    {
+        $this->sendEmail = $sendEmail;
+
+        return $this;
+    }
+
+    public function getRecipientScope(): AdminRecipientScope
+    {
+        return $this->recipientScope;
+    }
+
+    public function setRecipientScope(AdminRecipientScope $recipientScope): static
+    {
+        $this->recipientScope = $recipientScope;
+
+        return $this;
+    }
+
+    public function getPlayersTargeted(): int
+    {
+        return $this->playersTargeted;
+    }
+
+    public function setPlayersTargeted(int $playersTargeted): static
+    {
+        $this->playersTargeted = $playersTargeted;
+
+        return $this;
+    }
+
+    public function getEmailsSentCount(): int
+    {
+        return $this->emailsSentCount;
+    }
+
+    public function setEmailsSentCount(int $emailsSentCount): static
+    {
+        $this->emailsSentCount = $emailsSentCount;
+
+        return $this;
+    }
+
+    public function getEmailsFailedCount(): int
+    {
+        return $this->emailsFailedCount;
+    }
+
+    public function setEmailsFailedCount(int $emailsFailedCount): static
+    {
+        $this->emailsFailedCount = $emailsFailedCount;
+
+        return $this;
     }
 }

@@ -1,0 +1,7 @@
+{% set _content %}{% include 'email/content/team_created.html.twig' %}{% endset %}
+{% include 'email/lpf_layout.html.twig' with {
+    pageTitle: 'Équipe créée — LPF\'26',
+    logoUrl: logoUrl|default(null),
+    footerNote: 'Bienvenue sur LPF\'26 — Lotopotofoot.',
+    content: _content,
+} only %}

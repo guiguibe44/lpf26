@@ -67,6 +67,9 @@ class GameMatch
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $referee = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pushReminderSentAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -294,6 +297,18 @@ class GameMatch
     public function setReferee(?string $referee): static
     {
         $this->referee = $referee;
+
+        return $this;
+    }
+
+    public function getPushReminderSentAt(): ?\DateTimeImmutable
+    {
+        return $this->pushReminderSentAt;
+    }
+
+    public function setPushReminderSentAt(?\DateTimeImmutable $pushReminderSentAt): static
+    {
+        $this->pushReminderSentAt = $pushReminderSentAt;
 
         return $this;
     }

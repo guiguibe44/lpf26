@@ -7,6 +7,7 @@ use App\Entity\TeamInvitation;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Service\LpfEmailRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,8 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        LpfEmailRenderer $lpfEmailRenderer,
     ): Response
     {
         $user = new User();
@@ -65,27 +67,31 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             if ($invitation instanceof TeamInvitation) {
-                $invitationHtml = $this->renderView('registration/invitation_email.html.twig', [
+                $invitationHtml = $lpfEmailRenderer->render('email/content/invitation.html.twig', [
+                    'pageTitle' => 'Invitation équipe — LPF\'26',
                     'team' => $team,
                     'invitation' => $invitation,
+                    'footerNote' => 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
                 ]);
 
                 $invitationEmail = (new Email())
                     ->to((string) $invitation->getInvitedEmail())
-                    ->subject('Invitation a rejoindre votre equipe')
+                    ->subject('Invitation à rejoindre votre équipe — LPF\'26')
                     ->html($invitationHtml);
                 $mailer->send($invitationEmail);
             }
 
-            $ownerHtml = $this->renderView('registration/team_created_email.html.twig', [
+            $ownerHtml = $lpfEmailRenderer->render('email/content/team_created.html.twig', [
+                'pageTitle' => 'Équipe créée — LPF\'26',
                 'team' => $team,
                 'owner' => $owner,
                 'invitedEmail' => $invitation?->getInvitedEmail(),
+                'footerNote' => 'Bienvenue sur LPF\'26 — Lotopotofoot.',
             ]);
 
             $ownerEmail = (new Email())
                 ->to((string) $user->getEmail())
-                ->subject('Votre equipe LPF 2026 est creee')
+                ->subject('Votre équipe LPF\'26 est créée')
                 ->html($ownerHtml);
             $mailer->send($ownerEmail);
 

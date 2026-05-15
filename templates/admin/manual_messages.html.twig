@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'form/tailadmin_theme.html.twig' %}
+
+{% block title %}Messages manuels · Admin{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-paper-plane" aria-hidden="true"></i>
+                Messages manuels
+            </h1>
+            <p class="ta-page-subtitle">
+                Push et/ou e-mail — tous les joueurs ou une sélection.
+                <a href="{{ path('admin_pronostic_reminders_history') }}">Historique des relances prono automatiques</a>
+            </p>
+        </div>
+    </section>
+
+    <div class="admin-push-page">
+        <div class="admin-push-stats" role="list">
+            <div class="admin-push-stat" role="listitem">
+                <span class="admin-push-stat__label">Joueurs actifs</span>
+                <strong class="admin-push-stat__value">{{ active_players_count }}</strong>
+            </div>
+            <div class="admin-push-stat" role="listitem">
+                <span class="admin-push-stat__label">Abonnements push</span>
+                <strong class="admin-push-stat__value">{{ subscription_count }}</strong>
+            </div>
+            <div class="admin-push-stat admin-push-stat--{{ vapid_configured ? 'ok' : 'warn' }}" role="listitem">
+                <span class="admin-push-stat__label">VAPID</span>
+                <strong class="admin-push-stat__value">{{ vapid_configured ? 'Prêt' : 'Manquant' }}</strong>
+            </div>
+        </div>
+
+        {% if not vapid_configured %}
+            <div class="flash flash-warning admin-push-alert" role="alert">
+                <p>Les <strong>push</strong> nécessitent les clés VAPID (<code>php bin/console app:generate-vapid-keys</code>). Les <strong>e-mails</strong> utilisent <code>MAILER_DSN</code>.</p>
+            </div>
+        {% endif %}
+
+        <div class="admin-push-grid">
+            <section class="ta-card admin-push-form-card">
+                <h2 class="ta-card-title">
+                    <i class="ti ti-send" aria-hidden="true"></i>
+                    Nouveau message
+                </h2>
+
+                {{ form_start(form, { attr: { class: 'admin-push-form', id: 'admin-manual-message-form', 'data-turbo': 'false' } }) }}
+
+                    {% if form.vars.submitted and not form.vars.valid %}
+                        <div class="flash flash-danger" role="alert">
+                            <p><strong>Impossible d’envoyer.</strong></p>
+                            <ul class="ta-form-errors ta-form-errors--alert">
+                                {% for error in form.vars.errors %}
+                                    <li>{{ error.message }}</li>
+                                {% endfor %}
+                                {% for child in form %}
+                                    {% for error in child.vars.errors %}
+                                        <li><strong>{{ child.vars.label }} :</strong> {{ error.message }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <div class="admin-manual-channels">
+                        {{ form_row(form.sendPush) }}
+                        {{ form_row(form.sendEmail) }}
+                    </div>
+
+                    {{ form_row(form.recipientScope) }}
+
+                    <div id="admin-manual-players-wrap" class="admin-manual-players-wrap">
+                        {{ form_row(form.players) }}
+                    </div>
+
+                    {{ form_row(form.title) }}
+                    <p class="admin-push-counter" id="admin-push-title-counter" aria-live="polite">0 / 120</p>
+
+                    {{ form_row(form.body) }}
+                    <p class="admin-push-counter" id="admin-push-body-counter" aria-live="polite">0 / 2000</p>
+
+                    {{ form_row(form.url) }}
+
+                    <div class="admin-push-form__actions">
+                        <button type="submit" class="btn btn-primary btn-sharp">
+                            Envoyer
+                            <i class="ti ti-send" aria-hidden="true"></i>
+                        </button>
+                        <a href="{{ path('admin') }}" class="admin-push-form__back">
+                            <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                            Retour admin
+                        </a>
+                    </div>
+                {{ form_end(form) }}
+            </section>
+
+            <aside class="ta-card admin-push-preview-card admin-preview-column" aria-labelledby="admin-previews-heading">
+                <h2 class="ta-card-title" id="admin-previews-heading">
+                    <i class="ti ti-eye" aria-hidden="true"></i>
+                    Aperçus
+                </h2>
+
+                <h3 class="admin-preview-section-title">
+                    <i class="ti ti-device-mobile" aria-hidden="true"></i>
+                    Notification push
+                </h3>
+                <div class="admin-push-preview-device">
+                    <div class="admin-push-preview-notification" id="admin-push-preview">
+                        <div class="admin-push-preview-notification__app">
+                            <span class="admin-push-preview-notification__icon" aria-hidden="true">⚽</span>
+                            <span>LPF’26</span>
+                            <span class="admin-push-preview-notification__time">maintenant</span>
+                        </div>
+                        <p class="admin-push-preview-notification__title" id="admin-push-preview-title">Titre</p>
+                        <p class="admin-push-preview-notification__body" id="admin-push-preview-body">Message</p>
+                    </div>
+                </div>
+
+                <h3 class="admin-preview-section-title">
+                    <i class="ti ti-mail" aria-hidden="true"></i>
+                    E-mail
+                </h3>
+                <div class="admin-email-preview" id="admin-email-preview">
+                    <div class="admin-email-preview__outer">
+                    <div class="admin-email-preview__frame">
+                        <div class="admin-email-preview__header">
+                            <img
+                                src="{{ asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png') }}"
+                                alt="LPF'26"
+                                class="admin-email-preview__logo"
+                                width="80"
+                                height="80"
+                            >
+                        </div>
+                        <div class="admin-email-preview__divider" aria-hidden="true"></div>
+                        <div class="admin-email-preview__body">
+                            <p class="admin-email-preview__greeting">Bonjour <span id="admin-email-preview-greeting">Joueur</span>,</p>
+                            <h4 class="admin-email-preview__title" id="admin-email-preview-title">Titre du message</h4>
+                            <p class="admin-email-preview__text" id="admin-email-preview-body">Le contenu de votre message apparaîtra ici.</p>
+                            <span class="admin-email-preview__cta">Voir les matchs et pronostiquer</span>
+                        </div>
+                        <div class="admin-email-preview__footer">
+                            <p>Lotopotofoot — LPF'26</p>
+                            <p class="admin-email-preview__footer-note">Vous recevez ce message dans le cadre de LPF'26 — Lotopotofoot.</p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <section class="ta-card admin-push-history-card">
+            <h2 class="ta-card-title">
+                <i class="ti ti-history" aria-hidden="true"></i>
+                Historique des messages manuels
+            </h2>
+
+            {% if message_history is empty %}
+                <p class="admin-push-history-empty">Aucun envoi enregistré.</p>
+            {% else %}
+                <div class="admin-push-history-table-wrap">
+                    <table class="admin-push-history-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Canaux</th>
+                                <th scope="col">Destinataires</th>
+                                <th scope="col">Titre</th>
+                                <th scope="col">Résultat</th>
+                                <th scope="col">Par</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in message_history %}
+                                <tr>
+                                    <td><time datetime="{{ entry.sentAt|date('c') }}">{{ entry.sentAt|date('d/m/Y H:i') }}</time></td>
+                                    <td>{{ entry.channelsLabel }}</td>
+                                    <td>
+                                        {{ entry.recipientScope.label }}
+                                        <span class="admin-push-history-table__meta">({{ entry.playersTargeted }} joueur(s))</span>
+                                    </td>
+                                    <td class="admin-push-history-table__title" title="{{ entry.body }}">{{ entry.title }}</td>
+                                    <td>
+                                        {% if entry.sendPush %}
+                                            <span class="admin-push-badge admin-push-badge--ok">{{ entry.sentCount }} push</span>
+                                            {% if entry.failedCount > 0 %}<span class="admin-push-badge admin-push-badge--warn">{{ entry.failedCount }} échec push</span>{% endif %}
+                                        {% endif %}
+                                        {% if entry.sendEmail %}
+                                            <span class="admin-push-badge admin-push-badge--ok">{{ entry.emailsSentCount }} e-mail</span>
+                                            {% if entry.emailsFailedCount > 0 %}<span class="admin-push-badge admin-push-badge--warn">{{ entry.emailsFailedCount }} échec mail</span>{% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ entry.sentBy ? entry.sentBy.email : '—' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const playersWrap = document.getElementById('admin-manual-players-wrap');
+            const scopeRadios = document.querySelectorAll('input[name="admin_manual_message[recipientScope]"]');
+
+            function togglePlayers() {
+                if (!playersWrap) return;
+                const selected = document.querySelector('input[name="admin_manual_message[recipientScope]"]:checked');
+                const isSelection = selected && selected.value === 'selection';
+                playersWrap.hidden = !isSelection;
+            }
+
+            scopeRadios.forEach(function (radio) {
+                radio.addEventListener('change', togglePlayers);
+            });
+            togglePlayers();
+
+            const titleInput = document.getElementById('admin_manual_message_title');
+            const bodyInput = document.getElementById('admin_manual_message_body');
+            const previewTitle = document.getElementById('admin-push-preview-title');
+            const previewBody = document.getElementById('admin-push-preview-body');
+            const emailTitle = document.getElementById('admin-email-preview-title');
+            const emailBody = document.getElementById('admin-email-preview-body');
+            const titleCounter = document.getElementById('admin-push-title-counter');
+            const bodyCounter = document.getElementById('admin-push-body-counter');
+
+            if (!titleInput || !bodyInput) return;
+
+            function syncPreview() {
+                const title = (titleInput.value || '').trim() || 'Titre du message';
+                const body = (bodyInput.value || '').trim() || 'Le contenu de votre message apparaîtra ici.';
+
+                if (previewTitle) previewTitle.textContent = title;
+                if (previewBody) previewBody.textContent = body;
+                if (emailTitle) emailTitle.textContent = title;
+                if (emailBody) emailBody.textContent = body;
+
+                if (titleCounter) titleCounter.textContent = titleInput.value.length + ' / 120';
+                if (bodyCounter) bodyCounter.textContent = bodyInput.value.length + ' / 2000';
+            }
+
+            titleInput.addEventListener('input', syncPreview);
+            bodyInput.addEventListener('input', syncPreview);
+            syncPreview();
+        })();
+    </script>
+{% endblock %}

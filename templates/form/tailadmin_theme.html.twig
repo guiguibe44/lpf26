@@ -14,9 +14,19 @@
 {% endblock %}
 
 {% block form_label %}
-    {% if label is not same as(false) %}
-        <label for="{{ id }}" class="ta-form-label">{{ label|default(name|humanize) }}</label>
-    {% endif %}
+    {% if label is not same as(false) -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif %}
+        {% if label is empty -%}
+            {% set label = name|humanize %}
+        {%- endif -%}
+        <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %} class="ta-form-label">{{ label|trans(label_translation_parameters, translation_domain) }}</label>
+    {%- endif %}
+{% endblock %}
+
+{% block checkbox_label %}
+    <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %} class="ta-form-label ta-form-label--checkbox">{{ label|trans(label_translation_parameters, translation_domain) }}</label>
 {% endblock %}
 
 {% block form_widget_simple %}
@@ -32,8 +42,19 @@
     <textarea {{ block('widget_attributes') }} class="ta-form-input ta-form-textarea">{{ value }}</textarea>
 {% endblock %}
 
+{% block choice_widget_expanded %}
+    <div {{ block('widget_container_attributes') }} class="ta-form-choice-expanded{% if multiple %} ta-form-choice-expanded--multiple{% endif %}">
+        {%- for child in form %}
+            <div class="ta-form-choice-item">
+                {{- form_widget(child) -}}
+                {{- form_label(child) -}}
+            </div>
+        {% endfor -%}
+    </div>
+{% endblock %}
+
 {% block choice_widget_collapsed %}
-    <select {{ block('widget_attributes') }} class="ta-form-input ta-form-select">
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %} class="ta-form-input ta-form-select{% if multiple %} ta-form-select--multiple{% endif %}">
         {% if placeholder is not none %}
             <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>
         {% endif %}

@@ -1,12 +1,4 @@
-<p>Bonjour,</p>
-
-<p>Votre equipe <strong>{{ team.name }}</strong> a bien ete creee sur LPF 2026.</p>
-<p>Votre surnom joueur 1: <strong>{{ owner.nickname }}</strong>.</p>
-
-{% if invitedEmail %}
-    <p>Une invitation a ete envoyee a <strong>{{ invitedEmail }}</strong>.</p>
-{% else %}
-    <p>Aucune invitation n'a encore ete envoyee au joueur 2.</p>
-{% endif %}
-
-<p>Vous pouvez vous connecter et commencer vos pronostics.</p>
+{# Déprécié — préférer LpfEmailRenderer + email/content/team_created.html.twig #}
+{% include 'email/team_created.html.twig' with {
+    logoUrl: logoUrl|default(absolute_url(asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png'))),
+} %}

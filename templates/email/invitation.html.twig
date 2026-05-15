@@ -1,0 +1,7 @@
+{% set _content %}{% include 'email/content/invitation.html.twig' %}{% endset %}
+{% include 'email/lpf_layout.html.twig' with {
+    pageTitle: 'Invitation équipe — LPF\'26',
+    logoUrl: logoUrl|default(null),
+    footerNote: 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
+    content: _content,
+} only %}

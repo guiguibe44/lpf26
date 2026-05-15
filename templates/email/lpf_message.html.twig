@@ -1,0 +1,8 @@
+{# Relances / messages manuels — utilise le layout commun #}
+{% set _content %}{% include 'email/content/message.html.twig' %}{% endset %}
+{% include 'email/lpf_layout.html.twig' with {
+    pageTitle: (title|default('Message')) ~ ' — LPF\'26',
+    logoUrl: logoUrl|default(null),
+    footerNote: footerNote|default('Vous recevez ce message dans le cadre de LPF\'26 — Lotopotofoot.'),
+    content: _content,
+} only %}

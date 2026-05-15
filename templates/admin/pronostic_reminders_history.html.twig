@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique relances prono · Admin{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-history" aria-hidden="true"></i>
+                Historique des relances pronostic
+            </h1>
+            <p class="ta-page-subtitle">
+                Relances automatiques (push ou e-mail selon l’abonnement du joueur).
+                <a href="{{ path('admin_manual_messages') }}">Messages manuels</a>
+            </p>
+        </div>
+    </section>
+
+    <section class="ta-card admin-push-history-card">
+        <p class="ta-card-text admin-push-history-card__lead">
+            Les relances partent via le cron <code>app:push:pronostic-reminders</code> (1 h avant le match, ou 22 h la veille pour les matchs de nuit).
+        </p>
+
+        {% if reminder_history is empty %}
+            <p class="admin-push-history-empty">Aucune relance automatique enregistrée pour le moment.</p>
+        {% else %}
+            <div class="admin-push-history-table-wrap">
+                <table class="admin-push-history-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Joueur</th>
+                            <th scope="col">Match</th>
+                            <th scope="col">Canal</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Résultat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in reminder_history %}
+                            <tr>
+                                <td><time datetime="{{ entry.sentAt|date('c') }}">{{ entry.sentAt|date('d/m/Y H:i') }}</time></td>
+                                <td>{{ entry.user.email }}</td>
+                                <td>{{ entry.match ?? '—' }}</td>
+                                <td>{{ entry.channel.label }}</td>
+                                <td class="admin-push-history-table__body" title="{{ entry.body }}">
+                                    <strong>{{ entry.title }}</strong>
+                                </td>
+                                <td>
+                                    {% if entry.success %}
+                                        <span class="admin-push-badge admin-push-badge--ok">OK</span>
+                                    {% else %}
+                                        <span class="admin-push-badge admin-push-badge--warn">Échec</span>
+                                        {% if entry.errorMessage %}
+                                            <span class="admin-push-history-table__meta" title="{{ entry.errorMessage }}">{{ entry.errorMessage }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        <p class="admin-push-form__actions" style="margin-top: 1.5rem;">
+            <a href="{{ path('admin') }}" class="admin-push-form__back">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                Retour admin
+            </a>
+        </p>
+    </section>
+{% endblock %}

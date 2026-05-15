@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\GameMatch;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,41 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * Joueurs à jour de cotisation, sans pronostic sur ce match.
+     *
+     * @return list<User>
+     */
+    public function findPlayersWithoutPronosticForMatch(GameMatch $match): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->andWhere('NOT EXISTS (
+                SELECT 1 FROM App\Entity\Pronostic p
+                WHERE p.joueur = u AND p.match = :match
+            )')
+            ->setParameter('paid', true)
+            ->setParameter('match', $match)
+            ->orderBy('u.email', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Joueurs avec cotisation payée (sélection admin).
+     *
+     * @return list<User>
+     */
+    public function findActivePlayersOrderedByEmail(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->setParameter('paid', true)
+            ->orderBy('u.email', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**
