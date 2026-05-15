@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Security\SuperAdminAuthorization;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -87,7 +88,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
+        if (SuperAdminAuthorization::isSuperAdminEmail((string) $this->email)) {
+            $roles[] = 'ROLE_SUPER_ADMIN';
+        }
+
         return array_unique($roles);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return SuperAdminAuthorization::isSuperAdminEmail((string) $this->email);
     }
 
     /**
@@ -161,6 +171,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->plainPassword = $plainPassword;
 
         return $this;
+    }
+
+    public function isAdministrator(): bool
+    {
+        return \in_array('ROLE_ADMIN', $this->roles, true);
     }
 
     public function isGrantAdmin(): bool

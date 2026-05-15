@@ -50,9 +50,10 @@ final class Wc2026SyncCommand extends Command
             if ('' === $only || 'countries' === $only) {
                 $resultCountries = $this->syncService->syncCountries($countriesLimit);
                 $io->success(sprintf(
-                    'Pays synchronisés - créés: %d, mis à jour: %d',
+                    'Pays synchronisés - créés: %d, mis à jour: %d, drapeaux téléchargés: %d',
                     $resultCountries['created'],
-                    $resultCountries['updated']
+                    $resultCountries['updated'],
+                    $resultCountries['flags_downloaded'],
                 ));
             }
 

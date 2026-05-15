@@ -26,22 +26,77 @@
     #}
 
     {% if matchday_nav is not empty %}
-        <nav class="match-day-nav mt-5" aria-label="Acces rapide aux journees">
-            <p class="match-day-nav-label">Journees</p>
-            <ul class="match-day-nav-list">
+        <nav class="match-day-nav mt-5" aria-label="Accès rapide aux journées">
+            <p class="match-day-nav-label">Journées</p>
+
+            <ul class="match-day-nav-list match-day-nav-list--desktop">
                 {% for item in matchday_nav %}
                     <li>
-                        <a href="#{{ item.anchor }}" class="match-day-nav-link">
+                        <a
+                            href="#{{ item.anchor }}"
+                            class="match-day-nav-link{{ item.date_key == featured_matchday_key ? ' match-day-nav-link--featured' : '' }}"
+                        >
                             {% if item.date_for_label %}
-                                {{ item.date_for_label|date('l d F Y') }}
+                                {{ item.date_for_label|fr_date_long }}
                             {% else %}
-                                Date a definir
+                                Date à définir
                             {% endif %}
                         </a>
                     </li>
                 {% endfor %}
             </ul>
+
+            <div class="match-day-nav-select-wrap">
+                <label class="sr-only" for="match-day-nav-select">Choisir une journée</label>
+                <select id="match-day-nav-select" class="match-day-nav-select" aria-label="Choisir une journée">
+                    {% for item in matchday_nav %}
+                        <option
+                            value="#{{ item.anchor }}"
+                            {{ item.date_key == featured_matchday_key ? 'selected' : '' }}
+                        >
+                            {% if item.date_for_label %}
+                                {{ item.date_for_label|fr_date_long }}
+                            {% else %}
+                                Date à définir
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </nav>
+
+        <script>
+            (function initMatchDayNavSelect() {
+                const bind = () => {
+                    const select = document.getElementById('match-day-nav-select');
+                    if (!select || select.dataset.bound === '1') {
+                        return;
+                    }
+                    select.dataset.bound = '1';
+
+                    const scrollToAnchor = (hash) => {
+                        if (!hash || hash === '#') {
+                            return;
+                        }
+                        const id = hash.replace(/^#/, '');
+                        const block = document.getElementById(id);
+                        if (block) {
+                            block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            history.replaceState(null, '', '#' + id);
+                        }
+                    };
+
+                    if (window.location.hash) {
+                        select.value = window.location.hash;
+                    }
+
+                    select.addEventListener('change', () => scrollToAnchor(select.value));
+                };
+
+                document.addEventListener('DOMContentLoaded', bind);
+                document.addEventListener('turbo:load', bind);
+            })();
+        </script>
     {% endif %}
 
     <section class="match-dashboard-wrap mt-5 {{ prono_access_blocked|default(false) ? 'match-dashboard-wrap--locked' : '' }}">
@@ -57,9 +112,9 @@
                         </div>
                     {% endif %}
                     {% set current_day = match_day %}
-                    <div id="{{ match_day == 'date-inconnue' ? 'journee-date-inconnue' : 'journee-' ~ match_day }}" class="match-day-section {{ loop.first ? '' : 'mt-6' }}">
+                    <div id="{{ match_day == 'date-inconnue' ? 'journee-date-inconnue' : 'journee-' ~ match_day }}" class="match-day-section{{ match_day == featured_matchday_key ? ' match-day-section--featured' : '' }}{{ loop.first ? '' : ' mt-6' }}">
                         <h2 class="match-day-title">
-                            {{ match.dateHeure ? match.dateHeure|date('l d F Y') : 'Date a definir' }}
+                            {{ match.dateHeure ? match.dateHeure|fr_date_long : 'Date à définir' }}
                         </h2>
                         <div class="match-card-grid">
                 {% endif %}

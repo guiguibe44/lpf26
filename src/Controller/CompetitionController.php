@@ -33,12 +33,16 @@ class CompetitionController extends AbstractController
         $matches = $gameMatchRepository->findBy([], ['dateHeure' => 'ASC']);
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
 
+        $now = new \DateTimeImmutable();
+        $matchdayNav = $this->buildMatchdayNavEntries($matches);
+
         return $this->render('competition/matches.html.twig', [
             'matches' => $matches,
-            'matchday_nav' => $this->buildMatchdayNavEntries($matches),
+            'matchday_nav' => $matchdayNav,
+            'featured_matchday_key' => $this->resolveFeaturedMatchdayKey($matchdayNav, $now),
             'pronostics_by_match_id' => $pronosticRepository->findIndexedByPlayerAndMatches($user, $matches),
             'partner_pronostics_by_match_id' => $pronosticRepository->findIndexedByPlayersAndMatches($partnerIds, $matches),
-            'now' => new \DateTimeImmutable(),
+            'now' => $now,
             'prono_access_blocked' => !$user->isCotisationPayee(),
         ]);
     }
@@ -46,7 +50,7 @@ class CompetitionController extends AbstractController
     /**
      * @param list<GameMatch> $matches
      *
-     * @return list<array{anchor: string, date_for_label: \DateTimeImmutable|null}>
+     * @return list<array{anchor: string, date_key: string, date_for_label: \DateTimeImmutable|null}>
      */
     private function buildMatchdayNavEntries(array $matches): array
     {
@@ -65,6 +69,7 @@ class CompetitionController extends AbstractController
                 $seen[$key] = true;
                 $entries[] = [
                     'anchor' => 'journee-date-inconnue',
+                    'date_key' => $key,
                     'date_for_label' => null,
                 ];
 
@@ -77,11 +82,41 @@ class CompetitionController extends AbstractController
             $seen[$key] = true;
             $entries[] = [
                 'anchor' => 'journee-'.$key,
+                'date_key' => $key,
                 'date_for_label' => $dateHeure->setTime(0, 0, 0),
             ];
         }
 
         return $entries;
+    }
+
+    /**
+     * Journée du jour si des matchs, sinon la prochaine à venir, sinon la dernière passée.
+     *
+     * @param list<array{anchor: string, date_key: string, date_for_label: \DateTimeImmutable|null}> $entries
+     */
+    private function resolveFeaturedMatchdayKey(array $entries, \DateTimeImmutable $now): ?string
+    {
+        if ([] === $entries) {
+            return null;
+        }
+
+        $todayKey = $now->format('Y-m-d');
+        foreach ($entries as $entry) {
+            if ($entry['date_key'] === $todayKey) {
+                return $todayKey;
+            }
+        }
+
+        $todayStart = $now->setTime(0, 0, 0);
+        foreach ($entries as $entry) {
+            $day = $entry['date_for_label'];
+            if ($day instanceof \DateTimeImmutable && $day >= $todayStart) {
+                return $entry['date_key'];
+            }
+        }
+
+        return $entries[array_key_last($entries)]['date_key'];
     }
 
     #[Route('/matchs/{id}/pronostics', name: 'app_match_pronostics', methods: ['GET'])]

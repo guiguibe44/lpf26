@@ -19,7 +19,7 @@
                 <li>
                     <a href="{{ path('app_homepage') }}" class="ta-menu-link {{ currentRoute == 'app_homepage' ? 'active' : '' }}">
                         <i class="ti ti-home" aria-hidden="true"></i>
-                        Dashboard
+                        Accueil
                     </a>
                 </li>
                 <li>
@@ -48,7 +48,7 @@
                 </li>
                 {% if is_granted('ROLE_ADMIN') %}
                 <li>
-                    <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}">
+                    <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}" title="Administration EasyAdmin">
                         <i class="ti ti-settings" aria-hidden="true"></i>
                         Administration
                     </a>

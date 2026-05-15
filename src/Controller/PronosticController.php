@@ -107,7 +107,7 @@ class PronosticController extends AbstractController
         }
 
         if (!$this->canEditPronostic($match)) {
-            $this->addFlash('danger', 'Ce match a deja commence, le pronostic ne peut plus etre modifie.');
+            $this->addFlash('danger', 'Ce match a déjà commencé, le pronostic ne peut plus être modifié.');
 
             return;
         }

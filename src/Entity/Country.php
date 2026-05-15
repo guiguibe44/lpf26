@@ -19,6 +19,10 @@ class Country
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $drapeau = null;
 
+    /** Lettre de poule CDM 2026 (A–L), nullable. */
+    #[ORM\Column(length: 1, nullable: true)]
+    private ?string $groupe = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +50,34 @@ class Country
         $this->drapeau = $drapeau;
 
         return $this;
+    }
+
+    public function getGroupe(): ?string
+    {
+        return $this->groupe;
+    }
+
+    public function setGroupe(?string $groupe): static
+    {
+        if (null === $groupe || '' === $groupe) {
+            $this->groupe = null;
+
+            return $this;
+        }
+
+        $letter = mb_strtoupper($groupe);
+        if (1 !== mb_strlen($letter) || $letter < 'A' || $letter > 'L') {
+            throw new \InvalidArgumentException('Le groupe doit être une lettre entre A et L.');
+        }
+
+        $this->groupe = $letter;
+
+        return $this;
+    }
+
+    public function getGroupPhaseLabel(): ?string
+    {
+        return null !== $this->groupe ? 'Group '.$this->groupe : null;
     }
 
     public function __toString(): string

@@ -451,7 +451,8 @@ html body .btn.btn-primary,
 html body a.btn.btn-primary,
 html body button.btn.btn-primary,
 html body .ta-auth-form-wrap .ta-auth-submit,
-html body .ta-auth-form .ta-auth-submit {
+html body .ta-auth-form .ta-auth-submit,
+html body.front-body--auth .auth-wrap button[type="submit"] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -474,7 +475,8 @@ html body .btn.btn-primary:hover,
 html body a.btn.btn-primary:hover,
 html body button.btn.btn-primary:hover,
 html body .ta-auth-form-wrap .ta-auth-submit:hover,
-html body .ta-auth-form .ta-auth-submit:hover {
+html body .ta-auth-form .ta-auth-submit:hover,
+html body.front-body--auth .auth-wrap button[type="submit"]:hover {
     color: var(--lpf-white);
     background-color: var(--lpf-red-dark);
     border-color: var(--lpf-red-dark);
@@ -484,7 +486,8 @@ html body .btn.btn-primary:active,
 html body a.btn.btn-primary:active,
 html body button.btn.btn-primary:active,
 html body .ta-auth-form-wrap .ta-auth-submit:active,
-html body .ta-auth-form .ta-auth-submit:active {
+html body .ta-auth-form .ta-auth-submit:active,
+html body.front-body--auth .auth-wrap button[type="submit"]:active {
     transform: scale(0.97);
 }
 
@@ -501,6 +504,33 @@ html body .ta-auth-form-wrap .ta-auth-submit {
     width: 100%;
     margin-top: 10px;
     padding: 10px 22px;
+}
+
+/* Pages auth (non connecté) — liens et CTA alignés LPF */
+html body.front-body--auth .ta-auth-link-row a,
+html body.front-body--auth .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit),
+html body.front-body--auth .auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit) {
+    color: var(--lpf-red) !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+html body.front-body--auth .ta-auth-link-row a:hover,
+html body.front-body--auth .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):hover,
+html body.front-body--auth .auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):hover {
+    color: var(--lpf-red-dark) !important;
+    text-decoration: underline;
+}
+
+html body.front-body--auth .ta-auth-link-row a:visited,
+html body.front-body--auth .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):visited {
+    color: var(--lpf-red) !important;
+}
+
+html body.front-body--auth .ta-auth-submit:focus-visible,
+html body.front-body--auth .auth-wrap button[type="submit"]:focus-visible {
+    outline: 2px solid var(--lpf-red);
+    outline-offset: 2px;
 }
 
 html body .btn.btn-primary.btn-sm,

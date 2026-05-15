@@ -31,6 +31,8 @@ final class Wc2026SyncService
         private readonly GameMatchRepository $gameMatchRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly PronosticScoringService $pronosticScoringService,
+        private readonly CountryFlagStorage $countryFlagStorage,
+        private readonly ButeurPhotoStorage $buteurPhotoStorage,
         private readonly int $apiFootballWorldCupLeagueId = 1,
         private readonly int $apiFootballWorldCupSeason = 2026,
         /** Nombre max de requêtes /fixtures/events pour une synchro buts (0 = désactivé). */
@@ -39,7 +41,7 @@ final class Wc2026SyncService
     }
 
     /**
-     * @return array{created:int, updated:int}
+     * @return array{created:int, updated:int, flags_downloaded:int}
      */
     public function syncCountries(int $limit = 500): array
     {
@@ -53,6 +55,7 @@ final class Wc2026SyncService
         $countries = $this->indexCountriesByName();
         $created = 0;
         $updated = 0;
+        $flagsDownloaded = 0;
         $n = 0;
 
         foreach ($rows as $row) {
@@ -79,10 +82,14 @@ final class Wc2026SyncService
             $country = $countries[$key] ?? null;
 
             if (!$country instanceof Country) {
-                $country = (new Country())->setNom($name)->setDrapeau($flagUrl);
+                $country = (new Country())->setNom($name);
+                $this->applyCountryFlag($country, $flagUrl);
                 $this->entityManager->persist($country);
                 $countries[$key] = $country;
                 ++$created;
+                if ($this->countryFlagStorage->isLocalUpload($country->getDrapeau())) {
+                    ++$flagsDownloaded;
+                }
 
                 continue;
             }
@@ -92,9 +99,11 @@ final class Wc2026SyncService
                 $country->setNom($name);
                 $changed = true;
             }
-            if (null !== $flagUrl && $country->getDrapeau() !== $flagUrl) {
-                $country->setDrapeau($flagUrl);
+            if ($this->applyCountryFlag($country, $flagUrl)) {
                 $changed = true;
+                if ($this->countryFlagStorage->isLocalUpload($country->getDrapeau())) {
+                    ++$flagsDownloaded;
+                }
             }
 
             if ($changed) {
@@ -104,7 +113,143 @@ final class Wc2026SyncService
 
         $this->entityManager->flush();
 
-        return ['created' => $created, 'updated' => $updated];
+        return [
+            'created' => $created,
+            'updated' => $updated,
+            'flags_downloaded' => $flagsDownloaded,
+        ];
+    }
+
+    /**
+     * Télécharge les drapeaux dont l’URL est encore distante (http/https).
+     *
+     * @return array{downloaded:int, skipped:int, failed:int}
+     */
+    public function downloadAllCountryFlags(): array
+    {
+        $downloaded = 0;
+        $skipped = 0;
+        $failed = 0;
+
+        foreach ($this->countryRepository->findAll() as $country) {
+            if ($this->countryFlagStorage->isLocalUpload($country->getDrapeau())) {
+                ++$skipped;
+
+                continue;
+            }
+
+            if (!$this->countryFlagStorage->isRemoteUrl($country->getDrapeau())) {
+                ++$skipped;
+
+                continue;
+            }
+
+            if ($this->countryFlagStorage->storeFlagForCountry($country)) {
+                ++$downloaded;
+            } else {
+                ++$failed;
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return [
+            'downloaded' => $downloaded,
+            'skipped' => $skipped,
+            'failed' => $failed,
+        ];
+    }
+
+    /**
+     * Télécharge les photos de buteurs dont l’URL est encore distante (http/https).
+     *
+     * @return array{downloaded:int, skipped:int, failed:int}
+     */
+    public function downloadAllButeurPhotos(): array
+    {
+        $downloaded = 0;
+        $skipped = 0;
+        $failed = 0;
+
+        foreach ($this->buteurRepository->findAll() as $buteur) {
+            if ($this->buteurPhotoStorage->isLocalUpload($buteur->getPhoto())) {
+                ++$skipped;
+
+                continue;
+            }
+
+            if (!$this->buteurPhotoStorage->isRemoteUrl($buteur->getPhoto())) {
+                ++$skipped;
+
+                continue;
+            }
+
+            if ($this->buteurPhotoStorage->storePhotoForButeur($buteur)) {
+                ++$downloaded;
+            } else {
+                ++$failed;
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return [
+            'downloaded' => $downloaded,
+            'skipped' => $skipped,
+            'failed' => $failed,
+        ];
+    }
+
+    /**
+     * Recalcule la phase « Group X » des matchs à partir des noms d’équipes et du champ pays.groupe.
+     *
+     * @return array{updated:int}
+     */
+    public function repairGroupMatchPhases(): array
+    {
+        $updated = 0;
+
+        foreach ($this->gameMatchRepository->findAll() as $match) {
+            $home = $match->getPaysDomicile();
+            $away = $match->getPaysExterieur();
+            if (!$home instanceof Country || !$away instanceof Country) {
+                continue;
+            }
+
+            $newPhase = $this->resolveGroupPhaseForCountries($home, $away);
+            if (null === $newPhase) {
+                continue;
+            }
+
+            $currentLetter = GameMatch::extractGroupStandingLetter($match->getPhase());
+            $newLetter = GameMatch::extractGroupStandingLetter($newPhase);
+            if ($currentLetter === $newLetter && null !== $currentLetter) {
+                continue;
+            }
+
+            if ($this->isGenericStageRoundLabel($match->getPhase()) || null === $currentLetter) {
+                $match->setPhase($newPhase);
+                ++$updated;
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return ['updated' => $updated];
+    }
+
+    private function resolveGroupPhaseForCountries(Country $home, Country $away): ?string
+    {
+        $homeGroup = $home->getGroupe();
+        $awayGroup = $away->getGroupe();
+        if (null !== $homeGroup && $homeGroup === $awayGroup) {
+            return 'Group '.$homeGroup;
+        }
+
+        return WorldCup2026Groups::resolveGroupPhase(
+            (string) $home->getNom(),
+            (string) $away->getNom(),
+        );
     }
 
     /**
@@ -669,8 +814,8 @@ final class Wc2026SyncService
                 $buteur
                     ->setPrenom($prenom ?: '-')
                     ->setNom($nom ?: '-')
-                    ->setPays($country)
-                    ->setPhoto($photo);
+                    ->setPays($country);
+                $this->applyButeurPhoto($buteur, $photo);
                 if (null !== $apiPlayerId) {
                     $buteur->setApiSportsPlayerId($apiPlayerId);
                 }
@@ -697,8 +842,7 @@ final class Wc2026SyncService
                 $buteur->setPays($country);
                 $changed = true;
             }
-            if (null !== $photo && $buteur->getPhoto() !== $photo) {
-                $buteur->setPhoto($photo);
+            if ($this->applyButeurPhoto($buteur, $photo)) {
                 $changed = true;
             }
             if (null !== $apiPlayerId && $buteur->getApiSportsPlayerId() !== $apiPlayerId) {
@@ -741,18 +885,59 @@ final class Wc2026SyncService
 
         $country = $countries[$key] ?? null;
         if (!$country instanceof Country) {
-            $country = (new Country())->setNom($name)->setDrapeau($flag);
+            $country = (new Country())->setNom($name);
+            $this->applyCountryFlag($country, $flag);
             $this->entityManager->persist($country);
             $countries[$key] = $country;
 
             return $country;
         }
 
-        if (null !== $flag && $country->getDrapeau() !== $flag) {
-            $country->setDrapeau($flag);
-        }
+        $this->applyCountryFlag($country, $flag);
 
         return $country;
+    }
+
+    private function applyCountryFlag(Country $country, ?string $flagUrl): bool
+    {
+        if (null === $flagUrl || '' === $flagUrl) {
+            return false;
+        }
+
+        $previous = $country->getDrapeau();
+
+        if ($this->countryFlagStorage->storeFlagForCountry($country, $flagUrl)) {
+            return $previous !== $country->getDrapeau();
+        }
+
+        if ($previous !== $flagUrl) {
+            $country->setDrapeau($flagUrl);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function applyButeurPhoto(Buteur $buteur, ?string $photoUrl): bool
+    {
+        if (null === $photoUrl || '' === $photoUrl) {
+            return false;
+        }
+
+        $previous = $buteur->getPhoto();
+
+        if ($this->buteurPhotoStorage->storePhotoForButeur($buteur, $photoUrl)) {
+            return $previous !== $buteur->getPhoto();
+        }
+
+        if ($previous !== $photoUrl) {
+            $buteur->setPhoto($photoUrl);
+
+            return true;
+        }
+
+        return false;
     }
 
     private function normalizeNameKey(string $name): string

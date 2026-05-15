@@ -82,7 +82,14 @@ final class CreateAdminUserCommand extends Command
             $created = false;
         }
 
-        $user->setRoles(['ROLE_ADMIN']);
+        $roles = array_values(array_filter(
+            $user->getRoles(),
+            static fn (string $role): bool => 'ROLE_USER' !== $role,
+        ));
+        if (!\in_array('ROLE_ADMIN', $roles, true)) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+        $user->setRoles($roles);
         $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 
         $this->entityManager->flush();

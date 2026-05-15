@@ -17,7 +17,7 @@
         {% else %}
             {% if last_completed_matchday %}
                 <div class="match-day-section">
-                    <h2 class="match-day-title">Dernière journée  — {{ last_completed_matchday.date|date('l d F Y') }}</h2>
+                    <h2 class="match-day-title">Dernière journée  — {{ last_completed_matchday.date|fr_date_long }}</h2>
                     <div class="match-card-grid">
                         {% for match in last_completed_matchday.matches %}
                             {% include 'competition/_match_card.html.twig' with {
@@ -34,7 +34,7 @@
 
             {% if next_matchday %}
                 <div class="match-day-section {{ last_completed_matchday ? 'mt-6' : '' }}">
-                    <h2 class="match-day-title">Prochaine journée — {{ next_matchday.date|date('l d F Y') }}</h2>
+                    <h2 class="match-day-title">Prochaine journée — {{ next_matchday.date|fr_date_long }}</h2>
                     <div class="match-card-grid">
                         {% for match in next_matchday.matches %}
                             {% include 'competition/_match_card.html.twig' with {

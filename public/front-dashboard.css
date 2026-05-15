@@ -4,7 +4,10 @@
     --text: #111827;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --primary: #2563eb;
+    --primary: #e82030;
+    --primary-hover: #cc1a28;
+    --link: #e82030;
+    --link-hover: #cc1a28;
     --success: #16a34a;
     --danger: #dc2626;
     --info: #0284c7;
@@ -220,13 +223,35 @@ body.front-body {
     color: #334155;
 }
 
-.ta-auth-submit {
+.ta-auth-submit,
+.auth-wrap button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     margin-top: 10px;
-    border-radius: 10px;
-    background: #2563eb;
-    font-size: 15px;
-    font-weight: 700;
+    padding: 10px 22px;
+    border: 2px solid var(--primary);
+    border-radius: 0;
+    background: var(--primary);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.ta-auth-submit:hover:not(:disabled),
+.auth-wrap button[type="submit"]:hover:not(:disabled) {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #ffffff;
+}
+
+.ta-auth-submit:active:not(:disabled),
+.auth-wrap button[type="submit"]:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
 .ta-auth-link-row {
@@ -235,25 +260,21 @@ body.front-body {
     color: var(--muted);
 }
 
-.ta-auth-link-row a {
-    color: #1d4ed8;
+.ta-auth-link-row a,
+.ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit) {
+    color: var(--link);
+    font-weight: 600;
     text-decoration: none;
 }
 
-.ta-auth-link-row a:hover {
+.ta-auth-link-row a:hover,
+.ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):hover {
+    color: var(--link-hover);
     text-decoration: underline;
 }
 
 .ta-auth-form-wrap .ta-auth-link-row {
     color: var(--muted);
-}
-
-.ta-auth-form-wrap .ta-auth-link-row a {
-    color: #1d4ed8;
-}
-
-.ta-auth-form-wrap .ta-auth-link-row a:hover {
-    color: #1e40af;
 }
 
 .app-shell {
@@ -481,13 +502,13 @@ form input[type="password"] {
     color: #dc2626;
 }
 
-button {
+.auth-wrap button[type="submit"]:not(.ta-auth-submit) {
     margin-top: 14px;
     background: var(--primary);
     color: #fff;
-    border: 0;
-    border-radius: 9px;
-    padding: 10px 14px;
+    border: 2px solid var(--primary);
+    border-radius: 0;
+    padding: 10px 22px;
     cursor: pointer;
 }
 

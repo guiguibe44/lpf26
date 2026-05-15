@@ -19,14 +19,14 @@
             <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email" required autofocus>
             <label for="inputPassword">Mot de passe*</label>
             <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
-            <p class="ta-auth-check"><label><input type="checkbox" name="_remember_me"> Rester connecte</label></p>
+            <p class="ta-auth-check"><label><input type="checkbox" name="_remember_me"> Rester connecté</label></p>
 
             <button type="submit" class="ta-auth-submit">
                 Se connecter
                 <i class="ti ti-login" aria-hidden="true"></i>
             </button>
-            <p class="ta-auth-link-row"><a href="{{ path('app_forgot_password_request') }}">Mot de passe oublie ?</a></p>
-            <p class="ta-auth-link-row">Pas encore de compte ? <a href="{{ path('app_register') }}">Creer un compte</a></p>
+            <p class="ta-auth-link-row"><a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a></p>
+            <p class="ta-auth-link-row">Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
         </form>
     </div>
 </div>

@@ -46,11 +46,7 @@ class SecurityControllerAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        $user = $token->getUser();
-        if (\is_object($user) && \method_exists($user, 'getRoles') && \in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-            return new RedirectResponse($this->urlGenerator->generate('admin'));
-        }
-
+        // Admins et joueurs : même accueil front (équipe, pronos). L’admin reste accessible via le menu.
         return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
     }
 

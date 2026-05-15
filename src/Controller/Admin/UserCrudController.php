@@ -53,7 +53,7 @@ class UserCrudController extends AbstractAppCrudController
                         : 'Minimum '.self::MIN_PASSWORD_LENGTH.' caractères.'
                 ),
             BooleanField::new('grantAdmin', 'Administrateur')
-                ->setHelp('Accès au back-office EasyAdmin (ROLE_ADMIN).')
+                ->setHelp('Accès EasyAdmin en plus du jeu : équipe, pronostics et cotisation comme les autres joueurs.')
                 ->hideOnIndex()
                 ->onlyOnForms(),
             AssociationField::new('buteurChoisi')->setRequired(false),
@@ -105,7 +105,28 @@ class UserCrudController extends AbstractAppCrudController
         }
 
         $user->setPlainPassword(null);
-        $user->setRoles($user->isGrantAdmin() ? ['ROLE_ADMIN'] : []);
+        $this->syncAdminRole($user);
+    }
+
+    private function syncAdminRole(User $user): void
+    {
+        $roles = array_values(array_filter(
+            $user->getRoles(),
+            static fn (string $role): bool => 'ROLE_USER' !== $role,
+        ));
+
+        if ($user->isGrantAdmin()) {
+            if (!\in_array('ROLE_ADMIN', $roles, true)) {
+                $roles[] = 'ROLE_ADMIN';
+            }
+        } else {
+            $roles = array_values(array_filter(
+                $roles,
+                static fn (string $role): bool => 'ROLE_ADMIN' !== $role,
+            ));
+        }
+
+        $user->setRoles($roles);
     }
 
     private function normalizeUploadPath(?string $path, string $prefix): ?string

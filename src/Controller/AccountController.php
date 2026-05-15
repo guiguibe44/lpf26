@@ -126,7 +126,7 @@ class AccountController extends AbstractController
                 'nickname' => $nickname,
             ]);
             if (null !== $existingNickname && (!$hasTeamMember || $existingNickname->getId() !== $teamMember?->getId())) {
-                $profileForm->get('nickname')->addError(new FormError('Ce surnom est deja utilise dans cette equipe.'));
+                $profileForm->get('nickname')->addError(new FormError('Ce surnom est déjà utilisé dans cette équipe.'));
             } else {
                 $isNewProfile = !$hasTeamMember;
                 $user->setEmail(mb_strtolower((string) $user->getEmail()));
@@ -159,8 +159,8 @@ class AccountController extends AbstractController
 
                 $entityManager->flush();
                 $this->addFlash('success', $isNewProfile
-                    ? 'Votre profil joueur a ete cree.'
-                    : 'Votre profil joueur a ete mis a jour.');
+                    ? 'Votre profil joueur a été créé.'
+                    : 'Votre profil joueur a été mis à jour.');
 
                 return $this->redirect($this->generateUrl('app_account').'#tab-compte');
             }
@@ -171,7 +171,7 @@ class AccountController extends AbstractController
             if ('' !== $plainPassword) {
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
                 $entityManager->flush();
-                $this->addFlash('success', 'Votre mot de passe a ete modifie.');
+                $this->addFlash('success', 'Votre mot de passe a été modifié.');
 
                 return $this->redirect($this->generateUrl('app_account').'#tab-compte');
             }
@@ -204,7 +204,7 @@ class AccountController extends AbstractController
 
             if ($nameLocked && (string) $team->getName() !== $originalTeamName) {
                 $team->setName($originalTeamName);
-                $teamForm->get('name')->addError(new FormError('Le nom de l\'equipe est verrouille depuis le debut de la competition.'));
+                $teamForm->get('name')->addError(new FormError('Le nom de l\'équipe est verrouillé depuis le début de la compétition.'));
             } else {
                 /** @var UploadedFile|null $logoFile */
                 $logoFile = $teamForm->get('logoFile')->getData();
@@ -221,7 +221,7 @@ class AccountController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $this->addFlash('success', 'Les informations de l\'equipe ont ete mises a jour.');
+                $this->addFlash('success', 'Les informations de l\'équipe ont été mises à jour.');
 
                 return $this->redirect($this->generateUrl('app_account').'#tab-equipe');
             }

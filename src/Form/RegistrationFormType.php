@@ -27,7 +27,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('teamName', TextType::class, [
                 'mapped' => false,
-                'label' => 'Nom de l\'equipe',
+                'label' => 'Nom de l\'équipe',
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'equipe est obligatoire.'),
                     new Length(

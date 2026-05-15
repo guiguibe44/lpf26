@@ -19,7 +19,7 @@ class TeamManageType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Nom de l\'equipe',
+                'label' => 'Nom de l\'équipe',
                 'disabled' => (bool) $options['lock_team_name'],
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'equipe est obligatoire.'),
@@ -29,7 +29,7 @@ class TeamManageType extends AbstractType
             ->add('logoFile', FileType::class, [
                 'mapped' => false,
                 'required' => false,
-                'label' => 'Logo equipe (image)',
+                'label' => 'Logo équipe (image)',
                 'constraints' => [
                     new File(
                         maxSize: '4M',

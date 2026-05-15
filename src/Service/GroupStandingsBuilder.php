@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Data\WorldCup2026Groups;
 use App\Entity\Country;
 use App\Entity\GameMatch;
+use App\Repository\CountryRepository;
 use App\Repository\GameMatchRepository;
 
 /**
- * Construit les classements de phase de groupes à partir des matchs (phase « Group X ») et des scores.
+ * Construit les classements de phase de groupes à partir des matchs (phase « Group X »),
+ * du champ pays.groupe (admin) et de la grille CDM 2026 (noms API / variantes).
  */
 final class GroupStandingsBuilder
 {
     public function __construct(
         private readonly GameMatchRepository $gameMatchRepository,
+        private readonly CountryRepository $countryRepository,
     ) {
     }
 
@@ -49,9 +53,86 @@ final class GroupStandingsBuilder
             $result[$letter] = $this->computeStandingsForGroup($groupMatches);
         }
 
+        $this->mergeCountriesWithoutMatchRows($result);
+
         ksort($result, SORT_NATURAL);
 
         return $result;
+    }
+
+    /**
+     * Ajoute les pays assignés en admin (groupe) ou reconnus via la grille, absents des matchs « Group X ».
+     *
+     * @param array<string, list<array<string, mixed>>> $result
+     */
+    private function mergeCountriesWithoutMatchRows(array &$result): void
+    {
+        $seenByGroup = [];
+        foreach ($result as $letter => $rows) {
+            $seenByGroup[$letter] = [];
+            foreach ($rows as $row) {
+                $id = $row['country']->getId();
+                if (null !== $id) {
+                    $seenByGroup[$letter][$id] = true;
+                }
+            }
+        }
+
+        foreach ($this->countryRepository->findAllOrderedByName() as $country) {
+            $letter = $country->getGroupe() ?? WorldCup2026Groups::resolveGroupLetterForTeam((string) $country->getNom());
+            if (null === $letter) {
+                continue;
+            }
+
+            $countryId = $country->getId();
+            if (null === $countryId) {
+                continue;
+            }
+
+            if (!isset($result[$letter])) {
+                $result[$letter] = [];
+                $seenByGroup[$letter] = [];
+            }
+
+            if (isset($seenByGroup[$letter][$countryId])) {
+                continue;
+            }
+
+            $result[$letter][] = $this->emptyStandingRow($country);
+            $seenByGroup[$letter][$countryId] = true;
+        }
+
+        foreach ($result as $letter => $rows) {
+            $result[$letter] = $this->sortStandingRows($rows);
+        }
+    }
+
+    /**
+     * @return array{
+     *     country: Country,
+     *     joues: int,
+     *     victoires: int,
+     *     nuls: int,
+     *     defaites: int,
+     *     bp: int,
+     *     bc: int,
+     *     diff: int,
+     *     points: int
+     * }
+     */
+    private function emptyStandingRow(Country $country): array
+    {
+        return [
+            'country' => $country,
+            'joues' => 0,
+            'victoires' => 0,
+            'nuls' => 0,
+            'defaites' => 0,
+            'bp' => 0,
+            'bc' => 0,
+            'diff' => 0,
+            'points' => 0,
+        ];
     }
 
     /**
@@ -146,6 +227,36 @@ final class GroupStandingsBuilder
             ];
         }
 
+        return $this->sortStandingRows($rows);
+    }
+
+    /**
+     * @param list<array{
+     *     country: Country,
+     *     joues: int,
+     *     victoires: int,
+     *     nuls: int,
+     *     defaites: int,
+     *     bp: int,
+     *     bc: int,
+     *     diff: int,
+     *     points: int
+     * }> $rows
+     *
+     * @return list<array{
+     *     country: Country,
+     *     joues: int,
+     *     victoires: int,
+     *     nuls: int,
+     *     defaites: int,
+     *     bp: int,
+     *     bc: int,
+     *     diff: int,
+     *     points: int
+     * }>
+     */
+    private function sortStandingRows(array $rows): array
+    {
         usort($rows, static function (array $a, array $b): int {
             if ($a['points'] !== $b['points']) {
                 return $b['points'] <=> $a['points'];

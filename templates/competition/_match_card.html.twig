@@ -8,9 +8,9 @@
 <article class="match-card">
     <div class="match-card-head">
         {% if is_finished %}
-            <span class="ta-badge ta-badge-success">Termine</span>
+            <span class="ta-badge ta-badge-success">Terminé</span>
         {% elseif can_pronostic %}
-            <span class="ta-badge ta-badge-warning">A venir</span>
+            <span class="ta-badge ta-badge-warning">À venir</span>
         {% else %}
             <span class="ta-badge">En cours</span>
         {% endif %}
@@ -69,14 +69,12 @@
                     class="ta-form-input match-score-input"
                     required
                 >
-                <button type="submit" class="btn btn-primary btn-sm">
-                    {% if pronostic %}
-                        Modifier
-                        <i class="ti ti-edit" aria-hidden="true"></i>
-                    {% else %}
-                        Pronostiquer
-                        <i class="ti ti-target" aria-hidden="true"></i>
-                    {% endif %}
+                <button
+                    type="submit"
+                    class="btn btn-primary match-pronostic-submit"
+                    aria-label="{{ pronostic ? 'Modifier le pronostic' : 'Valider le pronostic' }}"
+                >
+                    <i class="ti {{ pronostic ? 'ti-edit' : 'ti-check' }}" aria-hidden="true"></i>
                 </button>
             </form>
         {% elseif is_finished %}

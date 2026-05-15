@@ -44,7 +44,7 @@ class CotisationAccessSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $request->getSession()?->getFlashBag()->add('warning', 'Tu dois regler ta cotisation pour acceder aux pronostics.');
+        $request->getSession()?->getFlashBag()->add('warning', 'Tu dois régler ta cotisation pour accéder aux pronostics.');
 
         $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_account')));
     }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Email envoye{% endblock %}
+{% block title %}E-mail envoyé{% endblock %}
 
 {% block body %}
     <div class="auth-grid ta-auth-grid">
@@ -8,11 +8,11 @@
             {% include 'auth/_aside_brand.html.twig' %}
         </div>
         <div class="ta-auth-form-wrap">
-            <h1 class="section-title ta-auth-title">Consulte ta boite mail</h1>
-            <p class="ta-auth-lead">Si un compte existe, un email vient d'etre envoye avec un lien de reinitialisation.</p>
+            <h1 class="section-title ta-auth-title">Consulte ta boîte mail</h1>
+            <p class="ta-auth-lead">Si un compte existe, un e-mail vient d'être envoyé avec un lien de réinitialisation.</p>
             <p class="ta-auth-lead">Le lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
-            <p class="ta-auth-link-row">Rien recu ? Verifie les spams ou <a href="{{ path('app_forgot_password_request') }}">reessaye</a>.</p>
-            <p class="ta-auth-link-row"><a href="{{ path('app_login') }}">Retour a la connexion</a></p>
+            <p class="ta-auth-link-row">Rien reçu ? Vérifie les spams ou <a href="{{ path('app_forgot_password_request') }}">réessaie</a>.</p>
+            <p class="ta-auth-link-row"><a href="{{ path('app_login') }}">Retour à la connexion</a></p>
         </div>
     </div>
 {% endblock %}

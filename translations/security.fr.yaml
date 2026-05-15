@@ -1,0 +1,7 @@
+'Invalid credentials.': 'Identifiants invalides.'
+'Invalid CSRF token.': 'Jeton CSRF invalide.'
+'Too many failed login attempts, please try again later.': 'Trop de tentatives de connexion. Réessayez plus tard.'
+'Too many failed login attempts, please try again in %minutes% minute.': 'Trop de tentatives. Réessayez dans %minutes% minute.'
+'Too many failed login attempts, please try again in %minutes% minutes.': 'Trop de tentatives. Réessayez dans %minutes% minutes.'
+'Account is disabled.': 'Ce compte est désactivé.'
+'Account is locked.': 'Ce compte est verrouillé.'

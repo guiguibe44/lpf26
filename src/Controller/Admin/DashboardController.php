@@ -8,6 +8,8 @@ use App\Entity\TeamMember;
 use App\Entity\Pronostic;
 use App\Entity\TeamRankingSnapshot;
 use App\Repository\CountryRepository;
+use App\Entity\User;
+use App\Security\SuperAdminAuthorization;
 use App\Service\ApiFootballPlayerSyncStop;
 use App\Service\Wc2026SyncService;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
@@ -18,6 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
@@ -26,6 +29,7 @@ class DashboardController extends AbstractDashboardController
 
     public function __construct(
         private readonly int $apiFootballSyncMaxRequests,
+        private readonly SuperAdminAuthorization $superAdminAuthorization,
     ) {
     }
 
@@ -37,7 +41,8 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('LPF 2026');
+            ->setTitle('LPF 2026')
+            ->setLocales(['fr']);
     }
 
     public function configureAssets(): Assets
@@ -48,7 +53,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::linkToRoute('Interface joueurs (front)', 'fa fa-globe', 'app_homepage');
 
         yield MenuItem::section('Communication');
@@ -68,16 +73,44 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Classements equipes', 'fas fa-ranking-star', 'admin_team_ranking_snapshot_index');
 
         yield MenuItem::section('Synchro API-Football');
-        yield MenuItem::linkToRoute('Sync pays', 'fas fa-flag', 'admin_wc2026_sync_countries');
-        yield MenuItem::linkToRoute('Sync matchs', 'fas fa-calendar-days', 'admin_wc2026_sync_matches');
-        yield MenuItem::linkToRoute('Sync joueurs (11 par pays)', 'fas fa-user-plus', 'admin_wc2026_sync_players');
-        yield MenuItem::linkToRoute('Sync joueurs (tous, par pays)', 'fas fa-users', 'admin_wc2026_sync_players_country_form');
-        yield MenuItem::linkToRoute('Sync tout (pays, matchs, joueurs, buts)', 'fas fa-rotate', 'admin_wc2026_sync');
+
+        $user = $this->getUser();
+        if ($user instanceof User && $this->superAdminAuthorization->isSuperAdmin($user)) {
+            yield MenuItem::linkToRoute('Sync pays', 'fas fa-flag', 'admin_wc2026_sync_countries');
+            yield MenuItem::linkToRoute('Réparer phases de groupes', 'fas fa-wrench', 'admin_wc2026_repair_group_phases');
+            yield MenuItem::linkToRoute('Sync matchs', 'fas fa-calendar-days', 'admin_wc2026_sync_matches');
+            yield MenuItem::linkToRoute('Sync joueurs (11 par pays)', 'fas fa-user-plus', 'admin_wc2026_sync_players');
+            yield MenuItem::linkToRoute('Sync joueurs (tous, par pays)', 'fas fa-users', 'admin_wc2026_sync_players_country_form');
+            yield MenuItem::linkToRoute('Sync tout (pays, matchs, joueurs, buts)', 'fas fa-rotate', 'admin_wc2026_sync');
+            yield MenuItem::linkToRoute('Arrêter synchro joueurs', 'fas fa-stop', 'admin_wc2026_sync_players_stop');
+
+            yield MenuItem::section('Médias (téléchargement)');
+            yield MenuItem::linkToRoute('Télécharger drapeaux', 'fas fa-download', 'admin_download_country_flags');
+            yield MenuItem::linkToRoute('Télécharger photos joueurs', 'fas fa-portrait', 'admin_download_buteur_photos');
+        }
+
         yield MenuItem::linkToRoute('Sync buts (événements)', 'fas fa-bullseye', 'admin_wc2026_sync_goals');
-        yield MenuItem::linkToRoute('Arrêter synchro joueurs', 'fas fa-stop', 'admin_wc2026_sync_players_stop');
+    }
+
+    #[Route('/admin/sync/wc2026/repair-group-phases', name: 'admin_wc2026_repair_group_phases', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
+    public function repairWc2026GroupPhases(Wc2026SyncService $syncService): Response
+    {
+        try {
+            $result = $syncService->repairGroupMatchPhases();
+            $this->addFlash('success', sprintf(
+                'Phases de groupes mises à jour sur %d match(s).',
+                $result['updated'],
+            ));
+        } catch (\Throwable $e) {
+            $this->addFlash('danger', sprintf('Erreur réparation phases : %s', $e->getMessage()));
+        }
+
+        return $this->redirectToRoute('admin');
     }
 
     #[Route('/admin/sync/wc2026/countries', name: 'admin_wc2026_sync_countries', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026Countries(Wc2026SyncService $syncService): Response
     {
         try {
@@ -87,9 +120,10 @@ class DashboardController extends AbstractDashboardController
 
             $countries = $syncService->syncCountries(500);
             $this->addFlash('success', sprintf(
-                'Pays synchronisés : +%d créés, %d mis à jour.',
+                'Pays synchronisés : +%d créés, %d mis à jour, %d drapeaux téléchargés.',
                 $countries['created'],
-                $countries['updated']
+                $countries['updated'],
+                $countries['flags_downloaded'],
             ));
         } catch (\Throwable $e) {
             $this->addFlash('danger', sprintf('Erreur synchronisation pays : %s', $e->getMessage()));
@@ -99,6 +133,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin/sync/wc2026/matches', name: 'admin_wc2026_sync_matches', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026Matches(Wc2026SyncService $syncService): Response
     {
         try {
@@ -121,6 +156,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin/sync/wc2026', name: 'admin_wc2026_sync', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026(Wc2026SyncService $syncService): Response
     {
         try {
@@ -134,9 +170,10 @@ class DashboardController extends AbstractDashboardController
             $goals = $syncService->syncButsFromFixtureEvents();
 
             $msg = sprintf(
-                'Synchronisation API-Football terminée. Pays: +%d / maj %d | Matchs: +%d / maj %d / ignorés %d | Joueurs: +%d / maj %d / ignorés %d | Buts: +%d (appels API événements: %d).',
+                'Synchronisation API-Football terminée. Pays: +%d / maj %d / drapeaux %d | Matchs: +%d / maj %d / ignorés %d | Joueurs: +%d / maj %d / ignorés %d | Buts: +%d (appels API événements: %d).',
                 $countries['created'],
                 $countries['updated'],
+                $countries['flags_downloaded'],
                 $matches['created'],
                 $matches['updated'],
                 $matches['skipped'],
@@ -158,6 +195,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin/sync/wc2026/players', name: 'admin_wc2026_sync_players', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026Players(Wc2026SyncService $syncService): Response
     {
         try {
@@ -187,6 +225,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin/sync/wc2026/players/by-country', name: 'admin_wc2026_sync_players_country_form', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026PlayersCountryForm(CountryRepository $countryRepository): Response
     {
         return $this->render('admin/sync_players_by_country.html.twig', [
@@ -195,6 +234,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[Route('/admin/sync/wc2026/players/by-country', name: 'admin_wc2026_sync_players_country_submit', methods: ['POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function syncWc2026PlayersCountrySubmit(Request $request, Wc2026SyncService $syncService): Response
     {
         if (!$this->isCsrfTokenValid('sync_wc2026_players_country', (string) $request->request->get('_token'))) {
@@ -258,7 +298,54 @@ class DashboardController extends AbstractDashboardController
         return $this->redirectToRoute('admin');
     }
 
+    #[Route('/admin/sync/download/country-flags', name: 'admin_download_country_flags', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
+    public function downloadCountryFlags(Wc2026SyncService $syncService): Response
+    {
+        try {
+            if (\function_exists('set_time_limit')) {
+                @set_time_limit(300);
+            }
+
+            $result = $syncService->downloadAllCountryFlags();
+            $this->addFlash('success', sprintf(
+                'Drapeaux : %d téléchargés, %d ignorés (déjà locaux ou absents), %d échecs.',
+                $result['downloaded'],
+                $result['skipped'],
+                $result['failed'],
+            ));
+        } catch (\Throwable $e) {
+            $this->addFlash('danger', sprintf('Erreur téléchargement drapeaux : %s', $e->getMessage()));
+        }
+
+        return $this->redirectToRoute('admin');
+    }
+
+    #[Route('/admin/sync/download/buteur-photos', name: 'admin_download_buteur_photos', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
+    public function downloadButeurPhotos(Wc2026SyncService $syncService): Response
+    {
+        try {
+            if (\function_exists('set_time_limit')) {
+                @set_time_limit(600);
+            }
+
+            $result = $syncService->downloadAllButeurPhotos();
+            $this->addFlash('success', sprintf(
+                'Photos joueurs : %d téléchargées, %d ignorées (déjà locales ou absentes), %d échecs.',
+                $result['downloaded'],
+                $result['skipped'],
+                $result['failed'],
+            ));
+        } catch (\Throwable $e) {
+            $this->addFlash('danger', sprintf('Erreur téléchargement photos : %s', $e->getMessage()));
+        }
+
+        return $this->redirectToRoute('admin');
+    }
+
     #[Route('/admin/sync/wc2026/players/stop', name: 'admin_wc2026_sync_players_stop', methods: ['GET'])]
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'Synchronisation API réservée au super administrateur.')]
     public function stopWc2026Players(ApiFootballPlayerSyncStop $playerSyncStop): Response
     {
         $playerSyncStop->requestStop();

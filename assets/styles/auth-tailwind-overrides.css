@@ -74,12 +74,22 @@
     color: #6b7280 !important;
 }
 
-.auth-wrap .ta-auth-form-wrap .ta-auth-link-row a {
-    color: #1d4ed8 !important;
+.auth-wrap .ta-auth-form-wrap .ta-auth-link-row a,
+.auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit) {
+    color: #e82030 !important;
+    font-weight: 600;
+    text-decoration: none;
 }
 
-.auth-wrap .ta-auth-form-wrap .ta-auth-link-row a:hover {
-    color: #1e40af !important;
+.auth-wrap .ta-auth-form-wrap .ta-auth-link-row a:hover,
+.auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):hover {
+    color: #cc1a28 !important;
+    text-decoration: underline;
+}
+
+.auth-wrap .ta-auth-form-wrap .ta-auth-link-row a:visited,
+.auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):visited {
+    color: #e82030 !important;
 }
 
 .auth-wrap .ta-auth-form-wrap .ta-auth-social {
@@ -157,18 +167,20 @@
 .auth-wrap .ta-auth-form-wrap .ta-auth-submit {
     width: 100%;
     margin-top: 10px;
-    border-radius: 10px;
-    background: #2563eb;
-    color: #ffffff;
-    border: 0;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 10px 14px;
+    border-radius: 0;
+    background: #e82030 !important;
+    color: #ffffff !important;
+    border: 2px solid #e82030 !important;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 22px;
     cursor: pointer;
 }
 
 .auth-wrap .ta-auth-form-wrap .ta-auth-submit:hover {
-    background: #1d4ed8;
+    background: #cc1a28 !important;
+    border-color: #cc1a28 !important;
+    color: #ffffff !important;
 }
 
 @media (max-width: 960px) {

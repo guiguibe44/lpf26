@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TeamMemberRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_team_member_team_id_nickname', columns: ['team_id', 'nickname'])]
-#[UniqueEntity(fields: ['team', 'nickname'], message: 'Ce surnom est deja utilise dans cette equipe.')]
+#[UniqueEntity(fields: ['team', 'nickname'], message: 'Ce surnom est déjà utilisé dans cette équipe.')]
 class TeamMember
 {
     #[ORM\Id]

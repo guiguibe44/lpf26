@@ -39,6 +39,9 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/$, roles: PUBLIC_ACCESS }
@@ -48,9 +51,10 @@ security:
         - { path: ^/invitation, roles: PUBLIC_ACCESS }
         # API JSON : cookie « se souvenir de moi » (évite une réponse HTML sur fetch / JSON).
         - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
+        - { path: ^/admin/sync/wc2026/goals, roles: ROLE_ADMIN }
+        - { path: ^/admin/sync, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        # Front : IS_AUTHENTICATED inclut « remember me ». Avec FULLY, un admin en REMEMBERED
-        # était refusé sur /accueil puis renvoyé vers /login, qui le redirigeait vers EasyAdmin.
+        # Front : IS_AUTHENTICATED inclut « remember me » (admins = joueurs + lien menu EasyAdmin).
         - { path: ^/, roles: IS_AUTHENTICATED }
 
 when@test:

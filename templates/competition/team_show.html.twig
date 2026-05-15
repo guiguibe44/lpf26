@@ -123,7 +123,7 @@
                         {% for ev in ranking_evolution_by_day %}
                             {% set lm = ev.last_match %}
                             <tr>
-                                <td>{{ ev.date_display|date('l d F Y') }}</td>
+                                <td>{{ ev.date_display|fr_date_long }}</td>
                                 <td class="ta-num"><strong>#{{ ev.position }}</strong></td>
                                 <td class="ta-num">{{ ev.teams_count }}</td>
                                 <td class="ta-num">{{ ev.total_points|number_format(0, ',', ' ') }}</td>
@@ -163,7 +163,7 @@
 
     <section class="ta-card mt-5">
         <h2 class="ta-card-title">Matchs joues et points par joueur</h2>
-        <p class="ta-card-text">Matchs avec score final enregistre ; points issus du barème LPF (apres notation).</p>
+        <p class="ta-card-text">Matchs avec score final enregistré ; points issus du barème LPF (après notation).</p>
 
         {% if played_rows is empty %}
             <p class="ta-card-text mt-3">Aucun match joue avec pronostic note pour les membres de cette equipe.</p>

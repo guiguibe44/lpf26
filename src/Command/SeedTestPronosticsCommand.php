@@ -56,10 +56,6 @@ final class SeedTestPronosticsCommand extends Command
 
         foreach ($matches as $match) {
             foreach ($users as $user) {
-                if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-                    continue;
-                }
-
                 $pronostic = $this->pronosticRepository->findOneBy([
                     'joueur' => $user,
                     'match' => $match,

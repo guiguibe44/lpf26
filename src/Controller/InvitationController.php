@@ -31,7 +31,7 @@ class InvitationController extends AbstractController
         }
 
         if ($teamMemberRepository->count(['team' => $invitation->getTeam()]) >= 2) {
-            $this->addFlash('warning', 'Cette equipe est deja complete.');
+            $this->addFlash('warning', 'Cette équipe est déjà complète.');
 
             return $this->redirectToRoute('app_login');
         }
@@ -55,7 +55,7 @@ class InvitationController extends AbstractController
                 'team' => $invitation->getTeam(),
                 'nickname' => $nickname,
             ])) {
-                $this->addFlash('danger', 'Ce surnom est deja utilise dans cette equipe.');
+                $this->addFlash('danger', 'Ce surnom est déjà utilisé dans cette équipe.');
 
                 return $this->redirectToRoute('app_team_invitation_accept', ['token' => $token]);
             }
@@ -74,7 +74,7 @@ class InvitationController extends AbstractController
             $entityManager->persist($member);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Inscription terminee. Connectez-vous pour commencer.');
+            $this->addFlash('success', 'Inscription terminée. Connectez-vous pour commencer.');
 
             return $this->redirectToRoute('app_login');
         }

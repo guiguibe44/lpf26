@@ -76,7 +76,7 @@ class TeamInvitationCrudController extends AbstractAppCrudController
         }
 
         if ($invitation->isAccepted()) {
-            $this->addFlash('warning', 'Cette invitation est deja acceptee.');
+            $this->addFlash('warning', 'Cette invitation est déjà acceptée.');
 
             return $this->redirect($referrer);
         }
@@ -97,7 +97,7 @@ class TeamInvitationCrudController extends AbstractAppCrudController
             ->html($invitationHtml);
         $mailer->send($email);
 
-        $this->addFlash('success', 'Invitation relancee avec succes.');
+        $this->addFlash('success', 'Invitation relancée avec succès.');
 
         return $this->redirect($referrer);
     }
