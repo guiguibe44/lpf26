@@ -41,11 +41,11 @@ final class ApiButeurController extends AbstractController
                 'id' => $b->getId(),
                 'prenom' => $b->getPrenom(),
                 'nom' => $b->getNom(),
-                'photo' => $b->getPhoto(),
+                'photo' => $b->getPhotoPublicPath(),
                 'pays' => $pays ? [
                     'id' => $pays->getId(),
                     'nom' => $pays->getNom(),
-                    'drapeau' => $pays->getDrapeau(),
+                    'drapeau' => $pays->getDrapeauPublicPath(),
                 ] : null,
             ];
         }

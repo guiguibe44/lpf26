@@ -43,7 +43,7 @@ class CountryCrudController extends AbstractAppCrudController
                 ->setHelp('Lettre de poule CDM 2026 (A à L). Met à jour la phase des matchs de groupe de ce pays.'),
             ImageField::new('drapeau')
                 ->setLabel('Drapeau')
-                ->setBasePath('')
+                ->setBasePath('/uploads/drapeaux')
                 ->setUploadDir('public/uploads/drapeaux')
                 ->setRequired(false),
         ];
@@ -52,7 +52,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->normalizeUploadPath($entityInstance->getDrapeau(), '/uploads/drapeaux/'));
+            $entityInstance->setDrapeau($this->normalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 
@@ -62,7 +62,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->normalizeUploadPath($entityInstance->getDrapeau(), '/uploads/drapeaux/'));
+            $entityInstance->setDrapeau($this->normalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 
@@ -92,12 +92,4 @@ class CountryCrudController extends AbstractAppCrudController
         }
     }
 
-    private function normalizeUploadPath(?string $path, string $prefix): ?string
-    {
-        if (null === $path || '' === $path || str_starts_with($path, '/uploads/')) {
-            return $path;
-        }
-
-        return $prefix.ltrim($path, '/');
-    }
 }

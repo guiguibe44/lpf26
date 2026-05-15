@@ -52,6 +52,11 @@ class Country
         return $this;
     }
 
+    public function getDrapeauPublicPath(): ?string
+    {
+        return \App\Service\UploadPathHelper::publicPath($this->drapeau, 'drapeaux');
+    }
+
     public function getGroupe(): ?string
     {
         return $this->groupe;

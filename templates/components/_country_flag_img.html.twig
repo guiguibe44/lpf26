@@ -1,6 +1,6 @@
 {# @var country \App\Entity\Country|null #}
 {% if country is defined and country %}
-    {% set d = country.drapeau %}
+    {% set d = country.drapeauPublicPath %}
     {% if d %}
         {% set src = (d starts with 'http://' or d starts with 'https://') ? d : asset(d) %}
         <img src="{{ src }}" alt="{{ country.nom }}"{% if img_classes is defined and img_classes %} class="{{ img_classes }}"{% endif %}>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Service\UploadPathHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
@@ -27,4 +28,9 @@ abstract class AbstractAppCrudController extends AbstractCrudController
      * @return list<string>
      */
     abstract protected function getAdminSearchFields(): array;
+
+    protected function normalizeUploadFilename(?string $path, string $uploadSubdir): ?string
+    {
+        return UploadPathHelper::normalizeStored($path, $uploadSubdir);
+    }
 }

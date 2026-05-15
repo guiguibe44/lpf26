@@ -37,7 +37,7 @@ class ButeurCrudController extends AbstractAppCrudController
             AssociationField::new('pays'),
             ImageField::new('photo')
                 ->setLabel('Photo')
-                ->setBasePath('')
+                ->setBasePath('/uploads/buteurs')
                 ->setUploadDir('public/uploads/buteurs')
                 ->setRequired(false),
         ];
@@ -46,7 +46,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->normalizeUploadPath($entityInstance->getPhoto(), '/uploads/buteurs/'));
+            $entityInstance->setPhoto($this->normalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -55,18 +55,10 @@ class ButeurCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->normalizeUploadPath($entityInstance->getPhoto(), '/uploads/buteurs/'));
+            $entityInstance->setPhoto($this->normalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::updateEntity($entityManager, $entityInstance);
     }
 
-    private function normalizeUploadPath(?string $path, string $prefix): ?string
-    {
-        if (null === $path || '' === $path || str_starts_with($path, '/uploads/')) {
-            return $path;
-        }
-
-        return $prefix.ltrim($path, '/');
-    }
 }

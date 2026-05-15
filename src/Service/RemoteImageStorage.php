@@ -28,7 +28,7 @@ final class RemoteImageStorage
 
     public function isLocalUpload(?string $path, string $subdir): bool
     {
-        return null !== $path && str_starts_with($path, '/uploads/'.$subdir.'/');
+        return UploadPathHelper::isLocalUpload($path, $subdir);
     }
 
     /**
@@ -82,15 +82,16 @@ final class RemoteImageStorage
                 return null;
             }
 
-            return '/uploads/'.$subdir.'/'.$filename;
+            return $filename;
         } catch (\Throwable) {
             return null;
         }
     }
 
-    public function deleteLocalFile(?string $publicPath, string $subdir): void
+    public function deleteLocalFile(?string $stored, string $subdir): void
     {
-        if (!$this->isLocalUpload($publicPath, $subdir)) {
+        $publicPath = UploadPathHelper::publicPath($stored, $subdir);
+        if (null === $publicPath || !UploadPathHelper::isLocalUpload($stored, $subdir)) {
             return;
         }
 

@@ -95,6 +95,11 @@ class Buteur
         return $this;
     }
 
+    public function getPhotoPublicPath(): ?string
+    {
+        return \App\Service\UploadPathHelper::publicPath($this->photo, 'buteurs');
+    }
+
     public function getApiSportsPlayerId(): ?int
     {
         return $this->apiSportsPlayerId;

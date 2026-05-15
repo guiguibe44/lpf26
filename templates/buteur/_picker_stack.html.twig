@@ -51,20 +51,20 @@
                     <img
                         class="dashboard-buteur-preview-img"
                         data-dashboard-buteur-target="previewPhotoImg"
-                        src="{{ current_b and current_b.photo ? current_b.photo : '' }}"
+                        src="{{ current_b and current_b.photoPublicPath ? (current_b.photoPublicPath starts with 'http' ? current_b.photoPublicPath : asset(current_b.photoPublicPath)) : '' }}"
                         width="40"
                         height="40"
                         alt=""
-                        {% if not current_b or not current_b.photo %}hidden{% endif %}
+                        {% if not current_b or not current_b.photoPublicPath %}hidden{% endif %}
                         loading="lazy"
                         decoding="async"
                     >
                     <span
                         class="dashboard-buteur-preview-photo dashboard-buteur-preview-photo--placeholder"
                         data-dashboard-buteur-target="previewPhotoPlaceholder"
-                        {% if current_b and current_b.photo %}hidden{% endif %}
+                        {% if current_b and current_b.photoPublicPath %}hidden{% endif %}
                         aria-hidden="true"
-                    >{% if current_b and not current_b.photo %}{{- (current_b.prenom|slice(0, 1) ~ current_b.nom|slice(0, 1))|upper -}}{% elseif not current_b %}?{% endif %}</span>
+                    >{% if current_b and not current_b.photoPublicPath %}{{- (current_b.prenom|slice(0, 1) ~ current_b.nom|slice(0, 1))|upper -}}{% elseif not current_b %}?{% endif %}</span>
                     <span class="dashboard-buteur-preview" data-dashboard-buteur-target="preview">{% if current_b %}{{ current_b.prenom }} {{ current_b.nom }}{% if current_b.pays %} — {{ current_b.pays.nom }}{% endif %}{% else %}—{% endif %}</span>
                 </div>
 
@@ -88,8 +88,8 @@
                                 {% endif %}
                             </div>
                             <div class="dashboard-buteur-footer-slot dashboard-buteur-footer-slot--buteur" title="{% if partner.buteurChoisi %}{{ partner.buteurChoisi.prenom }} {{ partner.buteurChoisi.nom }}{% else %}Buteur non choisi{% endif %}">
-                                {% if partner.buteurChoisi and partner.buteurChoisi.photo %}
-                                    <img class="dashboard-buteur-footer-buteur-photo" src="{{ partner.buteurChoisi.photo }}" alt="" width="48" height="48" loading="lazy" decoding="async">
+                                {% if partner.buteurChoisi and partner.buteurChoisi.photoPublicPath %}
+                                    <img class="dashboard-buteur-footer-buteur-photo" src="{{ partner.buteurChoisi.photoPublicPath starts with 'http' ? partner.buteurChoisi.photoPublicPath : asset(partner.buteurChoisi.photoPublicPath) }}" alt="" width="48" height="48" loading="lazy" decoding="async">
                                 {% elseif partner.buteurChoisi %}
                                     <span class="dashboard-buteur-footer-buteur-photo dashboard-buteur-footer-buteur-photo--placeholder" aria-hidden="true">
                                         {{- (partner.buteurChoisi.prenom|slice(0, 1) ~ partner.buteurChoisi.nom|slice(0, 1))|upper -}}
@@ -114,8 +114,8 @@
             <ul class="dashboard-buteur-taken-list">
                 {% for b in buteurs_pris_par_autres_equipes %}
                     <li class="dashboard-buteur-taken-row">
-                        {% if b.photo %}
-                            <img class="dashboard-buteur-taken-photo" src="{{ b.photo }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+                        {% if b.photoPublicPath %}
+                            <img class="dashboard-buteur-taken-photo" src="{{ b.photoPublicPath starts with 'http' ? b.photoPublicPath : asset(b.photoPublicPath) }}" alt="" width="40" height="40" loading="lazy" decoding="async">
                         {% else %}
                             <span class="dashboard-buteur-taken-photo dashboard-buteur-taken-photo--placeholder" aria-hidden="true">{{ (b.prenom|slice(0, 1) ~ b.nom|slice(0, 1))|upper }}</span>
                         {% endif %}
@@ -123,8 +123,8 @@
                             <span class="dashboard-buteur-taken-name">{{ b.prenom }} {{ b.nom }}</span>
                             {% if b.pays %}
                                 <span class="dashboard-buteur-taken-pays">
-                                    {% if b.pays.drapeau %}
-                                        <img class="dashboard-buteur-taken-flag" src="{{ b.pays.drapeau }}" alt="" width="18" height="12" loading="lazy" decoding="async">
+                                    {% if b.pays.drapeauPublicPath %}
+                                        <img class="dashboard-buteur-taken-flag" src="{{ b.pays.drapeauPublicPath starts with 'http' ? b.pays.drapeauPublicPath : asset(b.pays.drapeauPublicPath) }}" alt="" width="18" height="12" loading="lazy" decoding="async">
                                     {% endif %}
                                     {{ b.pays.nom }}
                                 </span>
