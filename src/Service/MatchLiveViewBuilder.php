@@ -34,6 +34,7 @@ final class MatchLiveViewBuilder
         private readonly JokerScoringApplicator $jokerScoringApplicator,
         private readonly TeamJokerService $teamJokerService,
         private readonly JokerStealPointsService $jokerStealPointsService,
+        private readonly ButeurJokerPointsService $buteurJokerPointsService,
     ) {
     }
 
@@ -93,7 +94,7 @@ final class MatchLiveViewBuilder
                 $previousTotal + $matchPoints,
                 0,
                 $teamPronostics,
-                $this->buildButeursForTeam($team, $matchCountryIds),
+                $this->buildButeursForTeam($team, $match, $matchCountryIds),
                 $jokersByTeamId[$teamId] ?? null,
             );
         }
@@ -229,11 +230,13 @@ final class MatchLiveViewBuilder
      *
      * @return list<array{name: string, country: string|null, pointsPerGoal: float}>
      */
-    private function buildButeursForTeam(Team $team, array $matchCountryIds): array
+    private function buildButeursForTeam(Team $team, GameMatch $match, array $matchCountryIds): array
     {
         if ([] === $matchCountryIds) {
             return [];
         }
+
+        $doubleButeurJoker = $this->buteurJokerPointsService->teamHasDoubleButeurJokerOnMatch($team, $match);
 
         $rows = [];
         foreach ($team->getMembers() as $member) {
@@ -254,12 +257,16 @@ final class MatchLiveViewBuilder
 
             $coefficient = $this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur);
             $pointsPerGoal = (float) round(ButeurGoalScoringService::DEFAULT_POINTS_BASE * $coefficient);
+            if ($doubleButeurJoker) {
+                $pointsPerGoal *= 2.0;
+            }
 
             $rows[] = [
                 'name' => (string) $buteur,
                 'country' => $buteur->getPays()?->getNom(),
                 'pointsPerGoal' => $pointsPerGoal,
                 'coefficient' => $coefficient,
+                'double_joker' => $doubleButeurJoker,
             ];
         }
 

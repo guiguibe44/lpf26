@@ -16,6 +16,8 @@
         return;
     }
 
+    const cotesVisible = config.cotesVisible !== false && teamsRoot.dataset.cotesVisible !== '0';
+
     let debounceTimer = null;
 
     const formatPoints = (value) => {
@@ -183,14 +185,24 @@
 
                 const baseEl = row.querySelector('[data-prono-base]');
                 const coteEl = row.querySelector('[data-prono-cote]');
+                const coteSepEl = row.querySelector('[data-prono-cote-sep]');
                 const pointsEl = row.querySelector('[data-prono-points]');
                 const riskEl = row.querySelector('[data-prono-risk]');
 
                 if (baseEl) {
                     baseEl.textContent = String(prono.basePoints);
                 }
+                if (coteSepEl) {
+                    coteSepEl.hidden = !cotesVisible;
+                }
                 if (coteEl) {
-                    coteEl.textContent = formatCote(prono.coefficient);
+                    if (cotesVisible) {
+                        coteEl.hidden = false;
+                        coteEl.textContent = formatCote(prono.coefficient);
+                    } else {
+                        coteEl.hidden = true;
+                        coteEl.textContent = '';
+                    }
                 }
                 if (pointsEl) {
                     pointsEl.textContent = formatPoints(prono.points);

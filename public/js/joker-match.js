@@ -14,6 +14,7 @@
     const targetSelectEl = document.getElementById('joker-dialog-target-select');
     const targetConfirmEl = document.getElementById('joker-dialog-target-confirm');
     const targetCancelEl = document.getElementById('joker-dialog-target-cancel');
+    const espionEl = document.getElementById('joker-dialog-espion');
 
     let currentMatchId = null;
     let currentStateUrl = null;
@@ -238,6 +239,81 @@
         }
     };
 
+    const renderEspionIntel = (intel) => {
+        if (!espionEl) {
+            return;
+        }
+
+        if (!intel) {
+            espionEl.hidden = true;
+            espionEl.replaceChildren();
+
+            return;
+        }
+
+        espionEl.hidden = false;
+        espionEl.className = 'joker-dialog-espion match-espion-panel';
+        espionEl.replaceChildren();
+
+        const title = document.createElement('p');
+        title.className = 'match-espion-title';
+        title.innerHTML = '<i class="ti ti-eye" aria-hidden="true"></i> Renseignements espion';
+        espionEl.appendChild(title);
+
+        const cotesSection = document.createElement('div');
+        cotesSection.className = 'match-espion-section';
+        const cotesTitle = document.createElement('h4');
+        cotesTitle.className = 'match-espion-section-title';
+        cotesTitle.textContent = 'Cotes du match';
+        cotesSection.appendChild(cotesTitle);
+
+        const c = intel.cotes || {};
+        const cotesP = document.createElement('p');
+        cotesP.className = intel.cotes && intel.cotes.moyenne != null ? 'match-espion-cotes' : 'match-espion-empty';
+        if (c.moyenne != null) {
+            let text = 'Moy. ' + Number(c.moyenne).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (c.min != null && c.max != null) {
+                text += ' · min ' + Number(c.min).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                text += ' · max ' + Number(c.max).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            text += ' (' + (c.pronostics_count || 0) + ' pronostic' + ((c.pronostics_count || 0) > 1 ? 's' : '') + ')';
+            cotesP.textContent = text;
+        } else {
+            cotesP.textContent = 'Pas encore assez de pronostics pour estimer les cotes.';
+        }
+        cotesSection.appendChild(cotesP);
+        espionEl.appendChild(cotesSection);
+
+        const jokersSection = document.createElement('div');
+        jokersSection.className = 'match-espion-section';
+        const jokersTitle = document.createElement('h4');
+        jokersTitle.className = 'match-espion-section-title';
+        jokersTitle.textContent = 'Jokers posés';
+        jokersSection.appendChild(jokersTitle);
+
+        const jokers = intel.jokers || [];
+        if (jokers.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'match-espion-empty';
+            empty.textContent = 'Aucun joker posé sur ce match pour le moment.';
+            jokersSection.appendChild(empty);
+        } else {
+            const ul = document.createElement('ul');
+            ul.className = 'match-espion-jokers-list';
+            jokers.forEach((row) => {
+                const li = document.createElement('li');
+                li.className = 'match-espion-joker-item';
+                li.textContent = row.team_name + ' — ' + row.joker_name;
+                if (row.target_team_name) {
+                    li.textContent += ' → ' + row.target_team_name;
+                }
+                ul.appendChild(li);
+            });
+            jokersSection.appendChild(ul);
+        }
+        espionEl.appendChild(jokersSection);
+    };
+
     const applyState = (state) => {
         if (!state) {
             return;
@@ -246,6 +322,7 @@
         currentPickerState = state;
         hideTargetPicker();
         renderList(state);
+        renderEspionIntel(state.espion_intel || null);
 
         if (currentMatchId) {
             refreshCardBadge(currentMatchId, state.active_on_match || null);
@@ -290,6 +367,13 @@
         text.innerHTML = '<strong>Joker actif :</strong> ' + activeText;
         wrap.appendChild(text);
 
+        if (active.code === 'espion') {
+            const irreversible = document.createElement('p');
+            irreversible.className = 'joker-dialog-irreversible-note';
+            irreversible.textContent = 'Ce joker est définitif : il ne peut pas être retiré.';
+            wrap.appendChild(irreversible);
+        }
+
         if (active.can_remove) {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -329,6 +413,13 @@
             note.className = 'joker-dialog-note';
             note.textContent = 'Joker en cours sur ' + state.pending_elsewhere.match_label + ' (« ' + state.pending_elsewhere.joker_name + ' »).';
             listEl.appendChild(note);
+        }
+
+        if (state.team_buteur_countries && state.team_buteur_countries.length > 0) {
+            const buteurNote = document.createElement('p');
+            buteurNote.className = 'joker-dialog-note joker-dialog-buteur-note';
+            buteurNote.textContent = 'Pays de vos buteurs : ' + state.team_buteur_countries.join(', ') + ' (joker Double buteur : match concerné uniquement).';
+            listEl.appendChild(buteurNote);
         }
 
         (state.jokers || []).forEach((joker) => {
@@ -385,6 +476,9 @@
                 if (joker.requires_target_team) {
                     btn.dataset.jokerRequiresTarget = '1';
                 }
+                if (joker.requires_confirmation) {
+                    btn.dataset.jokerRequiresConfirm = '1';
+                }
                 itemActions.appendChild(btn);
             } else if (joker.already_used) {
                 const badge = document.createElement('span');
@@ -439,6 +533,26 @@
         messageEl.textContent = message;
     };
 
+    const confirmPlaceJoker = (joker) => {
+        if (!joker) {
+            return true;
+        }
+
+        if (joker.requires_confirmation && joker.confirmation_message) {
+            return window.confirm(joker.confirmation_message);
+        }
+
+        return true;
+    };
+
+    const findJokerInState = (state, jokerId) => {
+        if (!state || !state.jokers) {
+            return null;
+        }
+
+        return state.jokers.find((j) => String(j.id) === String(jokerId)) || null;
+    };
+
     const placeJoker = (jokerId, targetTeamId) => {
         if (!currentPlaceUrl) {
             return;
@@ -463,6 +577,11 @@
                 }
 
                 showFeedback(data.message || 'Joker posé.', false);
+                if (data.state && data.state.espion_intel) {
+                    window.location.reload();
+
+                    return;
+                }
                 applyState(data.state);
             })
             .catch((err) => {
@@ -557,9 +676,16 @@
         if (playBtn && dialog.contains(playBtn)) {
             const jokerId = playBtn.dataset.jokerPlay;
             const requiresTarget = playBtn.dataset.jokerRequiresTarget === '1';
+            const joker = findJokerInState(currentPickerState, jokerId);
             if (jokerId && requiresTarget && currentPickerState) {
+                if (!confirmPlaceJoker(joker)) {
+                    return;
+                }
                 showTargetPicker(jokerId, currentPickerState);
             } else if (jokerId) {
+                if (!confirmPlaceJoker(joker)) {
+                    return;
+                }
                 placeJoker(jokerId, null);
             }
 
@@ -567,6 +693,10 @@
         }
 
         if (event.target === targetConfirmEl && pendingJokerId && targetSelectEl) {
+            const joker = findJokerInState(currentPickerState, pendingJokerId);
+            if (!confirmPlaceJoker(joker)) {
+                return;
+            }
             placeJoker(pendingJokerId, targetSelectEl.value);
 
             return;

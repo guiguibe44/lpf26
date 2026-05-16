@@ -29,6 +29,7 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_is_live', [$this, 'isMatchLive']),
             new TwigFunction('match_is_finished', [$this, 'isMatchFinished']),
             new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
+            new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
         ];
     }
 
@@ -57,6 +58,16 @@ final class AppExtension extends AbstractExtension
             : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
 
         return $this->matchStatusResolver->canEditBeforeKickoff($match, $at);
+    }
+
+    /** Cotes affichables à partir du coup d'envoi (live ou terminé). */
+    public function areMatchCotesVisible(GameMatch $match, ?\DateTimeInterface $now = null): bool
+    {
+        $at = $now instanceof \DateTimeImmutable
+            ? $now
+            : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
+
+        return $this->matchStatusResolver->isMatchStarted($match, $at);
     }
 
     public function formatDateLong(?\DateTimeInterface $date): string

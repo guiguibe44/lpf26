@@ -24,6 +24,9 @@ final class TeamJokerService
         private readonly MatchStatusResolver $matchStatusResolver,
         private readonly PronosticScoringService $pronosticScoringService,
         private readonly TeamRepository $teamRepository,
+        private readonly MatchEspionService $matchEspionService,
+        private readonly ButeurJokerPointsService $buteurJokerPointsService,
+        private readonly TeamRankingService $teamRankingService,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -160,7 +163,7 @@ final class TeamJokerService
                 'code' => (string) $joker?->getCode(),
                 'target_team_id' => $target?->getId(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
-                'can_remove' => $this->isMatchOpenForJoker($match),
+                'can_remove' => $this->canRemoveUsage($usageOnMatch, $match),
             ];
         }
 
@@ -210,9 +213,13 @@ final class TeamJokerService
                 );
             } elseif (!$canPlaceOnThisMatch['allowed']) {
                 $disabledReason = $canPlaceOnThisMatch['reason'];
+            } elseif (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode() && !$this->buteurJokerPointsService->isMatchEligibleForDoubleButeurJoker($team, $match)) {
+                $disabledReason = $this->formatDoubleButeurIneligibleReason($team);
             } else {
                 $canPlay = true;
             }
+
+            $isEspion = Joker::CODE_ESPION === $joker->getCode();
 
             $jokers[] = [
                 'id' => $jokerId,
@@ -221,6 +228,8 @@ final class TeamJokerService
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
                 'requires_target_team' => Joker::CODE_PIQUE_POINTS === $joker->getCode(),
+                'requires_confirmation' => $isEspion,
+                'confirmation_message' => $isEspion ? Joker::ESPION_PLACE_CONFIRMATION : null,
                 'can_play' => $canPlay,
                 'disabled_reason' => $disabledReason,
                 'already_used' => $alreadyUsed,
@@ -245,6 +254,17 @@ final class TeamJokerService
             static fn (array $a, array $b): int => strcmp($a['name'], $b['name']),
         );
 
+        $espionIntel = null;
+        if (
+            $activeOnMatch !== null
+            && Joker::CODE_ESPION === ($activeOnMatch['code'] ?? '')
+            && $this->matchEspionService->teamHasEspionOnMatchBeforeKickoff($team, $match)
+        ) {
+            $espionIntel = $this->matchEspionService->buildIntelForMatch($match);
+        }
+
+        $buteurCountries = $this->buteurJokerPointsService->getButeurCountryNamesForTeam($team);
+
         return [
             'can_manage' => true,
             'reason' => null,
@@ -252,6 +272,8 @@ final class TeamJokerService
             'pending_elsewhere' => $pendingElsewhere,
             'jokers' => $jokers,
             'opponent_teams' => $opponentTeams,
+            'espion_intel' => $espionIntel,
+            'team_buteur_countries' => $buteurCountries,
         ];
     }
 
@@ -313,6 +335,10 @@ final class TeamJokerService
             throw new \InvalidArgumentException('Votre équipe a déjà utilisé ce joker.');
         }
 
+        if (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode() && !$this->buteurJokerPointsService->isMatchEligibleForDoubleButeurJoker($team, $match)) {
+            throw new \InvalidArgumentException($this->formatDoubleButeurIneligibleReason($team));
+        }
+
         $targetTeam = $this->resolveTargetTeamForJoker($team, $joker, $targetTeam);
 
         $usage = (new TeamJokerUsage())
@@ -323,6 +349,8 @@ final class TeamJokerService
 
         $this->entityManager->persist($usage);
         $this->entityManager->flush();
+
+        $this->afterJokerUsageChanged($match, $joker);
 
         if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
             $this->pronosticScoringService->rescoreForMatch($match);
@@ -350,8 +378,18 @@ final class TeamJokerService
             throw new \InvalidArgumentException('Aucun joker posé sur ce match.');
         }
 
+        if (!$this->canRemoveUsage($usage, $match)) {
+            throw new \InvalidArgumentException('Ce joker ne peut pas être retiré une fois posé.');
+        }
+
+        $joker = $usage->getJoker();
+
         $this->entityManager->remove($usage);
         $this->entityManager->flush();
+
+        if ($joker instanceof Joker) {
+            $this->afterJokerUsageChanged($match, $joker);
+        }
 
         if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
             $this->pronosticScoringService->rescoreForMatch($match);
@@ -400,6 +438,19 @@ final class TeamJokerService
         return $this->matchStatusResolver->canEditBeforeKickoff($match);
     }
 
+    public function canRemoveUsage(TeamJokerUsage $usage, GameMatch $match): bool
+    {
+        if (!$this->isMatchOpenForJoker($match)) {
+            return false;
+        }
+
+        if (Joker::CODE_ESPION === $usage->getJoker()?->getCode()) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function resolveTargetTeamForJoker(Team $team, Joker $joker, ?Team $targetTeam): ?Team
     {
         if (Joker::CODE_PIQUE_POINTS === $joker->getCode()) {
@@ -421,6 +472,28 @@ final class TeamJokerService
         }
 
         return null;
+    }
+
+    private function afterJokerUsageChanged(GameMatch $match, Joker $joker): void
+    {
+        if (Joker::CODE_DOUBLE_BUTEUR !== $joker->getCode()) {
+            return;
+        }
+
+        $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+    }
+
+    private function formatDoubleButeurIneligibleReason(Team $team): string
+    {
+        $countries = $this->buteurJokerPointsService->getButeurCountryNamesForTeam($team);
+        if ([] === $countries) {
+            return 'Choisissez d\'abord les buteurs de votre équipe (pays requis).';
+        }
+
+        return sprintf(
+            'Ce joker ne peut être posé que sur un match impliquant le pays d\'un de vos buteurs (%s).',
+            implode(', ', $countries),
+        );
     }
 
     private function formatMatchLabel(?GameMatch $match): string

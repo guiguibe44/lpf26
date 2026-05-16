@@ -128,6 +128,7 @@
                     now: now,
                     prono_access_blocked: prono_access_blocked|default(false),
                     joker_usage_by_match_id: joker_usage_by_match_id|default({}),
+                    espion_intel_by_match_id: espion_intel_by_match_id|default({}),
                     show_joker_ui: show_joker_ui|default(false)
                 } only %}
 
@@ -147,6 +148,6 @@
 {% block javascripts %}
     {{ parent() }}
     {% if app.user %}
-        <script src="{{ asset('js/joker-match.js') }}?v=4" defer></script>
+        <script src="{{ asset('js/joker-match.js') }}?v=6" defer></script>
     {% endif %}
 {% endblock %}

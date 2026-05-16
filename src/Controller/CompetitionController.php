@@ -13,6 +13,7 @@ use App\Service\GroupStandingsBuilder;
 use App\Service\KdoMatchWinnerService;
 use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
+use App\Service\MatchEspionService;
 use App\Service\TeamJokerService;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
@@ -32,6 +33,7 @@ class CompetitionController extends AbstractController
         TeamMemberRepository $teamMemberRepository,
         DefaultPronosticService $defaultPronosticService,
         TeamJokerService $teamJokerService,
+        MatchEspionService $matchEspionService,
     ): Response
     {
         $user = $this->getUser();
@@ -49,6 +51,9 @@ class CompetitionController extends AbstractController
             : [];
 
         $now = new \DateTimeImmutable();
+        $espion_intel_by_match_id = $team instanceof Team
+            ? $matchEspionService->buildIntelByMatchIdForTeam($team, $matches, $now)
+            : [];
         $matchdayNav = $this->buildMatchdayNavEntries($matches);
 
         return $this->render('competition/matches.html.twig', [
@@ -60,6 +65,7 @@ class CompetitionController extends AbstractController
             'now' => $now,
             'prono_access_blocked' => !$user->isCotisationPayee(),
             'joker_usage_by_match_id' => $joker_usage_by_match_id,
+            'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
         ]);
     }

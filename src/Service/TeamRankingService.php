@@ -8,6 +8,7 @@ use App\Entity\Buteur;
 use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Entity\TeamRankingSnapshot;
+use App\Entity\Team;
 use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
@@ -28,6 +29,7 @@ final class TeamRankingService
         private readonly UserRepository $userRepository,
         private readonly ButRepository $butRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ButeurJokerPointsService $buteurJokerPointsService,
     ) {
     }
 
@@ -137,7 +139,12 @@ final class TeamRankingService
                 continue;
             }
 
-            $statsByTeamId[$teamId]['totalPoints'] += $this->butRepository->sumPointsAttribuesForButeur($buteur);
+            $team = $statsByTeamId[$teamId]['team'];
+            if (!$team instanceof Team) {
+                continue;
+            }
+
+            $statsByTeamId[$teamId]['totalPoints'] += $this->buteurJokerPointsService->sumEffectivePointsForButeur($team, $buteur);
         }
 
         $stats = array_values($statsByTeamId);

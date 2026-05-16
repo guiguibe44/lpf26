@@ -25,6 +25,7 @@
                     {% for match in matches %}
                         {% set pronostic = pronostics_by_match_id[match.id] ?? null %}
                         {% set prono_blocked = prono_access_blocked|default(false) %}
+                        {% set cotes_visible = match_cotes_visible(match, now) %}
                         {% set can_pronostic = match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_blocked %}
                         {% set match_prono_blocked_cotisation = prono_blocked and match.statut == 'SCHEDULED' and match.dateHeure > now %}
                         <tr>
@@ -71,7 +72,7 @@
                                     <span class="ta-badge ta-badge-success">
                                         {{ pronostic.points|number_format(0, ',', ' ') }} pts
                                     </span>
-                                    {% if pronostic.coteCoefficient is not null and pronostic.pointsBase is not null %}
+                                    {% if cotes_visible and pronostic.coteCoefficient is not null and pronostic.pointsBase is not null %}
                                         <div class="text-xs text-slate-500 mt-1">
                                             Base: {{ pronostic.pointsBase }} x Cote: {{ pronostic.coteCoefficient|number_format(2, ',', ' ') }}
                                         </div>

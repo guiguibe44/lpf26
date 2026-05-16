@@ -1090,6 +1090,113 @@ button.match-card-joker-badge {
     font-weight: 600;
 }
 
+.match-espion-panel {
+    margin-top: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.5rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    width: 100%;
+    text-align: left;
+}
+
+.joker-dialog-espion.match-espion-panel {
+    margin: 0.75rem 0 1rem;
+}
+
+.match-espion-irreversible {
+    margin: 0 0 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #b45309;
+}
+
+.match-espion-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.match-espion-section {
+    margin-top: 0.5rem;
+}
+
+.match-espion-section-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #475569;
+}
+
+.match-espion-cotes,
+.match-espion-empty {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #334155;
+}
+
+.match-espion-meta {
+    color: #64748b;
+}
+
+.match-espion-jokers-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.match-espion-joker-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+}
+
+.match-espion-team-logo {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.match-espion-team-name {
+    font-weight: 600;
+}
+
+.match-espion-joker-badge {
+    font-size: 0.7rem;
+}
+
+.match-espion-target {
+    color: #6d28d9;
+    font-weight: 600;
+}
+
+.joker-dialog-buteur-note {
+    color: #1d4ed8;
+}
+
+.match-live-buteur-double {
+    font-size: 0.65rem;
+    vertical-align: middle;
+}
+
+.joker-dialog-irreversible-note {
+    margin: 0.35rem 0 0;
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #b45309;
+}
+
 .match-live-jokers-list {
     list-style: none;
     margin: 0;

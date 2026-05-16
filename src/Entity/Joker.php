@@ -15,6 +15,12 @@ class Joker
 
     public const CODE_PIQUE_POINTS = 'pique_points';
 
+    public const CODE_ESPION = 'espion';
+
+    public const CODE_DOUBLE_BUTEUR = 'double_buteur';
+
+    public const ESPION_PLACE_CONFIRMATION = 'Le joker Espion est définitif : une fois posé sur ce match, il ne peut plus être retiré. Souhaitez-vous le jouer ?';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

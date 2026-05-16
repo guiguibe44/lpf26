@@ -91,7 +91,10 @@
             <span class="match-live-legend">(n)</span> = rang avant le match.
             Pronostics anonymes (2 par équipe).
         </p>
-        {% include 'competition/_match_live_teams.html.twig' with { teams: live_view.teams } only %}
+        {% include 'competition/_match_live_teams.html.twig' with {
+            teams: live_view.teams,
+            cotes_visible: match_cotes_visible(match),
+        } only %}
     </section>
 {% endblock %}
 
@@ -103,7 +106,8 @@
             simulateUrl: {{ simulate_url|json_encode|raw }},
             defaultHome: {{ match.scoreDomicile ?? 0 }},
             defaultAway: {{ match.scoreExterieur ?? 0 }},
-            teamShowUrlBase: {{ path('app_team_show', { id: 0 })|replace({'/0': '/'})|json_encode|raw }}
+            teamShowUrlBase: {{ path('app_team_show', { id: 0 })|replace({'/0': '/'})|json_encode|raw }},
+            cotesVisible: {{ match_cotes_visible(match) ? 'true' : 'false' }}
         };
     </script>
 {% endblock %}

@@ -15,6 +15,7 @@ use App\Service\ButeurGoalScoringService;
 use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
 use App\Service\MatchStatusResolver;
+use App\Service\MatchEspionService;
 use App\Service\TeamJokerService;
 use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,7 @@ class HomeController extends AbstractController
         DefaultPronosticService $defaultPronosticService,
         MatchStatusResolver $matchStatusResolver,
         TeamJokerService $teamJokerService,
+        MatchEspionService $matchEspionService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -88,6 +90,9 @@ class HomeController extends AbstractController
         $joker_usage_by_match_id = $team instanceof Team
             ? $teamJokerService->buildUsageSummaryByMatchIdForTeam($team)
             : [];
+        $espion_intel_by_match_id = $team instanceof Team
+            ? $matchEspionService->buildIntelByMatchIdForTeam($team, $dashboardMatchList, $now)
+            : [];
 
         $buteur_stats = null;
         $buteurChoisi = $user->getButeurChoisi();
@@ -117,6 +122,7 @@ class HomeController extends AbstractController
             'buteurs_pris_par_autres_equipes' => $teamMemberRepository->findButeursChoisisParAutresEquipes($user),
             'buteur_stats' => $buteur_stats,
             'joker_usage_by_match_id' => $joker_usage_by_match_id,
+            'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
         ]);
     }

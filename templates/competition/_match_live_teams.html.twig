@@ -1,5 +1,7 @@
 {# @var teams \App\Dto\MatchLiveTeamRow[] #}
-<div class="match-live-teams" id="match-live-teams">
+{# cotes_visible: bool — défaut true (page live = match démarré) #}
+{% set cotes_visible = cotes_visible|default(true) %}
+<div class="match-live-teams" id="match-live-teams" data-cotes-visible="{{ cotes_visible ? '1' : '0' }}">
     {% for team in teams %}
         <article class="match-live-team-card" data-team-id="{{ team.teamId }}">
             <header class="match-live-team-head">
@@ -29,10 +31,15 @@
                     <div class="match-live-prono-row" data-pronostic-id="{{ prono.pronosticId }}">
                         <span class="match-live-prono-label">{{ prono.playerLabel }}</span>
                         <span class="match-live-prono-score" data-prono-score>{{ prono.predHome }} - {{ prono.predAway }}</span>
-                        <span class="match-live-prono-meta">
+                        <span class="match-live-prono-meta" data-prono-meta>
                             <span data-prono-base title="Points de base">{{ prono.basePoints }}</span>
-                            ×
-                            <span data-prono-cote title="Cote">{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
+                            {% if cotes_visible %}
+                                <span class="match-live-prono-cote-sep" data-prono-cote-sep>×</span>
+                                <span data-prono-cote title="Cote">{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
+                            {% else %}
+                                <span data-prono-cote-sep hidden>×</span>
+                                <span data-prono-cote hidden title="Cote"></span>
+                            {% endif %}
                         </span>
                         <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>
                             {{ prono.points|number_format(0, ',', ' ') }} pts
@@ -59,8 +66,12 @@
                                     <span class="match-live-buteur-country">{{ buteur.country }}</span>
                                 {% endif %}
                                 <span class="match-live-buteur-points">
-                                    +{{ buteur.pointsPerGoal|number_format(0, ',', ' ') }} pts / but
-                                    <span class="match-live-buteur-cote">(cote {{ buteur.coefficient|number_format(2, ',', ' ') }})</span>
+                                    +{{ buteur.pointsPerGoal|number_format(0, ',', ' ') }} pts / but{% if buteur.double_joker|default(false) %} <span class="match-live-buteur-double ta-badge">×2 joker</span>{% endif %}
+                                    {% if cotes_visible %}
+                                        <span class="match-live-buteur-cote" data-buteur-cote>(cote {{ buteur.coefficient|number_format(2, ',', ' ') }})</span>
+                                    {% else %}
+                                        <span class="match-live-buteur-cote" data-buteur-cote hidden></span>
+                                    {% endif %}
                                 </span>
                             </li>
                         {% endfor %}
