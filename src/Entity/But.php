@@ -24,6 +24,12 @@ class But
     #[ORM\Column(nullable: true)]
     private ?int $minute = null;
 
+    #[ORM\Column(options: ['default' => 1])]
+    private int $pointsBase = 1;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $coteCoefficient = null;
+
     #[ORM\Column]
     private int $pointsAttribues = 0;
 
@@ -75,6 +81,30 @@ class But
     public function setMinute(?int $minute): static
     {
         $this->minute = $minute;
+
+        return $this;
+    }
+
+    public function getPointsBase(): int
+    {
+        return $this->pointsBase;
+    }
+
+    public function setPointsBase(int $pointsBase): static
+    {
+        $this->pointsBase = $pointsBase;
+
+        return $this;
+    }
+
+    public function getCoteCoefficient(): ?float
+    {
+        return $this->coteCoefficient;
+    }
+
+    public function setCoteCoefficient(?float $coteCoefficient): static
+    {
+        $this->coteCoefficient = $coteCoefficient;
 
         return $this;
     }

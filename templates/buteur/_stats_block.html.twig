@@ -1,0 +1,17 @@
+<div class="dashboard-buteur-stats" aria-label="Points buteur">
+    <p class="dashboard-buteur-stats__row">
+        <span>Buts marqués</span>
+        <strong>{{ buteur_stats.goals }}</strong>
+    </p>
+    <p class="dashboard-buteur-stats__row">
+        <span>Points buteur (classement)</span>
+        <strong>{{ buteur_stats.points }}</strong>
+    </p>
+    <p class="dashboard-buteur-stats__row dashboard-buteur-stats__row--muted">
+        <span>Cote actuelle</span>
+        <strong>×{{ buteur_stats.cote|number_format(2, ',', ' ') }}</strong>
+    </p>
+    <p class="dashboard-buteur-stats__hint">
+        1 pt de base par but × cote ({{ buteur_stats.selections }} joueur{{ buteur_stats.selections > 1 ? 's' : '' }} sur {{ buteur_stats.total_players }} l’ont choisi, max ×5).
+    </p>
+</div>

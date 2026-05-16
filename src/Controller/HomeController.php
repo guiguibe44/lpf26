@@ -5,10 +5,14 @@ namespace App\Controller;
 use App\Entity\Buteur;
 use App\Entity\User;
 use App\Repository\ButeurRepository;
+use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\UserRepository;
+use App\Service\ButeurGoalScoringService;
 use App\Service\CompetitionStatus;
+use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +27,9 @@ class HomeController extends AbstractController
         PronosticRepository $pronosticRepository,
         TeamMemberRepository $teamMemberRepository,
         CompetitionStatus $competitionStatus,
+        ButRepository $butRepository,
+        UserRepository $userRepository,
+        ButeurGoalScoringService $buteurGoalScoringService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -49,6 +56,19 @@ class HomeController extends AbstractController
 
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
 
+        $buteur_stats = null;
+        $buteurChoisi = $user->getButeurChoisi();
+        if ($buteurChoisi instanceof Buteur) {
+            $buteurId = (int) $buteurChoisi->getId();
+            $buteur_stats = [
+                'goals' => $butRepository->countForButeur($buteurChoisi),
+                'points' => $butRepository->sumPointsAttribuesForButeur($buteurChoisi),
+                'cote' => $buteurGoalScoringService->getCurrentCoefficientForButeur($buteurChoisi),
+                'selections' => $userRepository->countWithButeurChoisiId($buteurId),
+                'total_players' => $userRepository->countWithButeurChoisi(),
+            ];
+        }
+
         return $this->render('home/index.html.twig', [
             'last_completed_matchday' => $lastCompletedMatchday,
             'next_matchday' => $nextMatchday,
@@ -61,6 +81,7 @@ class HomeController extends AbstractController
             'prono_access_blocked' => !$user->isCotisationPayee(),
             'dashboard_partners' => $teamMemberRepository->findPartnerUsers($user),
             'buteurs_pris_par_autres_equipes' => $teamMemberRepository->findButeursChoisisParAutresEquipes($user),
+            'buteur_stats' => $buteur_stats,
         ]);
     }
 
@@ -70,6 +91,9 @@ class HomeController extends AbstractController
         EntityManagerInterface $entityManager,
         ButeurRepository $buteurRepository,
         CompetitionStatus $competitionStatus,
+        ButeurGoalScoringService $buteurGoalScoringService,
+        GameMatchRepository $gameMatchRepository,
+        TeamRankingService $teamRankingService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -110,6 +134,13 @@ class HomeController extends AbstractController
 
         $user->setButeurChoisi($buteur);
         $entityManager->flush();
+
+        $buteurGoalScoringService->rescoreAll();
+        $latestMatch = $gameMatchRepository->findLatestFinishedMatch();
+        if (null !== $latestMatch) {
+            $teamRankingService->rebuildSnapshotsFromMatch($latestMatch);
+        }
+
         $this->addFlash('success', 'Votre buteur a été enregistré.');
 
         return $this->redirectAfterDashboardButeurSave($request);

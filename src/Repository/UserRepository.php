@@ -69,6 +69,45 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * Joueurs cotisés ayant choisi un buteur.
+     *
+     * @return list<User>
+     */
+    public function findActivePlayersWithButeur(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->andWhere('u.buteurChoisi IS NOT NULL')
+            ->setParameter('paid', true)
+            ->orderBy('u.email', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countWithButeurChoisi(): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->andWhere('u.buteurChoisi IS NOT NULL')
+            ->setParameter('paid', true)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countWithButeurChoisiId(int $buteurId): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->andWhere('IDENTITY(u.buteurChoisi) = :buteurId')
+            ->setParameter('paid', true)
+            ->setParameter('buteurId', $buteurId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

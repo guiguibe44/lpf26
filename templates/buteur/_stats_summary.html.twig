@@ -1,0 +1,10 @@
+{# buteur_stats: goals, points, cote, selections, total_players #}
+{% if buteur_stats and app.user.buteurChoisi %}
+    <section class="ta-card dashboard-buteur-stats-card" aria-label="Points buteur">
+        <h3 class="ta-card-title dashboard-buteur-stats-card__title">
+            <i class="ti ti-ball-football" aria-hidden="true"></i>
+            Mon buteur — {{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}
+        </h3>
+        {% include 'buteur/_stats_block.html.twig' with { buteur_stats: buteur_stats } only %}
+    </section>
+{% endif %}

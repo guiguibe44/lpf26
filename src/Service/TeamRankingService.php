@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Buteur;
 use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Entity\TeamRankingSnapshot;
+use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\UserRepository;
 use App\Repository\TeamRankingSnapshotRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +25,8 @@ final class TeamRankingService
         private readonly TeamMemberRepository $teamMemberRepository,
         private readonly TeamRepository $teamRepository,
         private readonly TeamRankingSnapshotRepository $teamRankingSnapshotRepository,
+        private readonly UserRepository $userRepository,
+        private readonly ButRepository $butRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -118,6 +123,21 @@ final class TeamRankingService
             if (isset($statsByTeamId[$teamId])) {
                 $statsByTeamId[$teamId]['prisesRisque'] = count($riskMatches);
             }
+        }
+
+        foreach ($this->userRepository->findActivePlayersWithButeur() as $player) {
+            $playerId = $player->getId();
+            $buteur = $player->getButeurChoisi();
+            if (null === $playerId || !$buteur instanceof Buteur) {
+                continue;
+            }
+
+            $teamId = $playerTeamMap[$playerId] ?? null;
+            if (null === $teamId || !isset($statsByTeamId[$teamId])) {
+                continue;
+            }
+
+            $statsByTeamId[$teamId]['totalPoints'] += $this->butRepository->sumPointsAttribuesForButeur($buteur);
         }
 
         $stats = array_values($statsByTeamId);

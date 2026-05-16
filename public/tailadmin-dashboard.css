@@ -2861,6 +2861,51 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     }
 }
 
+/* Points buteur — dashboard */
+.dashboard-buteur-stats {
+    margin: 0.75rem 0 1rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.5rem;
+    background: #f0f4fa;
+    border: 1px solid #e8e5dd;
+}
+
+.dashboard-buteur-stats__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.dashboard-buteur-stats__row + .dashboard-buteur-stats__row {
+    margin-top: 0.35rem;
+}
+
+.dashboard-buteur-stats__row--muted {
+    color: #64748b;
+}
+
+.dashboard-buteur-stats__hint {
+    margin: 0.55rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: #6b7280;
+}
+
+.dashboard-buteur-stats-card {
+    margin-bottom: 1.25rem;
+}
+
+.dashboard-buteur-stats-card__title {
+    margin-bottom: 0.65rem;
+}
+
+.dashboard-buteur-stats-card .dashboard-buteur-stats {
+    margin: 0;
+}
+
 /* Guide admin — dashboard accueil (ROLE_ADMIN uniquement) */
 .lpf-admin-guide {
     margin-bottom: 1.75rem;

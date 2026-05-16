@@ -7,11 +7,16 @@
         {% include 'home/_admin_site_guide.html.twig' %}
     {% endif %}
 
+    {% if competition_started and buteur_stats %}
+        {% include 'buteur/_stats_summary.html.twig' with { buteur_stats: buteur_stats } only %}
+    {% endif %}
+
     {% if not competition_started %}
         {% include 'home/_dashboard_buteur.html.twig' with {
             cotisation_payee: cotisation_payee,
             dashboard_partners: dashboard_partners,
             buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
+            buteur_stats: buteur_stats,
         } only %}
     {% endif %}
 

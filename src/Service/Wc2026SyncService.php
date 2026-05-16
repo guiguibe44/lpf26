@@ -31,6 +31,8 @@ final class Wc2026SyncService
         private readonly GameMatchRepository $gameMatchRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly PronosticScoringService $pronosticScoringService,
+        private readonly ButeurGoalScoringService $buteurGoalScoringService,
+        private readonly TeamRankingService $teamRankingService,
         private readonly CountryFlagStorage $countryFlagStorage,
         private readonly ButeurPhotoStorage $buteurPhotoStorage,
         private readonly int $apiFootballWorldCupLeagueId = 1,
@@ -536,14 +538,22 @@ final class Wc2026SyncService
                     ->setButeur($buteur)
                     ->setMatchRef($match)
                     ->setMinute($elapsed > 0 ? $elapsed : null)
-                    ->setPointsAttribues(0)
                     ->setApiSportsEventKey($eventKey);
+                $this->buteurGoalScoringService->scoreBut($but);
                 $this->entityManager->persist($but);
                 ++$created;
             }
         }
 
         $this->entityManager->flush();
+
+        if ($created > 0) {
+            $this->buteurGoalScoringService->rescoreAll();
+            $latest = $this->gameMatchRepository->findLatestFinishedMatch();
+            if ($latest instanceof GameMatch) {
+                $this->teamRankingService->rebuildSnapshotsFromMatch($latest);
+            }
+        }
 
         return ['created' => $created, 'skipped' => $skipped, 'api_calls' => $apiCalls];
     }

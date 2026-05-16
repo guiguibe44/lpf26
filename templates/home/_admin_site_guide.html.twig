@@ -38,14 +38,16 @@
         </details>
 
         <details class="lpf-admin-guide__item">
-            <summary>Buteur (avant le coup d’envoi de la compétition)</summary>
-<div class="lpf-admin-guide__body">
+            <summary>Buteur et points buteur</summary>
+            <div class="lpf-admin-guide__body">
                 <ul>
-                    <li>Sur l’<strong>accueil</strong>, avant le début officiel de la compétition : chaque joueur choisit un buteur (recherche API, un buteur par joueur dans l’équipe).</li>
-                    <li>Un buteur déjà pris par une autre équipe est signalé ; le partenaire voit le choix de l’autre sur le dashboard.</li>
-                    <li>Le buteur sert au suivi personnel — il n’entre pas dans le calcul des points de pronos.</li>
+                    <li>Chaque joueur cotisé choisit un buteur (accueil ou compte) avant verrouillage au début de la compétition.</li>
+                    <li>À chaque but marqué par ce joueur (sync API ou saisie admin), points = <strong>1 pt de base × cote</strong> (plafond ×5).</li>
+                    <li><strong>Cote</strong> = joueurs avec buteur ÷ joueurs ayant choisi ce buteur (comme les pronos : choix rare = cote haute).</li>
+                    <li>Les points buteur s’ajoutent au <strong>classement équipe</strong> (cumul des deux joueurs).</li>
+                    <li>Recalcul : <code>php bin/console app:rescore:buteur-goals</code> après changement de sélections ou import de buts.</li>
                 </ul>
-</div>
+            </div>
         </details>
 
         <details class="lpf-admin-guide__item">

@@ -81,6 +81,18 @@ class GameMatchRepository extends ServiceEntityRepository
      *
      * @return array{date:\DateTimeImmutable,matches:list<GameMatch>}|null
      */
+    public function findLatestFinishedMatch(): ?GameMatch
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.scoreDomicile IS NOT NULL')
+            ->andWhere('m.scoreExterieur IS NOT NULL')
+            ->orderBy('m.dateHeure', 'DESC')
+            ->addOrderBy('m.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findLastCompletedMatchday(?\DateTimeImmutable $now = null): ?array
     {
         $now ??= new \DateTimeImmutable();
