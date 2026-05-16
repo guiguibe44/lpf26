@@ -27,6 +27,7 @@ final class PronosticScoringService
         private readonly PronosticSimulationService $pronosticSimulationService,
         private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
         private readonly JokerScoringApplicator $jokerScoringApplicator,
+        private readonly JokerStealPointsService $jokerStealPointsService,
     ) {
     }
 
@@ -138,6 +139,10 @@ final class PronosticScoringService
                 ->setPriseRisque(null !== $pronosticId ? ($riskByPronosticId[$pronosticId] ?? false) : false);
 
             $coefficients[] = $coefficient;
+        }
+
+        if ($hasFinalScore) {
+            $this->jokerStealPointsService->applyToPronostics($match, $pronostics, $playerTeamMap);
         }
 
         if ([] === $coefficients) {

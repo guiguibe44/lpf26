@@ -10,11 +10,17 @@
     const activeEl = document.getElementById('joker-dialog-active');
     const listEl = document.getElementById('joker-dialog-list');
     const loadingEl = document.getElementById('joker-dialog-loading');
+    const targetPickerEl = document.getElementById('joker-dialog-target-picker');
+    const targetSelectEl = document.getElementById('joker-dialog-target-select');
+    const targetConfirmEl = document.getElementById('joker-dialog-target-confirm');
+    const targetCancelEl = document.getElementById('joker-dialog-target-cancel');
 
     let currentMatchId = null;
     let currentStateUrl = null;
     let currentPlaceUrl = null;
     let currentRemoveUrl = null;
+    let currentPickerState = null;
+    let pendingJokerId = null;
 
     const assetUrl = (path) => {
         if (!path) {
@@ -115,6 +121,58 @@
         }
     };
 
+    const formatJokerBadgeLabel = (active) => {
+        if (!active) {
+            return '';
+        }
+
+        let label = 'Joker : ' + active.name;
+        if (active.target_team_name) {
+            label += ' → ' + active.target_team_name;
+        }
+
+        return label;
+    };
+
+    const hideTargetPicker = () => {
+        pendingJokerId = null;
+        if (targetPickerEl) {
+            targetPickerEl.hidden = true;
+        }
+        if (listEl) {
+            listEl.hidden = false;
+        }
+    };
+
+    const showTargetPicker = (jokerId, state) => {
+        if (!targetPickerEl || !targetSelectEl) {
+            placeJoker(jokerId, null);
+
+            return;
+        }
+
+        const opponents = state.opponent_teams || [];
+        if (!opponents.length) {
+            showFeedback('Aucune équipe adverse disponible.', true);
+
+            return;
+        }
+
+        pendingJokerId = jokerId;
+        targetSelectEl.replaceChildren();
+        opponents.forEach((team) => {
+            const option = document.createElement('option');
+            option.value = String(team.id);
+            option.textContent = team.name;
+            targetSelectEl.appendChild(option);
+        });
+
+        if (listEl) {
+            listEl.hidden = true;
+        }
+        targetPickerEl.hidden = false;
+    };
+
     const refreshCardBadge = (matchId, active) => {
         const card = document.querySelector('.match-card[data-match-id="' + matchId + '"]');
         if (!card) {
@@ -138,7 +196,7 @@
                 head.insertBefore(badge, head.firstChild);
             }
             if (badge) {
-                badge.textContent = 'Joker : ' + active.name;
+                badge.textContent = formatJokerBadgeLabel(active);
                 badge.hidden = false;
             }
         } else if (badge) {
@@ -185,6 +243,8 @@
             return;
         }
 
+        currentPickerState = state;
+        hideTargetPicker();
         renderList(state);
 
         if (currentMatchId) {
@@ -223,7 +283,11 @@
 
         const text = document.createElement('p');
         text.className = 'joker-dialog-active-text';
-        text.innerHTML = '<strong>Joker actif :</strong> ' + escapeHtml(active.name);
+        let activeText = escapeHtml(active.name);
+        if (active.target_team_name) {
+            activeText += ' <span class="joker-dialog-active-target">→ ' + escapeHtml(active.target_team_name) + '</span>';
+        }
+        text.innerHTML = '<strong>Joker actif :</strong> ' + activeText;
         wrap.appendChild(text);
 
         if (active.can_remove) {
@@ -318,6 +382,9 @@
                 btn.className = 'btn btn-primary btn-sm';
                 btn.textContent = 'Jouer ce joker';
                 btn.dataset.jokerPlay = String(joker.id);
+                if (joker.requires_target_team) {
+                    btn.dataset.jokerRequiresTarget = '1';
+                }
                 itemActions.appendChild(btn);
             } else if (joker.already_used) {
                 const badge = document.createElement('span');
@@ -372,13 +439,16 @@
         messageEl.textContent = message;
     };
 
-    const placeJoker = (jokerId) => {
+    const placeJoker = (jokerId, targetTeamId) => {
         if (!currentPlaceUrl) {
             return;
         }
 
         const body = new FormData();
         body.set('joker_id', String(jokerId));
+        if (targetTeamId) {
+            body.set('target_team_id', String(targetTeamId));
+        }
 
         fetch(currentPlaceUrl, {
             method: 'POST',
@@ -486,9 +556,24 @@
         const playBtn = event.target.closest('[data-joker-play]');
         if (playBtn && dialog.contains(playBtn)) {
             const jokerId = playBtn.dataset.jokerPlay;
-            if (jokerId) {
-                placeJoker(jokerId);
+            const requiresTarget = playBtn.dataset.jokerRequiresTarget === '1';
+            if (jokerId && requiresTarget && currentPickerState) {
+                showTargetPicker(jokerId, currentPickerState);
+            } else if (jokerId) {
+                placeJoker(jokerId, null);
             }
+
+            return;
+        }
+
+        if (event.target === targetConfirmEl && pendingJokerId && targetSelectEl) {
+            placeJoker(pendingJokerId, targetSelectEl.value);
+
+            return;
+        }
+
+        if (event.target === targetCancelEl) {
+            hideTargetPicker();
 
             return;
         }

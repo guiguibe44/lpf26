@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\GameMatch;
+use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\JokerRepository;
+use App\Repository\TeamRepository;
 use App\Service\TeamJokerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,6 +35,7 @@ final class JokerController extends AbstractController
         GameMatch $match,
         TeamJokerService $teamJokerService,
         JokerRepository $jokerRepository,
+        TeamRepository $teamRepository,
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -49,15 +52,33 @@ final class JokerController extends AbstractController
             return new JsonResponse(['error' => 'Joker introuvable.'], Response::HTTP_NOT_FOUND);
         }
 
+        $targetTeam = null;
+        $targetTeamId = $request->request->getInt('target_team_id');
+        if ($targetTeamId > 0) {
+            $targetTeam = $teamRepository->find($targetTeamId);
+            if (null === $targetTeam) {
+                return new JsonResponse(['error' => 'Équipe cible introuvable.'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
         try {
-            $teamJokerService->placeJoker($user, $match, $joker);
+            $teamJokerService->placeJoker($user, $match, $joker, $targetTeam);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
+        $message = sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName());
+        if ($targetTeam instanceof Team) {
+            $message = sprintf(
+                'Joker « %s » posé : cible %s.',
+                (string) $joker->getName(),
+                (string) $targetTeam->getName(),
+            );
+        }
+
         return $this->json([
             'success' => true,
-            'message' => sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName()),
+            'message' => $message,
             'state' => $teamJokerService->buildMatchPickerState($user, $match),
         ]);
     }

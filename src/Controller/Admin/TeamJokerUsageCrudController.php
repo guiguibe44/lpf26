@@ -36,6 +36,7 @@ class TeamJokerUsageCrudController extends AbstractAppCrudController
             AssociationField::new('team')->setLabel('Équipe'),
             AssociationField::new('joker')->setLabel('Joker'),
             AssociationField::new('match')->setLabel('Match'),
+            AssociationField::new('targetTeam')->setLabel('Équipe cible'),
             DateTimeField::new('placedAt')->setLabel('Posé le')->hideOnForm(),
         ];
     }

@@ -33,6 +33,7 @@ final class MatchLiveViewBuilder
         private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
         private readonly JokerScoringApplicator $jokerScoringApplicator,
         private readonly TeamJokerService $teamJokerService,
+        private readonly JokerStealPointsService $jokerStealPointsService,
     ) {
     }
 
@@ -61,6 +62,7 @@ final class MatchLiveViewBuilder
             $this->teamJokerUsageRepository->findJokerCodesByTeamForMatch($match),
             $this->jokerScoringApplicator,
         );
+        $simulatedLines = $this->jokerStealPointsService->adjustSimulatedLines($match, $simulatedLines);
 
         $linesByTeamId = [];
         foreach ($simulatedLines as $line) {

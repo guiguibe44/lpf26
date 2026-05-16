@@ -13,6 +13,8 @@ class Joker
 {
     public const CODE_DOUBLE_EQUIPE = 'double_equipe';
 
+    public const CODE_PIQUE_POINTS = 'pique_points';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

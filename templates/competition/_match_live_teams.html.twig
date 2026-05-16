@@ -15,7 +15,7 @@
                     {% endif %}
                     <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
                     {% if team.activeJoker %}
-                        <span class="match-live-team-joker ta-badge" data-team-joker title="Joker actif">{{ team.activeJoker.name }}</span>
+                        <span class="match-live-team-joker ta-badge" data-team-joker title="Joker actif">{{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}</span>
                     {% else %}
                         <span class="match-live-team-joker ta-badge" data-team-joker hidden></span>
                     {% endif %}

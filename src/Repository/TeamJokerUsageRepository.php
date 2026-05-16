@@ -27,9 +27,10 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
     public function findByMatch(GameMatch $match): array
     {
         return $this->createQueryBuilder('u')
-            ->addSelect('j', 't')
+            ->addSelect('j', 't', 'tt')
             ->innerJoin('u.joker', 'j')
             ->innerJoin('u.team', 't')
+            ->leftJoin('u.targetTeam', 'tt')
             ->andWhere('u.match = :match')
             ->setParameter('match', $match)
             ->getQuery()
@@ -42,9 +43,10 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
     public function findByTeamOrdered(Team $team): array
     {
         return $this->createQueryBuilder('u')
-            ->addSelect('j', 'm')
+            ->addSelect('j', 'm', 'tt')
             ->innerJoin('u.joker', 'j')
             ->innerJoin('u.match', 'm')
+            ->leftJoin('u.targetTeam', 'tt')
             ->andWhere('u.team = :team')
             ->setParameter('team', $team)
             ->orderBy('u.placedAt', 'DESC')
@@ -76,6 +78,36 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
             if (null !== $teamId && null !== $code) {
                 $map[(int) $teamId] = $code;
             }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Équipe poseuse => équipe ciblée (joker pique de points uniquement).
+     *
+     * @return array<int, int>
+     */
+    public function findPiquePointsTargetsByTeamForMatch(GameMatch $match): array
+    {
+        $map = [];
+        foreach ($this->findByMatch($match) as $usage) {
+            if (!$usage instanceof TeamJokerUsage) {
+                continue;
+            }
+
+            $code = $usage->getJoker()?->getCode();
+            if (Joker::CODE_PIQUE_POINTS !== $code) {
+                continue;
+            }
+
+            $thiefId = $usage->getTeam()?->getId();
+            $victimId = $usage->getTargetTeam()?->getId();
+            if (null === $thiefId || null === $victimId || (int) $thiefId === (int) $victimId) {
+                continue;
+            }
+
+            $map[(int) $thiefId] = (int) $victimId;
         }
 
         return $map;

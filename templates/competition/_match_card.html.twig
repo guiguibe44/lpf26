@@ -25,9 +25,9 @@
                     aria-expanded="false"
                     aria-haspopup="true"
                     title="Afficher les actions joker"
-                >Joker : {{ match_joker.name }}</button>
+                >Joker : {{ match_joker.name }}{% if match_joker.target_team_name|default('') %} → {{ match_joker.target_team_name }}{% endif %}</button>
             {% else %}
-                <span class="match-card-joker-badge match-card-joker-badge--static" data-joker-badge>Joker : {{ match_joker.name }}</span>
+                <span class="match-card-joker-badge match-card-joker-badge--static" data-joker-badge>Joker : {{ match_joker.name }}{% if match_joker.target_team_name|default('') %} → {{ match_joker.target_team_name }}{% endif %}</span>
             {% endif %}
         {% endif %}
         {% if is_finished %}

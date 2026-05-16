@@ -39,6 +39,9 @@
                                 {% if um.dateHeure %}
                                     ({{ um.dateHeure|date('d/m/Y H:i') }})
                                 {% endif %}
+                                {% if usage.targetTeam %}
+                                    · cible <strong>{{ usage.targetTeam.name }}</strong>
+                                {% endif %}
                                 · le {{ usage.placedAt|date('d/m/Y H:i') }}
                             </p>
                         {% elseif row.status == 'blocked' %}

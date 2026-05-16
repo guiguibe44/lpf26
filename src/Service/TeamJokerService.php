@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Repository\JokerRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class TeamJokerService
@@ -22,6 +23,7 @@ final class TeamJokerService
         private readonly TeamMemberRepository $teamMemberRepository,
         private readonly MatchStatusResolver $matchStatusResolver,
         private readonly PronosticScoringService $pronosticScoringService,
+        private readonly TeamRepository $teamRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -91,10 +93,12 @@ final class TeamJokerService
                 continue;
             }
 
+            $target = $usage->getTargetTeam();
             $map[(int) $matchId] = [
                 'name' => (string) $joker->getName(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
+                'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
             ];
         }
 
@@ -129,6 +133,7 @@ final class TeamJokerService
                 'active_on_match' => null,
                 'pending_elsewhere' => null,
                 'jokers' => [],
+                'opponent_teams' => [],
             ];
         }
 
@@ -139,6 +144,7 @@ final class TeamJokerService
                 'active_on_match' => null,
                 'pending_elsewhere' => null,
                 'jokers' => [],
+                'opponent_teams' => [],
             ];
         }
 
@@ -146,11 +152,14 @@ final class TeamJokerService
         $activeOnMatch = null;
         if ($usageOnMatch instanceof TeamJokerUsage) {
             $joker = $usageOnMatch->getJoker();
+            $target = $usageOnMatch->getTargetTeam();
             $activeOnMatch = [
                 'id' => (int) $joker?->getId(),
                 'name' => (string) $joker?->getName(),
                 'image' => $joker?->getImage(),
                 'code' => (string) $joker?->getCode(),
+                'target_team_id' => $target?->getId(),
+                'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
                 'can_remove' => $this->isMatchOpenForJoker($match),
             ];
         }
@@ -211,11 +220,30 @@ final class TeamJokerService
                 'name' => (string) $joker->getName(),
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
+                'requires_target_team' => Joker::CODE_PIQUE_POINTS === $joker->getCode(),
                 'can_play' => $canPlay,
                 'disabled_reason' => $disabledReason,
                 'already_used' => $alreadyUsed,
             ];
         }
+
+        $opponentTeams = [];
+        foreach ($this->teamRepository->findAll() as $opponent) {
+            $opponentId = $opponent->getId();
+            if (null === $opponentId || (int) $opponentId === (int) $team->getId()) {
+                continue;
+            }
+
+            $opponentTeams[] = [
+                'id' => (int) $opponentId,
+                'name' => (string) $opponent->getName(),
+            ];
+        }
+
+        usort(
+            $opponentTeams,
+            static fn (array $a, array $b): int => strcmp($a['name'], $b['name']),
+        );
 
         return [
             'can_manage' => true,
@@ -223,6 +251,7 @@ final class TeamJokerService
             'active_on_match' => $activeOnMatch,
             'pending_elsewhere' => $pendingElsewhere,
             'jokers' => $jokers,
+            'opponent_teams' => $opponentTeams,
         ];
     }
 
@@ -259,7 +288,7 @@ final class TeamJokerService
         return ['allowed' => true, 'reason' => null];
     }
 
-    public function placeJoker(User $user, GameMatch $match, Joker $joker): void
+    public function placeJoker(User $user, GameMatch $match, Joker $joker, ?Team $targetTeam = null): void
     {
         $teamMember = $this->teamMemberRepository->findOneBy(['player' => $user]);
         $team = $teamMember?->getTeam();
@@ -284,10 +313,13 @@ final class TeamJokerService
             throw new \InvalidArgumentException('Votre équipe a déjà utilisé ce joker.');
         }
 
+        $targetTeam = $this->resolveTargetTeamForJoker($team, $joker, $targetTeam);
+
         $usage = (new TeamJokerUsage())
             ->setTeam($team)
             ->setJoker($joker)
-            ->setMatch($match);
+            ->setMatch($match)
+            ->setTargetTeam($targetTeam);
 
         $this->entityManager->persist($usage);
         $this->entityManager->flush();
@@ -339,10 +371,12 @@ final class TeamJokerService
                 continue;
             }
 
+            $target = $usage->getTargetTeam();
             $map[(int) $teamId] = [
                 'name' => (string) $joker->getName(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
+                'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
             ];
         }
 
@@ -364,6 +398,29 @@ final class TeamJokerService
     public function isMatchOpenForJoker(GameMatch $match): bool
     {
         return $this->matchStatusResolver->canEditBeforeKickoff($match);
+    }
+
+    private function resolveTargetTeamForJoker(Team $team, Joker $joker, ?Team $targetTeam): ?Team
+    {
+        if (Joker::CODE_PIQUE_POINTS === $joker->getCode()) {
+            if (!$targetTeam instanceof Team) {
+                throw new \InvalidArgumentException('Choisissez l\'équipe adverse à cibler.');
+            }
+
+            $ownId = $team->getId();
+            $targetId = $targetTeam->getId();
+            if (null === $ownId || null === $targetId || (int) $ownId === (int) $targetId) {
+                throw new \InvalidArgumentException('Vous ne pouvez pas cibler votre propre équipe.');
+            }
+
+            return $targetTeam;
+        }
+
+        if ($targetTeam instanceof Team) {
+            throw new \InvalidArgumentException('Ce joker ne nécessite pas d\'équipe cible.');
+        }
+
+        return null;
     }
 
     private function formatMatchLabel(?GameMatch $match): string

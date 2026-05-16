@@ -29,6 +29,11 @@ class TeamJokerUsage
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?GameMatch $match = null;
 
+    /** Équipe ciblée (joker « pique de points »). */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Team $targetTeam = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $placedAt;
 
@@ -74,6 +79,18 @@ class TeamJokerUsage
     public function setMatch(?GameMatch $match): static
     {
         $this->match = $match;
+
+        return $this;
+    }
+
+    public function getTargetTeam(): ?Team
+    {
+        return $this->targetTeam;
+    }
+
+    public function setTargetTeam(?Team $targetTeam): static
+    {
+        $this->targetTeam = $targetTeam;
 
         return $this;
     }

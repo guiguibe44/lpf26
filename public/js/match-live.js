@@ -165,7 +165,11 @@
             if (jokerEl) {
                 if (team.activeJoker && team.activeJoker.name) {
                     jokerEl.hidden = false;
-                    jokerEl.textContent = team.activeJoker.name;
+                    let jokerLabel = team.activeJoker.name;
+                    if (team.activeJoker.target_team_name) {
+                        jokerLabel += ' → ' + team.activeJoker.target_team_name;
+                    }
+                    jokerEl.textContent = jokerLabel;
                 } else {
                     jokerEl.hidden = true;
                 }
