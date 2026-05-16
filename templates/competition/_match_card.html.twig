@@ -1,14 +1,19 @@
 {# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false #}
 {% set prono_access_blocked = prono_access_blocked ?? false %}
-{% set has_final_score = match.scoreDomicile is not null and match.scoreExterieur is not null %}
-{% set is_finished = match.statut == 'FINISHED' or (has_final_score and match.dateHeure < now) %}
-{% set can_pronostic = match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_access_blocked %}
+{% set is_finished = match_is_finished(match, now) %}
+{% set is_live = match_is_live(match, now) %}
+{% set can_pronostic = not is_finished and not is_live and match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_access_blocked %}
 {% set match_prono_blocked_cotisation = prono_access_blocked and match.statut == 'SCHEDULED' and match.dateHeure > now %}
 
-<article class="match-card">
+<article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}">
     <div class="match-card-head">
+        {% if match.isKdoMatch %}
+            <span class="ta-badge match-card-kdo-badge">KDO</span>
+        {% endif %}
         {% if is_finished %}
             <span class="ta-badge ta-badge-success">Terminé</span>
+        {% elseif is_live %}
+            <span class="ta-badge ta-badge-warning">En direct</span>
         {% elseif can_pronostic %}
             <span class="ta-badge ta-badge-warning">À venir</span>
         {% else %}
@@ -56,7 +61,7 @@
                     type="number"
                     name="score_domicile"
                     min="0"
-                    value="{{ pronostic ? pronostic.scoreDomicile : '' }}"
+                    value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
                     class="ta-form-input match-score-input"
                     required
                 >
@@ -65,7 +70,7 @@
                     type="number"
                     name="score_exterieur"
                     min="0"
-                    value="{{ pronostic ? pronostic.scoreExterieur : '' }}"
+                    value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
                     class="ta-form-input match-score-input"
                     required
                 >
@@ -77,6 +82,13 @@
                     <i class="ti {{ pronostic ? 'ti-edit' : 'ti-check' }}" aria-hidden="true"></i>
                 </button>
             </form>
+        {% elseif is_live %}
+            <div class="match-final-score match-final-score--live">
+                {{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }} - {{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}
+            </div>
+            <a href="{{ path('app_match_live', { id: match.id }) }}" class="match-link match-link--live">
+                Suivre en direct
+            </a>
         {% elseif is_finished %}
             <div class="match-final-score">
                 {{ match.scoreDomicile }} - {{ match.scoreExterieur }}
@@ -87,7 +99,7 @@
         {% elseif pronostic %}
             <span class="match-locked-pronostic">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
         {% else %}
-            <span class="ta-badge">Non joue</span>
+            <span class="match-locked-pronostic">{{ prono_default_score_domicile }} - {{ prono_default_score_exterieur }}</span>
         {% endif %}
     </div>
 

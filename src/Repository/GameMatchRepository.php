@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\GameMatch;
+use App\Service\MatchStatusResolver;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -11,8 +12,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class GameMatchRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly MatchStatusResolver $matchStatusResolver,
+    ) {
         parent::__construct($registry, GameMatch::class);
     }
 
@@ -151,13 +154,30 @@ class GameMatchRepository extends ServiceEntityRepository
         return null;
     }
 
+    /**
+     * @return list<GameMatch>
+     */
+    public function findCandidatesForLiveDisplay(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('m')
+            ->addSelect('hd', 'aw')
+            ->join('m.paysDomicile', 'hd')
+            ->join('m.paysExterieur', 'aw')
+            ->andWhere('m.statut NOT IN (:closed)')
+            ->andWhere('m.dateHeure IS NOT NULL')
+            ->andWhere('m.dateHeure <= :now OR m.statut IN (:liveStatuses)')
+            ->setParameter('closed', ['FINISHED', 'CANCELLED'])
+            ->setParameter('now', $now)
+            ->setParameter('liveStatuses', ['LIVE', '1H', '2H', 'HT', 'ET', 'BT', 'INT', 'P'])
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     private function isMatchFinishedForListing(GameMatch $match, \DateTimeImmutable $now): bool
     {
-        $hasFinalScore = null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur();
-        $dateHeure = $match->getDateHeure();
-
-        return 'FINISHED' === $match->getStatut()
-            || ($hasFinalScore && $dateHeure instanceof \DateTimeImmutable && $dateHeure < $now);
+        return $this->matchStatusResolver->isMatchFinished($match, $now);
     }
 
     /**
@@ -220,6 +240,27 @@ class GameMatchRepository extends ServiceEntityRepository
             ->orderBy('m.dateHeure', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findLastScoredMatchBefore(GameMatch $match): ?GameMatch
+    {
+        $date = $match->getDateHeure();
+        $matchId = $match->getId();
+        if (!$date instanceof \DateTimeImmutable || null === $matchId) {
+            return null;
+        }
+
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.scoreDomicile IS NOT NULL')
+            ->andWhere('m.scoreExterieur IS NOT NULL')
+            ->andWhere('m.dateHeure < :date OR (m.dateHeure = :date AND m.id < :matchId)')
+            ->setParameter('date', $date)
+            ->setParameter('matchId', $matchId)
+            ->orderBy('m.dateHeure', 'DESC')
+            ->addOrderBy('m.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function findMatchesForGroupStanding(): array

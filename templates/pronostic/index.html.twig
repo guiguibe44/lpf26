@@ -40,7 +40,7 @@
                                             type="number"
                                             name="score_domicile"
                                             min="0"
-                                            value="{{ pronostic ? pronostic.scoreDomicile : '' }}"
+                                            value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
                                             class="ta-form-input"
                                             style="max-width: 80px;"
                                             required
@@ -50,7 +50,7 @@
                                             type="number"
                                             name="score_exterieur"
                                             min="0"
-                                            value="{{ pronostic ? pronostic.scoreExterieur : '' }}"
+                                            value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
                                             class="ta-form-input"
                                             style="max-width: 80px;"
                                             required

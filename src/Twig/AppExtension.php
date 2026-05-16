@@ -2,17 +2,51 @@
 
 namespace App\Twig;
 
+use App\Entity\GameMatch;
+use App\Service\MatchStatusResolver;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 final class AppExtension extends AbstractExtension
 {
+    public function __construct(
+        private readonly MatchStatusResolver $matchStatusResolver,
+    ) {
+    }
+
     public function getFilters(): array
     {
         return [
             new TwigFilter('fr_date_long', [$this, 'formatDateLong']),
             new TwigFilter('fr_datetime', [$this, 'formatDateTime']),
         ];
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('match_is_live', [$this, 'isMatchLive']),
+            new TwigFunction('match_is_finished', [$this, 'isMatchFinished']),
+        ];
+    }
+
+    public function isMatchLive(GameMatch $match, ?\DateTimeInterface $now = null): bool
+    {
+        $at = $now instanceof \DateTimeImmutable
+            ? $now
+            : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
+
+        return $this->matchStatusResolver->isMatchLive($match, $at);
+    }
+
+    public function isMatchFinished(GameMatch $match, ?\DateTimeInterface $now = null): bool
+    {
+        $at = $now instanceof \DateTimeImmutable
+            ? $now
+            : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
+
+        return $this->matchStatusResolver->isMatchFinished($match, $at);
     }
 
     public function formatDateLong(?\DateTimeInterface $date): string

@@ -70,6 +70,9 @@ class GameMatch
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $pushReminderSentAt = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isKdoMatch = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -309,6 +312,18 @@ class GameMatch
     public function setPushReminderSentAt(?\DateTimeImmutable $pushReminderSentAt): static
     {
         $this->pushReminderSentAt = $pushReminderSentAt;
+
+        return $this;
+    }
+
+    public function isKdoMatch(): bool
+    {
+        return $this->isKdoMatch;
+    }
+
+    public function setIsKdoMatch(bool $isKdoMatch): static
+    {
+        $this->isKdoMatch = $isKdoMatch;
 
         return $this;
     }

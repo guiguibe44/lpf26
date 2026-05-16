@@ -34,6 +34,30 @@
         </div>
     </section>
 
+    {% if match.isKdoMatch %}
+        <section class="ta-card mt-5 match-kdo-section">
+            <h2 class="ta-card-title">Match KDO — cadeau</h2>
+            {% if kdo_winner %}
+                <p class="ta-card-text match-kdo-winner">
+                    {% if kdo_winner.team.logo %}
+                        <img src="{{ asset(kdo_winner.team.logo) }}" alt="" class="match-kdo-winner-logo" width="40" height="40">
+                    {% endif %}
+                    <a href="{{ path('app_team_show', { id: kdo_winner.team.id }) }}" class="ranking-team-link">
+                        <strong>{{ kdo_winner.team.name }}</strong>
+                    </a>
+                    remporte le cadeau
+                    {% if kdo_winner.exactScoresCount == 2 %}
+                        (2 scores exacts sur ce match).
+                    {% else %}
+                        (1 score exact sur ce match).
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="ta-card-text">Aucune équipe n’a obtenu le score exact sur ce match : pas de gagnant KDO.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+
     <section class="ta-card mt-5">
         <h2 class="ta-card-title">Tous les pronostics</h2>
 

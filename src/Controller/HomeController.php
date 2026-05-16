@@ -11,7 +11,9 @@ use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
+use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
+use App\Service\MatchStatusResolver;
 use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,6 +32,8 @@ class HomeController extends AbstractController
         ButRepository $butRepository,
         UserRepository $userRepository,
         ButeurGoalScoringService $buteurGoalScoringService,
+        DefaultPronosticService $defaultPronosticService,
+        MatchStatusResolver $matchStatusResolver,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -37,22 +41,43 @@ class HomeController extends AbstractController
         }
 
         $now = new \DateTimeImmutable();
+        $liveMatches = [];
+        foreach ($gameMatchRepository->findCandidatesForLiveDisplay($now) as $candidate) {
+            if ($matchStatusResolver->isMatchLive($candidate, $now)) {
+                $liveMatches[] = $candidate;
+            }
+        }
+
+        $liveMatchIds = [];
+        foreach ($liveMatches as $liveMatch) {
+            $liveMatchIds[(int) $liveMatch->getId()] = true;
+        }
+
         $lastCompletedMatchday = $gameMatchRepository->findLastCompletedMatchday($now);
         $nextMatchday = $gameMatchRepository->findNextMatchday();
         $rankingSummary = $pronosticRepository->findRankingSummary();
 
         $dashboardMatches = [];
+        foreach ($liveMatches as $match) {
+            $dashboardMatches[(int) $match->getId()] = $match;
+        }
         if (null !== $lastCompletedMatchday) {
             foreach ($lastCompletedMatchday['matches'] as $match) {
-                $dashboardMatches[(int) $match->getId()] = $match;
+                if (!isset($liveMatchIds[(int) $match->getId()])) {
+                    $dashboardMatches[(int) $match->getId()] = $match;
+                }
             }
         }
         if (null !== $nextMatchday) {
             foreach ($nextMatchday['matches'] as $match) {
-                $dashboardMatches[(int) $match->getId()] = $match;
+                if (!isset($liveMatchIds[(int) $match->getId()])) {
+                    $dashboardMatches[(int) $match->getId()] = $match;
+                }
             }
         }
         $dashboardMatchList = array_values($dashboardMatches);
+
+        $defaultPronosticService->ensureDefaultsForUser($user, $dashboardMatchList);
 
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
 
@@ -70,6 +95,7 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/index.html.twig', [
+            'live_matches' => $liveMatches,
             'last_completed_matchday' => $lastCompletedMatchday,
             'next_matchday' => $nextMatchday,
             'ranking_summary' => $rankingSummary,

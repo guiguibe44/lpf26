@@ -6,6 +6,7 @@ use App\Entity\GameMatch;
 use App\Service\PronosticScoringService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -62,17 +63,18 @@ class GameMatchCrudController extends AbstractAppCrudController
                 'Annule' => 'CANCELLED',
             ]),
             TextField::new('phase')->setRequired(false),
+            BooleanField::new('isKdoMatch')->setLabel('Match KDO (cadeau)'),
             IntegerField::new('apiFootballFixtureId')->setRequired(false)->onlyOnDetail(),
             TextField::new('venueName')->setRequired(false),
             TextField::new('referee')->setRequired(false),
             IntegerField::new('scoreDomicile')->setRequired(false),
             IntegerField::new('scoreExterieur')->setRequired(false),
-            IntegerField::new('pointsScoreExact')->setRequired(false)->hideOnIndex(),
-            IntegerField::new('pointsBonResultat')->setRequired(false)->hideOnIndex(),
-            IntegerField::new('pointsMauvaisResultat')->setRequired(false)->hideOnIndex(),
-            NumberField::new('coteMin')->setNumDecimals(2)->setRequired(false)->hideOnForm(),
-            NumberField::new('coteMoyenne')->setNumDecimals(2)->setRequired(false)->hideOnForm(),
-            NumberField::new('coteMax')->setNumDecimals(2)->setRequired(false)->hideOnForm(),
+            NumberField::new('coteMin')->setLabel('Cote min')->setNumDecimals(2)->onlyOnIndex()->onlyOnDetail(),
+            NumberField::new('coteMoyenne')->setLabel('Cote moy.')->setNumDecimals(2)->onlyOnIndex()->onlyOnDetail(),
+            NumberField::new('coteMax')->setLabel('Cote max')->setNumDecimals(2)->onlyOnIndex()->onlyOnDetail(),
+            IntegerField::new('pointsScoreExact')->setLabel('Pts exact')->setRequired(false)->onlyOnDetail(),
+            IntegerField::new('pointsBonResultat')->setLabel('Pts bon 1N2')->setRequired(false)->onlyOnDetail(),
+            IntegerField::new('pointsMauvaisResultat')->setLabel('Pts faux')->setRequired(false)->onlyOnDetail(),
             DateTimeField::new('createdAt')->hideOnForm(),
         ];
     }

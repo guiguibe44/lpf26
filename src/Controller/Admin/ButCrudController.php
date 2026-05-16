@@ -59,9 +59,9 @@ class ButCrudController extends AbstractAppCrudController
             AssociationField::new('matchRef')->setLabel('Match'),
             AssociationField::new('buteur'),
             IntegerField::new('minute')->setRequired(false),
-            IntegerField::new('pointsBase')->setLabel('Points de base')->hideOnForm(),
-            NumberField::new('coteCoefficient')->setLabel('Cote')->hideOnForm(),
-            IntegerField::new('pointsAttribues')->setLabel('Points attribués')->hideOnForm(),
+            IntegerField::new('pointsBase')->setLabel('Pts base')->onlyOnIndex()->onlyOnDetail(),
+            NumberField::new('coteCoefficient')->setLabel('Cote')->setNumDecimals(2)->onlyOnIndex()->onlyOnDetail(),
+            IntegerField::new('pointsAttribues')->setLabel('Points')->onlyOnIndex()->onlyOnDetail(),
             DateTimeField::new('createdAt')->hideOnForm(),
         ];
     }

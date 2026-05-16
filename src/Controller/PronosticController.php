@@ -7,6 +7,7 @@ use App\Entity\Pronostic;
 use App\Entity\User;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
+use App\Service\DefaultPronosticService;
 use App\Service\PronosticScoringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        DefaultPronosticService $defaultPronosticService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -36,6 +38,7 @@ class PronosticController extends AbstractController
         }
 
         $matches = $gameMatchRepository->findBy([], ['dateHeure' => 'ASC']);
+        $defaultPronosticService->ensureDefaultsForUser($user, $matches);
         $pronostics = $pronosticRepository->findBy(['joueur' => $user]);
         $pronosticsByMatchId = [];
 

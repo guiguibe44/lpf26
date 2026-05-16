@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'UNIQ_PRONOSTIC_USER_MATCH', fields: ['joueur', 'match'])]
 class Pronostic
 {
+    public const DEFAULT_SCORE_DOMICILE = 0;
+    public const DEFAULT_SCORE_EXTERIEUR = 0;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,6 +54,8 @@ class Pronostic
         $now = new \DateTimeImmutable();
         $this->createdAt = $now;
         $this->updatedAt = $now;
+        $this->scoreDomicile = self::DEFAULT_SCORE_DOMICILE;
+        $this->scoreExterieur = self::DEFAULT_SCORE_EXTERIEUR;
     }
 
     public function getId(): ?int

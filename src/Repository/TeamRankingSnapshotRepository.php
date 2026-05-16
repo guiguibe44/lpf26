@@ -100,4 +100,20 @@ class TeamRankingSnapshotRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @return list<TeamRankingSnapshot>
+     */
+    public function findRankingForMatch(GameMatch $match): array
+    {
+        return $this->createQueryBuilder('s')
+            ->addSelect('t')
+            ->join('s.team', 't')
+            ->andWhere('s.matchRef = :match')
+            ->setParameter('match', $match)
+            ->orderBy('s.position', 'ASC')
+            ->addOrderBy('t.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

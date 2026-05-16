@@ -8,11 +8,17 @@ use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\GameMatchRepository;
 use App\Repository\TeamRepository;
+use App\Service\DefaultPronosticService;
 use App\Service\GroupStandingsBuilder;
+use App\Service\KdoMatchWinnerService;
+use App\Service\MatchLiveViewBuilder;
+use App\Service\MatchStatusResolver;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\TeamRankingSnapshotRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -23,6 +29,7 @@ class CompetitionController extends AbstractController
         GameMatchRepository $gameMatchRepository,
         PronosticRepository $pronosticRepository,
         TeamMemberRepository $teamMemberRepository,
+        DefaultPronosticService $defaultPronosticService,
     ): Response
     {
         $user = $this->getUser();
@@ -31,6 +38,7 @@ class CompetitionController extends AbstractController
         }
 
         $matches = $gameMatchRepository->findBy([], ['dateHeure' => 'ASC']);
+        $defaultPronosticService->ensureDefaultsForUser($user, $matches);
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
 
         $now = new \DateTimeImmutable();
@@ -119,10 +127,62 @@ class CompetitionController extends AbstractController
         return $entries[array_key_last($entries)]['date_key'];
     }
 
+    #[Route('/matchs/{id}/live', name: 'app_match_live', methods: ['GET'])]
+    public function matchLive(
+        GameMatch $match,
+        MatchStatusResolver $matchStatusResolver,
+        MatchLiveViewBuilder $matchLiveViewBuilder,
+    ): Response {
+        if (!$matchStatusResolver->isMatchLive($match)) {
+            if ($matchStatusResolver->isMatchFinished($match)) {
+                return $this->redirectToRoute('app_match_pronostics', ['id' => $match->getId()]);
+            }
+
+            $this->addFlash('warning', 'Le suivi en direct sera disponible au coup d\'envoi.');
+
+            return $this->redirectToRoute('app_matches');
+        }
+
+        $scoreDomicile = $match->getScoreDomicile() ?? 0;
+        $scoreExterieur = $match->getScoreExterieur() ?? 0;
+        $liveView = $matchLiveViewBuilder->build($match, $scoreDomicile, $scoreExterieur);
+
+        return $this->render('competition/match_live.html.twig', [
+            'match' => $match,
+            'live_view' => $liveView,
+            'simulate_url' => $this->generateUrl('app_match_pronostics_simulate', ['id' => $match->getId()]),
+        ]);
+    }
+
+    #[Route('/matchs/{id}/pronostics/simuler', name: 'app_match_pronostics_simulate', methods: ['GET'])]
+    public function matchPronosticsSimulate(
+        GameMatch $match,
+        Request $request,
+        MatchStatusResolver $matchStatusResolver,
+        MatchLiveViewBuilder $matchLiveViewBuilder,
+    ): JsonResponse {
+        if (!$matchStatusResolver->isMatchStarted($match)) {
+            return new JsonResponse(['error' => 'Match non démarré.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $scoreDomicile = max(0, min(30, $request->query->getInt('domicile', $match->getScoreDomicile() ?? 0)));
+        $scoreExterieur = max(0, min(30, $request->query->getInt('exterieur', $match->getScoreExterieur() ?? 0)));
+
+        return $this->json($matchLiveViewBuilder->buildForJson($match, $scoreDomicile, $scoreExterieur));
+    }
+
     #[Route('/matchs/{id}/pronostics', name: 'app_match_pronostics', methods: ['GET'])]
-    public function matchPronostics(GameMatch $match, PronosticRepository $pronosticRepository): Response
-    {
-        if (!$this->isMatchFinished($match)) {
+    public function matchPronostics(
+        GameMatch $match,
+        PronosticRepository $pronosticRepository,
+        KdoMatchWinnerService $kdoMatchWinnerService,
+        MatchStatusResolver $matchStatusResolver,
+    ): Response {
+        if ($matchStatusResolver->isMatchLive($match)) {
+            return $this->redirectToRoute('app_match_live', ['id' => $match->getId()]);
+        }
+
+        if (!$matchStatusResolver->isMatchFinished($match)) {
             $this->addFlash('danger', 'Les pronostics de ce match seront visibles apres le score final.');
 
             return $this->redirectToRoute('app_matches');
@@ -131,6 +191,7 @@ class CompetitionController extends AbstractController
         return $this->render('competition/match_pronostics.html.twig', [
             'match' => $match,
             'pronostics' => $pronosticRepository->findByMatchWithTeamMembers($match),
+            'kdo_winner' => $kdoMatchWinnerService->resolveWinner($match),
         ]);
     }
 
@@ -287,16 +348,4 @@ class CompetitionController extends AbstractController
         return $rows;
     }
 
-    private function isMatchFinished(GameMatch $match): bool
-    {
-        $dateHeure = $match->getDateHeure();
-
-        return 'FINISHED' === $match->getStatut()
-            || (
-                null !== $match->getScoreDomicile()
-                && null !== $match->getScoreExterieur()
-                && null !== $dateHeure
-                && $dateHeure < new \DateTimeImmutable()
-            );
-    }
 }

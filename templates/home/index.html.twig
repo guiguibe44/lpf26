@@ -21,9 +21,26 @@
     {% endif %}
 
     <section class="match-dashboard-wrap mt-5 {{ prono_access_blocked ? 'match-dashboard-wrap--locked' : '' }}">
-        {% if last_completed_matchday is null and next_matchday is null %}
+        {% if live_matches is empty and last_completed_matchday is null and next_matchday is null %}
             <p class="ta-card-text mt-3">Aucun match à afficher pour le moment.</p>
         {% else %}
+            {% if live_matches is not empty %}
+                <div class="match-day-section match-day-section--live">
+                    <h2 class="match-day-title">Match{{ live_matches|length > 1 ? 's' : '' }} en direct</h2>
+                    <div class="match-card-grid">
+                        {% for match in live_matches %}
+                            {% include 'competition/_match_card.html.twig' with {
+                                match: match,
+                                pronostic: pronostics_by_match_id[match.id] ?? null,
+                                partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
+                                now: now,
+                                prono_access_blocked: prono_access_blocked
+                            } only %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
             {% if last_completed_matchday %}
                 <div class="match-day-section">
                     <h2 class="match-day-title">Dernière journée  — {{ last_completed_matchday.date|fr_date_long }}</h2>
@@ -42,7 +59,7 @@
             {% endif %}
 
             {% if next_matchday %}
-                <div class="match-day-section {{ last_completed_matchday ? 'mt-6' : '' }}">
+                <div class="match-day-section {{ live_matches is not empty or last_completed_matchday ? 'mt-6' : '' }}">
                     <h2 class="match-day-title">Prochaine journée — {{ next_matchday.date|fr_date_long }}</h2>
                     <div class="match-card-grid">
                         {% for match in next_matchday.matches %}

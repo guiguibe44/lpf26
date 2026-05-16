@@ -1,0 +1,69 @@
+{# @var teams \App\Dto\MatchLiveTeamRow[] #}
+<div class="match-live-teams" id="match-live-teams">
+    {% for team in teams %}
+        <article class="match-live-team-card" data-team-id="{{ team.teamId }}">
+            <header class="match-live-team-head">
+                <div class="match-live-team-rank">
+                    <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position title="Classement général simulé">#{{ team.simulatedRankingPosition }}</span>
+                    {% if team.rankingPosition < 9999 %}
+                        <span class="match-live-team-position match-live-team-position--before" title="Classement avant ce match">({{ team.rankingPosition }})</span>
+                    {% endif %}
+                    {% if team.teamLogo %}
+                        <img src="{{ asset(team.teamLogo) }}" alt="" class="match-live-team-logo" width="36" height="36" loading="lazy">
+                    {% else %}
+                        <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
+                    {% endif %}
+                    <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
+                </div>
+                <span class="match-live-team-total" data-team-total title="Points sur ce match">{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
+                <span class="match-live-team-total-general" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} pts gen.</span>
+            </header>
+
+            <div class="match-live-pronos">
+                {% for prono in team.pronostics %}
+                    <div class="match-live-prono-row" data-pronostic-id="{{ prono.pronosticId }}">
+                        <span class="match-live-prono-label">{{ prono.playerLabel }}</span>
+                        <span class="match-live-prono-score" data-prono-score>{{ prono.predHome }} - {{ prono.predAway }}</span>
+                        <span class="match-live-prono-meta">
+                            <span data-prono-base title="Points de base">{{ prono.basePoints }}</span>
+                            ×
+                            <span data-prono-cote title="Cote">{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
+                        </span>
+                        <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>
+                            {{ prono.points|number_format(0, ',', ' ') }} pts
+                        </span>
+                        {% if prono.priseRisque %}
+                            <span class="match-live-prono-risk ta-badge" data-prono-risk>Risque</span>
+                        {% else %}
+                            <span class="match-live-prono-risk" data-prono-risk hidden></span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="match-live-prono-empty">Aucun pronostic enregistré.</p>
+                {% endfor %}
+            </div>
+
+            {% if team.buteurs is not empty %}
+                <div class="match-live-buteurs">
+                    <p class="match-live-buteurs-title">Buteurs (pays du match)</p>
+                    <ul class="match-live-buteurs-list">
+                        {% for buteur in team.buteurs %}
+                            <li class="match-live-buteur-item">
+                                <span class="match-live-buteur-name">{{ buteur.name }}</span>
+                                {% if buteur.country %}
+                                    <span class="match-live-buteur-country">{{ buteur.country }}</span>
+                                {% endif %}
+                                <span class="match-live-buteur-points">
+                                    +{{ buteur.pointsPerGoal|number_format(0, ',', ' ') }} pts / but
+                                    <span class="match-live-buteur-cote">(cote {{ buteur.coefficient|number_format(2, ',', ' ') }})</span>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </article>
+    {% else %}
+        <p class="ta-card-text">Aucune équipe enregistrée.</p>
+    {% endfor %}
+</div>

@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     globals:
         cotisation_wire_phone: '%app.cotisation_wire_phone%'
+        prono_default_score_domicile: 0
+        prono_default_score_exterieur: 0
 
 when@test:
     twig:
