@@ -72,6 +72,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Matchs', 'fas fa-futbol', 'admin_game_match_index');
         yield MenuItem::linkToRoute('Pronostics', 'fas fa-list-check', 'admin_pronostic_index');
         yield MenuItem::linkToRoute('Classements equipes', 'fas fa-ranking-star', 'admin_team_ranking_snapshot_index');
+        yield MenuItem::linkToRoute('Jokers', 'fas fa-wand-magic-sparkles', 'admin_joker_index');
+        yield MenuItem::linkToRoute('Utilisations jokers', 'fas fa-hat-wizard', 'admin_team_joker_usage_index');
 
         yield MenuItem::section('Synchro API-Football');
 

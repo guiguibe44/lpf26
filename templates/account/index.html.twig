@@ -85,6 +85,7 @@
                         cotisation_payee: cotisation_payee,
                         dashboard_partners: dashboard_partners,
                         buteurs_pris_par_autres_equipes: buteurs_pris_par_autres_equipes,
+                        buteur_stats: buteur_stats|default(null),
                         form_return: 'account',
                     } only %}
                 </div>
@@ -152,6 +153,10 @@
 
         {% if team %}
         <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
+            {% if has_team_member %}
+                {% include 'account/_jokers_section.html.twig' with { team_joker_overview: team_joker_overview } only %}
+            {% endif %}
+
             <section class="account-card-team-info rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-2 text-lg font-semibold">Équipe {{ team.name }}</h2>
                 {% if team.slogan %}

@@ -28,6 +28,7 @@ final class AppExtension extends AbstractExtension
         return [
             new TwigFunction('match_is_live', [$this, 'isMatchLive']),
             new TwigFunction('match_is_finished', [$this, 'isMatchFinished']),
+            new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
         ];
     }
 
@@ -47,6 +48,15 @@ final class AppExtension extends AbstractExtension
             : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
 
         return $this->matchStatusResolver->isMatchFinished($match, $at);
+    }
+
+    public function canEditBeforeKickoff(GameMatch $match, ?\DateTimeInterface $now = null): bool
+    {
+        $at = $now instanceof \DateTimeImmutable
+            ? $now
+            : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
+
+        return $this->matchStatusResolver->canEditBeforeKickoff($match, $at);
     }
 
     public function formatDateLong(?\DateTimeInterface $date): string

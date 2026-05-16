@@ -34,7 +34,9 @@
                                 pronostic: pronostics_by_match_id[match.id] ?? null,
                                 partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
                                 now: now,
-                                prono_access_blocked: prono_access_blocked
+                                prono_access_blocked: prono_access_blocked,
+                                joker_usage_by_match_id: joker_usage_by_match_id,
+                                show_joker_ui: show_joker_ui|default(false)
                             } only %}
                         {% endfor %}
                     </div>
@@ -51,7 +53,9 @@
                                 pronostic: pronostics_by_match_id[match.id] ?? null,
                                 partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
                                 now: now,
-                                prono_access_blocked: prono_access_blocked
+                                prono_access_blocked: prono_access_blocked,
+                                joker_usage_by_match_id: joker_usage_by_match_id,
+                                show_joker_ui: show_joker_ui|default(false)
                             } only %}
                         {% endfor %}
                     </div>
@@ -68,7 +72,9 @@
                                 pronostic: pronostics_by_match_id[match.id] ?? null,
                                 partner_pronostics: partner_pronostics_by_match_id[match.id] ?? [],
                                 now: now,
-                                prono_access_blocked: prono_access_blocked
+                                prono_access_blocked: prono_access_blocked,
+                                joker_usage_by_match_id: joker_usage_by_match_id,
+                                show_joker_ui: show_joker_ui|default(false)
                             } only %}
                         {% endfor %}
                     </div>
@@ -76,4 +82,15 @@
             {% endif %}
         {% endif %}
     </section>
+
+    {% if app.user %}
+        {% include 'competition/_joker_modal.html.twig' %}
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if app.user %}
+        <script src="{{ asset('js/joker-match.js') }}?v=3" defer></script>
+    {% endif %}
 {% endblock %}

@@ -18,6 +18,7 @@ final class PronosticSimulationService
     /**
      * @param iterable<Pronostic> $pronostics
      * @param array<int, int>     $playerTeamMap
+     * @param array<int, string>  $jokerCodeByTeamId teamId => joker code
      *
      * @return list<SimulatedPronosticLine>
      */
@@ -28,6 +29,8 @@ final class PronosticSimulationService
         iterable $pronostics,
         array $playerTeamMap = [],
         array $playerLabels = [],
+        array $jokerCodeByTeamId = [],
+        ?JokerScoringApplicator $jokerScoringApplicator = null,
     ): array {
         $pronosticList = [];
         foreach ($pronostics as $pronostic) {
@@ -90,6 +93,27 @@ final class PronosticSimulationService
                 $home,
                 $away,
             );
+            $standardPoints = (float) round($basePoints * $coefficient);
+            $jokerCode = $teamId > 0 ? ($jokerCodeByTeamId[$teamId] ?? null) : null;
+            $jokerPoints = null !== $jokerScoringApplicator
+                ? $jokerScoringApplicator->applyForTeam(
+                    $jokerCode,
+                    $match,
+                    $scoreDomicileReel,
+                    $scoreExterieurReel,
+                    $home,
+                    $away,
+                    $standardPoints,
+                )
+                : null;
+
+            if (null !== $jokerPoints) {
+                $playerPoints = $jokerPoints['playerPoints'];
+                $teamPoints = $jokerPoints['teamPoints'];
+            } else {
+                $playerPoints = $standardPoints;
+                $teamPoints = $standardPoints;
+            }
 
             $lines[] = new SimulatedPronosticLine(
                 $pronosticId,
@@ -99,8 +123,9 @@ final class PronosticSimulationService
                 $away,
                 $basePoints,
                 $coefficient,
-                (float) round($basePoints * $coefficient),
+                $playerPoints,
                 $riskByPronosticId[$pronosticId] ?? false,
+                $teamPoints,
             );
         }
 

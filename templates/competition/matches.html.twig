@@ -126,7 +126,9 @@
                     pronostic: pronostic,
                     partner_pronostics: partner_pronostics,
                     now: now,
-                    prono_access_blocked: prono_access_blocked|default(false)
+                    prono_access_blocked: prono_access_blocked|default(false),
+                    joker_usage_by_match_id: joker_usage_by_match_id|default({}),
+                    show_joker_ui: show_joker_ui|default(false)
                 } only %}
 
                 {% if loop.last %}
@@ -136,4 +138,15 @@
             {% endfor %}
         {% endif %}
     </section>
+
+    {% if app.user %}
+        {% include 'competition/_joker_modal.html.twig' %}
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if app.user %}
+        <script src="{{ asset('js/joker-match.js') }}?v=3" defer></script>
+    {% endif %}
 {% endblock %}

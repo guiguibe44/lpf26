@@ -15,6 +15,7 @@ use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamRankingSnapshotRepository;
 use App\Repository\TeamRepository;
 
@@ -29,6 +30,9 @@ final class MatchLiveViewBuilder
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
         private readonly DefaultPronosticService $defaultPronosticService,
         private readonly KdoMatchWinnerService $kdoMatchWinnerService,
+        private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
+        private readonly JokerScoringApplicator $jokerScoringApplicator,
+        private readonly TeamJokerService $teamJokerService,
     ) {
     }
 
@@ -54,6 +58,8 @@ final class MatchLiveViewBuilder
             $pronostics,
             $playerTeamMap,
             $playerLabels,
+            $this->teamJokerUsageRepository->findJokerCodesByTeamForMatch($match),
+            $this->jokerScoringApplicator,
         );
 
         $linesByTeamId = [];
@@ -63,6 +69,7 @@ final class MatchLiveViewBuilder
 
         $rankingByTeamId = $this->buildCurrentRankingByTeamId();
         $matchCountryIds = $this->resolveMatchCountryIds($match);
+        $jokersByTeamId = $this->teamJokerService->buildActiveJokersByTeamIdForMatch($match);
         $teams = $this->teamRepository->findAllWithMembersAndPlayers();
 
         $teamRows = [];
@@ -70,7 +77,7 @@ final class MatchLiveViewBuilder
             $teamId = (int) $team->getId();
             $teamPronostics = $this->sortPronosticsForTeam($linesByTeamId[$teamId] ?? []);
             $matchPoints = (int) round(array_sum(array_map(
-                static fn (SimulatedPronosticLine $line): float => $line->points,
+                static fn (SimulatedPronosticLine $line): float => $line->teamPoints,
                 $teamPronostics,
             )));
             $previousTotal = (float) ($rankingByTeamId[$teamId]['totalPoints'] ?? 0.0);
@@ -85,6 +92,7 @@ final class MatchLiveViewBuilder
                 0,
                 $teamPronostics,
                 $this->buildButeursForTeam($team, $matchCountryIds),
+                $jokersByTeamId[$teamId] ?? null,
             );
         }
 
@@ -101,6 +109,7 @@ final class MatchLiveViewBuilder
                     $simulatedPositionByTeamId[$row->teamId] ?? 9999,
                     $row->pronostics,
                     $row->buteurs,
+                    $row->activeJoker,
                 );
             },
             $teamRows,

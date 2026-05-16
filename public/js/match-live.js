@@ -161,6 +161,16 @@
                 generalTotalEl.textContent = formatGeneralPoints(team.simulatedTotalPoints);
             }
 
+            const jokerEl = card.querySelector('[data-team-joker]');
+            if (jokerEl) {
+                if (team.activeJoker && team.activeJoker.name) {
+                    jokerEl.hidden = false;
+                    jokerEl.textContent = team.activeJoker.name;
+                } else {
+                    jokerEl.hidden = true;
+                }
+            }
+
             (team.pronostics || []).forEach((prono) => {
                 const row = card.querySelector('[data-pronostic-id="' + prono.pronosticId + '"]');
                 if (!row) {

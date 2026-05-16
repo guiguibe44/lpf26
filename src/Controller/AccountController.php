@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Buteur;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\AccountPasswordType;
@@ -9,10 +10,14 @@ use App\Form\AccountProfileType;
 use App\Form\CreateTeamInvitationType;
 use App\Form\ResendTeamInvitationType;
 use App\Form\TeamManageType;
+use App\Repository\ButRepository;
 use App\Repository\TeamInvitationRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\UserRepository;
+use App\Service\ButeurGoalScoringService;
 use App\Service\CompetitionStatus;
 use App\Service\TeamInvitationService;
+use App\Service\TeamJokerService;
 use App\Service\WebPushService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,6 +44,10 @@ class AccountController extends AbstractController
         WebPushService $webPushService,
         FormFactoryInterface $formFactory,
         SluggerInterface $slugger,
+        TeamJokerService $teamJokerService,
+        ButRepository $butRepository,
+        UserRepository $userRepository,
+        ButeurGoalScoringService $buteurGoalScoringService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -238,6 +247,19 @@ class AccountController extends AbstractController
             $teamMembers = $teamMemberRepository->findBy(['team' => $team], ['joinedAt' => 'ASC']);
         }
 
+        $buteur_stats = null;
+        $buteurChoisi = $user->getButeurChoisi();
+        if ($buteurChoisi instanceof Buteur) {
+            $buteurId = (int) $buteurChoisi->getId();
+            $buteur_stats = [
+                'goals' => $butRepository->countForButeur($buteurChoisi),
+                'points' => $butRepository->sumPointsAttribuesForButeur($buteurChoisi),
+                'cote' => $buteurGoalScoringService->getCurrentCoefficientForButeur($buteurChoisi),
+                'selections' => $userRepository->countWithButeurChoisiId($buteurId),
+                'total_players' => $userRepository->countWithButeurChoisi(),
+            ];
+        }
+
         return $this->render('account/index.html.twig', [
             'profile_form' => $profileForm?->createView(),
             'password_form' => $passwordForm->createView(),
@@ -256,8 +278,12 @@ class AccountController extends AbstractController
             'cotisation_payee' => $user->isCotisationPayee(),
             'dashboard_partners' => $dashboardPartners,
             'buteurs_pris_par_autres_equipes' => $buteursPris,
+            'buteur_stats' => $buteur_stats,
             'team_members' => $teamMembers,
             'push_vapid_configured' => $webPushService->isConfigured(),
+            'team_joker_overview' => null !== $team && $hasTeamMember
+                ? $teamJokerService->buildOverviewForTeam($team)
+                : [],
         ]);
     }
 

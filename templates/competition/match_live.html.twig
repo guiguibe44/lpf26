@@ -38,6 +38,28 @@
         </p>
     </section>
 
+    {% if match_active_jokers is not empty %}
+        <section class="ta-card mt-5 match-live-jokers-card">
+            <h2 class="ta-card-title">Jokers en jeu</h2>
+            <ul class="match-live-jokers-list">
+                {% for row in match_active_jokers %}
+                    <li class="match-live-jokers-item">
+                        {% if row.team_logo %}
+                            <img src="{{ asset(row.team_logo) }}" alt="" class="match-live-jokers-team-logo" width="32" height="32" loading="lazy">
+                        {% else %}
+                            <span class="match-live-jokers-team-placeholder" aria-hidden="true">{{ row.team_name|first|upper }}</span>
+                        {% endif %}
+                        <span class="match-live-jokers-team">{{ row.team_name }}</span>
+                        {% if row.joker.image %}
+                            <img src="{{ asset(row.joker.image) }}" alt="" class="match-live-jokers-icon" width="28" height="28" loading="lazy">
+                        {% endif %}
+                        <span class="ta-badge match-live-jokers-badge">{{ row.joker.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
     <section class="ta-card mt-5 match-live-simulator-card">
         <h2 class="ta-card-title">Simulateur de score</h2>
         <p class="ta-card-text">Ajustez le score pour estimer les points de chaque pronostic (cotes incluses).</p>

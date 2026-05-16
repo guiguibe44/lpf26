@@ -34,6 +34,10 @@ class Pronostic
     #[ORM\Column(nullable: true)]
     private ?float $points = null;
 
+    /** Contribution au classement équipe ; null = identique à {@see $points}. */
+    #[ORM\Column(nullable: true)]
+    private ?float $pointsEquipe = null;
+
     #[ORM\Column(nullable: true)]
     private ?int $pointsBase = null;
 
@@ -124,6 +128,25 @@ class Pronostic
         $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
+    }
+
+    public function getPointsEquipe(): ?float
+    {
+        return $this->pointsEquipe;
+    }
+
+    public function setPointsEquipe(?float $pointsEquipe): static
+    {
+        $this->pointsEquipe = $pointsEquipe;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    /** Points comptés pour le classement équipe. */
+    public function getEffectiveTeamPoints(): float
+    {
+        return (float) ($this->pointsEquipe ?? $this->points ?? 0);
     }
 
     public function getPointsBase(): ?int

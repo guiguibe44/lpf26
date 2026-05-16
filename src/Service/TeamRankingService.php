@@ -101,7 +101,7 @@ final class TeamRankingService
                 continue;
             }
 
-            $statsByTeamId[$teamId]['totalPoints'] += (float) ($pronostic->getPoints() ?? 0);
+            $statsByTeamId[$teamId]['totalPoints'] += $pronostic->getEffectiveTeamPoints();
 
             if ($this->isExactScore($pronostic)) {
                 ++$statsByTeamId[$teamId]['scoresExacts'];

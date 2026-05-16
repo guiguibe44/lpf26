@@ -64,4 +64,21 @@ final class MatchStatusResolver
     {
         return $this->isMatchStarted($match, $now) && !$this->isMatchFinished($match, $now);
     }
+
+    /** Pronostic / joker modifiables avant le coup d'envoi. */
+    public function canEditBeforeKickoff(GameMatch $match, ?\DateTimeImmutable $now = null): bool
+    {
+        if (\in_array($match->getStatut(), ['FINISHED', 'CANCELLED'], true)) {
+            return false;
+        }
+
+        if ($this->isMatchLive($match, $now)) {
+            return false;
+        }
+
+        $dateHeure = $match->getDateHeure();
+        $now ??= new \DateTimeImmutable();
+
+        return $dateHeure instanceof \DateTimeImmutable && $dateHeure > $now;
+    }
 }

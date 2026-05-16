@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Repository\PronosticRepository;
+use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamMemberRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,6 +25,8 @@ final class PronosticScoringService
         private readonly EntityManagerInterface $entityManager,
         private readonly DefaultPronosticService $defaultPronosticService,
         private readonly PronosticSimulationService $pronosticSimulationService,
+        private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
+        private readonly JokerScoringApplicator $jokerScoringApplicator,
     ) {
     }
 
@@ -76,6 +79,11 @@ final class PronosticScoringService
             }
         }
 
+        $jokerCodeByTeamId = $this->teamJokerUsageRepository->findJokerCodesByTeamForMatch($match);
+        $realHome = $match->getScoreDomicile();
+        $realAway = $match->getScoreExterieur();
+        $hasFinalScore = null !== $realHome && null !== $realAway;
+
         foreach ($pronostics as $pronostic) {
             $pronosticId = $pronostic->getId();
             $home = $pronostic->getScoreDomicile();
@@ -85,6 +93,7 @@ final class PronosticScoringService
                     ->setPointsBase(null)
                     ->setCoteCoefficient(null)
                     ->setPoints(null)
+                    ->setPointsEquipe(null)
                     ->setPriseRisque(false);
                 continue;
             }
@@ -93,17 +102,39 @@ final class PronosticScoringService
             $sameScoreCount = max(1, (int) ($occurrencesByScore[$scoreKey] ?? 1));
             $coefficientBrut = $totalPronostics > 0 ? ($totalPronostics / $sameScoreCount) : 1.0;
             $coefficient = round(min($coefficientBrut, self::MAX_COTE_COEFFICIENT), 2);
-            $realHome = $match->getScoreDomicile();
-            $realAway = $match->getScoreExterieur();
-            $basePoints = null !== $realHome && null !== $realAway
+            $basePoints = $hasFinalScore
                 ? $this->pronosticSimulationService->computeBasePoints($match, $realHome, $realAway, $home, $away)
                 : null;
             $pointsFinaux = null !== $basePoints ? (float) round($basePoints * $coefficient) : null;
 
+            $playerId = $pronostic->getJoueur()?->getId();
+            $teamId = null !== $playerId ? ($playerTeamMap[$playerId] ?? null) : null;
+            $jokerCode = null !== $teamId ? ($jokerCodeByTeamId[$teamId] ?? null) : null;
+            $jokerPoints = $hasFinalScore && null !== $pointsFinaux
+                ? $this->jokerScoringApplicator->applyForTeam(
+                    $jokerCode,
+                    $match,
+                    $realHome,
+                    $realAway,
+                    $home,
+                    $away,
+                    $pointsFinaux,
+                )
+                : null;
+
+            if (null !== $jokerPoints) {
+                $pronostic
+                    ->setPoints($jokerPoints['playerPoints'])
+                    ->setPointsEquipe($jokerPoints['teamPoints']);
+            } else {
+                $pronostic
+                    ->setPoints($pointsFinaux)
+                    ->setPointsEquipe(null);
+            }
+
             $pronostic
                 ->setPointsBase($basePoints)
                 ->setCoteCoefficient($coefficient)
-                ->setPoints($pointsFinaux)
                 ->setPriseRisque(null !== $pronosticId ? ($riskByPronosticId[$pronosticId] ?? false) : false);
 
             $coefficients[] = $coefficient;

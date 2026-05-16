@@ -1,0 +1,52 @@
+{# @var team_joker_overview list #}
+<section class="account-card-jokers rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+    <h2 class="mb-2 text-lg font-semibold">Jokers de l’équipe</h2>
+    <p class="ta-card-text mb-4">
+        Chaque joker ne peut être utilisé qu’<strong>une fois</strong> par équipe.
+        Une seule mise en jeu à la fois (sur un match donné).
+    </p>
+
+    {% if team_joker_overview is empty %}
+        <p class="ta-card-text">Aucun joker configuré pour le moment.</p>
+    {% else %}
+        <ul class="joker-overview-list">
+            {% for row in team_joker_overview %}
+                {% set joker = row.joker %}
+                {% set usage = row.usage %}
+                <li class="joker-overview-item joker-overview-item--{{ row.status }}">
+                    <div class="joker-overview-media">
+                        {% if joker.image %}
+                            <img src="{{ asset(joker.image) }}" alt="" class="joker-overview-image" width="56" height="56" loading="lazy">
+                        {% else %}
+                            <span class="joker-overview-image-placeholder" aria-hidden="true">
+                                <i class="ti ti-wand"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="joker-overview-body">
+                        <div class="joker-overview-head">
+                            <h3 class="joker-overview-name">{{ joker.name }}</h3>
+                            <span class="ta-badge joker-overview-badge joker-overview-badge--{{ row.status }}">{{ row.status_label }}</span>
+                        </div>
+                        {% if joker.description %}
+                            <p class="joker-overview-desc">{{ joker.description }}</p>
+                        {% endif %}
+                        {% if usage %}
+                            {% set um = usage.match %}
+                            <p class="joker-overview-usage">
+                                Posé sur
+                                <strong>{{ um.paysDomicile ? um.paysDomicile.nom : '?' }} — {{ um.paysExterieur ? um.paysExterieur.nom : '?' }}</strong>
+                                {% if um.dateHeure %}
+                                    ({{ um.dateHeure|date('d/m/Y H:i') }})
+                                {% endif %}
+                                · le {{ usage.placedAt|date('d/m/Y H:i') }}
+                            </p>
+                        {% elseif row.status == 'blocked' %}
+                            <p class="joker-overview-hint">Terminez ou jouez le match avec le joker en cours avant d’en utiliser un autre.</p>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>

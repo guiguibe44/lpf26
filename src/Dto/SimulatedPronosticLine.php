@@ -16,6 +16,7 @@ final class SimulatedPronosticLine
         public readonly float $coefficient,
         public readonly float $points,
         public readonly bool $priseRisque,
+        public readonly float $teamPoints,
     ) {
     }
 
@@ -33,6 +34,7 @@ final class SimulatedPronosticLine
             'basePoints' => $this->basePoints,
             'coefficient' => $this->coefficient,
             'points' => $this->points,
+            'teamPoints' => $this->teamPoints,
             'priseRisque' => $this->priseRisque,
         ];
     }

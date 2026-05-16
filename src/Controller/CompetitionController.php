@@ -13,6 +13,7 @@ use App\Service\GroupStandingsBuilder;
 use App\Service\KdoMatchWinnerService;
 use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
+use App\Service\TeamJokerService;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\TeamRankingSnapshotRepository;
@@ -30,6 +31,7 @@ class CompetitionController extends AbstractController
         PronosticRepository $pronosticRepository,
         TeamMemberRepository $teamMemberRepository,
         DefaultPronosticService $defaultPronosticService,
+        TeamJokerService $teamJokerService,
     ): Response
     {
         $user = $this->getUser();
@@ -40,6 +42,11 @@ class CompetitionController extends AbstractController
         $matches = $gameMatchRepository->findBy([], ['dateHeure' => 'ASC']);
         $defaultPronosticService->ensureDefaultsForUser($user, $matches);
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
+        $teamMember = $teamMemberRepository->findOneBy(['player' => $user]);
+        $team = $teamMember?->getTeam();
+        $joker_usage_by_match_id = $team instanceof Team
+            ? $teamJokerService->buildUsageSummaryByMatchIdForTeam($team)
+            : [];
 
         $now = new \DateTimeImmutable();
         $matchdayNav = $this->buildMatchdayNavEntries($matches);
@@ -52,6 +59,8 @@ class CompetitionController extends AbstractController
             'partner_pronostics_by_match_id' => $pronosticRepository->findIndexedByPlayersAndMatches($partnerIds, $matches),
             'now' => $now,
             'prono_access_blocked' => !$user->isCotisationPayee(),
+            'joker_usage_by_match_id' => $joker_usage_by_match_id,
+            'show_joker_ui' => true,
         ]);
     }
 
@@ -147,10 +156,22 @@ class CompetitionController extends AbstractController
         $scoreExterieur = $match->getScoreExterieur() ?? 0;
         $liveView = $matchLiveViewBuilder->build($match, $scoreDomicile, $scoreExterieur);
 
+        $activeJokers = [];
+        foreach ($liveView['teams'] as $teamRow) {
+            if (null !== $teamRow->activeJoker) {
+                $activeJokers[] = [
+                    'team_name' => $teamRow->teamName,
+                    'team_logo' => $teamRow->teamLogo,
+                    'joker' => $teamRow->activeJoker,
+                ];
+            }
+        }
+
         return $this->render('competition/match_live.html.twig', [
             'match' => $match,
             'live_view' => $liveView,
             'simulate_url' => $this->generateUrl('app_match_pronostics_simulate', ['id' => $match->getId()]),
+            'match_active_jokers' => $activeJokers,
         ]);
     }
 

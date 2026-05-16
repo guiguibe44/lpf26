@@ -1,14 +1,34 @@
-{# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false #}
+{# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false, joker_usage_by_match_id: array, show_joker_ui: bool|false #}
 {% set prono_access_blocked = prono_access_blocked ?? false %}
+{% set joker_usage_by_match_id = joker_usage_by_match_id ?? {} %}
+{% set show_joker_ui = show_joker_ui ?? false %}
+{% set match_joker = joker_usage_by_match_id[match.id] ?? null %}
 {% set is_finished = match_is_finished(match, now) %}
 {% set is_live = match_is_live(match, now) %}
-{% set can_pronostic = not is_finished and not is_live and match.statut == 'SCHEDULED' and match.dateHeure > now and not prono_access_blocked %}
-{% set match_prono_blocked_cotisation = prono_access_blocked and match.statut == 'SCHEDULED' and match.dateHeure > now %}
+{% set can_edit_before_kickoff = match_can_edit_before_kickoff(match, now) %}
+{% set can_pronostic = can_edit_before_kickoff and not prono_access_blocked %}
+{% set match_prono_blocked_cotisation = prono_access_blocked and can_edit_before_kickoff %}
+{% set can_place_joker = (show_joker_ui|default(false)) and can_edit_before_kickoff %}
 
-<article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}">
+<article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}" data-match-id="{{ match.id }}">
     <div class="match-card-head">
         {% if match.isKdoMatch %}
             <span class="ta-badge match-card-kdo-badge">KDO</span>
+        {% endif %}
+        {% if match_joker %}
+            {% if can_place_joker %}
+                <button
+                    type="button"
+                    class="match-card-joker-badge"
+                    data-joker-badge
+                    data-joker-badge-toggle
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    title="Afficher les actions joker"
+                >Joker : {{ match_joker.name }}</button>
+            {% else %}
+                <span class="match-card-joker-badge match-card-joker-badge--static" data-joker-badge>Joker : {{ match_joker.name }}</span>
+            {% endif %}
         {% endif %}
         {% if is_finished %}
             <span class="ta-badge ta-badge-success">Terminé</span>
@@ -102,6 +122,40 @@
             <span class="match-locked-pronostic">{{ prono_default_score_domicile }} - {{ prono_default_score_exterieur }}</span>
         {% endif %}
     </div>
+
+    {% if can_place_joker or match_joker %}
+        <div
+            class="match-joker-actions"
+            data-joker-actions
+            data-match-id="{{ match.id }}"
+            data-match-label="{{ match.paysDomicile ? match.paysDomicile.nom : '?' }} — {{ match.paysExterieur ? match.paysExterieur.nom : '?' }}"
+            data-joker-state-url="{{ path('app_match_jokers_state', { id: match.id }) }}"
+            data-joker-place-url="{{ path('app_match_joker_place', { id: match.id }) }}"
+            data-joker-remove-url="{{ path('app_match_joker_remove', { id: match.id }) }}"
+        >
+            <button
+                type="button"
+                class="btn btn-outline btn-primary btn-sm match-joker-btn"
+                data-joker-open
+                data-joker-open-initial
+                {% if match_joker %}hidden{% endif %}
+                {% if prono_access_blocked %}disabled title="Réglez la cotisation pour jouer un joker"{% endif %}
+            >
+                <i class="ti ti-wand" aria-hidden="true"></i>
+                Joker
+            </button>
+            <div class="match-joker-popover" data-joker-popover hidden>
+                <button type="button" class="btn btn-outline btn-primary btn-sm match-joker-btn" data-joker-open>
+                    <i class="ti ti-wand" aria-hidden="true"></i>
+                    Gérer
+                </button>
+                <button type="button" class="btn btn-outline btn-sm match-joker-remove-btn" data-joker-remove>
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                    Retirer
+                </button>
+            </div>
+        </div>
+    {% endif %}
 
     <div class="match-partner">
         {% if partner_pronostics is empty %}

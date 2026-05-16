@@ -2506,6 +2506,13 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     filter: grayscale(0.15);
 }
 
+.match-dashboard-wrap--locked .match-card .match-joker-actions,
+.match-dashboard-wrap--locked .match-card .match-card-joker-badge[data-joker-badge-toggle] {
+    opacity: 1;
+    pointer-events: auto;
+    filter: none;
+}
+
 .group-standings-card {
     scroll-margin-top: 1.5rem;
     min-width: 0;

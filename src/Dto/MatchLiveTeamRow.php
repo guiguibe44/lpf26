@@ -9,6 +9,7 @@ final class MatchLiveTeamRow
     /**
      * @param list<SimulatedPronosticLine>     $pronostics
      * @param list<array<string, mixed>>     $buteurs
+     * @param array{name: string, image: ?string, code: string}|null $activeJoker
      */
     public function __construct(
         public readonly int $teamId,
@@ -20,6 +21,7 @@ final class MatchLiveTeamRow
         public readonly int $simulatedRankingPosition,
         public readonly array $pronostics,
         public readonly array $buteurs,
+        public readonly ?array $activeJoker = null,
     ) {
     }
 
@@ -38,6 +40,7 @@ final class MatchLiveTeamRow
             'simulatedRankingPosition' => $this->simulatedRankingPosition,
             'pronostics' => array_map(static fn (SimulatedPronosticLine $line): array => $line->toArray(), $this->pronostics),
             'buteurs' => $this->buteurs,
+            'activeJoker' => $this->activeJoker,
         ];
     }
 }

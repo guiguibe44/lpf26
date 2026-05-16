@@ -14,6 +14,11 @@
                         <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
                     {% endif %}
                     <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
+                    {% if team.activeJoker %}
+                        <span class="match-live-team-joker ta-badge" data-team-joker title="Joker actif">{{ team.activeJoker.name }}</span>
+                    {% else %}
+                        <span class="match-live-team-joker ta-badge" data-team-joker hidden></span>
+                    {% endif %}
                 </div>
                 <span class="match-live-team-total" data-team-total title="Points sur ce match">{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
                 <span class="match-live-team-total-general" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} pts gen.</span>

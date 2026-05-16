@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Buteur;
+use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\ButeurRepository;
 use App\Repository\ButRepository;
@@ -14,6 +15,7 @@ use App\Service\ButeurGoalScoringService;
 use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
 use App\Service\MatchStatusResolver;
+use App\Service\TeamJokerService;
 use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +36,7 @@ class HomeController extends AbstractController
         ButeurGoalScoringService $buteurGoalScoringService,
         DefaultPronosticService $defaultPronosticService,
         MatchStatusResolver $matchStatusResolver,
+        TeamJokerService $teamJokerService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -80,6 +83,11 @@ class HomeController extends AbstractController
         $defaultPronosticService->ensureDefaultsForUser($user, $dashboardMatchList);
 
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
+        $teamMember = $teamMemberRepository->findOneBy(['player' => $user]);
+        $team = $teamMember?->getTeam();
+        $joker_usage_by_match_id = $team instanceof Team
+            ? $teamJokerService->buildUsageSummaryByMatchIdForTeam($team)
+            : [];
 
         $buteur_stats = null;
         $buteurChoisi = $user->getButeurChoisi();
@@ -108,6 +116,8 @@ class HomeController extends AbstractController
             'dashboard_partners' => $teamMemberRepository->findPartnerUsers($user),
             'buteurs_pris_par_autres_equipes' => $teamMemberRepository->findButeursChoisisParAutresEquipes($user),
             'buteur_stats' => $buteur_stats,
+            'joker_usage_by_match_id' => $joker_usage_by_match_id,
+            'show_joker_ui' => true,
         ]);
     }
 

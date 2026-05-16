@@ -11,7 +11,7 @@
                 Choix actuel : <strong>{{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
                 {% if app.user.buteurChoisi.pays %}<span class="dashboard-partner-buteur-pays">({{ app.user.buteurChoisi.pays.nom }})</span>{% endif %}
             </p>
-            {% if buteur_stats %}
+            {% if buteur_stats is defined and buteur_stats %}
                 {% include 'buteur/_stats_block.html.twig' with { buteur_stats: buteur_stats } only %}
             {% endif %}
         {% endif %}
