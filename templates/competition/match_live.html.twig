@@ -57,6 +57,10 @@
         </form>
     </section>
 
+    {% if match.isKdoMatch and live_view.kdoOutlook %}
+        {% include 'competition/_match_live_kdo.html.twig' with { kdo_outlook: live_view.kdoOutlook } only %}
+    {% endif %}
+
     <section class="mt-5 match-live-teams-section">
         <h2 class="match-day-title">Pronostics par équipe</h2>
         <p class="ta-card-text mb-4">
@@ -76,7 +80,8 @@
         window.matchLiveConfig = {
             simulateUrl: {{ simulate_url|json_encode|raw }},
             defaultHome: {{ match.scoreDomicile ?? 0 }},
-            defaultAway: {{ match.scoreExterieur ?? 0 }}
+            defaultAway: {{ match.scoreExterieur ?? 0 }},
+            teamShowUrlBase: {{ path('app_team_show', { id: 0 })|replace({'/0': '/'})|json_encode|raw }}
         };
     </script>
 {% endblock %}

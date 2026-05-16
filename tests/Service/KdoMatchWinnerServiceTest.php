@@ -98,6 +98,35 @@ final class KdoMatchWinnerServiceTest extends TestCase
         self::assertNull($service->resolveWinner($match));
     }
 
+    public function testBuildOutlookListsPotentialWinnersForSimulatedScore(): void
+    {
+        $match = $this->finishedKdoMatch();
+        $match->setScoreDomicile(0)->setScoreExterieur(0);
+
+        $teamA = $this->team(1, 'Alpha');
+        $teamB = $this->team(2, 'Bravo');
+
+        $service = $this->createService(
+            pronostics: [
+                $this->exactPronostic($match, 1, 1, 1),
+                $this->exactPronostic($match, 2, 1, 1),
+                $this->pronostic($match, 3, 0, 0),
+            ],
+            playerTeamMap: [1 => 1, 2 => 1, 3 => 2],
+            previousMatch: null,
+            ranking: [],
+            teams: [$teamA, $teamB],
+        );
+
+        $outlook = $service->buildOutlook($match, 1, 1);
+
+        self::assertNotNull($outlook);
+        self::assertSame(2, $outlook->maxExactScores);
+        self::assertCount(1, $outlook->potentialWinners);
+        self::assertSame(1, $outlook->potentialWinners[0]->teamId);
+        self::assertTrue($outlook->potentialWinners[0]->isWinner);
+    }
+
     /**
      * @param list<Pronostic>              $pronostics
      * @param array<int, int>              $playerTeamMap

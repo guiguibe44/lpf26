@@ -1140,6 +1140,38 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     color: #475569;
 }
 
+.match-live-kdo-card .ta-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.match-live-kdo-table {
+    margin-bottom: 0;
+}
+
+.match-live-kdo-row--winner {
+    background: #fffbeb;
+}
+
+.match-live-kdo-row--winner td {
+    border-color: #fde68a;
+}
+
+.match-live-kdo-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.match-live-kdo-team-logo {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.35rem;
+    object-fit: cover;
+}
+
 .match-live-team-logo,
 .match-live-team-logo-placeholder {
     width: 2.25rem;

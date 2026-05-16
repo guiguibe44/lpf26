@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\KdoMatchOutlook;
 use App\Dto\KdoMatchWinnerResult;
+use App\Dto\KdoPotentialWinnerRow;
 use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Entity\Team;
@@ -31,7 +33,80 @@ final class KdoMatchWinnerService
             return null;
         }
 
-        $exactCountsByTeamId = $this->countExactScoresByTeam($match);
+        return $this->resolveWinnerForScore(
+            $match,
+            (int) $match->getScoreDomicile(),
+            (int) $match->getScoreExterieur(),
+        );
+    }
+
+    public function buildOutlook(GameMatch $match, int $scoreDomicile, int $scoreExterieur): ?KdoMatchOutlook
+    {
+        if (!$match->isKdoMatch()) {
+            return null;
+        }
+
+        $exactCountsByTeamId = $this->countExactScoresForScore($match, $scoreDomicile, $scoreExterieur);
+        if ([] === $exactCountsByTeamId) {
+            return new KdoMatchOutlook($scoreDomicile, $scoreExterieur, 0, null, []);
+        }
+
+        $maxExact = max($exactCountsByTeamId);
+        if ($maxExact < 1) {
+            return new KdoMatchOutlook($scoreDomicile, $scoreExterieur, 0, null, []);
+        }
+
+        $candidateTeamIds = array_keys(array_filter(
+            $exactCountsByTeamId,
+            static fn (int $count): bool => $count === $maxExact,
+        ));
+
+        $winner = $this->resolveWinnerForScore($match, $scoreDomicile, $scoreExterieur);
+        $winnerTeamId = $winner?->team->getId();
+        $positionByTeamId = $this->buildPositionMapBeforeMatch($match);
+
+        $rows = [];
+        foreach ($candidateTeamIds as $teamId) {
+            $team = $this->getTeamById($teamId);
+            $rows[] = new KdoPotentialWinnerRow(
+                $teamId,
+                (string) $team->getName(),
+                $team->getLogo(),
+                $exactCountsByTeamId[$teamId],
+                $positionByTeamId[$teamId] ?? null,
+                null !== $winnerTeamId && (int) $winnerTeamId === $teamId,
+            );
+        }
+
+        usort(
+            $rows,
+            static function (KdoPotentialWinnerRow $a, KdoPotentialWinnerRow $b): int {
+                if ($a->isWinner !== $b->isWinner) {
+                    return $b->isWinner <=> $a->isWinner;
+                }
+
+                return ($b->exactScoresCount <=> $a->exactScoresCount)
+                    ?: (($b->rankingPositionBefore ?? 0) <=> ($a->rankingPositionBefore ?? 0))
+                    ?: strcmp($a->teamName, $b->teamName);
+            },
+        );
+
+        return new KdoMatchOutlook(
+            $scoreDomicile,
+            $scoreExterieur,
+            $maxExact,
+            null !== $winnerTeamId ? (int) $winnerTeamId : null,
+            $rows,
+        );
+    }
+
+    public function resolveWinnerForScore(GameMatch $match, int $scoreDomicile, int $scoreExterieur): ?KdoMatchWinnerResult
+    {
+        if (!$match->isKdoMatch()) {
+            return null;
+        }
+
+        $exactCountsByTeamId = $this->countExactScoresForScore($match, $scoreDomicile, $scoreExterieur);
         if ([] === $exactCountsByTeamId) {
             return null;
         }
@@ -60,11 +135,23 @@ final class KdoMatchWinnerService
             return [];
         }
 
+        return $this->countExactScoresForScore(
+            $match,
+            (int) $match->getScoreDomicile(),
+            (int) $match->getScoreExterieur(),
+        );
+    }
+
+    /**
+     * @return array<int, int> teamId => nombre de scores exacts pour un score donné
+     */
+    public function countExactScoresForScore(GameMatch $match, int $scoreDomicile, int $scoreExterieur): array
+    {
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
         $counts = [];
 
         foreach ($this->pronosticRepository->findByMatchWithTeamMembers($match) as $pronostic) {
-            if (!$this->isExactScore($pronostic)) {
+            if (!$this->isExactScoreForResult($pronostic, $scoreDomicile, $scoreExterieur)) {
                 continue;
             }
 
@@ -142,21 +229,12 @@ final class KdoMatchWinnerService
         return null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur();
     }
 
-    private function isExactScore(Pronostic $pronostic): bool
+    private function isExactScoreForResult(Pronostic $pronostic, int $realHome, int $realAway): bool
     {
-        $match = $pronostic->getMatch();
-        if (!$match instanceof GameMatch) {
-            return false;
-        }
-
-        $realHome = $match->getScoreDomicile();
-        $realAway = $match->getScoreExterieur();
         $predHome = $pronostic->getScoreDomicile();
         $predAway = $pronostic->getScoreExterieur();
 
-        return null !== $realHome
-            && null !== $realAway
-            && null !== $predHome
+        return null !== $predHome
             && null !== $predAway
             && $realHome === $predHome
             && $realAway === $predAway;

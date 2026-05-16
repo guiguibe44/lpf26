@@ -1,0 +1,57 @@
+{# @var kdo_outlook \App\Dto\KdoMatchOutlook #}
+<section class="ta-card mt-5 match-live-kdo-card" id="match-live-kdo-section">
+    <h2 class="ta-card-title">
+        <span class="ta-badge match-card-kdo-badge">KDO</span>
+        Cadeau — vainqueurs potentiels
+    </h2>
+    <p class="ta-card-text">
+        Selon le score simulé <strong id="match-live-kdo-score-label">{{ kdo_outlook.scoreDomicile }} - {{ kdo_outlook.scoreExterieur }}</strong>.
+        En cas d’égalité au meilleur nombre de scores exacts, l’équipe la moins bien classée avant le match l’emporte.
+    </p>
+
+    <div class="overflow-x-auto mt-4" id="match-live-kdo-table-wrap">
+        <table class="table ta-table match-live-kdo-table" id="match-live-kdo-table">
+            <thead>
+            <tr>
+                <th>Équipe</th>
+                <th class="ta-num">Scores exacts</th>
+                <th class="ta-num">Rang avant match</th>
+                <th>Statut</th>
+            </tr>
+            </thead>
+            <tbody id="match-live-kdo-tbody">
+            {% for row in kdo_outlook.potentialWinners %}
+                <tr data-team-id="{{ row.teamId }}" class="{{ row.isWinner ? 'match-live-kdo-row--winner' : '' }}">
+                    <td>
+                        <div class="match-live-kdo-team-cell">
+                            {% if row.teamLogo %}
+                                <img src="{{ asset(row.teamLogo) }}" alt="" class="match-live-kdo-team-logo" width="28" height="28" loading="lazy">
+                            {% endif %}
+                            <a href="{{ path('app_team_show', { id: row.teamId }) }}">{{ row.teamName }}</a>
+                        </div>
+                    </td>
+                    <td class="ta-num" data-kdo-exact>{{ row.exactScoresCount }}</td>
+                    <td class="ta-num" data-kdo-rank>
+                        {% if row.rankingPositionBefore %}
+                            #{{ row.rankingPositionBefore }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td data-kdo-status>
+                        {% if row.isWinner %}
+                            <span class="ta-badge ta-badge-success">Gagnant du cadeau</span>
+                        {% else %}
+                            <span class="ta-badge">En lice</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr id="match-live-kdo-empty-row">
+                    <td colspan="4" class="ta-card-text">Aucune équipe avec le score exact pour ce résultat.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>

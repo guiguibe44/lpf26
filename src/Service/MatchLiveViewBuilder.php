@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\KdoMatchOutlook;
 use App\Dto\MatchLiveTeamRow;
 use App\Dto\SimulatedPronosticLine;
 use App\Entity\Buteur;
@@ -27,6 +28,7 @@ final class MatchLiveViewBuilder
         private readonly PronosticSimulationService $pronosticSimulationService,
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
         private readonly DefaultPronosticService $defaultPronosticService,
+        private readonly KdoMatchWinnerService $kdoMatchWinnerService,
     ) {
     }
 
@@ -34,7 +36,8 @@ final class MatchLiveViewBuilder
      * @return array{
      *     scoreDomicile: int,
      *     scoreExterieur: int,
-     *     teams: list<MatchLiveTeamRow>
+     *     teams: list<MatchLiveTeamRow>,
+     *     kdoOutlook: ?KdoMatchOutlook
      * }
      */
     public function build(GameMatch $match, int $scoreDomicile, int $scoreExterieur): array
@@ -117,6 +120,7 @@ final class MatchLiveViewBuilder
             'scoreDomicile' => $scoreDomicile,
             'scoreExterieur' => $scoreExterieur,
             'teams' => $teamRows,
+            'kdoOutlook' => $this->kdoMatchWinnerService->buildOutlook($match, $scoreDomicile, $scoreExterieur),
         ];
     }
 
@@ -131,6 +135,7 @@ final class MatchLiveViewBuilder
             'scoreDomicile' => $data['scoreDomicile'],
             'scoreExterieur' => $data['scoreExterieur'],
             'teams' => array_map(static fn (MatchLiveTeamRow $row): array => $row->toArray(), $data['teams']),
+            'kdoOutlook' => $data['kdoOutlook'] instanceof KdoMatchOutlook ? $data['kdoOutlook']->toArray() : null,
         ];
     }
 

@@ -32,6 +32,102 @@
         return Number(value).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
+    const teamLogoUrl = (logo) => {
+        if (!logo) {
+            return null;
+        }
+        if (logo.startsWith('http://') || logo.startsWith('https://')) {
+            return logo;
+        }
+
+        return '/' + String(logo).replace(/^\//, '');
+    };
+
+    const teamShowUrl = (teamId) => {
+        const base = config.teamShowUrlBase || '/equipes/';
+        return base + String(teamId);
+    };
+
+    const updateKdoOutlook = (kdo) => {
+        const tbody = document.getElementById('match-live-kdo-tbody');
+        const scoreLabel = document.getElementById('match-live-kdo-score-label');
+        if (!tbody) {
+            return;
+        }
+
+        if (scoreLabel && kdo) {
+            scoreLabel.textContent = String(kdo.scoreDomicile) + ' - ' + String(kdo.scoreExterieur);
+        }
+
+        tbody.replaceChildren();
+
+        if (!kdo || !Array.isArray(kdo.potentialWinners) || kdo.potentialWinners.length === 0) {
+            const row = document.createElement('tr');
+            row.id = 'match-live-kdo-empty-row';
+            const cell = document.createElement('td');
+            cell.colSpan = 4;
+            cell.className = 'ta-card-text';
+            cell.textContent = 'Aucune équipe avec le score exact pour ce résultat.';
+            row.appendChild(cell);
+            tbody.appendChild(row);
+
+            return;
+        }
+
+        kdo.potentialWinners.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.dataset.teamId = String(row.teamId);
+            if (row.isWinner) {
+                tr.classList.add('match-live-kdo-row--winner');
+            }
+
+            const teamCell = document.createElement('td');
+            const teamWrap = document.createElement('div');
+            teamWrap.className = 'match-live-kdo-team-cell';
+
+            const logoUrl = teamLogoUrl(row.teamLogo);
+            if (logoUrl) {
+                const img = document.createElement('img');
+                img.src = logoUrl;
+                img.alt = '';
+                img.className = 'match-live-kdo-team-logo';
+                img.width = 28;
+                img.height = 28;
+                img.loading = 'lazy';
+                teamWrap.appendChild(img);
+            }
+
+            const link = document.createElement('a');
+            link.href = teamShowUrl(row.teamId);
+            link.textContent = row.teamName;
+            teamWrap.appendChild(link);
+            teamCell.appendChild(teamWrap);
+            tr.appendChild(teamCell);
+
+            const exactCell = document.createElement('td');
+            exactCell.className = 'ta-num';
+            exactCell.dataset.kdoExact = '';
+            exactCell.textContent = String(row.exactScoresCount);
+            tr.appendChild(exactCell);
+
+            const rankCell = document.createElement('td');
+            rankCell.className = 'ta-num';
+            rankCell.dataset.kdoRank = '';
+            rankCell.textContent = row.rankingPositionBefore ? '#' + row.rankingPositionBefore : '—';
+            tr.appendChild(rankCell);
+
+            const statusCell = document.createElement('td');
+            statusCell.dataset.kdoStatus = '';
+            const badge = document.createElement('span');
+            badge.className = row.isWinner ? 'ta-badge ta-badge-success' : 'ta-badge';
+            badge.textContent = row.isWinner ? 'Gagnant du cadeau' : 'En lice';
+            statusCell.appendChild(badge);
+            tr.appendChild(statusCell);
+
+            tbody.appendChild(tr);
+        });
+    };
+
     const updateTeams = (data) => {
         if (!data || !Array.isArray(data.teams)) {
             return;
@@ -97,6 +193,10 @@
 
             teamsRoot.appendChild(card);
         });
+
+        if (data.kdoOutlook) {
+            updateKdoOutlook(data.kdoOutlook);
+        }
     };
 
     const fetchSimulation = () => {
