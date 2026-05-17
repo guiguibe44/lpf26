@@ -106,6 +106,66 @@ final class ButeurJokerPointsServiceTest extends TestCase
         self::assertSame(16.0, $service->sumEffectivePointsForButeur($team, $buteur));
     }
 
+    public function testSumEffectivePointsInvertsGoalsOnTargetedMatch(): void
+    {
+        $team = new Team();
+        $this->setId($team, 5);
+
+        $buteur = new Buteur();
+        $this->setId($buteur, 7);
+
+        $matchInvert = new GameMatch();
+        $this->setId($matchInvert, 100);
+        $matchOther = new GameMatch();
+        $this->setId($matchOther, 200);
+
+        $butInvert = (new But())->setButeur($buteur)->setMatchRef($matchInvert)->setPointsAttribues(6);
+        $butOther = (new But())->setButeur($buteur)->setMatchRef($matchOther)->setPointsAttribues(4);
+
+        $usageRepo = $this->createMock(TeamJokerUsageRepository::class);
+        $usageRepo->method('findByTeamOrdered')->willReturn([]);
+        $usageRepo->method('findInvertButeurMatchIdsForTargetTeam')->with($team)->willReturn([100]);
+
+        $butRepo = $this->createMock(ButRepository::class);
+        $butRepo->method('findForButeurOrderedByMatch')->with($buteur)->willReturn([$butInvert, $butOther]);
+        $butRepo->method('sumPointsAttribuesForButeur')->with($buteur)->willReturn(10);
+
+        $service = new ButeurJokerPointsService($usageRepo, $butRepo);
+
+        self::assertSame(-2.0, $service->sumEffectivePointsForButeur($team, $buteur));
+    }
+
+    public function testInvertAndDoubleCombineOnSameMatch(): void
+    {
+        $team = new Team();
+        $this->setId($team, 5);
+
+        $buteur = new Buteur();
+        $this->setId($buteur, 7);
+
+        $match = new GameMatch();
+        $this->setId($match, 100);
+
+        $but = (new But())->setButeur($buteur)->setMatchRef($match)->setPointsAttribues(5);
+
+        $usageRepo = $this->createMock(TeamJokerUsageRepository::class);
+        $usageRepo->method('findByTeamOrdered')->willReturn([
+            (new TeamJokerUsage())
+                ->setTeam($team)
+                ->setMatch($match)
+                ->setJoker((new Joker())->setCode(Joker::CODE_DOUBLE_BUTEUR)),
+        ]);
+        $usageRepo->method('findInvertButeurMatchIdsForTargetTeam')->with($team)->willReturn([100]);
+
+        $butRepo = $this->createMock(ButRepository::class);
+        $butRepo->method('findForButeurOrderedByMatch')->with($buteur)->willReturn([$but]);
+        $butRepo->method('sumPointsAttribuesForButeur')->with($buteur)->willReturn(5);
+
+        $service = new ButeurJokerPointsService($usageRepo, $butRepo);
+
+        self::assertSame(-10.0, $service->sumEffectivePointsForButeur($team, $buteur));
+    }
+
     private function setId(object $entity, int $id): void
     {
         $ref = new \ReflectionProperty($entity, 'id');

@@ -112,4 +112,47 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
 
         return $map;
     }
+
+    /**
+     * @return list<int>
+     */
+    public function findInvertButeurMatchIdsForTargetTeam(Team $targetTeam): array
+    {
+        $rows = $this->createQueryBuilder('u')
+            ->select('IDENTITY(u.match) AS matchId')
+            ->innerJoin('u.joker', 'j')
+            ->andWhere('u.targetTeam = :target')
+            ->andWhere('j.code = :code')
+            ->setParameter('target', $targetTeam)
+            ->setParameter('code', Joker::CODE_INVERSE_BUTEUR)
+            ->getQuery()
+            ->getScalarResult();
+
+        $matchIds = [];
+        foreach ($rows as $row) {
+            $matchId = (int) ($row['matchId'] ?? 0);
+            if ($matchId > 0) {
+                $matchIds[] = $matchId;
+            }
+        }
+
+        return $matchIds;
+    }
+
+    public function teamIsTargetOfInvertButeurOnMatch(Team $targetTeam, GameMatch $match): bool
+    {
+        $count = (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->innerJoin('u.joker', 'j')
+            ->andWhere('u.targetTeam = :target')
+            ->andWhere('u.match = :match')
+            ->andWhere('j.code = :code')
+            ->setParameter('target', $targetTeam)
+            ->setParameter('match', $match)
+            ->setParameter('code', Joker::CODE_INVERSE_BUTEUR)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $count > 0;
+    }
 }

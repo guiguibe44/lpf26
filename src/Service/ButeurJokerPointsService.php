@@ -14,8 +14,7 @@ use App\Repository\ButRepository;
 use App\Repository\TeamJokerUsageRepository;
 
 /**
- * Joker « double buteur » : double les points buteur de l'équipe sur un match
- * (uniquement posable si le match oppose le pays d'un buteur de l'équipe).
+ * Jokers buteur : double (×2) et inversion (points négatifs pour l'équipe ciblée).
  */
 final class ButeurJokerPointsService
 {
@@ -77,7 +76,7 @@ final class ButeurJokerPointsService
         return $ids;
     }
 
-    public function isMatchEligibleForDoubleButeurJoker(Team $team, GameMatch $match): bool
+    public function isMatchEligibleForTeamButeurCountries(Team $team, GameMatch $match): bool
     {
         $buteurCountryIds = $this->getButeurCountryIdsForTeam($team);
         if ([] === $buteurCountryIds) {
@@ -98,6 +97,11 @@ final class ButeurJokerPointsService
         return false;
     }
 
+    public function isMatchEligibleForDoubleButeurJoker(Team $team, GameMatch $match): bool
+    {
+        return $this->isMatchEligibleForTeamButeurCountries($team, $match);
+    }
+
     public function teamHasDoubleButeurJokerOnMatch(Team $team, GameMatch $match): bool
     {
         $usage = $this->teamJokerUsageRepository->findOneByTeamAndMatch($team, $match);
@@ -106,6 +110,11 @@ final class ButeurJokerPointsService
         }
 
         return Joker::CODE_DOUBLE_BUTEUR === $usage->getJoker()?->getCode();
+    }
+
+    public function teamIsTargetOfInvertButeurJokerOnMatch(Team $team, GameMatch $match): bool
+    {
+        return $this->teamJokerUsageRepository->teamIsTargetOfInvertButeurOnMatch($team, $match);
     }
 
     /**
@@ -131,7 +140,9 @@ final class ButeurJokerPointsService
     public function sumEffectivePointsForButeur(Team $team, Buteur $buteur): float
     {
         $doubleMatchIds = array_fill_keys($this->findDoubleButeurMatchIdsForTeam($team), true);
-        if ([] === $doubleMatchIds) {
+        $invertMatchIds = array_fill_keys($this->teamJokerUsageRepository->findInvertButeurMatchIdsForTargetTeam($team), true);
+
+        if ([] === $doubleMatchIds && [] === $invertMatchIds) {
             return (float) $this->butRepository->sumPointsAttribuesForButeur($buteur);
         }
 
@@ -139,8 +150,19 @@ final class ButeurJokerPointsService
         foreach ($this->butRepository->findForButeurOrderedByMatch($buteur) as $but) {
             $points = $but->getPointsAttribues();
             $matchId = $but->getMatchRef()?->getId();
-            if (null !== $matchId && isset($doubleMatchIds[(int) $matchId])) {
+            if (null === $matchId) {
+                $total += $points;
+
+                continue;
+            }
+
+            $matchKey = (int) $matchId;
+            if (isset($doubleMatchIds[$matchKey])) {
                 $points *= 2;
+            }
+
+            if (isset($invertMatchIds[$matchKey])) {
+                $points = -$points;
             }
 
             $total += $points;

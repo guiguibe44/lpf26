@@ -1189,6 +1189,13 @@ button.match-card-joker-badge {
     vertical-align: middle;
 }
 
+.match-live-buteur-invert {
+    font-size: 0.65rem;
+    vertical-align: middle;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
 .joker-dialog-irreversible-note {
     margin: 0.35rem 0 0;
     width: 100%;

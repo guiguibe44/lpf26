@@ -237,6 +237,7 @@ final class MatchLiveViewBuilder
         }
 
         $doubleButeurJoker = $this->buteurJokerPointsService->teamHasDoubleButeurJokerOnMatch($team, $match);
+        $invertButeurJoker = $this->buteurJokerPointsService->teamIsTargetOfInvertButeurJokerOnMatch($team, $match);
 
         $rows = [];
         foreach ($team->getMembers() as $member) {
@@ -261,12 +262,17 @@ final class MatchLiveViewBuilder
                 $pointsPerGoal *= 2.0;
             }
 
+            if ($invertButeurJoker) {
+                $pointsPerGoal = -abs($pointsPerGoal);
+            }
+
             $rows[] = [
                 'name' => (string) $buteur,
                 'country' => $buteur->getPays()?->getNom(),
                 'pointsPerGoal' => $pointsPerGoal,
                 'coefficient' => $coefficient,
                 'double_joker' => $doubleButeurJoker,
+                'invert_joker' => $invertButeurJoker,
             ];
         }
 

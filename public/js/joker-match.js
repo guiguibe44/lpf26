@@ -139,6 +139,10 @@
         pendingJokerId = null;
         if (targetPickerEl) {
             targetPickerEl.hidden = true;
+            const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
+            if (targetLabel) {
+                targetLabel.textContent = 'Équipe adverse à cibler';
+            }
         }
         if (listEl) {
             listEl.hidden = false;
@@ -152,9 +156,19 @@
             return;
         }
 
-        const opponents = state.opponent_teams || [];
+        const joker = findJokerInState(state, jokerId);
+        let opponents = state.opponent_teams || [];
+        if (joker && joker.code === 'inverse_buteur') {
+            opponents = opponents.filter((team) => team.match_eligible_inverse_buteur);
+        }
+
         if (!opponents.length) {
-            showFeedback('Aucune équipe adverse disponible.', true);
+            showFeedback(
+                joker && joker.code === 'inverse_buteur'
+                    ? 'Aucune équipe adverse n\'a un buteur dont le pays joue ce match.'
+                    : 'Aucune équipe adverse disponible.',
+                true,
+            );
 
             return;
         }
@@ -164,9 +178,21 @@
         opponents.forEach((team) => {
             const option = document.createElement('option');
             option.value = String(team.id);
-            option.textContent = team.name;
+            let label = team.name;
+            if (team.buteur_countries && team.buteur_countries.length > 0) {
+                label += ' (' + team.buteur_countries.join(', ') + ')';
+            }
+            option.textContent = label;
             targetSelectEl.appendChild(option);
         });
+
+        const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
+        if (targetLabel) {
+            targetLabel.textContent =
+                joker && joker.code === 'inverse_buteur'
+                    ? 'Équipe adverse à cibler (un de ses buteurs doit jouer ce match)'
+                    : 'Équipe adverse à cibler';
+        }
 
         if (listEl) {
             listEl.hidden = true;
@@ -418,7 +444,10 @@
         if (state.team_buteur_countries && state.team_buteur_countries.length > 0) {
             const buteurNote = document.createElement('p');
             buteurNote.className = 'joker-dialog-note joker-dialog-buteur-note';
-            buteurNote.textContent = 'Pays de vos buteurs : ' + state.team_buteur_countries.join(', ') + ' (joker Double buteur : match concerné uniquement).';
+            buteurNote.textContent =
+                'Pays de vos buteurs : ' +
+                state.team_buteur_countries.join(', ') +
+                ' (Double buteur : match concerné · Inversion buteur : pays d\'un buteur de l\'équipe ciblée).';
             listEl.appendChild(buteurNote);
         }
 

@@ -215,6 +215,8 @@ final class TeamJokerService
                 $disabledReason = $canPlaceOnThisMatch['reason'];
             } elseif (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode() && !$this->buteurJokerPointsService->isMatchEligibleForDoubleButeurJoker($team, $match)) {
                 $disabledReason = $this->formatDoubleButeurIneligibleReason($team);
+            } elseif (Joker::CODE_INVERSE_BUTEUR === $joker->getCode() && !$this->hasOpponentEligibleForInvertButeurOnMatch($team, $match)) {
+                $disabledReason = 'Aucune équipe adverse n\'a un buteur dont le pays joue ce match.';
             } else {
                 $canPlay = true;
             }
@@ -227,7 +229,7 @@ final class TeamJokerService
                 'name' => (string) $joker->getName(),
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
-                'requires_target_team' => Joker::CODE_PIQUE_POINTS === $joker->getCode(),
+                'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR], true),
                 'requires_confirmation' => $isEspion,
                 'confirmation_message' => $isEspion ? Joker::ESPION_PLACE_CONFIRMATION : null,
                 'can_play' => $canPlay,
@@ -246,6 +248,8 @@ final class TeamJokerService
             $opponentTeams[] = [
                 'id' => (int) $opponentId,
                 'name' => (string) $opponent->getName(),
+                'buteur_countries' => $this->buteurJokerPointsService->getButeurCountryNamesForTeam($opponent),
+                'match_eligible_inverse_buteur' => $this->buteurJokerPointsService->isMatchEligibleForTeamButeurCountries($opponent, $match),
             ];
         }
 
@@ -339,7 +343,7 @@ final class TeamJokerService
             throw new \InvalidArgumentException($this->formatDoubleButeurIneligibleReason($team));
         }
 
-        $targetTeam = $this->resolveTargetTeamForJoker($team, $joker, $targetTeam);
+        $targetTeam = $this->resolveTargetTeamForJoker($team, $joker, $match, $targetTeam);
 
         $usage = (new TeamJokerUsage())
             ->setTeam($team)
@@ -451,9 +455,9 @@ final class TeamJokerService
         return true;
     }
 
-    private function resolveTargetTeamForJoker(Team $team, Joker $joker, ?Team $targetTeam): ?Team
+    private function resolveTargetTeamForJoker(Team $team, Joker $joker, GameMatch $match, ?Team $targetTeam): ?Team
     {
-        if (Joker::CODE_PIQUE_POINTS === $joker->getCode()) {
+        if (Joker::CODE_PIQUE_POINTS === $joker->getCode() || Joker::CODE_INVERSE_BUTEUR === $joker->getCode()) {
             if (!$targetTeam instanceof Team) {
                 throw new \InvalidArgumentException('Choisissez l\'équipe adverse à cibler.');
             }
@@ -462,6 +466,11 @@ final class TeamJokerService
             $targetId = $targetTeam->getId();
             if (null === $ownId || null === $targetId || (int) $ownId === (int) $targetId) {
                 throw new \InvalidArgumentException('Vous ne pouvez pas cibler votre propre équipe.');
+            }
+
+            if (Joker::CODE_INVERSE_BUTEUR === $joker->getCode()
+                && !$this->buteurJokerPointsService->isMatchEligibleForTeamButeurCountries($targetTeam, $match)) {
+                throw new \InvalidArgumentException($this->formatInverseButeurIneligibleReason($targetTeam));
             }
 
             return $targetTeam;
@@ -476,11 +485,45 @@ final class TeamJokerService
 
     private function afterJokerUsageChanged(GameMatch $match, Joker $joker): void
     {
-        if (Joker::CODE_DOUBLE_BUTEUR !== $joker->getCode()) {
+        if (!\in_array($joker->getCode(), [Joker::CODE_DOUBLE_BUTEUR, Joker::CODE_INVERSE_BUTEUR], true)) {
             return;
         }
 
         $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+    }
+
+    private function hasOpponentEligibleForInvertButeurOnMatch(Team $team, GameMatch $match): bool
+    {
+        $ownId = $team->getId();
+        foreach ($this->teamRepository->findAll() as $opponent) {
+            $opponentId = $opponent->getId();
+            if (null === $ownId || null === $opponentId || (int) $ownId === (int) $opponentId) {
+                continue;
+            }
+
+            if ($this->buteurJokerPointsService->isMatchEligibleForTeamButeurCountries($opponent, $match)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function formatInverseButeurIneligibleReason(Team $targetTeam): string
+    {
+        $countries = $this->buteurJokerPointsService->getButeurCountryNamesForTeam($targetTeam);
+        if ([] === $countries) {
+            return sprintf(
+                'L\'équipe %s n\'a pas de buteurs avec pays défini.',
+                (string) $targetTeam->getName(),
+            );
+        }
+
+        return sprintf(
+            'Ce joker ne peut être posé que sur un match impliquant le pays d\'un buteur de %s (%s).',
+            (string) $targetTeam->getName(),
+            implode(', ', $countries),
+        );
     }
 
     private function formatDoubleButeurIneligibleReason(Team $team): string

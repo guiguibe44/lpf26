@@ -66,7 +66,7 @@
                                     <span class="match-live-buteur-country">{{ buteur.country }}</span>
                                 {% endif %}
                                 <span class="match-live-buteur-points">
-                                    +{{ buteur.pointsPerGoal|number_format(0, ',', ' ') }} pts / but{% if buteur.double_joker|default(false) %} <span class="match-live-buteur-double ta-badge">×2 joker</span>{% endif %}
+                                    {% if buteur.pointsPerGoal < 0 %}−{% else %}+{% endif %}{{ buteur.pointsPerGoal|abs|number_format(0, ',', ' ') }} pts / but{% if buteur.double_joker|default(false) %} <span class="match-live-buteur-double ta-badge">×2 joker</span>{% endif %}{% if buteur.invert_joker|default(false) %} <span class="match-live-buteur-invert ta-badge">inversion</span>{% endif %}
                                     {% if cotes_visible %}
                                         <span class="match-live-buteur-cote" data-buteur-cote>(cote {{ buteur.coefficient|number_format(2, ',', ' ') }})</span>
                                     {% else %}
