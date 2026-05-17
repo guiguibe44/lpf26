@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\GameMatch;
 use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -55,5 +56,45 @@ class TeamRepository extends ServiceEntityRepository
             ->addOrderBy('t.id', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Équipes dont le pays favori joue ce match de poule.
+     *
+     * @return list<int>
+     */
+    public function findTeamIdsWithFavoriteCountryInGroupMatch(GameMatch $match): array
+    {
+        if (null === GameMatch::extractGroupStandingLetter($match->getPhase())) {
+            return [];
+        }
+
+        $countryIds = [];
+        foreach ([$match->getPaysDomicile(), $match->getPaysExterieur()] as $country) {
+            if (null !== $country?->getId()) {
+                $countryIds[(int) $country->getId()] = (int) $country->getId();
+            }
+        }
+
+        if ([] === $countryIds) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('t')
+            ->select('t.id')
+            ->andWhere('t.favoriteCountry IN (:countryIds)')
+            ->setParameter('countryIds', array_values($countryIds))
+            ->getQuery()
+            ->getScalarResult();
+
+        $ids = [];
+        foreach ($rows as $row) {
+            $id = (int) ($row['id'] ?? 0);
+            if ($id > 0) {
+                $ids[] = $id;
+            }
+        }
+
+        return $ids;
     }
 }

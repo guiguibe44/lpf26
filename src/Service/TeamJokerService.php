@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Joker;
 use App\Entity\Team;
 use App\Entity\TeamJokerUsage;
 use App\Entity\User;
+use App\Repository\CountryRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\JokerRepository;
 use App\Repository\TeamJokerUsageRepository;
@@ -30,6 +32,7 @@ final class TeamJokerService
         private readonly TeamRankingService $teamRankingService,
         private readonly JokerDefenseService $jokerDefenseService,
         private readonly GameMatchRepository $gameMatchRepository,
+        private readonly CountryRepository $countryRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -163,6 +166,7 @@ final class TeamJokerService
             $joker = $usageOnMatch->getJoker();
             $target = $usageOnMatch->getTargetTeam();
             $neutralized = $this->jokerDefenseService->isUsageNeutralized($usageOnMatch);
+            $favoriteOnUsage = $team->getFavoriteCountry();
             $activeOnMatch = [
                 'id' => (int) $joker?->getId(),
                 'name' => (string) $joker?->getName(),
@@ -170,6 +174,9 @@ final class TeamJokerService
                 'code' => (string) $joker?->getCode(),
                 'target_team_id' => $target?->getId(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
+                'favorite_country_name' => Joker::CODE_EQUIPE_FAVORITE === $joker?->getCode() && $favoriteOnUsage instanceof Country
+                    ? (string) $favoriteOnUsage->getNom()
+                    : null,
                 'can_remove' => $this->canRemoveUsage($usageOnMatch, $match),
                 'effect_blocked' => $neutralized,
             ];
@@ -225,8 +232,14 @@ final class TeamJokerService
                 $disabledReason = $this->formatDoubleButeurIneligibleReason($team);
             } elseif (Joker::CODE_INVERSE_BUTEUR === $joker->getCode() && !$this->hasOpponentEligibleForInvertButeurOnMatch($team, $match)) {
                 $disabledReason = 'Aucune équipe adverse n\'a un buteur dont le pays joue ce match.';
+            } elseif (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode() && $team->getFavoriteCountry() instanceof Country) {
+                $disabledReason = 'Votre équipe favorite est déjà choisie (choix secret).';
             } else {
                 $canPlay = true;
+            }
+
+            if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode() && $team->getFavoriteCountry() instanceof Country) {
+                $alreadyUsed = true;
             }
 
             $isEspion = Joker::CODE_ESPION === $joker->getCode();
@@ -238,6 +251,7 @@ final class TeamJokerService
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
                 'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR, Joker::CODE_INVERSE_SCORE], true),
+                'requires_favorite_country' => Joker::CODE_EQUIPE_FAVORITE === $joker->getCode(),
                 'requires_confirmation' => $isEspion,
                 'confirmation_message' => $isEspion ? Joker::ESPION_PLACE_CONFIRMATION : null,
                 'can_play' => $canPlay,
@@ -258,7 +272,20 @@ final class TeamJokerService
                 'name' => (string) $opponent->getName(),
                 'buteur_countries' => $this->buteurJokerPointsService->getButeurCountryNamesForTeam($opponent),
                 'match_eligible_inverse_buteur' => $this->buteurJokerPointsService->isMatchEligibleForTeamButeurCountries($opponent, $match),
-                'shield_protected' => $this->jokerDefenseService->isTeamProtectedOnMatch($opponent, $match),
+                'shield_protected' => $this->jokerDefenseService->teamHasBouclierOnMatchday($opponent, $match),
+            ];
+        }
+
+        $favoriteCountries = [];
+        foreach ($this->countryRepository->findAllOrderedByName() as $country) {
+            $countryId = $country->getId();
+            if (null === $countryId) {
+                continue;
+            }
+
+            $favoriteCountries[] = [
+                'id' => (int) $countryId,
+                'name' => (string) $country->getNom(),
             ];
         }
 
@@ -278,6 +305,8 @@ final class TeamJokerService
 
         $buteurCountries = $this->buteurJokerPointsService->getButeurCountryNamesForTeam($team);
         $teamShieldActive = $this->jokerDefenseService->teamHasBouclierOnMatchday($team, $match);
+        $favorite = $team->getFavoriteCountry();
+        $favoriteProtectionOnMatch = $this->jokerDefenseService->isTeamProtectedByFavoriteOnGroupMatch($team, $match);
 
         return [
             'can_manage' => true,
@@ -290,6 +319,9 @@ final class TeamJokerService
             'team_buteur_countries' => $buteurCountries,
             'team_shield_active' => $teamShieldActive,
             'matchday_label' => $this->formatMatchdayLabel($match),
+            'favorite_countries' => $favoriteCountries,
+            'team_favorite_country_name' => $favorite instanceof Country ? (string) $favorite->getNom() : null,
+            'team_favorite_protection_on_match' => $favoriteProtectionOnMatch,
         ];
     }
 
@@ -326,7 +358,7 @@ final class TeamJokerService
         return ['allowed' => true, 'reason' => null];
     }
 
-    public function placeJoker(User $user, GameMatch $match, Joker $joker, ?Team $targetTeam = null): void
+    public function placeJoker(User $user, GameMatch $match, Joker $joker, ?Team $targetTeam = null, ?Country $favoriteCountry = null): void
     {
         $teamMember = $this->teamMemberRepository->findOneBy(['player' => $user]);
         $team = $teamMember?->getTeam();
@@ -347,7 +379,11 @@ final class TeamJokerService
             throw new \InvalidArgumentException((string) $canPlace['reason']);
         }
 
-        if ($this->teamJokerUsageRepository->findOneByTeamAndJoker($team, $joker) instanceof TeamJokerUsage) {
+        if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode()) {
+            if ($team->getFavoriteCountry() instanceof Country) {
+                throw new \InvalidArgumentException('Votre équipe favorite est déjà choisie.');
+            }
+        } elseif ($this->teamJokerUsageRepository->findOneByTeamAndJoker($team, $joker) instanceof TeamJokerUsage) {
             throw new \InvalidArgumentException('Votre équipe a déjà utilisé ce joker.');
         }
 
@@ -356,6 +392,12 @@ final class TeamJokerService
         }
 
         $targetTeam = $this->resolveTargetTeamForJoker($team, $joker, $match, $targetTeam);
+        $favoriteCountry = $this->resolveFavoriteCountryForJoker($team, $joker, $favoriteCountry);
+
+        if ($favoriteCountry instanceof Country) {
+            $team->setFavoriteCountry($favoriteCountry);
+            $this->entityManager->persist($team);
+        }
 
         $usage = (new TeamJokerUsage())
             ->setTeam($team)
@@ -399,6 +441,11 @@ final class TeamJokerService
         }
 
         $joker = $usage->getJoker();
+
+        if (Joker::CODE_EQUIPE_FAVORITE === $joker?->getCode()) {
+            $team->setFavoriteCountry(null);
+            $this->entityManager->persist($team);
+        }
 
         $this->entityManager->remove($usage);
         $this->entityManager->flush();
@@ -498,10 +545,39 @@ final class TeamJokerService
         return null;
     }
 
+    private function resolveFavoriteCountryForJoker(Team $team, Joker $joker, ?Country $favoriteCountry): ?Country
+    {
+        if (Joker::CODE_EQUIPE_FAVORITE !== $joker->getCode()) {
+            if ($favoriteCountry instanceof Country) {
+                throw new \InvalidArgumentException('Ce joker ne nécessite pas de pays favori.');
+            }
+
+            return null;
+        }
+
+        if (!$favoriteCountry instanceof Country) {
+            throw new \InvalidArgumentException('Choisissez votre équipe favorite (sélection nationale).');
+        }
+
+        if (null === $favoriteCountry->getId()) {
+            throw new \InvalidArgumentException('Pays invalide.');
+        }
+
+        return $favoriteCountry;
+    }
+
     private function afterJokerUsageChanged(GameMatch $match, Joker $joker): void
     {
         if (Joker::CODE_BOUCLIER === $joker->getCode()) {
             $this->rescoreFinishedMatchesOnMatchday($match);
+
+            return;
+        }
+
+        if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode()) {
+            if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
+                $this->pronosticScoringService->rescoreForMatch($match);
+            }
 
             return;
         }
@@ -540,7 +616,7 @@ final class TeamJokerService
         }
     }
 
-    public function buildPlacementSuccessMessage(Joker $joker, ?Team $targetTeam, GameMatch $match): string
+    public function buildPlacementSuccessMessage(Joker $joker, ?Team $targetTeam, GameMatch $match, ?Country $favoriteCountry = null): string
     {
         $message = sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName());
         if ($targetTeam instanceof Team) {
@@ -550,8 +626,15 @@ final class TeamJokerService
                 (string) $targetTeam->getName(),
             );
             if ($this->jokerDefenseService->wouldOffensiveJokerBeNeutralized($targetTeam, $match, $joker)) {
-                $message .= ' La cible est protégée par un bouclier : votre joker est consommé sans effet sur elle.';
+                $message .= ' La cible est protégée sur ce match : votre joker est consommé sans effet sur elle.';
             }
+        }
+
+        if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode() && $favoriteCountry instanceof Country) {
+            $message = sprintf(
+                'Équipe favorite enregistrée : %s. Ce choix reste secret. Protection sur les matchs de poule où cette sélection joue.',
+                (string) $favoriteCountry->getNom(),
+            );
         }
 
         if (Joker::CODE_BOUCLIER === $joker->getCode()) {

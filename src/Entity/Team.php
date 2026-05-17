@@ -24,6 +24,11 @@ class Team
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $slogan = null;
 
+    /** Pays favori (joker équipe favorite), choix secret de l'équipe. */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Country $favoriteCountry = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -101,6 +106,18 @@ class Team
     public function setSlogan(?string $slogan): static
     {
         $this->slogan = $slogan;
+
+        return $this;
+    }
+
+    public function getFavoriteCountry(): ?Country
+    {
+        return $this->favoriteCountry;
+    }
+
+    public function setFavoriteCountry(?Country $favoriteCountry): static
+    {
+        $this->favoriteCountry = $favoriteCountry;
 
         return $this;
     }

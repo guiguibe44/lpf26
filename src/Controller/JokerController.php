@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Team;
 use App\Entity\User;
+use App\Repository\CountryRepository;
 use App\Repository\JokerRepository;
 use App\Repository\TeamRepository;
 use App\Service\TeamJokerService;
@@ -36,6 +38,7 @@ final class JokerController extends AbstractController
         TeamJokerService $teamJokerService,
         JokerRepository $jokerRepository,
         TeamRepository $teamRepository,
+        CountryRepository $countryRepository,
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -61,13 +64,22 @@ final class JokerController extends AbstractController
             }
         }
 
+        $favoriteCountry = null;
+        $favoriteCountryId = $request->request->getInt('favorite_country_id');
+        if ($favoriteCountryId > 0) {
+            $favoriteCountry = $countryRepository->find($favoriteCountryId);
+            if (!$favoriteCountry instanceof Country) {
+                return new JsonResponse(['error' => 'Pays introuvable.'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
         try {
-            $teamJokerService->placeJoker($user, $match, $joker, $targetTeam);
+            $teamJokerService->placeJoker($user, $match, $joker, $targetTeam, $favoriteCountry);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        $message = $teamJokerService->buildPlacementSuccessMessage($joker, $targetTeam, $match);
+        $message = $teamJokerService->buildPlacementSuccessMessage($joker, $targetTeam, $match, $favoriteCountry);
 
         return $this->json([
             'success' => true,

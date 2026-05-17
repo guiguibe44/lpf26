@@ -22,6 +22,7 @@
     let currentRemoveUrl = null;
     let currentPickerState = null;
     let pendingJokerId = null;
+    let pendingPickerMode = null;
 
     const assetUrl = (path) => {
         if (!path) {
@@ -128,7 +129,9 @@
         }
 
         let label = 'Joker : ' + active.name;
-        if (active.target_team_name) {
+        if (active.favorite_country_name) {
+            label += ' · ' + active.favorite_country_name;
+        } else if (active.target_team_name) {
             label += ' → ' + active.target_team_name;
         }
         if (active.effect_blocked) {
@@ -140,6 +143,7 @@
 
     const hideTargetPicker = () => {
         pendingJokerId = null;
+        pendingPickerMode = null;
         if (targetPickerEl) {
             targetPickerEl.hidden = true;
             const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
@@ -200,6 +204,41 @@
                 label += ' — protégée (bouclier)';
             }
             option.textContent = label;
+            targetSelectEl.appendChild(option);
+        });
+
+        if (listEl) {
+            listEl.hidden = true;
+        }
+        targetPickerEl.hidden = false;
+        pendingPickerMode = 'target';
+    };
+
+    const showFavoriteCountryPicker = (jokerId, state) => {
+        if (!targetPickerEl || !targetSelectEl) {
+            return;
+        }
+
+        const countries = state.favorite_countries || [];
+        if (!countries.length) {
+            showFeedback('Aucun pays disponible.', true);
+
+            return;
+        }
+
+        const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
+        if (targetLabel) {
+            targetLabel.textContent =
+                'Sélection nationale favorite (choix secret, définitif sauf retrait avant le coup d\'envoi)';
+        }
+
+        pendingJokerId = jokerId;
+        pendingPickerMode = 'favorite';
+        targetSelectEl.replaceChildren();
+        countries.forEach((country) => {
+            const option = document.createElement('option');
+            option.value = String(country.id);
+            option.textContent = country.name;
             targetSelectEl.appendChild(option);
         });
 
@@ -343,7 +382,7 @@
                     li.textContent += ' → ' + row.target_team_name;
                 }
                 if (row.effect_blocked) {
-                    li.textContent += ' (sans effet — bouclier)';
+                    li.textContent += ' (sans effet — cible protégée)';
                 }
                 ul.appendChild(li);
             });
@@ -419,10 +458,20 @@
             wrap.appendChild(shieldNote);
         }
 
+        if (active.code === 'equipe_favorite' && active.favorite_country_name) {
+            const favoriteNote = document.createElement('p');
+            favoriteNote.className = 'joker-dialog-favorite-note';
+            favoriteNote.textContent =
+                'Équipe favorite : ' +
+                active.favorite_country_name +
+                '. Choix secret — protection sur les matchs de poule où cette sélection joue.';
+            wrap.appendChild(favoriteNote);
+        }
+
         if (active.effect_blocked) {
             const blockedNote = document.createElement('p');
             blockedNote.className = 'joker-dialog-blocked-note';
-            blockedNote.textContent = 'Sans effet : la cible est protégée par un bouclier (joker consommé).';
+            blockedNote.textContent = 'Sans effet : la cible est protégée sur ce match (joker consommé).';
             wrap.appendChild(blockedNote);
         }
 
@@ -475,6 +524,24 @@
                 (state.matchday_label ? ' (journée du ' + state.matchday_label + ')' : '') +
                 '.';
             listEl.appendChild(shieldActive);
+        }
+
+        if (state.team_favorite_country_name) {
+            const favoriteChosen = document.createElement('p');
+            favoriteChosen.className = 'joker-dialog-note joker-dialog-favorite-chosen';
+            favoriteChosen.textContent =
+                'Équipe favorite : ' +
+                state.team_favorite_country_name +
+                ' (choix secret).';
+            listEl.appendChild(favoriteChosen);
+        }
+
+        if (state.team_favorite_protection_on_match) {
+            const favoriteProtect = document.createElement('p');
+            favoriteProtect.className = 'joker-dialog-note joker-dialog-favorite-protect';
+            favoriteProtect.textContent =
+                'Sur ce match de poule, votre équipe est protégée des jokers adverses qui vous ciblent (équipe favorite).';
+            listEl.appendChild(favoriteProtect);
         }
 
         if (state.team_buteur_countries && state.team_buteur_countries.length > 0) {
@@ -540,6 +607,9 @@
                 btn.dataset.jokerPlay = String(joker.id);
                 if (joker.requires_target_team) {
                     btn.dataset.jokerRequiresTarget = '1';
+                }
+                if (joker.requires_favorite_country) {
+                    btn.dataset.jokerRequiresFavorite = '1';
                 }
                 if (joker.requires_confirmation) {
                     btn.dataset.jokerRequiresConfirm = '1';
@@ -618,7 +688,7 @@
         return state.jokers.find((j) => String(j.id) === String(jokerId)) || null;
     };
 
-    const placeJoker = (jokerId, targetTeamId) => {
+    const placeJoker = (jokerId, targetTeamId, favoriteCountryId) => {
         if (!currentPlaceUrl) {
             return;
         }
@@ -627,6 +697,9 @@
         body.set('joker_id', String(jokerId));
         if (targetTeamId) {
             body.set('target_team_id', String(targetTeamId));
+        }
+        if (favoriteCountryId) {
+            body.set('favorite_country_id', String(favoriteCountryId));
         }
 
         fetch(currentPlaceUrl, {
@@ -741,12 +814,18 @@
         if (playBtn && dialog.contains(playBtn)) {
             const jokerId = playBtn.dataset.jokerPlay;
             const requiresTarget = playBtn.dataset.jokerRequiresTarget === '1';
+            const requiresFavorite = playBtn.dataset.jokerRequiresFavorite === '1';
             const joker = findJokerInState(currentPickerState, jokerId);
             if (jokerId && requiresTarget && currentPickerState) {
                 if (!confirmPlaceJoker(joker)) {
                     return;
                 }
                 showTargetPicker(jokerId, currentPickerState);
+            } else if (jokerId && requiresFavorite && currentPickerState) {
+                if (!confirmPlaceJoker(joker)) {
+                    return;
+                }
+                showFavoriteCountryPicker(jokerId, currentPickerState);
             } else if (jokerId) {
                 if (!confirmPlaceJoker(joker)) {
                     return;
@@ -762,7 +841,12 @@
             if (!confirmPlaceJoker(joker)) {
                 return;
             }
-            placeJoker(pendingJokerId, targetSelectEl.value);
+            if (pendingPickerMode === 'favorite') {
+                placeJoker(pendingJokerId, null, targetSelectEl.value);
+            } else {
+                placeJoker(pendingJokerId, targetSelectEl.value, null);
+            }
+            hideTargetPicker();
 
             return;
         }

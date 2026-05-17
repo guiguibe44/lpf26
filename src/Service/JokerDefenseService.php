@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Joker;
 use App\Entity\Team;
 use App\Entity\TeamJokerUsage;
 use App\Repository\TeamJokerUsageRepository;
+use App\Repository\TeamRepository;
 
 /**
- * Joker « bouclier » : protège l'équipe sur toute la journée calendaire du match choisi.
- * Les jokers adverses qui ciblent cette équipe sont consommés sans effet.
+ * Protection contre les jokers offensifs ciblés : bouclier (journée) et équipe favorite (poules).
  */
 final class JokerDefenseService
 {
     public function __construct(
         private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
+        private readonly TeamRepository $teamRepository,
     ) {
     }
 
@@ -35,7 +37,13 @@ final class JokerDefenseService
      */
     public function getProtectedTeamIdsForMatch(GameMatch $match): array
     {
-        return $this->teamJokerUsageRepository->findProtectedTeamIdsForMatchdayOfMatch($match);
+        $protected = $this->teamJokerUsageRepository->findProtectedTeamIdsForMatchdayOfMatch($match);
+
+        foreach ($this->teamRepository->findTeamIdsWithFavoriteCountryInGroupMatch($match) as $teamId) {
+            $protected[$teamId] = true;
+        }
+
+        return $protected;
     }
 
     public function isTeamProtectedOnMatch(Team $team, GameMatch $match): bool
@@ -46,6 +54,37 @@ final class JokerDefenseService
         }
 
         return isset($this->getProtectedTeamIdsForMatch($match)[(int) $teamId]);
+    }
+
+    public function isTeamProtectedByFavoriteOnGroupMatch(Team $team, GameMatch $match): bool
+    {
+        if (null === $match->getGroupStandingLetter()) {
+            return false;
+        }
+
+        $favorite = $team->getFavoriteCountry();
+        if (!$favorite instanceof Country || null === $favorite->getId()) {
+            return false;
+        }
+
+        $favoriteId = (int) $favorite->getId();
+        foreach ([$match->getPaysDomicile(), $match->getPaysExterieur()] as $country) {
+            if ($country instanceof Country && (int) $country->getId() === $favoriteId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function teamHasBouclierOnMatchday(Team $team, GameMatch $match): bool
+    {
+        $teamId = $team->getId();
+        if (null === $teamId) {
+            return false;
+        }
+
+        return isset($this->teamJokerUsageRepository->findProtectedTeamIdsForMatchdayOfMatch($match)[(int) $teamId]);
     }
 
     public function isUsageNeutralized(TeamJokerUsage $usage): bool
@@ -71,10 +110,5 @@ final class JokerDefenseService
         }
 
         return $this->isTeamProtectedOnMatch($target, $match);
-    }
-
-    public function teamHasBouclierOnMatchday(Team $team, GameMatch $match): bool
-    {
-        return $this->isTeamProtectedOnMatch($team, $match);
     }
 }
