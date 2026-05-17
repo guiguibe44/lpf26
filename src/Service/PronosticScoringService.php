@@ -28,6 +28,7 @@ final class PronosticScoringService
         private readonly TeamJokerUsageRepository $teamJokerUsageRepository,
         private readonly JokerScoringApplicator $jokerScoringApplicator,
         private readonly JokerStealPointsService $jokerStealPointsService,
+        private readonly PronosticScoreInversionService $pronosticScoreInversionService,
     ) {
     }
 
@@ -50,23 +51,31 @@ final class PronosticScoringService
         $coefficients = [];
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
         $teamScorePronostics = [];
+        $invertedTargetTeamIds = $this->pronosticScoreInversionService->getTargetTeamIdsForMatch($match);
+        $effectiveByPronosticId = $this->pronosticScoreInversionService->buildEffectiveScoresByPronosticId(
+            $pronostics,
+            $playerTeamMap,
+            $invertedTargetTeamIds,
+        );
 
         foreach ($pronostics as $pronostic) {
             $pronosticId = $pronostic->getId();
-            $home = $pronostic->getScoreDomicile();
-            $away = $pronostic->getScoreExterieur();
-            if (null === $home || null === $away) {
+            if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
                 if (null !== $pronosticId) {
                     $riskByPronosticId[$pronosticId] = false;
                 }
                 continue;
             }
+
+            $effective = $effectiveByPronosticId[$pronosticId];
+            $home = $effective['home'];
+            $away = $effective['away'];
             $scoreKey = sprintf('%d-%d', $home, $away);
             $occurrencesByScore[$scoreKey] = ($occurrencesByScore[$scoreKey] ?? 0) + 1;
 
             $playerId = $pronostic->getJoueur()?->getId();
             $teamId = null !== $playerId ? ($playerTeamMap[$playerId] ?? null) : null;
-            if (null !== $teamId && null !== $pronosticId) {
+            if (null !== $teamId) {
                 $teamScorePronostics[$teamId][$scoreKey][] = $pronosticId;
             }
         }
@@ -87,9 +96,7 @@ final class PronosticScoringService
 
         foreach ($pronostics as $pronostic) {
             $pronosticId = $pronostic->getId();
-            $home = $pronostic->getScoreDomicile();
-            $away = $pronostic->getScoreExterieur();
-            if (null === $home || null === $away) {
+            if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
                 $pronostic
                     ->setPointsBase(null)
                     ->setCoteCoefficient(null)
@@ -99,6 +106,9 @@ final class PronosticScoringService
                 continue;
             }
 
+            $effective = $effectiveByPronosticId[$pronosticId];
+            $home = $effective['home'];
+            $away = $effective['away'];
             $scoreKey = sprintf('%d-%d', $home, $away);
             $sameScoreCount = max(1, (int) ($occurrencesByScore[$scoreKey] ?? 1));
             $coefficientBrut = $totalPronostics > 0 ? ($totalPronostics / $sameScoreCount) : 1.0;

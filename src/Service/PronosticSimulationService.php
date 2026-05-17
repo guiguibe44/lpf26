@@ -10,6 +10,11 @@ use App\Entity\Pronostic;
 
 final class PronosticSimulationService
 {
+    public function __construct(
+        private readonly PronosticScoreInversionService $pronosticScoreInversionService,
+    ) {
+    }
+
     public const DEFAULT_POINTS_SCORE_EXACT = 3;
     public const DEFAULT_POINTS_BON_RESULTAT = 1;
     public const DEFAULT_POINTS_MAUVAIS_RESULTAT = 0;
@@ -19,6 +24,7 @@ final class PronosticSimulationService
      * @param iterable<Pronostic> $pronostics
      * @param array<int, int>     $playerTeamMap
      * @param array<int, string>  $jokerCodeByTeamId teamId => joker code
+     * @param array<int, true>    $invertedTargetTeamIds équipes ciblées par inversion score
      *
      * @return list<SimulatedPronosticLine>
      */
@@ -31,6 +37,7 @@ final class PronosticSimulationService
         array $playerLabels = [],
         array $jokerCodeByTeamId = [],
         ?JokerScoringApplicator $jokerScoringApplicator = null,
+        array $invertedTargetTeamIds = [],
     ): array {
         $pronosticList = [];
         foreach ($pronostics as $pronostic) {
@@ -43,21 +50,27 @@ final class PronosticSimulationService
         $occurrencesByScore = [];
         $riskByPronosticId = [];
         $teamScorePronostics = [];
+        $effectiveByPronosticId = $this->pronosticScoreInversionService->buildEffectiveScoresByPronosticId(
+            $pronosticList,
+            $playerTeamMap,
+            $invertedTargetTeamIds,
+        );
 
         foreach ($pronosticList as $pronostic) {
             $pronosticId = $pronostic->getId();
-            $home = $pronostic->getScoreDomicile();
-            $away = $pronostic->getScoreExterieur();
-            if (null === $home || null === $away) {
+            if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
                 continue;
             }
 
+            $effective = $effectiveByPronosticId[$pronosticId];
+            $home = $effective['home'];
+            $away = $effective['away'];
             $scoreKey = sprintf('%d-%d', $home, $away);
             $occurrencesByScore[$scoreKey] = ($occurrencesByScore[$scoreKey] ?? 0) + 1;
 
             $playerId = $pronostic->getJoueur()?->getId();
             $teamId = null !== $playerId ? ($playerTeamMap[$playerId] ?? null) : null;
-            if (null !== $teamId && null !== $pronosticId) {
+            if (null !== $teamId) {
                 $teamScorePronostics[$teamId][$scoreKey][] = $pronosticId;
             }
         }
@@ -74,11 +87,13 @@ final class PronosticSimulationService
         $lines = [];
         foreach ($pronosticList as $pronostic) {
             $pronosticId = $pronostic->getId();
-            $home = $pronostic->getScoreDomicile();
-            $away = $pronostic->getScoreExterieur();
-            if (null === $home || null === $away || null === $pronosticId) {
+            if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
                 continue;
             }
+
+            $effective = $effectiveByPronosticId[$pronosticId];
+            $home = $effective['home'];
+            $away = $effective['away'];
 
             $playerId = (int) ($pronostic->getJoueur()?->getId() ?? 0);
             $teamId = $playerTeamMap[$playerId] ?? 0;
@@ -126,6 +141,7 @@ final class PronosticSimulationService
                 $playerPoints,
                 $riskByPronosticId[$pronosticId] ?? false,
                 $teamPoints,
+                $effective['inverted'],
             );
         }
 

@@ -7,7 +7,9 @@ namespace App\Tests\Service;
 use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Joker;
+use App\Repository\TeamJokerUsageRepository;
 use App\Service\JokerScoringApplicator;
+use App\Service\PronosticScoreInversionService;
 use App\Service\PronosticSimulationService;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +19,8 @@ final class JokerScoringApplicatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->applicator = new JokerScoringApplicator(new PronosticSimulationService());
+        $inversion = new PronosticScoreInversionService($this->createMock(TeamJokerUsageRepository::class));
+        $this->applicator = new JokerScoringApplicator(new PronosticSimulationService($inversion));
     }
 
     public function testDoubleEquipeDoublesStandardPointsForGoodProno(): void

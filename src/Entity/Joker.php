@@ -21,6 +21,8 @@ class Joker
 
     public const CODE_INVERSE_BUTEUR = 'inverse_buteur';
 
+    public const CODE_INVERSE_SCORE = 'inverse_score';
+
     public const ESPION_PLACE_CONFIRMATION = 'Le joker Espion est définitif : une fois posé sur ce match, il ne peut plus être retiré. Souhaitez-vous le jouer ?';
 
     #[ORM\Id]

@@ -8,6 +8,8 @@ use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Entity\User;
+use App\Repository\TeamJokerUsageRepository;
+use App\Service\PronosticScoreInversionService;
 use App\Service\PronosticSimulationService;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +19,8 @@ final class PronosticSimulationServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->service = new PronosticSimulationService();
+        $inversion = new PronosticScoreInversionService($this->createMock(TeamJokerUsageRepository::class));
+        $this->service = new PronosticSimulationService($inversion);
     }
 
     public function testExactScoreGetsHigherBaseAndCoteWhenRare(): void
@@ -60,6 +63,38 @@ final class PronosticSimulationServiceTest extends TestCase
         }
 
         self::assertSame(2, $riskCount);
+    }
+
+    public function testInvertedTeamScoresUseSwappedPrediction(): void
+    {
+        $match = $this->createMatch();
+        $a = $this->pronostic($match, 1, 1, 1);
+        $b = $this->pronostic($match, 2, 3, 0);
+
+        $lines = $this->service->simulate(
+            $match,
+            0,
+            3,
+            [$a, $b],
+            [1 => 10, 2 => 20],
+            [],
+            [],
+            null,
+            [20 => true],
+        );
+
+        $byId = [];
+        foreach ($lines as $line) {
+            $byId[$line->pronosticId] = $line;
+        }
+
+        self::assertSame(1, $byId[1]->predHome);
+        self::assertSame(1, $byId[1]->predAway);
+        self::assertFalse($byId[1]->scoreInverted);
+        self::assertSame(0, $byId[2]->predHome);
+        self::assertSame(3, $byId[2]->predAway);
+        self::assertTrue($byId[2]->scoreInverted);
+        self::assertSame(3, $byId[2]->basePoints);
     }
 
     private function createMatch(): GameMatch

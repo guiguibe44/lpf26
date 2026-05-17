@@ -155,4 +155,24 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
 
         return $count > 0;
     }
+
+    /**
+     * @return array<int, true>
+     */
+    public function findInverseScoreTargetTeamIdsForMatch(GameMatch $match): array
+    {
+        $ids = [];
+        foreach ($this->findByMatch($match) as $usage) {
+            if (Joker::CODE_INVERSE_SCORE !== $usage->getJoker()?->getCode()) {
+                continue;
+            }
+
+            $targetId = $usage->getTargetTeam()?->getId();
+            if (null !== $targetId) {
+                $ids[(int) $targetId] = true;
+            }
+        }
+
+        return $ids;
+    }
 }

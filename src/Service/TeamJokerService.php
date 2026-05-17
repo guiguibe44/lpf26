@@ -229,7 +229,7 @@ final class TeamJokerService
                 'name' => (string) $joker->getName(),
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
-                'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR], true),
+                'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR, Joker::CODE_INVERSE_SCORE], true),
                 'requires_confirmation' => $isEspion,
                 'confirmation_message' => $isEspion ? Joker::ESPION_PLACE_CONFIRMATION : null,
                 'can_play' => $canPlay,
@@ -457,7 +457,7 @@ final class TeamJokerService
 
     private function resolveTargetTeamForJoker(Team $team, Joker $joker, GameMatch $match, ?Team $targetTeam): ?Team
     {
-        if (Joker::CODE_PIQUE_POINTS === $joker->getCode() || Joker::CODE_INVERSE_BUTEUR === $joker->getCode()) {
+        if (\in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR, Joker::CODE_INVERSE_SCORE], true)) {
             if (!$targetTeam instanceof Team) {
                 throw new \InvalidArgumentException('Choisissez l\'équipe adverse à cibler.');
             }
@@ -485,6 +485,14 @@ final class TeamJokerService
 
     private function afterJokerUsageChanged(GameMatch $match, Joker $joker): void
     {
+        if (Joker::CODE_INVERSE_SCORE === $joker->getCode()) {
+            if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
+                $this->pronosticScoringService->rescoreForMatch($match);
+            }
+
+            return;
+        }
+
         if (!\in_array($joker->getCode(), [Joker::CODE_DOUBLE_BUTEUR, Joker::CODE_INVERSE_BUTEUR], true)) {
             return;
         }

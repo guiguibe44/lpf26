@@ -30,7 +30,7 @@
                 {% for prono in team.pronostics %}
                     <div class="match-live-prono-row" data-pronostic-id="{{ prono.pronosticId }}">
                         <span class="match-live-prono-label">{{ prono.playerLabel }}</span>
-                        <span class="match-live-prono-score" data-prono-score>{{ prono.predHome }} - {{ prono.predAway }}</span>
+                        <span class="match-live-prono-score" data-prono-score>{{ prono.predHome }} - {{ prono.predAway }}{% if prono.scoreInverted|default(false) %} <span class="match-live-prono-invert ta-badge" title="Score inversé par joker">↔</span>{% endif %}</span>
                         <span class="match-live-prono-meta" data-prono-meta>
                             <span data-prono-base title="Points de base">{{ prono.basePoints }}</span>
                             {% if cotes_visible %}

@@ -17,6 +17,7 @@ final class SimulatedPronosticLine
         public readonly float $points,
         public readonly bool $priseRisque,
         public readonly float $teamPoints,
+        public readonly bool $scoreInverted = false,
     ) {
     }
 
@@ -36,6 +37,7 @@ final class SimulatedPronosticLine
             'points' => $this->points,
             'teamPoints' => $this->teamPoints,
             'priseRisque' => $this->priseRisque,
+            'scoreInverted' => $this->scoreInverted,
         ];
     }
 }

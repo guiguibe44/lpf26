@@ -162,6 +162,17 @@
             opponents = opponents.filter((team) => team.match_eligible_inverse_buteur);
         }
 
+        const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
+        if (targetLabel) {
+            if (joker && joker.code === 'inverse_score') {
+                targetLabel.textContent = 'Équipe adverse : ses pronostics seront notés avec le score inversé';
+            } else if (joker && joker.code === 'inverse_buteur') {
+                targetLabel.textContent = 'Équipe adverse à cibler (un de ses buteurs doit jouer ce match)';
+            } else {
+                targetLabel.textContent = 'Équipe adverse à cibler';
+            }
+        }
+
         if (!opponents.length) {
             showFeedback(
                 joker && joker.code === 'inverse_buteur'
@@ -185,14 +196,6 @@
             option.textContent = label;
             targetSelectEl.appendChild(option);
         });
-
-        const targetLabel = targetPickerEl.querySelector('.joker-dialog-target-label');
-        if (targetLabel) {
-            targetLabel.textContent =
-                joker && joker.code === 'inverse_buteur'
-                    ? 'Équipe adverse à cibler (un de ses buteurs doit jouer ce match)'
-                    : 'Équipe adverse à cibler';
-        }
 
         if (listEl) {
             listEl.hidden = true;

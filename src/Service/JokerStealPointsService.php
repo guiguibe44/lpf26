@@ -88,13 +88,14 @@ final class JokerStealPointsService
                 $line->pronosticId,
                 $line->teamId,
                 $line->playerLabel,
-                $line->scoreDomicile,
-                $line->scoreExterieur,
+                $line->predHome,
+                $line->predAway,
                 $line->basePoints,
                 $line->coefficient,
                 $line->playerPoints,
-                $line->isPriseRisque,
+                $line->priseRisque,
                 $newLineTeamPoints,
+                $line->scoreInverted,
             );
         }
 

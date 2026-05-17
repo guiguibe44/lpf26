@@ -1196,6 +1196,13 @@ button.match-card-joker-badge {
     color: #b91c1c;
 }
 
+.match-live-prono-invert {
+    font-size: 0.65rem;
+    vertical-align: middle;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
 .joker-dialog-irreversible-note {
     margin: 0.35rem 0 0;
     width: 100%;
