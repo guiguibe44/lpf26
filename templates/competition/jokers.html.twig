@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jokers | LPF 2026{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar joker-guide-topbar">
+        <div>
+            <h1 class="ta-page-title">Guide des jokers</h1>
+            <p class="ta-page-subtitle">
+                Chaque équipe dispose de jokers uniques à stratégiser sur les matchs. Retrouvez ici le détail de chaque carte et les règles communes.
+            </p>
+        </div>
+        <a href="{{ path('app_matches') }}" class="btn btn-primary btn-sm joker-guide-cta">
+            <i class="ti ti-ball-football" aria-hidden="true"></i>
+            Voir les matchs
+        </a>
+    </section>
+
+    <section class="ta-card joker-guide-rules-card">
+        <h2 class="ta-card-title">Règles communes</h2>
+        <ul class="joker-guide-rules-list">
+            <li>Chaque type de joker ne peut être utilisé qu’<strong>une seule fois</strong> par équipe sur toute la compétition.</li>
+            <li>Une seule mise en jeu à la fois : tant qu’un joker est « en cours » sur un match non terminé, vous ne pouvez pas en poser un autre.</li>
+            <li>Les jokers se posent sur un <strong>match à venir</strong>, avant le coup d’envoi (retirables sauf mention contraire).</li>
+            <li>La cotisation de l’équipe doit être réglée pour gérer les jokers.</li>
+            <li>Les jokers <strong>offensifs</strong> (pique, inversions) peuvent être neutralisés si la cible est protégée : le joker est alors consommé sans effet sur elle.</li>
+        </ul>
+    </section>
+
+    {% if joker_catalog is empty %}
+        <section class="ta-card">
+            <p class="ta-card-text">Aucun joker actif pour le moment.</p>
+        </section>
+    {% else %}
+        <ol class="joker-guide-catalog">
+            {% for entry in joker_catalog %}
+                {% set joker = entry.joker %}
+                <li class="joker-guide-card joker-guide-card--{{ entry.category }}">
+                    <div class="joker-guide-card-inner">
+                        <div class="joker-guide-card-media">
+                            {% if joker.image %}
+                                <img
+                                    src="{{ asset(joker.image) }}"
+                                    alt=""
+                                    class="joker-guide-card-image"
+                                    width="80"
+                                    height="80"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <span class="joker-guide-card-placeholder" aria-hidden="true">
+                                    <i class="ti ti-wand"></i>
+                                </span>
+                            {% endif %}
+                            <span class="joker-guide-card-order" aria-hidden="true">{{ loop.index }}</span>
+                        </div>
+
+                        <div class="joker-guide-card-body">
+                            <header class="joker-guide-card-head">
+                                <h2 class="joker-guide-card-name">{{ joker.name }}</h2>
+                                <div class="joker-guide-card-badges">
+                                    <span class="ta-badge joker-guide-badge joker-guide-badge--{{ entry.category }}">{{ entry.category_label }}</span>
+                                    {% if entry.irreversible %}
+                                        <span class="ta-badge joker-guide-badge joker-guide-badge--warn">Définitif</span>
+                                    {% endif %}
+                                    {% if entry.targets_opponent %}
+                                        <span class="ta-badge joker-guide-badge joker-guide-badge--target">Cible adverse</span>
+                                    {% endif %}
+                                </div>
+                            </header>
+
+                            {% if joker.description %}
+                                <p class="joker-guide-card-summary">{{ joker.description }}</p>
+                            {% endif %}
+
+                            {% if entry.details is not empty %}
+                                <ul class="joker-guide-card-details">
+                                    {% for detail in entry.details %}
+                                        <li>{{ detail }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+{% endblock %}
