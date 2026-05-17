@@ -25,6 +25,8 @@ class Joker
 
     public const CODE_BOUCLIER = 'bouclier';
 
+    public const CODE_COLLECTE_POINTS = 'collecte_points';
+
     public const ESPION_PLACE_CONFIRMATION = 'Le joker Espion est définitif : une fois posé sur ce match, il ne peut plus être retiré. Souhaitez-vous le jouer ?';
 
     #[ORM\Id]

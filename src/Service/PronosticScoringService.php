@@ -29,6 +29,7 @@ final class PronosticScoringService
         private readonly JokerScoringApplicator $jokerScoringApplicator,
         private readonly JokerStealPointsService $jokerStealPointsService,
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
+        private readonly JokerCollectePointsService $jokerCollectePointsService,
     ) {
     }
 
@@ -153,6 +154,7 @@ final class PronosticScoringService
 
         if ($hasFinalScore) {
             $this->jokerStealPointsService->applyToPronostics($match, $pronostics, $playerTeamMap);
+            $this->jokerCollectePointsService->applyToPronostics($match, $pronostics, $playerTeamMap);
         }
 
         if ([] === $coefficients) {

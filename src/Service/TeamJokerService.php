@@ -508,7 +508,8 @@ final class TeamJokerService
 
         if (Joker::CODE_INVERSE_SCORE === $joker->getCode()
             || Joker::CODE_PIQUE_POINTS === $joker->getCode()
-            || Joker::CODE_INVERSE_BUTEUR === $joker->getCode()) {
+            || Joker::CODE_INVERSE_BUTEUR === $joker->getCode()
+            || Joker::CODE_COLLECTE_POINTS === $joker->getCode()) {
             if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
                 $this->pronosticScoringService->rescoreForMatch($match);
             }

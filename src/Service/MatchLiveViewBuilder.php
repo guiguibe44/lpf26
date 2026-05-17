@@ -36,6 +36,7 @@ final class MatchLiveViewBuilder
         private readonly JokerStealPointsService $jokerStealPointsService,
         private readonly ButeurJokerPointsService $buteurJokerPointsService,
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
+        private readonly JokerCollectePointsService $jokerCollectePointsService,
     ) {
     }
 
@@ -66,6 +67,7 @@ final class MatchLiveViewBuilder
             $this->pronosticScoreInversionService->getTargetTeamIdsForMatch($match),
         );
         $simulatedLines = $this->jokerStealPointsService->adjustSimulatedLines($match, $simulatedLines);
+        $simulatedLines = $this->jokerCollectePointsService->adjustSimulatedLines($match, $simulatedLines);
 
         $linesByTeamId = [];
         foreach ($simulatedLines as $line) {

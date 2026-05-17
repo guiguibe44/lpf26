@@ -250,4 +250,28 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
 
         return isset($this->findProtectedTeamIdsForMatchdayOfMatch($match)[(int) $teamId]);
     }
+
+    /**
+     * Équipes ayant posé le joker collecte sur ce match (ordre stable).
+     *
+     * @return list<int>
+     */
+    public function findCollecteTeamIdsForMatch(GameMatch $match): array
+    {
+        $ids = [];
+        foreach ($this->findByMatch($match) as $usage) {
+            if (Joker::CODE_COLLECTE_POINTS !== $usage->getJoker()?->getCode()) {
+                continue;
+            }
+
+            $teamId = $usage->getTeam()?->getId();
+            if (null !== $teamId) {
+                $ids[] = (int) $teamId;
+            }
+        }
+
+        sort($ids);
+
+        return $ids;
+    }
 }
