@@ -131,6 +131,9 @@
         if (active.target_team_name) {
             label += ' → ' + active.target_team_name;
         }
+        if (active.effect_blocked) {
+            label += ' (sans effet)';
+        }
 
         return label;
     };
@@ -192,6 +195,9 @@
             let label = team.name;
             if (team.buteur_countries && team.buteur_countries.length > 0) {
                 label += ' (' + team.buteur_countries.join(', ') + ')';
+            }
+            if (team.shield_protected) {
+                label += ' — protégée (bouclier)';
             }
             option.textContent = label;
             targetSelectEl.appendChild(option);
@@ -336,6 +342,9 @@
                 if (row.target_team_name) {
                     li.textContent += ' → ' + row.target_team_name;
                 }
+                if (row.effect_blocked) {
+                    li.textContent += ' (sans effet — bouclier)';
+                }
                 ul.appendChild(li);
             });
             jokersSection.appendChild(ul);
@@ -403,6 +412,20 @@
             wrap.appendChild(irreversible);
         }
 
+        if (active.code === 'bouclier') {
+            const shieldNote = document.createElement('p');
+            shieldNote.className = 'joker-dialog-shield-note';
+            shieldNote.textContent = 'Votre équipe est protégée pour toute la journée de ce match contre les jokers adverses qui vous ciblent.';
+            wrap.appendChild(shieldNote);
+        }
+
+        if (active.effect_blocked) {
+            const blockedNote = document.createElement('p');
+            blockedNote.className = 'joker-dialog-blocked-note';
+            blockedNote.textContent = 'Sans effet : la cible est protégée par un bouclier (joker consommé).';
+            wrap.appendChild(blockedNote);
+        }
+
         if (active.can_remove) {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -442,6 +465,16 @@
             note.className = 'joker-dialog-note';
             note.textContent = 'Joker en cours sur ' + state.pending_elsewhere.match_label + ' (« ' + state.pending_elsewhere.joker_name + ' »).';
             listEl.appendChild(note);
+        }
+
+        if (state.team_shield_active) {
+            const shieldActive = document.createElement('p');
+            shieldActive.className = 'joker-dialog-note joker-dialog-shield-active';
+            shieldActive.textContent =
+                'Bouclier actif pour votre équipe' +
+                (state.matchday_label ? ' (journée du ' + state.matchday_label + ')' : '') +
+                '.';
+            listEl.appendChild(shieldActive);
         }
 
         if (state.team_buteur_countries && state.team_buteur_countries.length > 0) {

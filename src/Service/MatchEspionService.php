@@ -21,6 +21,7 @@ final class MatchEspionService
         private readonly PronosticRepository $pronosticRepository,
         private readonly MatchCotePreviewService $matchCotePreviewService,
         private readonly MatchStatusResolver $matchStatusResolver,
+        private readonly JokerDefenseService $jokerDefenseService,
     ) {
     }
 
@@ -102,6 +103,7 @@ final class MatchEspionService
                 'joker_code' => (string) $joker->getCode(),
                 'joker_image' => $joker->getImage(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
+                'effect_blocked' => $this->jokerDefenseService->isUsageNeutralized($usage),
             ];
         }
 

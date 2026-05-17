@@ -8,6 +8,7 @@ use App\Entity\GameMatch;
 use App\Entity\Joker;
 use App\Entity\Team;
 use App\Entity\TeamJokerUsage;
+use App\Service\MatchdayKey;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -90,6 +91,7 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
      */
     public function findPiquePointsTargetsByTeamForMatch(GameMatch $match): array
     {
+        $protected = $this->findProtectedTeamIdsForMatchdayOfMatch($match);
         $map = [];
         foreach ($this->findByMatch($match) as $usage) {
             if (!$usage instanceof TeamJokerUsage) {
@@ -107,10 +109,55 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
                 continue;
             }
 
+            if (isset($protected[(int) $victimId])) {
+                continue;
+            }
+
             $map[(int) $thiefId] = (int) $victimId;
         }
 
         return $map;
+    }
+
+    /**
+     * Équipes protégées par un bouclier posé sur un match de la même journée calendaire.
+     *
+     * @return array<int, true>
+     */
+    public function findProtectedTeamIdsForMatchdayOfMatch(GameMatch $match): array
+    {
+        $dayKey = MatchdayKey::fromMatch($match);
+        if (null === $dayKey) {
+            return [];
+        }
+
+        $bounds = MatchdayKey::dayBounds($dayKey);
+        if (null === $bounds) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('u')
+            ->select('IDENTITY(u.team) AS teamId')
+            ->innerJoin('u.joker', 'j')
+            ->innerJoin('u.match', 'm')
+            ->andWhere('j.code = :code')
+            ->andWhere('m.dateHeure >= :start')
+            ->andWhere('m.dateHeure < :end')
+            ->setParameter('code', Joker::CODE_BOUCLIER)
+            ->setParameter('start', $bounds['start'])
+            ->setParameter('end', $bounds['end'])
+            ->getQuery()
+            ->getScalarResult();
+
+        $ids = [];
+        foreach ($rows as $row) {
+            $teamId = (int) ($row['teamId'] ?? 0);
+            if ($teamId > 0) {
+                $ids[$teamId] = true;
+            }
+        }
+
+        return $ids;
     }
 
     /**
@@ -131,9 +178,20 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
         $matchIds = [];
         foreach ($rows as $row) {
             $matchId = (int) ($row['matchId'] ?? 0);
-            if ($matchId > 0) {
-                $matchIds[] = $matchId;
+            if ($matchId <= 0) {
+                continue;
             }
+
+            $usageMatch = $this->getEntityManager()->find(GameMatch::class, $matchId);
+            if (!$usageMatch instanceof GameMatch) {
+                continue;
+            }
+
+            if ($this->isTeamProtectedOnMatchday($targetTeam, $usageMatch)) {
+                continue;
+            }
+
+            $matchIds[] = $matchId;
         }
 
         return $matchIds;
@@ -141,6 +199,10 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
 
     public function teamIsTargetOfInvertButeurOnMatch(Team $targetTeam, GameMatch $match): bool
     {
+        if ($this->isTeamProtectedOnMatchday($targetTeam, $match)) {
+            return false;
+        }
+
         $count = (int) $this->createQueryBuilder('u')
             ->select('COUNT(u.id)')
             ->innerJoin('u.joker', 'j')
@@ -161,6 +223,7 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
      */
     public function findInverseScoreTargetTeamIdsForMatch(GameMatch $match): array
     {
+        $protected = $this->findProtectedTeamIdsForMatchdayOfMatch($match);
         $ids = [];
         foreach ($this->findByMatch($match) as $usage) {
             if (Joker::CODE_INVERSE_SCORE !== $usage->getJoker()?->getCode()) {
@@ -168,11 +231,23 @@ class TeamJokerUsageRepository extends ServiceEntityRepository
             }
 
             $targetId = $usage->getTargetTeam()?->getId();
-            if (null !== $targetId) {
-                $ids[(int) $targetId] = true;
+            if (null === $targetId || isset($protected[(int) $targetId])) {
+                continue;
             }
+
+            $ids[(int) $targetId] = true;
         }
 
         return $ids;
+    }
+
+    public function isTeamProtectedOnMatchday(Team $team, GameMatch $match): bool
+    {
+        $teamId = $team->getId();
+        if (null === $teamId) {
+            return false;
+        }
+
+        return isset($this->findProtectedTeamIdsForMatchdayOfMatch($match)[(int) $teamId]);
     }
 }

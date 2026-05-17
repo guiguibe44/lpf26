@@ -67,14 +67,7 @@ final class JokerController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        $message = sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName());
-        if ($targetTeam instanceof Team) {
-            $message = sprintf(
-                'Joker « %s » posé : cible %s.',
-                (string) $joker->getName(),
-                (string) $targetTeam->getName(),
-            );
-        }
+        $message = $teamJokerService->buildPlacementSuccessMessage($joker, $targetTeam, $match);
 
         return $this->json([
             'success' => true,

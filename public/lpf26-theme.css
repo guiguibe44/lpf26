@@ -1211,6 +1211,23 @@ button.match-card-joker-badge {
     color: #b45309;
 }
 
+.joker-dialog-shield-note,
+.joker-dialog-shield-active {
+    margin: 0.35rem 0 0;
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #047857;
+}
+
+.joker-dialog-blocked-note {
+    margin: 0.35rem 0 0;
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
 .match-live-jokers-list {
     list-style: none;
     margin: 0;

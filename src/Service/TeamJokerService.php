@@ -9,6 +9,7 @@ use App\Entity\Joker;
 use App\Entity\Team;
 use App\Entity\TeamJokerUsage;
 use App\Entity\User;
+use App\Repository\GameMatchRepository;
 use App\Repository\JokerRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamMemberRepository;
@@ -27,6 +28,8 @@ final class TeamJokerService
         private readonly MatchEspionService $matchEspionService,
         private readonly ButeurJokerPointsService $buteurJokerPointsService,
         private readonly TeamRankingService $teamRankingService,
+        private readonly JokerDefenseService $jokerDefenseService,
+        private readonly GameMatchRepository $gameMatchRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -97,11 +100,14 @@ final class TeamJokerService
             }
 
             $target = $usage->getTargetTeam();
+            $match = $usage->getMatch();
+            $neutralized = $match instanceof GameMatch && $this->jokerDefenseService->isUsageNeutralized($usage);
             $map[(int) $matchId] = [
                 'name' => (string) $joker->getName(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
+                'effect_blocked' => $neutralized,
             ];
         }
 
@@ -156,6 +162,7 @@ final class TeamJokerService
         if ($usageOnMatch instanceof TeamJokerUsage) {
             $joker = $usageOnMatch->getJoker();
             $target = $usageOnMatch->getTargetTeam();
+            $neutralized = $this->jokerDefenseService->isUsageNeutralized($usageOnMatch);
             $activeOnMatch = [
                 'id' => (int) $joker?->getId(),
                 'name' => (string) $joker?->getName(),
@@ -164,6 +171,7 @@ final class TeamJokerService
                 'target_team_id' => $target?->getId(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
                 'can_remove' => $this->canRemoveUsage($usageOnMatch, $match),
+                'effect_blocked' => $neutralized,
             ];
         }
 
@@ -250,6 +258,7 @@ final class TeamJokerService
                 'name' => (string) $opponent->getName(),
                 'buteur_countries' => $this->buteurJokerPointsService->getButeurCountryNamesForTeam($opponent),
                 'match_eligible_inverse_buteur' => $this->buteurJokerPointsService->isMatchEligibleForTeamButeurCountries($opponent, $match),
+                'shield_protected' => $this->jokerDefenseService->isTeamProtectedOnMatch($opponent, $match),
             ];
         }
 
@@ -268,6 +277,7 @@ final class TeamJokerService
         }
 
         $buteurCountries = $this->buteurJokerPointsService->getButeurCountryNamesForTeam($team);
+        $teamShieldActive = $this->jokerDefenseService->teamHasBouclierOnMatchday($team, $match);
 
         return [
             'can_manage' => true,
@@ -278,6 +288,8 @@ final class TeamJokerService
             'opponent_teams' => $opponentTeams,
             'espion_intel' => $espionIntel,
             'team_buteur_countries' => $buteurCountries,
+            'team_shield_active' => $teamShieldActive,
+            'matchday_label' => $this->formatMatchdayLabel($match),
         ];
     }
 
@@ -414,11 +426,14 @@ final class TeamJokerService
             }
 
             $target = $usage->getTargetTeam();
+            $usageMatch = $usage->getMatch();
+            $neutralized = $usageMatch instanceof GameMatch && $this->jokerDefenseService->isUsageNeutralized($usage);
             $map[(int) $teamId] = [
                 'name' => (string) $joker->getName(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
+                'effect_blocked' => $neutralized,
             ];
         }
 
@@ -485,19 +500,86 @@ final class TeamJokerService
 
     private function afterJokerUsageChanged(GameMatch $match, Joker $joker): void
     {
-        if (Joker::CODE_INVERSE_SCORE === $joker->getCode()) {
+        if (Joker::CODE_BOUCLIER === $joker->getCode()) {
+            $this->rescoreFinishedMatchesOnMatchday($match);
+
+            return;
+        }
+
+        if (Joker::CODE_INVERSE_SCORE === $joker->getCode()
+            || Joker::CODE_PIQUE_POINTS === $joker->getCode()
+            || Joker::CODE_INVERSE_BUTEUR === $joker->getCode()) {
             if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
                 $this->pronosticScoringService->rescoreForMatch($match);
+            }
+
+            if (Joker::CODE_INVERSE_BUTEUR === $joker->getCode()) {
+                $this->teamRankingService->rebuildSnapshotsFromMatch($match);
             }
 
             return;
         }
 
-        if (!\in_array($joker->getCode(), [Joker::CODE_DOUBLE_BUTEUR, Joker::CODE_INVERSE_BUTEUR], true)) {
+        if (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode()) {
+            $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+        }
+    }
+
+    private function rescoreFinishedMatchesOnMatchday(GameMatch $anchor): void
+    {
+        $dayKey = MatchdayKey::fromMatch($anchor);
+        if (null === $dayKey) {
             return;
         }
 
-        $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+        foreach ($this->gameMatchRepository->findByCalendarDay($dayKey) as $dayMatch) {
+            if (null !== $dayMatch->getScoreDomicile() && null !== $dayMatch->getScoreExterieur()) {
+                $this->pronosticScoringService->rescoreForMatch($dayMatch);
+            }
+        }
+    }
+
+    public function buildPlacementSuccessMessage(Joker $joker, ?Team $targetTeam, GameMatch $match): string
+    {
+        $message = sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName());
+        if ($targetTeam instanceof Team) {
+            $message = sprintf(
+                'Joker « %s » posé : cible %s.',
+                (string) $joker->getName(),
+                (string) $targetTeam->getName(),
+            );
+            if ($this->jokerDefenseService->wouldOffensiveJokerBeNeutralized($targetTeam, $match, $joker)) {
+                $message .= ' La cible est protégée par un bouclier : votre joker est consommé sans effet sur elle.';
+            }
+        }
+
+        if (Joker::CODE_BOUCLIER === $joker->getCode()) {
+            $dayLabel = $this->formatMatchdayLabel($match);
+            $message = sprintf(
+                'Joker « %s » actif : votre équipe est protégée pour la journée%s contre les jokers adverses qui vous ciblent.',
+                (string) $joker->getName(),
+                null !== $dayLabel ? ' du '.$dayLabel : '',
+            );
+        }
+
+        return $message;
+    }
+
+    private function formatMatchdayLabel(GameMatch $match): ?string
+    {
+        $dateHeure = $match->getDateHeure();
+        if (!$dateHeure instanceof \DateTimeImmutable) {
+            return null;
+        }
+
+        $formatter = new \IntlDateFormatter(
+            'fr_FR',
+            \IntlDateFormatter::LONG,
+            \IntlDateFormatter::NONE,
+            $dateHeure->getTimezone(),
+        );
+
+        return $formatter->format($dateHeure) ?: $dateHeure->format('d/m/Y');
     }
 
     private function hasOpponentEligibleForInvertButeurOnMatch(Team $team, GameMatch $match): bool

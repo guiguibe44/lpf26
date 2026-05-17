@@ -277,4 +277,25 @@ class GameMatchRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return list<GameMatch>
+     */
+    public function findByCalendarDay(string $dayKey): array
+    {
+        $bounds = \App\Service\MatchdayKey::dayBounds($dayKey);
+        if (null === $bounds) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.dateHeure >= :start')
+            ->andWhere('m.dateHeure < :end')
+            ->setParameter('start', $bounds['start'])
+            ->setParameter('end', $bounds['end'])
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
