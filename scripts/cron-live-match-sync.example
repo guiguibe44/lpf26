@@ -1,12 +1,20 @@
 # Synchro scores / buts en direct (API-Football) — toutes les 3 minutes.
-# Copier la ligne ci-dessous dans l’espace client OVH → Hébergement → Tâches planifiées (cron).
-# (crontab SSH indisponible sur le mutualisé OVH — passer par le manager.)
-
-*/3 * * * * cd /homez.1544/lotopou/lpf26 && /usr/local/bin/php8.4 bin/console app:live-match:sync --env=prod --no-interaction >> var/log/live-match-sync.log 2>&1
-
-# Prérequis dans .env.local sur le serveur :
-#   API_FOOTBALL_KEY=…
-#   API_FOOTBALL_LIVE_SYNC_ENABLED=1
 #
-# Test manuel (SSH) :
-#   cd /homez.1544/lotopou/lpf26 && php bin/console app:live-match:sync --env=prod
+# === OVH : Hébergement → Tâches planifiées ===
+# Langage : PHP 8.4
+# Planification : */3 * * * *
+# Commande à exécuter (une seule ligne, après le ./ affiché par OVH) :
+#
+#   lpf26/scripts/cron-live-match-sync.php
+#
+# (affiché : ./lpf26/scripts/cron-live-match-sync.php)
+# Si le cron est créé depuis le dossier du site, essayer :
+#   scripts/cron-live-match-sync.php
+#
+# === SSH (alternative) ===
+# */3 * * * * cd /homez.1544/lotopou/lpf26 && /usr/local/bin/php8.4 bin/console app:live-match:sync --env=prod --no-interaction >> var/log/live-match-sync.log 2>&1
+#
+# Test :
+#   cd /homez.1544/lotopou/lpf26 && php scripts/cron-live-match-sync.php
+#
+# Prérequis .env.local : API_FOOTBALL_KEY, API_FOOTBALL_LIVE_SYNC_ENABLED=1
