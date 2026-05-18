@@ -81,6 +81,7 @@ services:
     App\Controller\Admin\UserCrudController:
         arguments:
             $passwordHasher: '@security.user_password_hasher'
+            $uploadedImageFinalize: '@App\Service\UploadedImageFinalizeService'
 
     App\Mailer\Transport\PhpMailTransportFactory:
         tags: ['mailer.transport_factory']

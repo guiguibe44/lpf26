@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Joker;
 use App\Enum\JokerTag;
+use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -18,6 +19,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class JokerCrudController extends AbstractAppCrudController
 {
+    public function __construct(
+        private readonly UploadedImageFinalizeService $uploadedImageFinalize,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Joker::class;
@@ -95,7 +101,7 @@ class JokerCrudController extends AbstractAppCrudController
             return;
         }
 
-        $basename = $this->finalizeUploadFilename(
+        $basename = $this->uploadedImageFinalize->finalize(
             UploadPathHelper::normalizeStored($image, 'jokers') ?? basename($image),
             'jokers',
         );

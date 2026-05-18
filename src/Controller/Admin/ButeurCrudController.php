@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Buteur;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
+use App\Service\UploadedImageFinalizeService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -18,6 +19,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
+        private readonly UploadedImageFinalizeService $uploadedImageFinalize,
     ) {
     }
 
@@ -77,7 +79,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->finalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
+            $entityInstance->setPhoto($this->uploadedImageFinalize->finalize($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -86,7 +88,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->finalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
+            $entityInstance->setPhoto($this->uploadedImageFinalize->finalize($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::updateEntity($entityManager, $entityInstance);

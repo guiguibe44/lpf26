@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Country;
+use App\Service\UploadedImageFinalizeService;
 use App\Entity\GameMatch;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -12,6 +13,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class CountryCrudController extends AbstractAppCrudController
 {
+    public function __construct(
+        private readonly UploadedImageFinalizeService $uploadedImageFinalize,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Country::class;
@@ -52,7 +58,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->finalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
+            $entityInstance->setDrapeau($this->uploadedImageFinalize->finalize($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 
@@ -62,7 +68,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->finalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
+            $entityInstance->setDrapeau($this->uploadedImageFinalize->finalize($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Service\UploadedImageFinalizeService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -19,6 +20,7 @@ class UserCrudController extends AbstractAppCrudController
 
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly UploadedImageFinalizeService $uploadedImageFinalize,
     ) {
     }
     public static function getEntityFqcn(): string
@@ -131,23 +133,6 @@ class UserCrudController extends AbstractAppCrudController
 
     private function finalizeUserAvatar(?string $path): ?string
     {
-        if (null === $path || '' === $path) {
-            return $path;
-        }
-
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
-        }
-
-        $basename = $this->finalizeUploadFilename($path, 'avatars');
-        if (null === $basename || '' === $basename) {
-            return $path;
-        }
-
-        if (str_starts_with($basename, '/uploads/')) {
-            return $basename;
-        }
-
-        return '/uploads/avatars/'.$basename;
+        return $this->uploadedImageFinalize->finalize($path, 'avatars', asPublicPath: true);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Team;
+use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -12,6 +13,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class TeamCrudController extends AbstractAppCrudController
 {
+    public function __construct(
+        private readonly UploadedImageFinalizeService $uploadedImageFinalize,
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Team::class;
@@ -75,7 +81,7 @@ class TeamCrudController extends AbstractAppCrudController
             return;
         }
 
-        $basename = $this->finalizeUploadFilename(
+        $basename = $this->uploadedImageFinalize->finalize(
             UploadPathHelper::normalizeStored($logo, 'team-logos') ?? basename($logo),
             'team-logos',
         );
