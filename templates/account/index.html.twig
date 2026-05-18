@@ -79,9 +79,10 @@
             {% endif %}
 
             {% if has_team_member and not competition_started %}
-                <div class="account-buteur-section">
+                <section id="buteur" class="account-buteur-section rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                    <h2 class="mb-4 text-lg font-semibold">Choisir mon buteur</h2>
                     {% if not cotisation_payee %}
-                        <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur (identique au tableau de bord).</p>
+                        <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur.</p>
                     {% endif %}
                     {% include 'buteur/_picker_stack.html.twig' with {
                         picker_id_prefix: 'acc',
@@ -91,7 +92,7 @@
                         buteur_stats: buteur_stats|default(null),
                         form_return: 'account',
                     } only %}
-                </div>
+                </section>
             {% elseif has_team_member and competition_started %}
                 <p class="ta-card-text">Le choix du buteur est verrouillé depuis le début de la compétition.</p>
             {% endif %}
@@ -158,10 +159,6 @@
         <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
             {% if favorite_country_state %}
                 {% include 'account/_favorite_country_section.html.twig' %}
-            {% endif %}
-
-            {% if has_team_member %}
-                {% include 'account/_jokers_section.html.twig' with { team_joker_overview: team_joker_overview } only %}
             {% endif %}
 
             <section class="account-card-team-info rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
@@ -296,7 +293,13 @@
 
                 const hashToTab = () => {
                     const h = (window.location.hash || '').toLowerCase();
-                    if (h === '#tab-equipe' || h === '#equipe' || h === '#team-section' || h === '#invitation') {
+                    if (
+                        h === '#tab-equipe'
+                        || h === '#equipe'
+                        || h === '#team-section'
+                        || h === '#invitation'
+                        || h === '#favorite-country'
+                    ) {
                         return 'equipe';
                     }
                     return 'compte';
@@ -308,8 +311,17 @@
                     if (h === '#notifications') {
                         scrollToAnchor('notifications');
                     }
-                    if (h === '#invitation') {
-                        scrollToAnchor('invitation');
+                    if (h === '#buteur') {
+                        scrollToAnchor('buteur');
+                    }
+                    if (h === '#invitation' || h === '#invitation-equipe') {
+                        scrollToAnchor(h === '#invitation-equipe' ? 'invitation-equipe' : 'invitation');
+                    }
+                    if (h === '#favorite-country') {
+                        scrollToAnchor('favorite-country');
+                    }
+                    if (h === '#team-setup') {
+                        scrollToAnchor('team-setup');
                     }
                 };
 

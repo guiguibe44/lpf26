@@ -2221,6 +2221,149 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     max-width: 100%;
 }
 
+.precomp-dashboard {
+    margin-bottom: 1.5rem;
+}
+
+.precomp-dashboard__header {
+    margin-bottom: 1rem;
+}
+
+.precomp-dashboard__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.precomp-dashboard__intro {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.precomp-dashboard__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .precomp-dashboard__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.precomp-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.1rem 1.15rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    background: #fff;
+}
+
+.precomp-card--done {
+    border-color: #86efac;
+    background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%);
+}
+
+.precomp-card__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.65rem 0.75rem;
+    align-items: start;
+}
+
+.precomp-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.55rem;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 1.15rem;
+}
+
+.precomp-card--done .precomp-card__icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.precomp-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.precomp-card__desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #64748b;
+}
+
+.precomp-card__status {
+    align-self: start;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.precomp-card__status--ok {
+    background: #dcfce7;
+    color: #166534;
+    border: none;
+}
+
+.precomp-checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.precomp-checklist__item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+.precomp-checklist__item .ti {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.precomp-checklist__item--done {
+    color: #166534;
+}
+
+.precomp-checklist__item--done .ti {
+    color: #16a34a;
+}
+
+.precomp-card__hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #b45309;
+}
+
+.precomp-card__cta {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+.account-buteur-section .dashboard-buteur-columns {
+    margin-top: 0;
+}
+
 .dashboard-buteur-columns {
     display: grid;
     grid-template-columns: 1fr;

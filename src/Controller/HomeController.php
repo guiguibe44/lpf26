@@ -12,6 +12,7 @@ use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
+use App\Service\PreCompetitionDashboardService;
 use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
 use App\Service\MatchStatusResolver;
@@ -41,6 +42,7 @@ class HomeController extends AbstractController
         TeamJokerService $teamJokerService,
         TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
+        PreCompetitionDashboardService $preCompetitionDashboard,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -131,6 +133,7 @@ class HomeController extends AbstractController
             'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
             'team_favorite_highlight' => $team_favorite_highlight,
+            'precomp_checklist' => $preCompetitionDashboard->buildChecklist($user),
         ]);
     }
 

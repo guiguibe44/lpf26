@@ -56,44 +56,58 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::linkToRoute('Interface joueurs (front)', 'fa fa-globe', 'app_homepage');
 
-        yield MenuItem::section('Communication');
-        yield MenuItem::linkToRoute('Messages forum', 'fas fa-comments', 'admin_forum_post_index');
-        yield MenuItem::linkToRoute('Messages manuels', 'fas fa-paper-plane', 'admin_manual_messages');
-        yield MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history');
+        yield MenuItem::subMenu('Communication', 'fas fa-comments')
+            ->setSubItems([
+                MenuItem::linkToRoute('Messages forum', 'fas fa-comments', 'admin_forum_post_index'),
+                MenuItem::linkToRoute('Messages manuels', 'fas fa-paper-plane', 'admin_manual_messages'),
+                MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history'),
+            ]);
 
-        yield MenuItem::section('Gestion');
-        yield MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index');
-        yield MenuItem::linkToRoute('Utilisateurs', 'fas fa-users', 'admin_user_index');
-        yield MenuItem::linkToRoute('Invitations', 'fas fa-envelope', 'admin_team_invitation_index');
+        yield MenuItem::subMenu('Gestion', 'fas fa-people-group')
+            ->setSubItems([
+                MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index'),
+                MenuItem::linkToRoute('Utilisateurs', 'fas fa-users', 'admin_user_index'),
+                MenuItem::linkToRoute('Invitations', 'fas fa-envelope', 'admin_team_invitation_index'),
+            ]);
 
-        yield MenuItem::section('Compétition');
-        yield MenuItem::linkToRoute('Pays', 'fas fa-flag', 'admin_country_index');
-        yield MenuItem::linkToRoute('Buteurs', 'fas fa-user', 'admin_buteur_index');
-        yield MenuItem::linkToRoute('Buts', 'fas fa-futbol', 'admin_but_index');
-        yield MenuItem::linkToRoute('Matchs', 'fas fa-futbol', 'admin_game_match_index');
-        yield MenuItem::linkToRoute('Pronostics', 'fas fa-list-check', 'admin_pronostic_index');
-        yield MenuItem::linkToRoute('Classements equipes', 'fas fa-ranking-star', 'admin_team_ranking_snapshot_index');
-        yield MenuItem::linkToRoute('Jokers', 'fas fa-wand-magic-sparkles', 'admin_joker_index');
-        yield MenuItem::linkToRoute('Utilisations jokers', 'fas fa-hat-wizard', 'admin_team_joker_usage_index');
+        yield MenuItem::subMenu('Compétition', 'fas fa-trophy')
+            ->setSubItems([
+                MenuItem::linkToRoute('Pays', 'fas fa-flag', 'admin_country_index'),
+                MenuItem::linkToRoute('Buteurs', 'fas fa-user', 'admin_buteur_index'),
+                MenuItem::linkToRoute('Buts', 'fas fa-futbol', 'admin_but_index'),
+                MenuItem::linkToRoute('Matchs', 'fas fa-futbol', 'admin_game_match_index'),
+                MenuItem::linkToRoute('Pronostics', 'fas fa-list-check', 'admin_pronostic_index'),
+                MenuItem::linkToRoute('Classements equipes', 'fas fa-ranking-star', 'admin_team_ranking_snapshot_index'),
+                MenuItem::linkToRoute('Jokers', 'fas fa-wand-magic-sparkles', 'admin_joker_index'),
+                MenuItem::linkToRoute('Utilisations jokers', 'fas fa-hat-wizard', 'admin_team_joker_usage_index'),
+            ]);
 
-        yield MenuItem::section('Synchro API-Football');
+        $syncItems = [
+            MenuItem::linkToRoute('Sync buts (événements)', 'fas fa-bullseye', 'admin_wc2026_sync_goals'),
+        ];
 
         $user = $this->getUser();
         if ($user instanceof User && $this->superAdminAuthorization->isSuperAdmin($user)) {
-            yield MenuItem::linkToRoute('Sync pays', 'fas fa-flag', 'admin_wc2026_sync_countries');
-            yield MenuItem::linkToRoute('Réparer phases de groupes', 'fas fa-wrench', 'admin_wc2026_repair_group_phases');
-            yield MenuItem::linkToRoute('Sync matchs', 'fas fa-calendar-days', 'admin_wc2026_sync_matches');
-            yield MenuItem::linkToRoute('Sync joueurs (11 par pays)', 'fas fa-user-plus', 'admin_wc2026_sync_players');
-            yield MenuItem::linkToRoute('Sync joueurs (tous, par pays)', 'fas fa-users', 'admin_wc2026_sync_players_country_form');
-            yield MenuItem::linkToRoute('Sync tout (pays, matchs, joueurs, buts)', 'fas fa-rotate', 'admin_wc2026_sync');
-            yield MenuItem::linkToRoute('Arrêter synchro joueurs', 'fas fa-stop', 'admin_wc2026_sync_players_stop');
+            $syncItems = [
+                MenuItem::linkToRoute('Sync pays', 'fas fa-flag', 'admin_wc2026_sync_countries'),
+                MenuItem::linkToRoute('Réparer phases de groupes', 'fas fa-wrench', 'admin_wc2026_repair_group_phases'),
+                MenuItem::linkToRoute('Sync matchs', 'fas fa-calendar-days', 'admin_wc2026_sync_matches'),
+                MenuItem::linkToRoute('Sync joueurs (11 par pays)', 'fas fa-user-plus', 'admin_wc2026_sync_players'),
+                MenuItem::linkToRoute('Sync joueurs (tous, par pays)', 'fas fa-users', 'admin_wc2026_sync_players_country_form'),
+                MenuItem::linkToRoute('Sync tout (pays, matchs, joueurs, buts)', 'fas fa-rotate', 'admin_wc2026_sync'),
+                MenuItem::linkToRoute('Arrêter synchro joueurs', 'fas fa-stop', 'admin_wc2026_sync_players_stop'),
+                MenuItem::linkToRoute('Sync buts (événements)', 'fas fa-bullseye', 'admin_wc2026_sync_goals'),
+            ];
 
-            yield MenuItem::section('Médias (téléchargement)');
-            yield MenuItem::linkToRoute('Télécharger drapeaux', 'fas fa-download', 'admin_download_country_flags');
-            yield MenuItem::linkToRoute('Télécharger photos joueurs', 'fas fa-portrait', 'admin_download_buteur_photos');
+            yield MenuItem::subMenu('Médias', 'fas fa-download')
+                ->setSubItems([
+                    MenuItem::linkToRoute('Télécharger drapeaux', 'fas fa-download', 'admin_download_country_flags'),
+                    MenuItem::linkToRoute('Télécharger photos joueurs', 'fas fa-portrait', 'admin_download_buteur_photos'),
+                ]);
         }
 
-        yield MenuItem::linkToRoute('Sync buts (événements)', 'fas fa-bullseye', 'admin_wc2026_sync_goals');
+        yield MenuItem::subMenu('Synchro API-Football', 'fas fa-rotate')
+            ->setSubItems($syncItems);
     }
 
     #[Route('/admin/sync/wc2026/repair-group-phases', name: 'admin_wc2026_repair_group_phases', methods: ['GET'])]
