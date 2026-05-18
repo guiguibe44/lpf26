@@ -111,6 +111,7 @@ final class TeamJokerService
                 'code' => (string) $joker->getCode(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
                 'effect_blocked' => $neutralized,
+                'can_remove' => $match instanceof GameMatch && $this->canRemoveUsage($usage, $match),
             ];
         }
 

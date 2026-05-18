@@ -266,15 +266,23 @@
         padding-top: 0.65rem;
     }
 
-    .ta-main .match-card-joker-badge,
-    .ta-main .match-card-joker-badge--static {
-        width: 2rem;
-        height: 2rem;
+    .ta-main .match-card-joker-mark {
+        right: 0.45rem;
+        bottom: -1.15rem;
     }
 
-    .ta-main .match-card-joker-badge__icon img {
-        width: 1.5rem;
-        height: 1.5rem;
+    .ta-main .match-card-joker-badge__icon {
+        width: 2.85rem;
+    }
+
+    .ta-main .match-card-joker-badge__icon .ti {
+        width: 2.85rem;
+        height: 3.65rem;
+        font-size: 1.35rem;
+    }
+
+    .ta-main .match-card--has-joker {
+        overflow: visible;
     }
 
     .ta-main .match-card--favorite-country {

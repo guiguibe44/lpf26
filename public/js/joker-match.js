@@ -184,15 +184,22 @@
         return label;
     };
 
-    const fillJokerBadge = (badge, active, interactive) => {
+    const fillJokerBadge = (badge, active) => {
         if (!badge || !active) {
             return;
         }
 
         const title = buildJokerBadgeTitle(active);
-        const hint = interactive ? title + ' — Gérer le joker' : title;
+        const removable = Boolean(active.can_remove) && badge.tagName === 'BUTTON';
+        const hint = removable ? title + ' — Cliquer pour retirer le joker' : title;
         badge.title = hint;
-        badge.setAttribute('aria-label', hint);
+        if (removable) {
+            badge.dataset.jokerBadgeRemove = '';
+            badge.setAttribute('aria-label', hint);
+        } else {
+            delete badge.dataset.jokerBadgeRemove;
+            badge.removeAttribute('aria-label');
+        }
         badge.replaceChildren();
 
         const iconWrap = document.createElement('span');
@@ -203,8 +210,8 @@
             const img = document.createElement('img');
             img.src = assetUrl(active.image);
             img.alt = '';
-            img.width = 22;
-            img.height = 22;
+            img.width = 56;
+            img.height = 72;
             img.loading = 'lazy';
             img.decoding = 'async';
             iconWrap.appendChild(img);
@@ -216,8 +223,22 @@
 
         const sr = document.createElement('span');
         sr.className = 'sr-only';
-        sr.textContent = title;
+        sr.textContent = removable ? title + ' — Retirer' : title;
         badge.appendChild(sr);
+    };
+
+    const createJokerBadgeElement = (active) => {
+        const canRemove = Boolean(active.can_remove);
+        const badge = document.createElement(canRemove ? 'button' : 'span');
+        if (canRemove) {
+            badge.type = 'button';
+            badge.className = 'match-card-joker-badge match-card-joker-badge--removable';
+        } else {
+            badge.className = 'match-card-joker-badge match-card-joker-badge--static';
+        }
+        badge.dataset.jokerBadge = '';
+
+        return badge;
     };
 
     const hideTargetPicker = () => {
@@ -327,6 +348,17 @@
         targetPickerEl.hidden = false;
     };
 
+    const ensureJokerMark = (card) => {
+        let mark = card.querySelector('.match-card-joker-mark');
+        if (!mark) {
+            mark = document.createElement('div');
+            mark.className = 'match-card-joker-mark';
+            card.appendChild(mark);
+        }
+
+        return mark;
+    };
+
     const refreshCardBadge = (matchId, active) => {
         const card = document.querySelector('.match-card[data-match-id="' + matchId + '"]');
         if (!card) {
@@ -337,23 +369,28 @@
 
         let badge = card.querySelector('[data-joker-badge]');
         if (active) {
-            const head = card.querySelector('.match-card-head');
-            if (!badge && head) {
-                badge = document.createElement('button');
-                badge.type = 'button';
-                badge.className = 'match-card-joker-badge';
-                badge.dataset.jokerBadge = '';
-                badge.dataset.jokerBadgeToggle = '';
-                badge.setAttribute('aria-expanded', 'false');
-                badge.setAttribute('aria-haspopup', 'true');
-                head.insertBefore(badge, head.firstChild);
+            card.classList.add('match-card--has-joker');
+            const mark = ensureJokerMark(card);
+            const needsButton = Boolean(active.can_remove);
+            const isButton = badge && badge.tagName === 'BUTTON';
+            if (!badge || needsButton !== isButton) {
+                if (badge) {
+                    badge.remove();
+                }
+                badge = createJokerBadgeElement(active);
+                mark.appendChild(badge);
+            } else if (badge.parentElement !== mark) {
+                mark.appendChild(badge);
             }
-            if (badge) {
-                fillJokerBadge(badge, active, true);
-                badge.hidden = false;
+            fillJokerBadge(badge, active);
+        } else {
+            card.classList.remove('match-card--has-joker');
+            const mark = card.querySelector('.match-card-joker-mark');
+            if (mark) {
+                mark.remove();
+            } else if (badge) {
+                badge.remove();
             }
-        } else if (badge) {
-            badge.remove();
         }
     };
 
@@ -1004,11 +1041,20 @@
             return;
         }
 
-        const badgeToggle = event.target.closest('[data-joker-badge-toggle]');
-        if (badgeToggle) {
+        const badgeRemove = event.target.closest('[data-joker-badge-remove]');
+        if (badgeRemove) {
             event.preventDefault();
             event.stopPropagation();
-            toggleJokerPopover(badgeToggle);
+            const card = badgeRemove.closest('.match-card');
+            const actions = card?.querySelector('[data-joker-actions]');
+            if (!actions) {
+                return;
+            }
+            const urls = readUrlsFromElement(actions);
+            currentMatchId = urls.matchId || currentMatchId;
+            currentRemoveUrl = urls.removeUrl || currentRemoveUrl;
+            currentStateUrl = urls.stateUrl || currentStateUrl;
+            removeJoker();
 
             return;
         }
