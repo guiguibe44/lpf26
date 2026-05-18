@@ -1,0 +1,37 @@
+{# show_buteur: bool, show_country: bool #}
+{% set show_buteur = show_buteur|default(false) %}
+{% set show_country = show_country|default(false) %}
+{% set player_buteur = show_buteur ? connected_player_buteur() : null %}
+{% set favorite_country = show_country ? connected_team_favorite_country() : null %}
+{% if player_buteur or favorite_country %}
+    <div class="precomp-card__choices">
+        {% if player_buteur %}
+            {% set buteur_photo = player_buteur.photoPublicPath %}
+            <span class="precomp-card__choice-thumb precomp-card__choice-thumb--buteur" title="Votre buteur — {{ player_buteur.prenom }} {{ player_buteur.nom }}">
+                {% if buteur_photo %}
+                    <img
+                        src="{{ buteur_photo starts with 'http' ? buteur_photo : asset(buteur_photo) }}"
+                        alt=""
+                        width="36"
+                        height="36"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                {% else %}
+                    <span class="precomp-card__choice-thumb__initials" aria-hidden="true">
+                        {{ (player_buteur.prenom|slice(0, 1) ~ player_buteur.nom|slice(0, 1))|upper }}
+                    </span>
+                {% endif %}
+            </span>
+        {% endif %}
+        {% if favorite_country %}
+            <span class="precomp-card__choice-thumb precomp-card__choice-thumb--country" title="Équipe favorite — {{ favorite_country.nom }}">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: favorite_country,
+                    img_classes: 'precomp-card__choice-thumb__flag',
+                    placeholder_class: 'precomp-card__choice-thumb__flag-placeholder',
+                } only %}
+            </span>
+        {% endif %}
+    </div>
+{% endif %}

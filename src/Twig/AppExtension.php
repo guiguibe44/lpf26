@@ -2,8 +2,9 @@
 
 namespace App\Twig;
 
-use App\Entity\GameMatch;
+use App\Entity\Buteur;
 use App\Entity\Country;
+use App\Entity\GameMatch;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
 use App\Service\MatchStatusResolver;
@@ -42,6 +43,8 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_is_team_favorite_highlight', [$this, 'isTeamFavoriteHighlight']),
             new TwigFunction('country_short_label', [$this, 'getCountryShortLabel']),
             new TwigFunction('connected_player_sidebar', [$this, 'getConnectedPlayerSidebar']),
+            new TwigFunction('connected_player_buteur', [$this, 'getConnectedPlayerButeur']),
+            new TwigFunction('connected_team_favorite_country', [$this, 'getConnectedTeamFavoriteCountry']),
             new TwigFunction('unread_notifications_count', [$this, 'getUnreadNotificationsCount']),
         ];
     }
@@ -52,6 +55,16 @@ final class AppExtension extends AbstractExtension
     public function getConnectedPlayerSidebar(): ?array
     {
         return $this->connectedPlayerContext->getSidebarProfile();
+    }
+
+    public function getConnectedPlayerButeur(): ?Buteur
+    {
+        return $this->connectedPlayerContext->getButeurChoisi();
+    }
+
+    public function getConnectedTeamFavoriteCountry(): ?Country
+    {
+        return $this->connectedPlayerContext->getFavoriteCountry();
     }
 
     public function getUnreadNotificationsCount(): int

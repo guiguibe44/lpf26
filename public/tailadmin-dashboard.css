@@ -2481,6 +2481,51 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     color: #64748b;
 }
 
+.precomp-card__choices {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.35rem;
+}
+
+.precomp-card__choice-thumb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.45rem;
+    overflow: hidden;
+    background: #f1f5f9;
+    box-shadow: 0 0 0 2px #fff;
+    flex-shrink: 0;
+}
+
+.precomp-card__choice-thumb img,
+.precomp-card__choice-thumb__flag {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.precomp-card__choice-thumb__flag-placeholder,
+.precomp-card__choice-thumb__initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #64748b;
+    background: #e2e8f0;
+}
+
+.precomp-card__choice-thumb--country {
+    width: 2.4rem;
+}
+
 .precomp-checklist {
     list-style: none;
     margin: 0;

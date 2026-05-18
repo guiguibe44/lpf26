@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Buteur;
+use App\Entity\Country;
 use App\Entity\User;
+use App\Repository\TeamInvitationRepository;
 use App\Repository\TeamMemberRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -16,7 +19,33 @@ final class ConnectedPlayerContext
     public function __construct(
         private readonly Security $security,
         private readonly TeamMemberRepository $teamMemberRepository,
+        private readonly TeamInvitationRepository $teamInvitationRepository,
     ) {
+    }
+
+    public function getButeurChoisi(): ?Buteur
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            return null;
+        }
+
+        return $user->getButeurChoisi();
+    }
+
+    public function getFavoriteCountry(): ?Country
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            return null;
+        }
+
+        $team = $this->teamMemberRepository->findOneBy(['player' => $user])?->getTeam();
+        if (null === $team) {
+            $team = $this->teamInvitationRepository->findTeamForInviter($user);
+        }
+
+        return $team?->getFavoriteCountry();
     }
 
     /**

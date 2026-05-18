@@ -27,6 +27,9 @@
         {% set buteur = precomp_checklist.buteur %}
         <article class="precomp-card ta-card {{ buteur.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
             {% include 'home/_precomp_card_status_mark.html.twig' with { done: buteur.done } only %}
+            {% if buteur.done %}
+                {% include 'home/_precomp_card_choice_thumbs.html.twig' with { show_buteur: true, show_country: false } only %}
+            {% endif %}
             <div class="precomp-card__head">
                 <h3 class="precomp-card__title">Choisir son buteur</h3>
                 <p class="precomp-card__desc">
@@ -46,6 +49,9 @@
         {% set favorite = precomp_checklist.favorite %}
         <article class="precomp-card ta-card {{ favorite.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
             {% include 'home/_precomp_card_status_mark.html.twig' with { done: favorite.done } only %}
+            {% if favorite.done %}
+                {% include 'home/_precomp_card_choice_thumbs.html.twig' with { show_buteur: false, show_country: true } only %}
+            {% endif %}
             <div class="precomp-card__head">
                 <h3 class="precomp-card__title">Choisir son équipe favorite</h3>
                 <p class="precomp-card__desc">Joker « équipe favorite » : protège votre équipe sur les matchs de ce pays.</p>
