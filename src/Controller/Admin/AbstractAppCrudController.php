@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Service\ImageUploadOptimizer;
 use App\Service\UploadPathHelper;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -32,5 +33,20 @@ abstract class AbstractAppCrudController extends AbstractCrudController
     protected function normalizeUploadFilename(?string $path, string $uploadSubdir): ?string
     {
         return UploadPathHelper::normalizeStored($path, $uploadSubdir);
+    }
+
+    /** Normalise le chemin stocké puis optimise le fichier sur disque. */
+    protected function finalizeUploadFilename(?string $path, string $uploadSubdir): ?string
+    {
+        $normalized = $this->normalizeUploadFilename($path, $uploadSubdir);
+        if (null === $normalized || '' === $normalized) {
+            return $normalized;
+        }
+
+        if (str_starts_with($normalized, 'http://') || str_starts_with($normalized, 'https://')) {
+            return $normalized;
+        }
+
+        return $this->container->get(ImageUploadOptimizer::class)->optimizeStoredFilename($normalized, $uploadSubdir) ?? $normalized;
     }
 }

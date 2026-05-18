@@ -70,7 +70,7 @@ class UserCrudController extends AbstractAppCrudController
     {
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, true);
-            $entityInstance->setAvatar($this->normalizeUploadPath($entityInstance->getAvatar(), '/uploads/avatars/'));
+            $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -80,7 +80,7 @@ class UserCrudController extends AbstractAppCrudController
     {
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, false);
-            $entityInstance->setAvatar($this->normalizeUploadPath($entityInstance->getAvatar(), '/uploads/avatars/'));
+            $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
         }
 
         parent::updateEntity($entityManager, $entityInstance);
@@ -129,12 +129,25 @@ class UserCrudController extends AbstractAppCrudController
         $user->setRoles($roles);
     }
 
-    private function normalizeUploadPath(?string $path, string $prefix): ?string
+    private function finalizeUserAvatar(?string $path): ?string
     {
-        if (null === $path || '' === $path || str_starts_with($path, '/uploads/')) {
+        if (null === $path || '' === $path) {
             return $path;
         }
 
-        return $prefix.ltrim($path, '/');
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $basename = $this->finalizeUploadFilename($path, 'avatars');
+        if (null === $basename || '' === $basename) {
+            return $path;
+        }
+
+        if (str_starts_with($basename, '/uploads/')) {
+            return $basename;
+        }
+
+        return '/uploads/avatars/'.$basename;
     }
 }

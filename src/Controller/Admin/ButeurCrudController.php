@@ -77,7 +77,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->normalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
+            $entityInstance->setPhoto($this->finalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -86,7 +86,7 @@ class ButeurCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Buteur) {
-            $entityInstance->setPhoto($this->normalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
+            $entityInstance->setPhoto($this->finalizeUploadFilename($entityInstance->getPhoto(), 'buteurs'));
         }
 
         parent::updateEntity($entityManager, $entityInstance);

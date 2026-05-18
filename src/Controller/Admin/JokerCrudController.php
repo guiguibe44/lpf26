@@ -6,6 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Joker;
 use App\Enum\JokerTag;
+use App\Service\UploadPathHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -66,5 +68,40 @@ class JokerCrudController extends AbstractAppCrudController
             BooleanField::new('active')->setLabel('Actif'),
             IntegerField::new('sortOrder')->setLabel('Ordre'),
         ];
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof Joker) {
+            $this->applyOptimizedImageFilename($entityInstance);
+        }
+
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof Joker) {
+            $this->applyOptimizedImageFilename($entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function applyOptimizedImageFilename(Joker $joker): void
+    {
+        $image = $joker->getImage();
+        if (null === $image || '' === $image) {
+            return;
+        }
+
+        $basename = $this->finalizeUploadFilename(
+            UploadPathHelper::normalizeStored($image, 'jokers') ?? basename($image),
+            'jokers',
+        );
+
+        if (null !== $basename && '' !== $basename) {
+            $joker->setImageFilename($basename);
+        }
     }
 }

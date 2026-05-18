@@ -52,7 +52,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->normalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
+            $entityInstance->setDrapeau($this->finalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 
@@ -62,7 +62,7 @@ class CountryCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Country) {
-            $entityInstance->setDrapeau($this->normalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
+            $entityInstance->setDrapeau($this->finalizeUploadFilename($entityInstance->getDrapeau(), 'drapeaux'));
             $this->syncGroupStagePhasesForCountry($entityManager, $entityInstance);
         }
 

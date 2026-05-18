@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Team;
+use App\Service\UploadPathHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
@@ -46,5 +48,40 @@ class TeamCrudController extends AbstractAppCrudController
                 ->setRequired(false)
                 ->onlyOnForms(),
         ];
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof Team) {
+            $this->applyOptimizedLogoFilename($entityInstance);
+        }
+
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance instanceof Team) {
+            $this->applyOptimizedLogoFilename($entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function applyOptimizedLogoFilename(Team $team): void
+    {
+        $logo = $team->getLogo();
+        if (null === $logo || '' === $logo) {
+            return;
+        }
+
+        $basename = $this->finalizeUploadFilename(
+            UploadPathHelper::normalizeStored($logo, 'team-logos') ?? basename($logo),
+            'team-logos',
+        );
+
+        if (null !== $basename && '' !== $basename) {
+            $team->setLogoFilename($basename);
+        }
     }
 }

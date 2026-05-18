@@ -3,6 +3,9 @@
 parameters:
     app.competition_start_at: '%env(default::COMPETITION_START_AT)%'
     app.cotisation_wire_phone: '%env(default::COTISATION_WIRE_PHONE)%'
+    app.image_upload.webp_quality: 82
+    app.image_upload.jpeg_quality: 85
+    app.image_upload.png_compression: 8
     env(VAPID_PUBLIC_KEY): ''
     env(VAPID_PRIVATE_KEY): ''
     env(VAPID_SUBJECT): ''
@@ -49,6 +52,17 @@ services:
             $projectDir: '%kernel.project_dir%'
 
     App\Service\RemoteImageStorage:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\ImageUploadOptimizer:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $webpQuality: '%app.image_upload.webp_quality%'
+            $jpegQuality: '%app.image_upload.jpeg_quality%'
+            $pngCompression: '%app.image_upload.png_compression%'
+
+    App\Service\UploadedImageStorage:
         arguments:
             $projectDir: '%kernel.project_dir%'
 

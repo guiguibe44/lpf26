@@ -18,9 +18,11 @@ use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
 use App\Service\CompetitionStatus;
+use App\Enum\UploadImageCategory;
 use App\Service\TeamFavoriteCountryService;
 use App\Service\TeamInvitationService;
 use App\Service\TeamJokerService;
+use App\Service\UploadedImageStorage;
 use App\Service\WebPushService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +33,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AccountController extends AbstractController
 {
@@ -46,9 +47,9 @@ class AccountController extends AbstractController
         CompetitionStatus $competitionStatus,
         WebPushService $webPushService,
         FormFactoryInterface $formFactory,
-        SluggerInterface $slugger,
         TeamJokerService $teamJokerService,
         TeamFavoriteCountryService $teamFavoriteCountryService,
+        UploadedImageStorage $uploadedImageStorage,
         ButRepository $butRepository,
         UserRepository $userRepository,
         ButeurGoalScoringService $buteurGoalScoringService,
@@ -173,7 +174,7 @@ class AccountController extends AbstractController
                 $previousAvatar = $user->getAvatar();
 
                 if ($avatarFile instanceof UploadedFile) {
-                    $avatarPath = $this->uploadImageFile($avatarFile, 'avatars', $slugger);
+                    $avatarPath = $uploadedImageStorage->storeUploadedFile($avatarFile, UploadImageCategory::Avatar);
                     $user->setAvatar($avatarPath);
                     $this->deletePublicFile($previousAvatar);
                 } elseif ($removeAvatar) {
@@ -256,7 +257,7 @@ class AccountController extends AbstractController
                 $previousLogo = $team->getLogo();
 
                 if ($logoFile instanceof UploadedFile) {
-                    $logoPath = $this->uploadImageFile($logoFile, 'team-logos', $slugger);
+                    $logoPath = $uploadedImageStorage->storeUploadedFile($logoFile, UploadImageCategory::TeamLogo);
                     $team->setLogo($logoPath);
                     $this->deletePublicFile($previousLogo);
                 } elseif ($removeLogo) {
@@ -322,23 +323,6 @@ class AccountController extends AbstractController
                 ? $teamJokerService->buildOverviewForTeam($team)
                 : [],
         ]);
-    }
-
-    private function uploadImageFile(UploadedFile $file, string $subDir, SluggerInterface $slugger): string
-    {
-        $originalFilename = pathinfo((string) $file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = (string) $slugger->slug($originalFilename);
-        $extension = $file->guessExtension() ?: 'bin';
-        $newFilename = sprintf('%s-%s.%s', $safeFilename, uniqid('', true), $extension);
-
-        $uploadRoot = $this->getParameter('kernel.project_dir').'/public/uploads/'.$subDir;
-        if (!is_dir($uploadRoot)) {
-            mkdir($uploadRoot, 0775, true);
-        }
-
-        $file->move($uploadRoot, $newFilename);
-
-        return '/uploads/'.$subDir.'/'.$newFilename;
     }
 
     private function deletePublicFile(?string $publicPath): void

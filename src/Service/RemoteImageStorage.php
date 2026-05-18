@@ -16,6 +16,7 @@ final class RemoteImageStorage
         private readonly HttpClientInterface $httpClient,
         private readonly SluggerInterface $slugger,
         private readonly string $projectDir,
+        private readonly ImageUploadOptimizer $imageUploadOptimizer,
     ) {
     }
 
@@ -82,7 +83,9 @@ final class RemoteImageStorage
                 return null;
             }
 
-            return $filename;
+            $optimized = $this->imageUploadOptimizer->optimizeStoredFilename($filename, $subdir);
+
+            return $optimized ?? $filename;
         } catch (\Throwable) {
             return null;
         }
