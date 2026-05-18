@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\JokerTag;
 use App\Repository\JokerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -42,8 +43,17 @@ class Joker
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?string $tag = null;
+
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $technicalExplanation = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
@@ -83,6 +93,49 @@ class Joker
         return $this;
     }
 
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+        $this->name = $title;
+
+        return $this;
+    }
+
+    /** Libellé affiché (titre prioritaire, repli sur name). */
+    public function getDisplayTitle(): string
+    {
+        $title = trim((string) ($this->title ?? $this->name ?? ''));
+
+        return '' !== $title ? $title : (string) $this->code;
+    }
+
+    public function getTag(): ?string
+    {
+        return $this->tag;
+    }
+
+    public function setTag(?string $tag): static
+    {
+        $this->tag = $tag;
+
+        return $this;
+    }
+
+    public function getTagLabel(): string
+    {
+        return JokerTag::labelFor($this->tag);
+    }
+
+    public function getTagCssClass(): string
+    {
+        return JokerTag::cssClassFor($this->tag);
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -93,6 +146,32 @@ class Joker
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getTechnicalExplanation(): ?string
+    {
+        return $this->technicalExplanation;
+    }
+
+    public function setTechnicalExplanation(?string $technicalExplanation): static
+    {
+        $this->technicalExplanation = $technicalExplanation;
+
+        return $this;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getTechnicalExplanationLines(): array
+    {
+        if (null === $this->technicalExplanation || '' === trim($this->technicalExplanation)) {
+            return [];
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', $this->technicalExplanation) ?: [];
+
+        return array_values(array_filter(array_map(static fn (string $line): string => trim($line), $lines)));
     }
 
     public function getImage(): ?string
@@ -153,6 +232,6 @@ class Joker
 
     public function __toString(): string
     {
-        return (string) $this->name;
+        return $this->getDisplayTitle();
     }
 }

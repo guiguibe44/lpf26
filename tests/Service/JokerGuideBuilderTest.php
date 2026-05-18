@@ -15,8 +15,10 @@ final class JokerGuideBuilderTest extends TestCase
     {
         $active = (new Joker())
             ->setCode(Joker::CODE_ESPION)
-            ->setName('Espion')
+            ->setTitle('Espion')
+            ->setTag('intel')
             ->setDescription('Desc')
+            ->setTechnicalExplanation("Ligne 1\nLigne 2")
             ->setActive(true)
             ->setSortOrder(1);
 
@@ -32,8 +34,11 @@ final class JokerGuideBuilderTest extends TestCase
         $catalog = (new JokerGuideBuilder($repo))->buildCatalog();
 
         self::assertCount(1, $catalog);
-        self::assertSame('Espion', $catalog[0]['joker']->getName());
-        self::assertSame('intel', $catalog[0]['category']);
+        self::assertSame('Espion', $catalog[0]['joker']->getDisplayTitle());
+        self::assertSame('intel', $catalog[0]['tag']);
+        self::assertSame('Renseignement', $catalog[0]['tag_label']);
+        self::assertSame('intel', $catalog[0]['tag_css']);
+        self::assertSame(['Ligne 1', 'Ligne 2'], $catalog[0]['details']);
         self::assertTrue($catalog[0]['irreversible']);
     }
 }

@@ -18,13 +18,13 @@
                 {% endif %}
             </div>
             <div class="joker-drawer__card-copy">
-                <h2 class="joker-drawer__card-title">{{ joker.name }}</h2>
+                <h2 class="joker-drawer__card-title">{{ joker.title ?? joker.name }}</h2>
                 {% if joker.description %}
                     <p class="joker-drawer__card-desc">{{ joker.description }}</p>
                 {% endif %}
                 <div class="joker-drawer__card-actions joker-catalog-card__actions">
                     <div class="joker-catalog-card__badges">
-                        <span class="ta-badge joker-guide-badge joker-guide-badge--{{ entry.category }}">{{ entry.category_label }}</span>
+                        <span class="ta-badge joker-guide-badge joker-guide-badge--{{ entry.tag_css }}">{{ entry.tag_label }}</span>
                         {% if entry.irreversible %}
                             <span class="ta-badge joker-guide-badge joker-guide-badge--warn">Définitif</span>
                         {% endif %}
@@ -33,11 +33,14 @@
                         {% endif %}
                     </div>
                     {% if entry.details is not empty %}
-                        <ul class="joker-guide-card-details joker-catalog-card__details">
-                            {% for detail in entry.details %}
-                                <li>{{ detail }}</li>
-                            {% endfor %}
-                        </ul>
+                        <div class="joker-catalog-card__technical">
+                            <p class="joker-catalog-card__technical-label">Explications techniques</p>
+                            <ul class="joker-guide-card-details joker-catalog-card__details">
+                                {% for detail in entry.details %}
+                                    <li>{{ detail }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% endif %}
                 </div>
             </div>

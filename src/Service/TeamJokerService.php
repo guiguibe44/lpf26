@@ -106,7 +106,7 @@ final class TeamJokerService
             $match = $usage->getMatch();
             $neutralized = $match instanceof GameMatch && $this->jokerDefenseService->isUsageNeutralized($usage);
             $map[(int) $matchId] = [
-                'name' => (string) $joker->getName(),
+                'name' => $joker->getDisplayTitle(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
@@ -169,7 +169,7 @@ final class TeamJokerService
             $favoriteOnUsage = $team->getFavoriteCountry();
             $activeOnMatch = [
                 'id' => (int) $joker?->getId(),
-                'name' => (string) $joker?->getName(),
+                'name' => $joker?->getDisplayTitle() ?? '',
                 'description' => $joker?->getDescription(),
                 'image' => $joker?->getImage(),
                 'code' => (string) $joker?->getCode(),
@@ -236,7 +236,7 @@ final class TeamJokerService
             $jokers[] = [
                 'id' => $jokerId,
                 'code' => (string) $joker->getCode(),
-                'name' => (string) $joker->getName(),
+                'name' => $joker->getDisplayTitle(),
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
                 'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR, Joker::CODE_INVERSE_SCORE], true),
@@ -454,7 +454,7 @@ final class TeamJokerService
             $usageMatch = $usage->getMatch();
             $neutralized = $usageMatch instanceof GameMatch && $this->jokerDefenseService->isUsageNeutralized($usage);
             $map[(int) $teamId] = [
-                'name' => (string) $joker->getName(),
+                'name' => $joker->getDisplayTitle(),
                 'image' => $joker->getImage(),
                 'code' => (string) $joker->getCode(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,
@@ -493,7 +493,7 @@ final class TeamJokerService
             $planned[] = [
                 'match_id' => (int) $usageMatchId,
                 'match_label' => $this->formatMatchLabel($usageMatch),
-                'joker_name' => (string) $usage->getJoker()?->getName(),
+                'joker_name' => $usage->getJoker()?->getDisplayTitle() ?? '',
             ];
         }
 
@@ -619,11 +619,11 @@ final class TeamJokerService
 
     public function buildPlacementSuccessMessage(Joker $joker, ?Team $targetTeam, GameMatch $match, ?Country $favoriteCountry = null): string
     {
-        $message = sprintf('Joker « %s » posé sur ce match.', (string) $joker->getName());
+        $message = sprintf('Joker « %s » posé sur ce match.', $joker->getDisplayTitle());
         if ($targetTeam instanceof Team) {
             $message = sprintf(
                 'Joker « %s » posé : cible %s.',
-                (string) $joker->getName(),
+                $joker->getDisplayTitle(),
                 (string) $targetTeam->getName(),
             );
             if ($this->jokerDefenseService->wouldOffensiveJokerBeNeutralized($targetTeam, $match, $joker)) {
@@ -642,7 +642,7 @@ final class TeamJokerService
             $dayLabel = $this->formatMatchdayLabel($match);
             $message = sprintf(
                 'Joker « %s » actif : votre équipe est protégée pour la journée%s contre les jokers adverses qui vous ciblent.',
-                (string) $joker->getName(),
+                $joker->getDisplayTitle(),
                 null !== $dayLabel ? ' du '.$dayLabel : '',
             );
         }

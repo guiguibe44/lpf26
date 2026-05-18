@@ -136,6 +136,15 @@ details[open] > summary .joker-guide-chevron {
     gap: 0.35rem;
 }
 
+.joker-catalog-card__technical-label {
+    margin: 0 0 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--lpf-muted, #64748b);
+}
+
 .joker-catalog-card__details {
     margin: 0;
     padding-left: 1.15rem;
@@ -147,10 +156,23 @@ details[open] > summary .joker-guide-chevron {
     color: var(--lpf-muted, #64748b);
 }
 
+.joker-guide-badge--attaque,
 .joker-guide-badge--offensive {
     background: rgb(178 102 255 / 18%) !important;
     color: #7c3aed !important;
     border: 1px solid rgb(178 102 255 / 35%);
+}
+
+.joker-guide-badge--bonus {
+    background: rgb(236 72 153 / 12%) !important;
+    color: #be185d !important;
+    border: 1px solid rgb(236 72 153 / 35%);
+}
+
+.joker-guide-badge--autre {
+    background: rgb(100 116 139 / 12%) !important;
+    color: #475569 !important;
+    border: 1px solid rgb(100 116 139 / 35%);
 }
 
 .joker-guide-badge--defense {
@@ -189,10 +211,23 @@ details[open] > summary .joker-guide-chevron {
     border: 1px solid rgb(220 38 38 / 30%);
 }
 
+html.dark .joker-guide-badge--attaque,
 html.dark .joker-guide-badge--offensive {
     color: #d8b4fe !important;
     background: rgb(178 102 255 / 18%) !important;
     border-color: rgb(178 102 255 / 45%);
+}
+
+html.dark .joker-guide-badge--bonus {
+    color: #f9a8d4 !important;
+    background: rgb(236 72 153 / 15%) !important;
+    border-color: rgb(236 72 153 / 40%);
+}
+
+html.dark .joker-guide-badge--autre {
+    color: #cbd5e1 !important;
+    background: rgb(148 163 184 / 15%) !important;
+    border-color: rgb(148 163 184 / 40%);
 }
 
 html.dark .joker-guide-badge--defense {
