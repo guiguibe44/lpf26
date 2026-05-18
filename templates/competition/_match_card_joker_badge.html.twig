@@ -1,4 +1,4 @@
-{# joker: array, removable: bool — vignette coin bas-droit de la carte match #}
+{# match, joker — vignette coin bas-droit ; clic = détail dans la popup jokers #}
 {% set joker_badge_title = 'Joker : ' ~ joker.name %}
 {% if joker.target_team_name|default('') %}
     {% set joker_badge_title = joker_badge_title ~ ' → ' ~ joker.target_team_name %}
@@ -6,55 +6,40 @@
 {% if joker.effect_blocked|default(false) %}
     {% set joker_badge_title = joker_badge_title ~ ' (sans effet)' %}
 {% endif %}
-{% set joker_badge_hint = removable ? joker_badge_title ~ ' — Cliquer pour retirer le joker' : joker_badge_title %}
+{% set joker_badge_hint = joker_badge_title ~ ' — Voir le détail' %}
 
-<div class="match-card-joker-mark">
-    {% if removable %}
-        <button
-            type="button"
-            class="match-card-joker-badge match-card-joker-badge--removable"
-            data-joker-badge
-            data-joker-badge-remove
-            title="{{ joker_badge_hint }}"
-            aria-label="{{ joker_badge_hint }}"
-        >
-            <span class="match-card-joker-badge__icon" aria-hidden="true">
-                {% if joker.image %}
-                    <img
-                        src="{{ asset(joker.image) }}"
-                        alt=""
-                        width="56"
-                        height="72"
-                        loading="lazy"
-                        decoding="async"
-                    >
-                {% else %}
-                    <i class="ti ti-wand"></i>
-                {% endif %}
-            </span>
-            <span class="sr-only">{{ joker_badge_title }} — Retirer</span>
-        </button>
-    {% else %}
-        <span
-            class="match-card-joker-badge match-card-joker-badge--static"
-            data-joker-badge
-            title="{{ joker_badge_title }}"
-        >
-            <span class="match-card-joker-badge__icon" aria-hidden="true">
-                {% if joker.image %}
-                    <img
-                        src="{{ asset(joker.image) }}"
-                        alt=""
-                        width="56"
-                        height="72"
-                        loading="lazy"
-                        decoding="async"
-                    >
-                {% else %}
-                    <i class="ti ti-wand"></i>
-                {% endif %}
-            </span>
-            <span class="sr-only">{{ joker_badge_title }}</span>
+<div
+    class="match-card-joker-mark"
+    data-joker-actions
+    data-match-id="{{ match.id }}"
+    data-match-label="{{ match.paysDomicile ? match.paysDomicile.nom : '?' }} — {{ match.paysExterieur ? match.paysExterieur.nom : '?' }}"
+    data-joker-state-url="{{ path('app_match_jokers_state', { id: match.id }) }}"
+    data-joker-place-url="{{ path('app_match_joker_place', { id: match.id }) }}"
+    data-joker-remove-url="{{ path('app_match_joker_remove', { id: match.id }) }}"
+>
+    <button
+        type="button"
+        class="match-card-joker-badge"
+        data-joker-badge
+        data-joker-badge-detail
+        title="{{ joker_badge_hint }}"
+        aria-label="{{ joker_badge_hint }}"
+        aria-haspopup="dialog"
+    >
+        <span class="match-card-joker-badge__icon" aria-hidden="true">
+            {% if joker.image %}
+                <img
+                    src="{{ asset(joker.image) }}"
+                    alt=""
+                    width="72"
+                    height="96"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <i class="ti ti-wand"></i>
+            {% endif %}
         </span>
-    {% endif %}
+        <span class="sr-only">{{ joker_badge_title }}</span>
+    </button>
 </div>

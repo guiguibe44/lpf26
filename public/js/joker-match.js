@@ -13,6 +13,7 @@
     let espionEl = null;
     let heroEl = null;
     let listLabelEl = null;
+    let jokerDetailOnly = false;
 
     const bindElements = () => {
         dialog = document.getElementById('joker-match-dialog');
@@ -152,8 +153,32 @@
     };
 
     const closeDialog = () => {
+        jokerDetailOnly = false;
         if (dialog.open) {
             dialog.close();
+        }
+    };
+
+    const copyJokerActionUrls = (from, to) => {
+        if (!from || !to) {
+            return;
+        }
+
+        to.dataset.jokerActions = '';
+        if (from.dataset.matchId) {
+            to.dataset.matchId = from.dataset.matchId;
+        }
+        if (from.dataset.matchLabel) {
+            to.dataset.matchLabel = from.dataset.matchLabel;
+        }
+        if (from.dataset.jokerStateUrl) {
+            to.dataset.jokerStateUrl = from.dataset.jokerStateUrl;
+        }
+        if (from.dataset.jokerPlaceUrl) {
+            to.dataset.jokerPlaceUrl = from.dataset.jokerPlaceUrl;
+        }
+        if (from.dataset.jokerRemoveUrl) {
+            to.dataset.jokerRemoveUrl = from.dataset.jokerRemoveUrl;
         }
     };
 
@@ -190,16 +215,11 @@
         }
 
         const title = buildJokerBadgeTitle(active);
-        const removable = Boolean(active.can_remove) && badge.tagName === 'BUTTON';
-        const hint = removable ? title + ' — Cliquer pour retirer le joker' : title;
+        const hint = title + ' — Voir le détail';
         badge.title = hint;
-        if (removable) {
-            badge.dataset.jokerBadgeRemove = '';
-            badge.setAttribute('aria-label', hint);
-        } else {
-            delete badge.dataset.jokerBadgeRemove;
-            badge.removeAttribute('aria-label');
-        }
+        badge.setAttribute('aria-label', hint);
+        badge.dataset.jokerBadgeDetail = '';
+        badge.setAttribute('aria-haspopup', 'dialog');
         badge.replaceChildren();
 
         const iconWrap = document.createElement('span');
@@ -210,8 +230,8 @@
             const img = document.createElement('img');
             img.src = assetUrl(active.image);
             img.alt = '';
-            img.width = 56;
-            img.height = 72;
+            img.width = 72;
+            img.height = 96;
             img.loading = 'lazy';
             img.decoding = 'async';
             iconWrap.appendChild(img);
@@ -223,19 +243,14 @@
 
         const sr = document.createElement('span');
         sr.className = 'sr-only';
-        sr.textContent = removable ? title + ' — Retirer' : title;
+        sr.textContent = title;
         badge.appendChild(sr);
     };
 
-    const createJokerBadgeElement = (active) => {
-        const canRemove = Boolean(active.can_remove);
-        const badge = document.createElement(canRemove ? 'button' : 'span');
-        if (canRemove) {
-            badge.type = 'button';
-            badge.className = 'match-card-joker-badge match-card-joker-badge--removable';
-        } else {
-            badge.className = 'match-card-joker-badge match-card-joker-badge--static';
-        }
+    const createJokerBadgeElement = () => {
+        const badge = document.createElement('button');
+        badge.type = 'button';
+        badge.className = 'match-card-joker-badge';
         badge.dataset.jokerBadge = '';
 
         return badge;
@@ -351,8 +366,12 @@
     const ensureJokerMark = (card) => {
         let mark = card.querySelector('.match-card-joker-mark');
         if (!mark) {
+            const urlSource =
+                card.querySelector('.match-joker-actions[data-joker-actions]') ||
+                card.querySelector('[data-joker-actions]:not(.match-card-joker-mark)');
             mark = document.createElement('div');
             mark.className = 'match-card-joker-mark';
+            copyJokerActionUrls(urlSource, mark);
             card.appendChild(mark);
         }
 
@@ -371,13 +390,8 @@
         if (active) {
             card.classList.add('match-card--has-joker');
             const mark = ensureJokerMark(card);
-            const needsButton = Boolean(active.can_remove);
-            const isButton = badge && badge.tagName === 'BUTTON';
-            if (!badge || needsButton !== isButton) {
-                if (badge) {
-                    badge.remove();
-                }
-                badge = createJokerBadgeElement(active);
+            if (!badge) {
+                badge = createJokerBadgeElement();
                 mark.appendChild(badge);
             } else if (badge.parentElement !== mark) {
                 mark.appendChild(badge);
@@ -795,8 +809,10 @@
             listLabelEl.hidden = !showList;
         }
 
+        const hideChooserExtras = jokerDetailOnly && state.active_on_match;
+
         const plannedElsewhere = state.planned_on_other_matches || [];
-        if (plannedElsewhere.length > 0 && !state.active_on_match) {
+        if (!hideChooserExtras && plannedElsewhere.length > 0 && !state.active_on_match) {
             const note = document.createElement('p');
             note.className = 'joker-dialog-note joker-dialog-note--planned';
             const parts = plannedElsewhere.map(
@@ -807,7 +823,7 @@
             listEl.appendChild(note);
         }
 
-        if (state.team_shield_active) {
+        if (!hideChooserExtras && state.team_shield_active) {
             const shieldActive = document.createElement('p');
             shieldActive.className = 'joker-dialog-note joker-dialog-shield-active';
             shieldActive.textContent =
@@ -817,7 +833,7 @@
             listEl.appendChild(shieldActive);
         }
 
-        if (state.team_favorite_country_name) {
+        if (!hideChooserExtras && state.team_favorite_country_name) {
             const favoriteChosen = document.createElement('p');
             favoriteChosen.className = 'joker-dialog-note joker-dialog-favorite-chosen';
             favoriteChosen.textContent =
@@ -827,7 +843,7 @@
             listEl.appendChild(favoriteChosen);
         }
 
-        if (state.team_favorite_protection_on_match) {
+        if (!hideChooserExtras && state.team_favorite_protection_on_match) {
             const favoriteProtect = document.createElement('p');
             favoriteProtect.className = 'joker-dialog-note joker-dialog-favorite-protect';
             favoriteProtect.textContent =
@@ -835,7 +851,7 @@
             listEl.appendChild(favoriteProtect);
         }
 
-        if (state.team_buteur_countries && state.team_buteur_countries.length > 0) {
+        if (!hideChooserExtras && state.team_buteur_countries && state.team_buteur_countries.length > 0) {
             const buteurNote = document.createElement('p');
             buteurNote.className = 'joker-dialog-note joker-dialog-buteur-note';
             buteurNote.textContent =
@@ -850,6 +866,10 @@
                 listLabelEl.hidden = true;
             }
 
+            return;
+        }
+
+        if (hideChooserExtras) {
             return;
         }
 
@@ -995,7 +1015,9 @@
             });
     };
 
-    const openDialog = (el) => {
+    const openDialog = (el, options) => {
+        const opts = options || {};
+        jokerDetailOnly = Boolean(opts.detailOnly);
         const urls = readUrlsFromElement(el);
         currentMatchId = urls.matchId;
         currentStateUrl = urls.stateUrl;
@@ -1003,7 +1025,9 @@
         currentRemoveUrl = urls.removeUrl;
 
         if (titleEl) {
-            titleEl.textContent = 'Jokers — ' + urls.matchLabel;
+            titleEl.textContent = opts.detailOnly
+                ? 'Joker posé'
+                : 'Jokers — ' + urls.matchLabel;
         }
         if (matchLabelEl) {
             matchLabelEl.hidden = true;
@@ -1041,20 +1065,18 @@
             return;
         }
 
-        const badgeRemove = event.target.closest('[data-joker-badge-remove]');
-        if (badgeRemove) {
+        const badgeDetail = event.target.closest('[data-joker-badge-detail]');
+        if (badgeDetail) {
             event.preventDefault();
             event.stopPropagation();
-            const card = badgeRemove.closest('.match-card');
-            const actions = card?.querySelector('[data-joker-actions]');
-            if (!actions) {
+            const source =
+                badgeDetail.closest('.match-card-joker-mark') ||
+                badgeDetail.closest('.match-card')?.querySelector('[data-joker-actions]');
+            if (!source) {
                 return;
             }
-            const urls = readUrlsFromElement(actions);
-            currentMatchId = urls.matchId || currentMatchId;
-            currentRemoveUrl = urls.removeUrl || currentRemoveUrl;
-            currentStateUrl = urls.stateUrl || currentStateUrl;
-            removeJoker();
+            closeAllJokerPopovers();
+            openDialog(source, { detailOnly: true });
 
             return;
         }

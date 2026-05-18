@@ -164,8 +164,8 @@
 
     {% if match_joker %}
         {% include 'competition/_match_card_joker_badge.html.twig' with {
+            match: match,
             joker: match_joker,
-            removable: match_joker.can_remove|default(false),
         } only %}
     {% endif %}
 

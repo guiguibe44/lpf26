@@ -1237,8 +1237,8 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 
 .match-card-joker-mark {
     position: absolute;
-    right: 0.6rem;
-    bottom: -1.35rem;
+    right: 0.5rem;
+    bottom: -1.65rem;
     z-index: 4;
     display: block;
     pointer-events: none;
@@ -1267,13 +1267,9 @@ button.match-card-joker-badge {
     font-family: inherit;
 }
 
-.match-card-joker-badge--static {
-    cursor: default;
-}
-
 .match-card-joker-badge__icon {
     display: block;
-    width: 3.25rem;
+    width: 4.75rem;
     border-radius: 0.45rem;
     overflow: hidden;
     background: #fff;
@@ -1295,24 +1291,20 @@ button.match-card-joker-badge {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 3.25rem;
-    height: 4.15rem;
-    font-size: 1.5rem;
+    width: 4.75rem;
+    height: 6rem;
+    font-size: 1.85rem;
     color: #6d28d9;
     background: linear-gradient(145deg, #ede9fe, #fff);
 }
 
-.match-card-joker-badge--removable {
-    cursor: pointer;
-}
-
-.match-card-joker-badge--removable:hover,
-.match-card-joker-badge--removable:focus-visible {
+.match-card-joker-badge:hover,
+.match-card-joker-badge:focus-visible {
     transform: rotate(8deg) translateY(-2px);
     filter: brightness(1.04);
 }
 
-.match-card-joker-badge--removable:focus-visible .match-card-joker-badge__icon {
+.match-card-joker-badge:focus-visible .match-card-joker-badge__icon {
     box-shadow:
         0 0 0 2px #fff,
         0 0 0 4px #7c3aed,
@@ -3172,7 +3164,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .match-dashboard-wrap--locked .match-card .match-joker-actions,
-.match-dashboard-wrap--locked .match-card .match-card-joker-badge[data-joker-badge-remove] {
+.match-dashboard-wrap--locked .match-card .match-card-joker-badge[data-joker-badge-detail] {
     opacity: 1;
     pointer-events: auto;
     filter: none;

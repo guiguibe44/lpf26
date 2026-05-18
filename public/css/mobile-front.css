@@ -267,18 +267,18 @@
     }
 
     .ta-main .match-card-joker-mark {
-        right: 0.45rem;
-        bottom: -1.15rem;
+        right: 0.35rem;
+        bottom: -1.45rem;
     }
 
     .ta-main .match-card-joker-badge__icon {
-        width: 2.85rem;
+        width: 4.15rem;
     }
 
     .ta-main .match-card-joker-badge__icon .ti {
-        width: 2.85rem;
-        height: 3.65rem;
-        font-size: 1.35rem;
+        width: 4.15rem;
+        height: 5.25rem;
+        font-size: 1.6rem;
     }
 
     .ta-main .match-card--has-joker {
@@ -290,7 +290,7 @@
     }
 
     .ta-main .match-card-grid {
-        row-gap: 2rem;
+        row-gap: 2.35rem;
         padding-top: 1rem;
     }
 
