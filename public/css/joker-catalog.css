@@ -1,0 +1,301 @@
+/* Guide jokers — grille image + nom, popup au clic */
+
+.joker-guide-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-cta {
+    flex-shrink: 0;
+}
+
+.joker-guide-rules-card {
+    margin-bottom: 1.25rem;
+}
+
+.joker-guide-rules-accordion {
+    padding: 0;
+    overflow: hidden;
+}
+
+.joker-guide-rules-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+}
+
+.joker-guide-rules-summary::-webkit-details-marker {
+    display: none;
+}
+
+.joker-guide-rules-summary-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.joker-guide-rules-list {
+    margin: 0;
+    padding: 0 1.25rem 1.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+}
+
+.joker-guide-chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+details[open] > summary .joker-guide-chevron {
+    transform: rotate(180deg);
+}
+
+/* Grille catalogue — tuile minimaliste (pas de carte) */
+.joker-catalog-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 1rem;
+}
+
+.joker-catalog-grid__item {
+    min-width: 0;
+}
+
+.joker-catalog-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: center;
+    font: inherit;
+    color: inherit;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.joker-catalog-tile:hover {
+    opacity: 0.92;
+    transform: scale(1.02);
+}
+
+.joker-catalog-tile:focus-visible {
+    outline: 2px solid var(--lpf-primary, #22c55e);
+    outline-offset: 4px;
+    border-radius: 0.35rem;
+}
+
+.joker-catalog-tile__image {
+    display: block;
+    width: min(160px, 72%);
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.joker-catalog-tile__placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: min(120px, 55%);
+    aspect-ratio: 1;
+    border-radius: 0.65rem;
+    background: linear-gradient(135deg, #7c3aed, #1b2d4f);
+    color: #fff;
+    font-size: 2rem;
+}
+
+.joker-catalog-tile__name {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: var(--lpf-text, #fafafa);
+}
+
+/* Popup détail */
+.joker-guide-detail-dialog {
+    border: none;
+    padding: 0;
+    max-width: min(32rem, calc(100vw - 2rem));
+    width: 100%;
+    background: transparent;
+}
+
+.joker-guide-detail-dialog::backdrop {
+    background: rgb(0 0 0 / 65%);
+    backdrop-filter: blur(2px);
+}
+
+.joker-guide-detail-dialog__panel {
+    background: var(--lpf-surface, #18181b);
+    border: 1px solid var(--lpf-border, #3f3f46);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 25px 50px rgb(0 0 0 / 45%);
+    color: var(--lpf-text, #fafafa);
+}
+
+.joker-guide-detail-dialog__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-detail-dialog__title {
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.05;
+}
+
+.joker-guide-detail-dialog__close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--lpf-border, #3f3f46);
+    border-radius: 0.5rem;
+    background: var(--lpf-bg, #09090b);
+    color: var(--lpf-muted, #a1a1aa);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.joker-guide-detail-dialog__close:hover {
+    background: var(--lpf-surface-raised, #27272a);
+    color: var(--lpf-text, #fafafa);
+}
+
+.joker-guide-detail-dialog__hero {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+}
+
+.joker-guide-detail-dialog__hero:empty {
+    display: none;
+}
+
+.joker-guide-detail-template__image {
+    width: 7.5rem;
+    height: 7.5rem;
+    object-fit: contain;
+    border-radius: 0.65rem;
+}
+
+.joker-guide-detail-dialog__badges,
+.joker-guide-detail-template__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+}
+
+.joker-guide-detail-dialog__badges:empty {
+    display: none;
+}
+
+.joker-guide-badge--offensive {
+    background: rgb(178 102 255 / 18%) !important;
+    color: #d8b4fe !important;
+    border: 1px solid rgb(178 102 255 / 45%);
+}
+
+.joker-guide-badge--defense {
+    background: rgb(128 216 255 / 15%) !important;
+    color: #bae6fd !important;
+    border: 1px solid rgb(128 216 255 / 40%);
+}
+
+.joker-guide-badge--points {
+    background: rgb(89 255 106 / 12%) !important;
+    color: #86efac !important;
+    border: 1px solid rgb(89 255 106 / 35%);
+}
+
+.joker-guide-badge--buteur {
+    background: rgb(244 197 66 / 15%) !important;
+    color: #fde68a !important;
+    border: 1px solid rgb(244 197 66 / 40%);
+}
+
+.joker-guide-badge--intel {
+    background: rgb(77 184 255 / 15%) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgb(77 184 255 / 40%);
+}
+
+.joker-guide-badge--warn {
+    background: rgb(245 158 11 / 15%) !important;
+    color: #fcd34d !important;
+    border: 1px solid rgb(245 158 11 / 45%);
+}
+
+.joker-guide-badge--target {
+    background: rgb(239 68 68 / 12%) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgb(239 68 68 / 35%);
+}
+
+.joker-guide-card-summary {
+    margin: 0 0 0.85rem;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--lpf-text, #fafafa);
+}
+
+.joker-guide-card-details {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--lpf-muted, #a1a1aa);
+}
+
+@media (max-width: 540px) {
+    .joker-catalog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .joker-catalog-tile__image {
+        width: min(180px, 55vw);
+    }
+}
+
+@media (min-width: 900px) {
+    .joker-catalog-tile__image {
+        width: min(180px, 75%);
+    }
+}

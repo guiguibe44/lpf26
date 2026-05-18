@@ -4,6 +4,7 @@ twig:
         cotisation_wire_phone: '%app.cotisation_wire_phone%'
         prono_default_score_domicile: 0
         prono_default_score_exterieur: 0
+        lpf_logo_asset: 'images/lpf26-logo-gta.png'
 
 when@test:
     twig:

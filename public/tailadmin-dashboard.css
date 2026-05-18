@@ -467,9 +467,10 @@
     display: block;
     width: 100%;
     height: auto;
+    max-height: 7.5rem;
     object-fit: contain;
     object-position: center;
-    background: #ffffff;
+    background: transparent;
 }
 
 .ta-logo-placeholder {

@@ -1,0 +1,1429 @@
+/**
+ * LPF'26 — Thème premium GTA / Coupe du Monde 2026
+ * Surcharge lpf26-theme.css + tailadmin (hors EasyAdmin : layout séparé).
+ * Actif par défaut sur <html class="lpf-gta-theme"> (désactivable via gta_theme_toggle.js).
+ */
+
+/* =============================================================================
+ * 1. Variables & polices
+ * ============================================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap");
+
+html.lpf-gta-theme {
+    /* Palette LPF26 — planche graphique GTA / FUT / esport */
+    --bg-main: #050505;
+    --bg-secondary: #0c0c0c;
+    --bg-card: #121212;
+    --border-dark: #2a2a2a;
+    --text-main: #ededed;
+    --text-secondary: #a8a8a8;
+    --bonus: #59ff6a;
+    --malus: #ff4d4d;
+    --spy: #4db8ff;
+    --steal: #b266ff;
+    --shield: #4db8ff;
+    --gold: #f4c542;
+    --mexico: #00a86b;
+    --usa: #3a86ff;
+    --canada: #d7263d;
+
+    --gta-font-display: "Bebas Neue", "Impact", sans-serif;
+    --gta-font-body: "Montserrat", system-ui, sans-serif;
+    --gta-radius: 0;
+    --gta-radius-lg: 0;
+    --gta-border-btn: 2px;
+    --gta-shadow-hard: 4px 4px 0 rgb(0 0 0 / 85%);
+    --gta-shadow-deep: 6px 6px 0 rgb(0 0 0 / 90%);
+    --gta-shadow-card: 4px 4px 0 rgb(0 0 0 / 70%);
+    --gta-glow-bonus: 0 0 20px rgb(89 255 106 / 45%);
+    --gta-glow-gold: 0 0 22px rgb(244 197 66 / 40%);
+    --gta-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Bordures dégradées boutons */
+    --gta-grad-border-primary: linear-gradient(135deg, #8fff9a, var(--bonus) 40%, var(--spy) 100%);
+    --gta-grad-border-danger: linear-gradient(135deg, #ff8a8a, var(--malus) 45%, var(--steal) 100%);
+    --gta-grad-border-spy: linear-gradient(135deg, var(--spy), var(--steal) 50%, var(--bonus) 100%);
+    --gta-grad-border-gold: linear-gradient(135deg, #ffe566, var(--gold) 40%, var(--malus) 100%);
+    --gta-grad-border-neutral: linear-gradient(135deg, #555, var(--border-dark) 50%, #888 100%);
+
+    /* Réécriture tokens des autres feuilles → textes clairs */
+    --lpf-navy: #ededed;
+    --lpf-text: #ededed;
+    --lpf-muted: #a8a8a8;
+    --th-ui-primary: #59ff6a;
+    --th-ui-primary-hover: #8fff9a;
+    --th-ui-menu-muted: #a8a8a8;
+
+    color-scheme: dark;
+}
+
+/* =============================================================================
+ * 2. Reset léger & fond immersif
+ * ============================================================================= */
+html.lpf-gta-theme,
+html.lpf-gta-theme body,
+html.lpf-gta-theme body.front-body,
+html.lpf-gta-theme body.lpf-gta-theme-active {
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body {
+    position: relative;
+    min-height: 100vh;
+    font-family: var(--gta-font-body) !important;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+html.lpf-gta-theme body .ta-shell {
+    background: transparent !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgb(89 255 106 / 6%), transparent 55%),
+        radial-gradient(ellipse 80% 60% at 100% 50%, rgb(58 134 255 / 5%), transparent 50%),
+        radial-gradient(ellipse 70% 50% at 0% 80%, rgb(215 38 61 / 4%), transparent 45%),
+        linear-gradient(180deg, #0a0a0a 0%, var(--bg-main) 40%, #080808 100%);
+}
+
+html.lpf-gta-theme body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+html.lpf-gta-theme ::selection {
+    background: rgb(89 255 106 / 35%);
+    color: var(--text-main);
+}
+
+html.lpf-gta-theme ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html.lpf-gta-theme ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+html.lpf-gta-theme ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3a3a3a, #222);
+    border-radius: 0;
+    border: 2px solid var(--bg-secondary);
+}
+
+html.lpf-gta-theme ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--bonus), #2d8a3a);
+}
+
+/* =============================================================================
+ * 3. Typographie
+ * ============================================================================= */
+html.lpf-gta-theme body,
+html.lpf-gta-theme body p,
+html.lpf-gta-theme p,
+html.lpf-gta-theme .ta-card-text,
+html.lpf-gta-theme label {
+    font-family: var(--gta-font-body) !important;
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body h1,
+html.lpf-gta-theme body h2,
+html.lpf-gta-theme body h3,
+html.lpf-gta-theme body h4,
+html.lpf-gta-theme h1,
+html.lpf-gta-theme h2,
+html.lpf-gta-theme h3,
+html.lpf-gta-theme h4,
+html.lpf-gta-theme body .ta-page-title,
+html.lpf-gta-theme .ta-page-title,
+html.lpf-gta-theme body .ta-card-title,
+html.lpf-gta-theme .ta-card-title,
+html.lpf-gta-theme .h1-like,
+html.lpf-gta-theme .h2-like {
+    font-family: var(--gta-font-display) !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-main) !important;
+    line-height: 1.05;
+    text-shadow: 0 0 40px rgb(89 255 106 / 12%);
+}
+
+html.lpf-gta-theme .ta-page-title {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+}
+
+html.lpf-gta-theme .ta-page-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+html.lpf-gta-theme a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit) {
+    color: var(--bonus);
+    transition: color var(--gta-transition);
+}
+
+html.lpf-gta-theme a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit):hover {
+    color: #8fff9a;
+}
+
+/* =============================================================================
+ * 4. Layout global
+ * ============================================================================= */
+html.lpf-gta-theme .ta-main {
+    padding: clamp(1rem, 3vw, 1.75rem);
+    animation: gtaFadeIn 0.5s ease-out;
+}
+
+html.lpf-gta-theme .bg-base-100 {
+    background-color: var(--bg-card) !important;
+}
+
+html.lpf-gta-theme .border-base-300 {
+    border-color: var(--border-dark) !important;
+}
+
+html.lpf-gta-theme .text-base-content {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme .text-base-content\/70 {
+    color: var(--text-secondary) !important;
+}
+
+/* =============================================================================
+ * 5. Navbar / sidebar / header mobile
+ * ============================================================================= */
+html.lpf-gta-theme .ta-sidebar,
+html.lpf-gta-theme .ta-mobile-bar {
+    background: rgb(16 16 16 / 88%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-color: var(--border-dark);
+    box-shadow: var(--gta-shadow-deep);
+}
+
+html.lpf-gta-theme .ta-sidebar {
+    border-right: 1px solid var(--border-dark);
+}
+
+html.lpf-gta-theme .ta-mobile-bar {
+    border-bottom: 1px solid var(--border-dark);
+}
+
+html.lpf-gta-theme .ta-menu-link {
+    color: var(--text-secondary);
+    border-radius: 0;
+    border-left: 3px solid transparent;
+    transition:
+        color var(--gta-transition),
+        background var(--gta-transition),
+        border-color var(--gta-transition),
+        box-shadow var(--gta-transition);
+}
+
+html.lpf-gta-theme .ta-menu-link:hover {
+    color: var(--bonus);
+    background: rgb(89 255 106 / 6%);
+    border-left-color: var(--bonus);
+    box-shadow: var(--gta-glow-bonus);
+}
+
+html.lpf-gta-theme .ta-menu-link.active {
+    color: var(--bg-main);
+    background: var(--bonus);
+    border-left-color: var(--text-main);
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus);
+    font-weight: 700;
+}
+
+html.lpf-gta-theme .ta-menu-link .ti {
+    filter: drop-shadow(0 0 6px rgb(89 255 106 / 25%));
+}
+
+html.lpf-gta-theme .ta-sidebar-notify {
+    border: 1px solid var(--border-dark);
+    background: var(--bg-card);
+    color: var(--text-main);
+}
+
+html.lpf-gta-theme .ta-sidebar-notify:hover {
+    border-color: var(--bonus);
+    color: var(--bonus);
+    box-shadow: var(--gta-glow-bonus);
+}
+
+/* Bascule thème GTA */
+html.lpf-gta-theme .gta-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    border: var(--gta-border-btn) solid transparent;
+    border-radius: 0;
+    background:
+        linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+        var(--gta-grad-border-neutral) border-box;
+    color: var(--text-secondary);
+    font-family: var(--gta-font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    box-shadow: var(--gta-shadow-hard);
+    transition: all var(--gta-transition);
+}
+
+html.lpf-gta-theme .gta-theme-toggle:hover,
+html.lpf-gta-theme .gta-theme-toggle[aria-pressed="true"] {
+    background:
+        linear-gradient(rgb(89 255 106 / 12%), rgb(89 255 106 / 12%)) padding-box,
+        var(--gta-grad-border-primary) border-box;
+    color: var(--bonus);
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus);
+}
+
+/* =============================================================================
+ * 6. Cards
+ * ============================================================================= */
+html.lpf-gta-theme body .ta-card,
+html.lpf-gta-theme body article.ta-card,
+html.lpf-gta-theme .ta-card,
+html.lpf-gta-theme .rounded-box,
+html.lpf-gta-theme .account-card-jokers,
+html.lpf-gta-theme .auth-card {
+    background:
+        linear-gradient(165deg, rgb(22 22 22 / 98%), var(--bg-card)) padding-box !important;
+    border: 4px solid var(--border-dark) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card);
+    color: var(--text-main) !important;
+    position: relative;
+    transition:
+        transform var(--gta-transition),
+        box-shadow var(--gta-transition),
+        border-color var(--gta-transition);
+}
+
+html.lpf-gta-theme .ta-card::after,
+html.lpf-gta-theme .rounded-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+html.lpf-gta-theme .ta-card:hover,
+html.lpf-gta-theme .rounded-box:hover {
+    transform: translate(-2px, -2px);
+    border-color: var(--bonus) !important;
+    box-shadow: 6px 6px 0 rgb(0 0 0 / 80%), var(--gta-glow-bonus);
+}
+
+html.lpf-gta-theme .ta-card-title {
+    font-size: 1.35rem;
+}
+
+/* =============================================================================
+ * 7. Boutons — angles droits + bordure dégradée
+ * ============================================================================= */
+html.lpf-gta-theme .btn,
+html.lpf-gta-theme body .btn,
+html.lpf-gta-theme .ta-auth-submit,
+html.lpf-gta-theme .auth-wrap button[type="submit"],
+html.lpf-gta-theme .joker-guide-view-btn,
+html.lpf-gta-theme .match-pronostic-submit {
+    font-family: var(--gta-font-display) !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-radius: 0 !important;
+    border: var(--gta-border-btn) solid transparent !important;
+    background-origin: border-box !important;
+    background-clip: padding-box, border-box !important;
+    box-shadow: var(--gta-shadow-hard);
+    transition:
+        transform 0.12s ease,
+        box-shadow var(--gta-transition),
+        filter var(--gta-transition);
+}
+
+html.lpf-gta-theme .btn:active,
+html.lpf-gta-theme .ta-auth-submit:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgb(0 0 0 / 80%);
+}
+
+/* Primaire — INSCRIPTION / CTA vert */
+html.lpf-gta-theme body .btn.btn-primary,
+html.lpf-gta-theme body a.btn.btn-primary,
+html.lpf-gta-theme body button.btn.btn-primary,
+html.lpf-gta-theme .btn.btn-primary,
+html.lpf-gta-theme .btn-primary,
+html.lpf-gta-theme .ta-auth-submit,
+html.lpf-gta-theme .auth-wrap button[type="submit"],
+html.lpf-gta-theme body.front-body--auth .auth-wrap button[type="submit"],
+html.lpf-gta-theme .match-pronostic-submit.btn-primary {
+    background-image:
+        linear-gradient(180deg, var(--bonus), #45e657) padding-box,
+        var(--gta-grad-border-primary) border-box !important;
+    color: #050505 !important;
+    font-size: 0.95rem;
+    padding: 0.7rem 1.35rem;
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus) !important;
+}
+
+html.lpf-gta-theme .btn.btn-primary:hover:not(:disabled),
+html.lpf-gta-theme .btn-primary:hover:not(:disabled),
+html.lpf-gta-theme .ta-auth-submit:hover:not(:disabled),
+html.lpf-gta-theme .auth-wrap button[type="submit"]:hover:not(:disabled) {
+    background-image:
+        linear-gradient(180deg, #8fff9a, var(--bonus)) padding-box,
+        var(--gta-grad-border-primary) border-box !important;
+    box-shadow: 5px 5px 0 rgb(0 0 0 / 85%), 0 0 28px rgb(89 255 106 / 55%) !important;
+    transform: translate(-1px, -1px);
+    filter: brightness(1.05);
+}
+
+/* Danger */
+html.lpf-gta-theme .btn.btn-error,
+html.lpf-gta-theme .btn-danger {
+    background-image:
+        linear-gradient(180deg, #1a0808, #120404) padding-box,
+        var(--gta-grad-border-danger) border-box !important;
+    color: var(--malus) !important;
+    box-shadow: var(--gta-shadow-hard), 0 0 18px rgb(255 77 77 / 30%) !important;
+}
+
+html.lpf-gta-theme .btn.btn-error:hover:not(:disabled),
+html.lpf-gta-theme .btn-danger:hover:not(:disabled) {
+    box-shadow: 5px 5px 0 rgb(0 0 0 / 85%), 0 0 26px rgb(255 77 77 / 45%) !important;
+    transform: translate(-1px, -1px);
+}
+
+/* Outline / espionnage */
+html.lpf-gta-theme .btn.btn-outline,
+html.lpf-gta-theme .btn.btn-outline.btn-primary,
+html.lpf-gta-theme .btn-spy {
+    background-image:
+        linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+        var(--gta-grad-border-spy) border-box !important;
+    color: var(--spy) !important;
+}
+
+html.lpf-gta-theme .btn.btn-outline:hover:not(:disabled),
+html.lpf-gta-theme .btn.btn-outline.btn-primary:hover:not(:disabled),
+html.lpf-gta-theme .btn-spy:hover {
+    background-image:
+        linear-gradient(rgb(77 184 255 / 10%), rgb(77 184 255 / 10%)) padding-box,
+        var(--gta-grad-border-spy) border-box !important;
+    color: var(--bonus) !important;
+    box-shadow: var(--gta-shadow-hard), 0 0 22px rgb(77 184 255 / 35%) !important;
+    transform: translate(-1px, -1px);
+}
+
+/* Or / légendaire */
+html.lpf-gta-theme .btn-gold,
+html.lpf-gta-theme .btn.btn-warning {
+    background-image:
+        linear-gradient(180deg, var(--gold), #d4a82e) padding-box,
+        var(--gta-grad-border-gold) border-box !important;
+    color: #0a0800 !important;
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-gold) !important;
+}
+
+html.lpf-gta-theme .btn-gold:hover,
+html.lpf-gta-theme .btn.btn-warning:hover:not(:disabled) {
+    box-shadow: 5px 5px 0 rgb(0 0 0 / 85%), var(--gta-glow-gold) !important;
+    transform: translate(-1px, -1px);
+}
+
+/* Secondaire neutre */
+html.lpf-gta-theme .btn:not(.btn-primary):not(.btn-outline):not(.btn-error):not(.btn-danger):not(.btn-warning):not(.btn-gold):not(.ta-auth-submit) {
+    background-image:
+        linear-gradient(var(--bg-secondary), var(--bg-card)) padding-box,
+        var(--gta-grad-border-neutral) border-box !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme .btn.btn-sm {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+html.lpf-gta-theme .joker-guide-view-btn {
+    border-radius: 0 !important;
+    background-image:
+        linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+        var(--gta-grad-border-neutral) border-box !important;
+    color: var(--text-secondary) !important;
+    box-shadow: 2px 2px 0 rgb(0 0 0 / 70%);
+}
+
+html.lpf-gta-theme .joker-guide-view-btn.is-active {
+    background-image:
+        linear-gradient(rgb(89 255 106 / 15%), rgb(89 255 106 / 8%)) padding-box,
+        var(--gta-grad-border-primary) border-box !important;
+    color: var(--bonus) !important;
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus);
+}
+
+/* =============================================================================
+ * 8. Joker cards (mapping classes existantes)
+ * ============================================================================= */
+html.lpf-gta-theme .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-accordion-item,
+html.lpf-gta-theme .joker-overview-item {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Base collectible */
+html.lpf-gta-theme .joker-card,
+html.lpf-gta-theme .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-accordion-item {
+    background: linear-gradient(145deg, #1a1a1a, var(--bg-card));
+}
+
+html.lpf-gta-theme .joker-guide-slide-card::before,
+html.lpf-gta-theme .joker-guide-accordion-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(125deg, transparent 40%, rgb(255 255 255 / 6%) 50%, transparent 60%);
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* Variantes par catégorie métier */
+html.lpf-gta-theme .joker-bonus,
+html.lpf-gta-theme .joker-guide-card--points .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-card--points.joker-guide-accordion-item {
+    border: 4px solid var(--bonus) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card), 0 0 20px rgb(89 255 106 / 18%);
+}
+
+html.lpf-gta-theme .joker-danger,
+html.lpf-gta-theme .joker-guide-card--offensive .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-card--offensive.joker-guide-accordion-item {
+    border: 4px solid var(--malus) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card), 0 0 20px rgb(255 77 77 / 18%);
+}
+
+html.lpf-gta-theme .joker-spy,
+html.lpf-gta-theme .joker-guide-card--intel .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-card--intel.joker-guide-accordion-item {
+    border: 4px solid var(--spy) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card), 0 0 20px rgb(77 184 255 / 20%);
+}
+
+html.lpf-gta-theme .joker-legendary,
+html.lpf-gta-theme .joker-guide-card--buteur .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-card--buteur.joker-guide-accordion-item {
+    border: 4px solid var(--gold) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card), var(--gta-glow-gold);
+}
+
+html.lpf-gta-theme .joker-defensive,
+html.lpf-gta-theme .joker-guide-card--defense .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-card--defense.joker-guide-accordion-item {
+    border: 4px solid var(--shield) !important;
+    border-radius: 0 !important;
+    box-shadow: var(--gta-shadow-card), 0 0 18px rgb(77 184 255 / 15%);
+}
+
+html.lpf-gta-theme .joker-guide-slide-card,
+html.lpf-gta-theme .joker-guide-accordion-item {
+    border-radius: 0 !important;
+}
+
+html.lpf-gta-theme .joker-guide-badge--offensive {
+    background: rgb(255 77 77 / 20%);
+    color: var(--malus);
+    border: 2px solid var(--malus);
+    border-radius: 0;
+}
+
+html.lpf-gta-theme .joker-guide-badge--defense,
+html.lpf-gta-theme .joker-guide-badge--points,
+html.lpf-gta-theme .joker-guide-badge--buteur,
+html.lpf-gta-theme .joker-guide-badge--intel,
+html.lpf-gta-theme .ta-badge {
+    border-radius: 0;
+}
+
+html.lpf-gta-theme .joker-guide-badge--defense {
+    background: rgb(77 184 255 / 15%);
+    color: var(--shield);
+    border: 2px solid var(--shield);
+}
+
+html.lpf-gta-theme .joker-guide-badge--points {
+    background: rgb(89 255 106 / 15%);
+    color: var(--bonus);
+    border: 2px solid var(--bonus);
+}
+
+html.lpf-gta-theme .joker-guide-badge--buteur {
+    background: rgb(244 197 66 / 15%);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+}
+
+html.lpf-gta-theme .joker-guide-badge--intel {
+    background: rgb(77 184 255 / 15%);
+    color: var(--spy);
+    border: 2px solid var(--spy);
+}
+
+/* Boutons kit LPF (btn-red, btn-navy…) */
+html.lpf-gta-theme body .btn-red,
+html.lpf-gta-theme body .btn-navy,
+html.lpf-gta-theme body .btn-green,
+html.lpf-gta-theme body .btn-sharp {
+    border-radius: 0 !important;
+    border: var(--gta-border-btn) solid transparent !important;
+    background-origin: border-box !important;
+    background-clip: padding-box, border-box !important;
+    box-shadow: var(--gta-shadow-hard) !important;
+}
+
+html.lpf-gta-theme body .btn-red {
+    background-image:
+        linear-gradient(180deg, var(--malus), #cc3a3a) padding-box,
+        var(--gta-grad-border-danger) border-box !important;
+    color: #050505 !important;
+}
+
+html.lpf-gta-theme body .btn-navy {
+    background-image:
+        linear-gradient(180deg, #1a2a4a, #0f1929) padding-box,
+        var(--gta-grad-border-spy) border-box !important;
+    color: var(--spy) !important;
+}
+
+html.lpf-gta-theme body .btn-green {
+    background-image:
+        linear-gradient(180deg, var(--bonus), #45e657) padding-box,
+        var(--gta-grad-border-primary) border-box !important;
+    color: #050505 !important;
+}
+
+html.lpf-gta-theme .joker-guide-carousel-dot.is-active {
+    background: var(--bonus);
+    box-shadow: 0 0 12px var(--bonus);
+}
+
+html.lpf-gta-theme .joker-guide-carousel-controls {
+    background: var(--bg-secondary);
+    border-top-color: var(--border-dark);
+}
+
+/* =============================================================================
+ * 9. Tables / leaderboard
+ * ============================================================================= */
+html.lpf-gta-theme .ta-table-wrap,
+html.lpf-gta-theme .ranking-table-wrap {
+    border: 3px solid var(--border-dark);
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--bg-card);
+    box-shadow: var(--gta-shadow-card);
+}
+
+html.lpf-gta-theme .table.ta-table th {
+    font-family: var(--gta-font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.85rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-dark);
+}
+
+html.lpf-gta-theme .table.ta-table td {
+    border-bottom: 1px solid var(--border-dark);
+    color: var(--text-main);
+    transition: background var(--gta-transition);
+}
+
+html.lpf-gta-theme .ranking-table tbody tr:hover td {
+    background: rgb(89 255 106 / 6%);
+}
+
+html.lpf-gta-theme .ranking-table tbody tr:first-child td {
+    background: linear-gradient(90deg, rgb(244 197 66 / 12%), transparent);
+    border-left: 3px solid var(--gold);
+}
+
+html.lpf-gta-theme .ranking-table tbody tr:nth-child(2) td {
+    background: linear-gradient(90deg, rgb(189 189 189 / 10%), transparent);
+}
+
+html.lpf-gta-theme .ranking-table tbody tr:nth-child(3) td {
+    background: linear-gradient(90deg, rgb(205 127 50 / 12%), transparent);
+}
+
+html.lpf-gta-theme .ranking-table tbody tr:first-child .ranking-team-name {
+    color: var(--gold);
+    text-shadow: 0 0 20px rgb(244 197 66 / 35%);
+}
+
+html.lpf-gta-theme .ranking-team-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+html.lpf-gta-theme .ranking-team-link:hover .ranking-team-name {
+    color: var(--bonus);
+}
+
+/* =============================================================================
+ * 10. Formulaires
+ * ============================================================================= */
+html.lpf-gta-theme input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html.lpf-gta-theme select,
+html.lpf-gta-theme textarea {
+    background: var(--bg-secondary) !important;
+    border: 2px solid var(--border-dark) !important;
+    border-radius: 0 !important;
+    color: var(--text-main) !important;
+    transition:
+        border-color var(--gta-transition),
+        box-shadow var(--gta-transition);
+}
+
+html.lpf-gta-theme input::placeholder,
+html.lpf-gta-theme textarea::placeholder {
+    color: #666 !important;
+}
+
+html.lpf-gta-theme input:focus,
+html.lpf-gta-theme select:focus,
+html.lpf-gta-theme textarea:focus {
+    outline: none !important;
+    border-color: var(--bonus) !important;
+    box-shadow: 0 0 0 3px rgb(89 255 106 / 20%), var(--gta-glow-bonus) !important;
+}
+
+html.lpf-gta-theme .tabs-box {
+    background: var(--bg-secondary);
+    border-color: var(--border-dark);
+    border-radius: 0;
+}
+
+html.lpf-gta-theme .tab {
+    border-radius: 0;
+}
+
+html.lpf-gta-theme .tab-active {
+    background: rgb(89 255 106 / 15%);
+    color: var(--bonus);
+}
+
+/* =============================================================================
+ * 11. Flash, alertes, match cards
+ * ============================================================================= */
+html.lpf-gta-theme .flash-success,
+html.lpf-gta-theme .flash-danger,
+html.lpf-gta-theme .flash-info,
+html.lpf-gta-theme .alert {
+    border-radius: 0;
+    box-shadow: var(--gta-shadow-hard);
+}
+
+html.lpf-gta-theme .flash-success {
+    background: rgb(89 255 106 / 12%);
+    border: 2px solid var(--bonus);
+    color: var(--bonus);
+}
+
+html.lpf-gta-theme .flash-danger,
+html.lpf-gta-theme .alert-warning {
+    background: rgb(255 77 77 / 10%);
+    border: 1px solid var(--malus);
+    color: #ff9a9a;
+}
+
+html.lpf-gta-theme .flash-info {
+    background: rgb(77 184 255 / 12%);
+    border: 1px solid var(--spy);
+    color: var(--spy);
+}
+
+html.lpf-gta-theme .alert-warning {
+    border-color: var(--gold);
+    background: rgb(244 197 66 / 10%);
+    color: var(--gold);
+}
+
+html.lpf-gta-theme .match-card,
+html.lpf-gta-theme .match-pronostic-card,
+html.lpf-gta-theme .match-pronostic {
+    border: 3px solid var(--border-dark);
+    background: var(--bg-card);
+    border-radius: 0;
+    box-shadow: var(--gta-shadow-card);
+}
+
+html.lpf-gta-theme .match-card:hover {
+    border-color: var(--bonus);
+    box-shadow: 5px 5px 0 rgb(0 0 0 / 80%), var(--gta-glow-bonus);
+    transform: translate(-2px, -2px);
+}
+
+html.lpf-gta-theme .match-card--kdo {
+    border-color: var(--gold);
+    box-shadow: var(--gta-glow-gold);
+}
+
+html.lpf-gta-theme .ta-badge {
+    font-family: var(--gta-font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 0;
+}
+
+html.lpf-gta-theme .ta-badge-success {
+    background: rgb(89 255 106 / 18%);
+    color: var(--bonus);
+    border: 1px solid var(--bonus);
+}
+
+html.lpf-gta-theme .ta-badge-warning {
+    background: rgb(244 197 66 / 18%);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+}
+
+html.lpf-gta-theme .match-score-input {
+    background: var(--bg-secondary) !important;
+    border: 2px solid var(--border-dark) !important;
+    border-radius: 0 !important;
+    color: var(--text-main) !important;
+    font-family: var(--gta-font-display);
+    font-size: 1.5rem;
+    box-shadow: var(--gta-shadow-hard);
+}
+
+html.lpf-gta-theme .match-score-input:focus {
+    border-color: var(--bonus) !important;
+    box-shadow: var(--gta-glow-bonus) !important;
+}
+
+html.lpf-gta-theme .ta-topbar {
+    border-bottom: 1px solid var(--border-dark);
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+html.lpf-gta-theme .lpf-burger {
+    border-color: var(--border-dark);
+}
+
+html.lpf-gta-theme .lpf-burger:hover .lpf-burger__line {
+    background: var(--bonus);
+}
+
+html.lpf-gta-theme .ta-sidebar-logo,
+html.lpf-gta-theme .ta-mobile-bar__logo,
+html.lpf-gta-theme .ta-auth-logo {
+    background: transparent !important;
+    filter: drop-shadow(0 4px 16px rgb(0 0 0 / 45%));
+}
+
+/* =============================================================================
+ * Pages auth (front non connecté)
+ * ============================================================================= */
+html.lpf-gta-theme body.front-body--auth,
+html.lpf-gta-theme body.front-body--auth .auth-wrap {
+    background: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme .auth-wrap {
+    background: transparent !important;
+}
+
+html.lpf-gta-theme .auth-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+html.lpf-gta-theme .auth-grid,
+html.lpf-gta-theme .ta-auth-grid {
+    min-height: 100vh;
+}
+
+html.lpf-gta-theme .auth-aside,
+html.lpf-gta-theme .ta-auth-aside {
+    background: linear-gradient(160deg, #0a0a0a 0%, #141414 45%, rgb(89 255 106 / 8%) 100%) !important;
+    color: var(--text-main) !important;
+    border-right: 2px solid var(--border-dark) !important;
+    box-shadow: inset -1px 0 0 rgb(89 255 106 / 12%);
+}
+
+html.lpf-gta-theme .ta-auth-slogan,
+html.lpf-gta-theme .auth-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme .ta-auth-form-wrap {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-card) 100%) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme .ta-auth-form-wrap .section-title,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-title,
+html.lpf-gta-theme body .ta-auth-title {
+    font-family: var(--gta-font-display) !important;
+    color: var(--text-main) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 32px rgb(89 255 106 / 15%);
+}
+
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-lead,
+html.lpf-gta-theme .ta-auth-lead {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme .auth-wrap form label,
+html.lpf-gta-theme .ta-auth-form-wrap form label,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-form-label {
+    color: var(--text-secondary) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+html.lpf-gta-theme .auth-wrap form input[type="text"],
+html.lpf-gta-theme .auth-wrap form input[type="email"],
+html.lpf-gta-theme .auth-wrap form input[type="password"],
+html.lpf-gta-theme .ta-auth-form-wrap form input,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-form-input {
+    background: var(--bg-main) !important;
+    border: 1px solid var(--border-dark) !important;
+    color: var(--text-main) !important;
+    border-radius: 0 !important;
+}
+
+html.lpf-gta-theme .auth-wrap form input:focus,
+html.lpf-gta-theme .ta-auth-form-wrap form input:focus,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-form-input:focus {
+    border-color: var(--bonus) !important;
+    box-shadow: var(--gta-glow-bonus) !important;
+    outline: none !important;
+}
+
+html.lpf-gta-theme .auth-wrap form input::placeholder,
+html.lpf-gta-theme .ta-auth-form-wrap form input::placeholder {
+    color: #666 !important;
+}
+
+html.lpf-gta-theme .ta-auth-check,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-check {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme .ta-auth-separator,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-separator {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme .ta-auth-separator::before,
+html.lpf-gta-theme .ta-auth-separator::after,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-separator::before,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-separator::after {
+    background: var(--border-dark) !important;
+}
+
+html.lpf-gta-theme .ta-auth-link-row,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-link-row {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme .ta-auth-link-row a,
+html.lpf-gta-theme .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit),
+html.lpf-gta-theme .auth-wrap a:not(.btn):not(.ta-auth-submit) {
+    color: var(--spy) !important;
+}
+
+html.lpf-gta-theme .ta-auth-link-row a:hover,
+html.lpf-gta-theme .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):hover {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme .ta-auth-social,
+html.lpf-gta-theme .ta-auth-form-wrap .ta-auth-social {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-dark) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme .auth-wrap hr {
+    border-color: var(--border-dark);
+}
+
+html.lpf-gta-theme .auth-wrap h2,
+html.lpf-gta-theme .auth-card h2 {
+    font-family: var(--gta-font-display);
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+html.lpf-gta-theme .auth-wrap code {
+    background: var(--bg-secondary);
+    color: var(--bonus);
+    border: 1px solid var(--border-dark);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+    html.lpf-gta-theme .auth-grid,
+    html.lpf-gta-theme .ta-auth-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    html.lpf-gta-theme .auth-aside,
+    html.lpf-gta-theme .ta-auth-aside {
+        min-height: auto !important;
+        border-right: none !important;
+        border-bottom: 2px solid var(--border-dark) !important;
+        padding: 2rem 1.25rem !important;
+    }
+
+    html.lpf-gta-theme .ta-auth-form-wrap {
+        padding: 2rem 1.25rem !important;
+    }
+}
+
+/* Cotisation banner */
+html.lpf-gta-theme .cotisation-banner {
+    background: linear-gradient(90deg, var(--bg-secondary), rgb(215 38 61 / 15%));
+    border-bottom: 1px solid var(--canada);
+}
+
+/* =============================================================================
+ * 12. Animations
+ * ============================================================================= */
+@keyframes gtaGlowPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgb(89 255 106 / 25%);
+    }
+    50% {
+        box-shadow: 0 0 36px rgb(89 255 106 / 45%);
+    }
+}
+
+@keyframes gtaCardHover {
+    to {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes gtaNeonFlicker {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    92% {
+        opacity: 1;
+    }
+    93% {
+        opacity: 0.85;
+    }
+    94% {
+        opacity: 1;
+    }
+}
+
+@keyframes gtaFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes gtaSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+html.lpf-gta-theme .ta-page-title {
+    animation: gtaNeonFlicker 4s ease-in-out infinite;
+}
+
+html.lpf-gta-theme .btn.btn-primary:focus-visible {
+    animation: gtaGlowPulse 2s ease-in-out infinite;
+}
+
+/* =============================================================================
+ * 13. Responsive
+ * ============================================================================= */
+@media (max-width: 768px) {
+    html.lpf-gta-theme .ta-main {
+        padding: 0.85rem;
+    }
+
+    html.lpf-gta-theme .ta-page-title {
+        font-size: 1.75rem;
+    }
+
+    html.lpf-gta-theme .joker-guide-slide-card {
+        padding: 1rem 0.75rem;
+    }
+
+    html.lpf-gta-theme .ranking-table th,
+    html.lpf-gta-theme .ranking-table td {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    html.lpf-gta-theme .btn.btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* =============================================================================
+ * 14. Textes clairs — élimine navy / bleu (lpf26, tailadmin, theme-ui, auth)
+ * ============================================================================= */
+html.lpf-gta-theme body .ta-shell,
+html.lpf-gta-theme body .ta-main,
+html.lpf-gta-theme body .auth-wrap,
+html.lpf-gta-theme body .match-dashboard-wrap {
+    color: var(--text-main);
+}
+
+/* Texte courant dans les zones principales */
+html.lpf-gta-theme body .ta-main *:not(.btn):not(.btn *):not(.ta-menu-link):not(.ta-badge):not(.ta-badge *):not(.flash):not(.flash *):not(.joker-guide-badge):not(.joker-guide-badge *),
+html.lpf-gta-theme body .auth-wrap *:not(.btn):not(.btn *):not(.ta-auth-submit):not(.ta-badge):not(.flash):not(.flash *) {
+    color: var(--text-secondary);
+}
+
+/* Titres & chiffres importants */
+html.lpf-gta-theme body :is(
+    h1, h2, h3, h4, h5, h6,
+    .ta-page-title,
+    .ta-card-title,
+    .ta-auth-title,
+    .section-title,
+    .match-day-title,
+    .match-day-nav-label,
+    .ta-kpi-value,
+    .match-live-score-display,
+    .match-team-name,
+    .ranking-team-name,
+    .joker-guide-card-name,
+    .joker-overview-name
+) {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body strong,
+html.lpf-gta-theme body b {
+    color: var(--text-main) !important;
+}
+
+/* Liens : vert néon, pas bleu */
+html.lpf-gta-theme body a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit):not(.ranking-team-link) {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body a:not(.btn):not(.ta-menu-link):hover {
+    color: #8fff9a !important;
+}
+
+html.lpf-gta-theme body .ranking-team-link,
+html.lpf-gta-theme body .ranking-team-link .ranking-team-name {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body .ranking-team-link:hover .ranking-team-name {
+    color: var(--bonus) !important;
+}
+
+/* Menu sidebar (theme-typography-ui + tailadmin) */
+html.lpf-gta-theme body .ta-sidebar .ta-menu-link:not(.active) {
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html.lpf-gta-theme body .ta-sidebar .ta-menu-link:hover:not(.active) {
+    color: var(--bonus) !important;
+    background: rgb(89 255 106 / 6%) !important;
+}
+
+html.lpf-gta-theme body .ta-sidebar .ta-menu-link.active {
+    color: var(--bg-main) !important;
+    background: var(--bonus) !important;
+    box-shadow: var(--gta-shadow-hard) !important;
+}
+
+html.lpf-gta-theme body .ta-sidebar .menu > li:last-child {
+    border-top-color: var(--border-dark) !important;
+}
+
+/* KPI, nav journées, matchs */
+html.lpf-gta-theme body :is(
+    .ta-page-subtitle,
+    .ta-kpi-label,
+    .ta-kpi-neutral,
+    .match-day-nav-label,
+    .match-day-nav-link,
+    .match-live-score-sep,
+    .match-live-score-hint,
+    .match-live-simulator-field,
+    .match-live-simulator-sep,
+    .match-live-team-position,
+    .match-live-team-total-general,
+    .match-live-legend,
+    .match-live-team-position--before,
+    .ta-card-text,
+    .ta-form-help,
+    .text-sm,
+    .text-xs,
+    .text-label,
+    .text-muted,
+    .ta-auth-lead,
+    .ta-auth-check,
+    .ta-auth-link-row,
+    .ta-auth-separator,
+    .joker-overview-desc,
+    .joker-overview-hint,
+    .joker-guide-toolbar-label
+) {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body :is(
+    .match-day-nav-link:hover,
+    .match-day-nav-link--featured,
+    .tab-active
+) {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .tab:not(.tab-active) {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body .ta-kpi-up {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .match-live-score-team,
+html.lpf-gta-theme body .match-live-team-position--simulated {
+    color: var(--text-main) !important;
+}
+
+/* Auth — bat auth-tailwind-overrides (#0f172a, #1d4ed8…) */
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .section-title,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-title {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-lead,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap form label,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-form-label,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-check,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-link-row,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-separator {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap .ta-auth-link-row a,
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit) {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .auth-wrap .ta-auth-form-wrap a:not(.btn):not(.ta-auth-submit):visited {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .auth-wrap .ta-auth-slogan {
+    color: var(--text-secondary) !important;
+}
+
+/* html body lpf26 — titres & labels */
+html.lpf-gta-theme body :is(.text-label, small, .text-sm, .text-xs) {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body .ta-menu-link:not(.active) {
+    color: var(--text-secondary) !important;
+}
+
+/* Boutons secondaires theme-ui */
+html.lpf-gta-theme body .btn-secondary,
+html.lpf-gta-theme body .btn-ghost {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body .btn-ghost:hover:not(:disabled) {
+    color: var(--bonus) !important;
+    background: rgb(89 255 106 / 8%) !important;
+}
+
+/* Matchs, groupes, buteurs, espion */
+html.lpf-gta-theme body :is(
+    .match-team,
+    .match-time,
+    .match-final-score,
+    .match-live-buteur-name,
+    .group-standings-name,
+    .group-country-row,
+    .match-espion-team-name,
+    .match-pronostic-label
+) {
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme body :is(
+    .match-live-buteur-country,
+    .match-live-buteur-cote,
+    .match-espion-section-title,
+    .match-espion-cotes,
+    .match-espion-empty,
+    .match-espion-meta,
+    .match-espion-joker-item,
+    .match-meta
+) {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body .match-live-buteur-points {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .match-meta .match-group-link,
+html.lpf-gta-theme body .match-espion-title,
+html.lpf-gta-theme body .joker-dialog-buteur-note {
+    color: var(--spy) !important;
+}
+
+html.lpf-gta-theme body .match-meta .match-group-link:hover {
+    color: var(--bonus) !important;
+}
+
+html.lpf-gta-theme body .match-espion-target {
+    color: var(--steal) !important;
+}
+
+html.lpf-gta-theme body .match-flag-placeholder {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme body .match-live-prono-invert {
+    background: rgb(77 184 255 / 15%) !important;
+    color: var(--spy) !important;
+}
+
+html.lpf-gta-theme body details,
+html.lpf-gta-theme body summary {
+    color: var(--text-main);
+}
+
+/* =============================================================================
+ * Toggle visible même quand le thème est désactivé
+ * ============================================================================= */
+.gta-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    margin-top: 0.65rem;
+    padding: 0.5rem 0.65rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 0;
+    background: #fff;
+    color: #334155;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gta-theme-toggle--floating {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    width: auto;
+    margin: 0;
+    padding: 0.55rem 0.85rem;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+
+.gta-theme-toggle:hover {
+    border-color: #59ff6a;
+    color: #1a7a3d;
+}
+
+.gta-theme-toggle[aria-pressed="true"] {
+    border-color: #59ff6a;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+html.lpf-gta-theme .gta-theme-toggle--floating {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dark);
+    color: var(--text-secondary);
+    box-shadow: var(--gta-shadow-card);
+}
+
+html.lpf-gta-theme .gta-theme-toggle--floating:hover,
+html.lpf-gta-theme .gta-theme-toggle--floating[aria-pressed="true"] {
+    border-color: var(--bonus);
+    color: var(--bonus);
+    background: rgb(89 255 106 / 10%);
+    box-shadow: var(--gta-glow-bonus);
+}

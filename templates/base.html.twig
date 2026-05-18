@@ -3,12 +3,38 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
-<html lang="fr">
+<html lang="fr" class="dark">
     <head>
+        <script>
+            (function () {
+                var key = 'lpfTheme';
+                var legacy = 'lpfGtaTheme';
+                var theme = 'classic';
+                try {
+                    var v = localStorage.getItem(key);
+                    if (v === 'classic' || v === 'classic-light') {
+                        theme = v;
+                    } else if (v === 'gta' || v === 'miami') {
+                        theme = 'classic';
+                    } else if (localStorage.getItem(legacy) === '0') {
+                        theme = 'classic';
+                    } else if (localStorage.getItem(legacy) === '1') {
+                        theme = 'classic';
+                    }
+                } catch (e) {
+                    theme = 'classic';
+                }
+                var html = document.documentElement;
+                html.classList.toggle('dark', theme === 'classic' || theme === 'gta');
+                html.classList.toggle('lpf-classic-light', theme === 'classic-light');
+                html.classList.toggle('lpf-gta-theme', theme === 'gta' || theme === 'miami');
+                html.classList.toggle('lpf-gta-miami', theme === 'miami');
+            })();
+        </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <meta name="theme-color" content="#1B2D4F">
+        <meta name="theme-color" content="#09090b">
         <title>{% block title %}LPF 2026{% endblock %}</title>
         <link rel="icon" href="{{ asset('images/favicon-lpf/favicon.ico') }}" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-lpf/favicon-32x32.png') }}">
@@ -16,21 +42,33 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        {% if isAppShellPage %}
-            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=admin-site-guide">
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        {% if not isAuthPage %}
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-dark">
         {% endif %}
-        {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('front-dashboard.css') }}?v=lpf-auth-red">
-        {% endif %}
-        {# Option typographie / boutons / menu : supprimer ce lien (+ fichier public/theme-typography-ui.css) pour revenir au style par défaut #}
-        <link rel="stylesheet" href="{{ asset('theme-typography-ui.css') }}?v=2">
-        <link rel="stylesheet" href="{{ asset('lpf26-theme.css') }}?v=17">
         {% block stylesheets %}
         {% endblock %}
 
         {% block javascripts %}
-            {{ importmap('app') }}
+            {% if not isAuthPage %}
+                {{ importmap('app') }}
+            {% endif %}
         {% endblock %}
+
+        {% if isAuthPage %}
+            {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
+            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=4">
+        {% else %}
+            {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=5">
+        {% endif %}
+        <link rel="stylesheet" href="{{ asset('lpf-theme-switcher.css') }}?v=4">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=1">
+        <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
+        <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
+        {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
+        <link rel="stylesheet" href="{{ asset('lpf-gta-typography.css') }}?v=2">
+        <link rel="stylesheet" href="{{ asset('lpf-gta-buttons.css') }}?v=3">
 
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
         {% if frankenphpHotReload %}
@@ -41,17 +79,16 @@
     </head>
     <body class="front-body{{ isAuthPage ? ' front-body--auth' : '' }}{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
         {% if isAuthPage %}
+            {% include '_gta_theme_switcher.html.twig' with { modifier: 'floating', switcher_id: 'lpf-theme-switcher-auth' } %}
             <main class="auth-wrap">
-                <section class="auth-card">
-                        {% for label, messages in app.flashes %}
-                            {% for message in messages %}
-                                <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
-                                    <span>{{ message }}</span>
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
-                        {{ block('body') }}
-                </section>
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {{ block('body') }}
             </main>
         {% else %}
             {% if show_cotisation_banner %}
@@ -60,13 +97,7 @@
             <div class="ta-shell" data-controller="mobile-nav">
                 <header class="ta-mobile-bar">
                     <a href="{{ path('app_homepage') }}" class="ta-mobile-bar__logo-link" title="Accueil LPF'26">
-                        <img
-                            src="{{ asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png') }}"
-                            alt="LPF'26"
-                            class="ta-mobile-bar__logo"
-                            loading="lazy"
-                            decoding="async"
-                        >
+                        {% include '_lpf_brand_logo.html.twig' with { img_class: 'ta-mobile-bar__logo' } %}
                     </a>
                     <button
                         type="button"
@@ -105,5 +136,6 @@
                 </main>
             </div>
         {% endif %}
+        <script src="{{ asset('js/lpf-theme-switcher.js') }}?v=5"></script>
     </body>
 </html>

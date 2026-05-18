@@ -1,0 +1,455 @@
+/**
+ * LPF'26 — surcharges dark du front connecté (complément de lpf-app-dark.css)
+ * Cible tailadmin-dashboard.css + styles historiques (ex lpf26-theme) non chargés.
+ */
+
+/* ========== Matchs — navigation & sections ========== */
+html.dark body.front-body .ta-main .match-day-nav-link {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-nav-link:hover {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-nav-link--featured {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+    box-shadow: 0 0 0 1px var(--lpf-primary);
+}
+
+html.dark body.front-body .ta-main .match-day-nav-select {
+    border-color: var(--lpf-border) !important;
+    background-color: var(--lpf-surface-raised) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-section--featured > .match-day-title {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-section--live > .match-day-title {
+    color: var(--lpf-warning) !important;
+}
+
+/* ========== Matchs — cartes & scores ========== */
+html.dark body.front-body .ta-main .match-card--kdo {
+    border-color: var(--lpf-warning) !important;
+    background: linear-gradient(180deg, rgb(69 26 3 / 0.35) 0%, var(--lpf-surface) 42%) !important;
+    box-shadow: 0 0 0 1px rgb(245 158 11 / 25%);
+}
+
+html.dark body.front-body .ta-main .match-card-kdo-badge {
+    background: var(--lpf-warning) !important;
+    color: #422006 !important;
+}
+
+html.dark body.front-body .ta-main .match-final-score--live,
+html.dark body.front-body .ta-main .match-link--live {
+    color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .ta-main .match-final-score,
+html.dark body.front-body .ta-main .match-locked-pronostic,
+html.dark body.front-body .ta-main .match-time,
+html.dark body.front-body .ta-main .match-partner-score {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-link,
+html.dark body.front-body .ta-main .match-meta .match-group-link {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-meta .match-venue {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-pronostic {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-flag-placeholder,
+html.dark body.front-body .ta-main .match-live-team-logo-placeholder,
+html.dark body.front-body .ta-main .match-partner-avatar--placeholder {
+    background: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-partner-empty {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-prono-cotisation-msg {
+    color: var(--lpf-warning) !important;
+}
+
+/* ========== Matchs — live ========== */
+html.dark body.front-body .ta-main .match-live-team-card {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-team-position--simulated {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-team-position,
+html.dark body.front-body .ta-main .match-live-team-position--before,
+html.dark body.front-body .ta-main .match-live-team-total-general,
+html.dark body.front-body .ta-main .match-live-legend,
+html.dark body.front-body .ta-main .match-live-score-hint {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-team-total,
+html.dark body.front-body .ta-main .match-live-buteur-points {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-row {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-label,
+html.dark body.front-body .ta-main .match-live-prono-meta,
+html.dark body.front-body .ta-main .match-live-prono-empty,
+html.dark body.front-body .ta-main .match-live-buteurs-title,
+html.dark body.front-body .ta-main .match-live-buteur-country,
+html.dark body.front-body .ta-main .match-live-buteur-cote {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-score,
+html.dark body.front-body .ta-main .match-live-buteur-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-buteurs {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-kdo-row--winner {
+    background: rgb(245 158 11 / 12%) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-kdo-row--winner td {
+    border-color: rgb(245 158 11 / 35%) !important;
+}
+
+/* ========== Équipe (fiche) ========== */
+html.dark body.front-body .ta-main .team-show-member-card {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .team-show-member-nick,
+html.dark body.front-body .ta-main .team-show-ranking-position,
+html.dark body.front-body .ta-main .team-show-prono-score {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .team-show-member-mail,
+html.dark body.front-body .ta-main .team-show-slogan,
+html.dark body.front-body .ta-main .team-show-th-sub,
+html.dark body.front-body .ta-main .team-show-ranking-dl dt,
+html.dark body.front-body .ta-main .team-show-prono-sep {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .ranking-team-logo-placeholder {
+    background: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+/* ========== Shell mobile & formulaires ========== */
+@media (max-width: 1024px) {
+    html.dark body.front-body .ta-mobile-bar {
+        border-bottom-color: var(--lpf-border) !important;
+        background: var(--lpf-surface) !important;
+    }
+
+    html.dark body.front-body .ta-burger {
+        border-color: var(--lpf-border) !important;
+        background: var(--lpf-surface-raised) !important;
+        color: var(--lpf-text) !important;
+    }
+
+    html.dark body.front-body.ta-nav-open .ta-burger {
+        background: var(--lpf-primary) !important;
+        border-color: var(--lpf-primary) !important;
+        color: #052e16 !important;
+    }
+}
+
+html.dark body.front-body .ta-main .ta-form-label {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .ta-form-choice-expanded--multiple {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .ta-form-file::file-selector-button {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .ta-user-badge {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .tabs-box {
+    background: var(--lpf-surface) !important;
+}
+
+/* ========== Flash & notifications ========== */
+html.dark body.front-body .ta-main .flash.flash-danger {
+    border-color: var(--lpf-danger) !important;
+    background: rgb(239 68 68 / 12%) !important;
+    color: #fca5a5 !important;
+}
+
+html.dark body.front-body .push-notifications-card__list {
+    color: var(--lpf-muted) !important;
+}
+
+/* ========== Admin push / preview ========== */
+html.dark body.front-body .ta-main .admin-push-stat {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-stat--ok {
+    border-color: var(--lpf-primary) !important;
+    background: var(--lpf-primary-muted) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-stat--warn {
+    border-color: var(--lpf-warning) !important;
+    background: rgb(245 158 11 / 12%) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-stat__label {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-stat__value {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-form__back {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-form__back:hover {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .admin-preview-column .admin-preview-section-title {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .admin-email-preview {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .admin-email-preview__frame,
+html.dark body.front-body .ta-main .admin-email-preview__header {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .admin-email-preview__brand {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .admin-email-preview__tagline {
+    color: var(--lpf-muted) !important;
+}
+
+/* ========== Jokers (styles ex lpf26-theme) ========== */
+html.dark body.front-body .ta-main .joker-overview-item {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .joker-overview-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-overview-desc,
+html.dark body.front-body .ta-main .joker-overview-usage,
+html.dark body.front-body .ta-main .joker-overview-hint {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-overview-badge--available {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .joker-overview-badge--used {
+    background: rgb(59 130 246 / 15%) !important;
+    color: #93c5fd !important;
+}
+
+html.dark body.front-body .ta-main .joker-overview-badge--blocked,
+html.dark body.front-body .ta-main .joker-overview-badge--inactive {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-joker-popover {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-panel {
+    background: var(--lpf-surface) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-close {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-item {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-item-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-item-desc,
+html.dark body.front-body .ta-main .joker-dialog-item-reason,
+html.dark body.front-body .ta-main .joker-dialog-note,
+html.dark body.front-body .ta-main .joker-dialog-match {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-active-card,
+html.dark body.front-body .ta-main .joker-dialog-target-picker {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-target-select {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-active-target,
+html.dark body.front-body .ta-main .match-espion-target {
+    color: #c4b5fd !important;
+}
+
+html.dark body.front-body .ta-main .match-espion-panel {
+    background: rgb(59 130 246 / 12%) !important;
+    border-color: rgb(59 130 246 / 35%) !important;
+}
+
+html.dark body.front-body .ta-main .match-espion-section-title,
+html.dark body.front-body .ta-main .match-espion-meta {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-espion-cotes,
+html.dark body.front-body .ta-main .match-espion-empty,
+html.dark body.front-body .ta-main .match-espion-team-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-espion-irreversible {
+    color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-message--success {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .joker-dialog-message--error {
+    color: #fca5a5 !important;
+}
+
+/* ========== Guide jokers (/jokers) ========== */
+html.dark body.front-body .ta-main .joker-guide-rules-summary {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-rules-list,
+html.dark body.front-body .ta-main .joker-guide-toolbar-label,
+html.dark body.front-body .ta-main .joker-guide-chevron {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-view-switch {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-view-btn {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-view-btn.is-active {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-text) !important;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+}
+
+html.dark body.front-body .ta-main .joker-guide-carousel-controls {
+    border-top-color: var(--lpf-border) !important;
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-slide-card {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-card-name,
+html.dark body.front-body .ta-main .joker-guide-card-summary {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-card-details,
+html.dark body.front-body .ta-main .joker-guide-card-order {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-carousel-dot {
+    background: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-carousel-dot.is-active {
+    background: var(--lpf-primary) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-accordion-item {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-accordion-summary {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-accordion-title {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-accordion-panel,
+html.dark body.front-body .ta-main .joker-guide-card-details {
+    color: var(--lpf-muted) !important;
+}

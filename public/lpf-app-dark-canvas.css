@@ -1,0 +1,213 @@
+/**
+ * LPF'26 — fond sombre maximal (filet + utilitaires template)
+ * Chargé en dernier via lpf-app-dark.css
+ */
+
+/* --- Utilitaires FlyonUI / Daisy (bg-base-*, borders) --- */
+html.dark body.front-body .bg-base-100 {
+    background-color: var(--lpf-surface) !important;
+}
+
+html.dark body.front-body .bg-base-200 {
+    background-color: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .border-base-300,
+html.dark body.front-body [class*="border-base-content"] {
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .before\:bg-base-content\/20::before,
+html.dark body.front-body [class*="before:bg-base-content"] {
+    --tw-bg-opacity: 1;
+    background-color: var(--lpf-border) !important;
+}
+
+/* --- Boutons, onglets, alertes (tailadmin global) --- */
+html.dark body.front-body .btn-outline {
+    background: transparent !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .btn-outline.btn-primary {
+    color: var(--lpf-link) !important;
+    border-color: var(--lpf-primary) !important;
+}
+
+html.dark body.front-body .btn-outline.btn-primary:hover:not(:disabled) {
+    background: var(--lpf-primary-muted) !important;
+}
+
+html.dark body.front-body .tab {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .tab-active {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .alert-warning {
+    background: rgb(245 158 11 / 12%) !important;
+    border-color: var(--lpf-warning) !important;
+    color: #fcd34d !important;
+}
+
+html.dark body.front-body .ta-sidebar-notify {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-sidebar-notify:hover {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Tableaux --- */
+html.dark body.front-body .ta-main .table th,
+html.dark body.front-body .ta-main .table thead th,
+html.dark body.front-body .ta-main .ta-table th,
+html.dark body.front-body .ta-main .group-standings-table th,
+html.dark body.front-body .ta-main .ranking-table th,
+html.dark body.front-body .ta-main .admin-push-history-table thead {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-muted) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .table td,
+html.dark body.front-body .ta-main .ta-table td,
+html.dark body.front-body .ta-main .group-standings-table td,
+html.dark body.front-body .ta-main .ranking-table td,
+html.dark body.front-body .ta-main .admin-push-history-table td {
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .table tbody tr:hover,
+html.dark body.front-body .ta-main .ta-table tbody tr:hover,
+html.dark body.front-body .ta-main .admin-push-history-table tbody tr:hover {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .ta-table-row-details-dl {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-history-table-wrap {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-badge--ok {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-badge--warn {
+    background: rgb(245 158 11 / 15%) !important;
+    color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .ta-main .admin-push-badge--muted {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Page compte (sections bg-base-100 dans le HTML) --- */
+html.dark body.front-body .account-page section.rounded-box,
+html.dark body.front-body .account-page .account-tab-panel > section,
+html.dark body.front-body .account-page .push-notifications-card,
+html.dark body.front-body .account-buteur-section {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .account-tabs-nav .tab {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Filet large : blocs « carte / panneau / item » dans le contenu --- */
+html.dark body.front-body .ta-main [class*="card"]:not([class*="badge"]):not(.match-card-joker-badge),
+html.dark body.front-body .ta-main [class*="-panel"]:not(.joker-dialog):not([class*="dialog"]),
+html.dark body.front-body .ta-main [class*="__item"],
+html.dark body.front-body .ta-main .alert:not(.app-cotisation-banner),
+html.dark body.front-body .ta-main .tabs-box,
+html.dark body.front-body .ta-main .ta-kpis > *,
+html.dark body.front-body .ta-main .admin-email-preview__body,
+html.dark body.front-body .ta-main .admin-email-preview__footer,
+html.dark body.front-body .ta-main .admin-email-preview__frame {
+    background-color: var(--lpf-surface) !important;
+}
+
+/* Sous-blocs / lignes : fond légèrement relevé */
+html.dark body.front-body .ta-main :where(
+    .match-live-prono-row,
+    .match-day-nav-link,
+    .match-day-nav-select,
+    .team-show-member-card,
+    .match-live-team-card,
+    .dashboard-buteur-form-card,
+    .dashboard-buteur-taken-card,
+    .dashboard-buteur-result-list,
+    .dashboard-buteur-result-panel,
+    .dashboard-buteur-results > .dashboard-buteur-hint,
+    .dashboard-buteur-results > .dashboard-buteur-error,
+    .lpf-admin-guide__item,
+    .joker-overview-item,
+    .joker-guide-accordion-item,
+    .joker-guide-carousel-controls,
+    .joker-dialog-item,
+    .admin-push-stat,
+    .ta-user-badge,
+    .ta-form-input,
+    .ta-form-choice-expanded--multiple,
+    .match-joker-popover
+) {
+    background-color: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border);
+}
+
+/* Cartes match KDO : teinte ambre sur fond sombre */
+html.dark body.front-body .ta-main .match-card--kdo {
+    background: linear-gradient(180deg, rgb(69 26 3 / 0.4) 0%, var(--lpf-surface) 45%) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-kdo-row--winner {
+    background: rgb(245 158 11 / 10%) !important;
+}
+
+/* Liens & textes bleus résiduels dans .ta-main */
+html.dark body.front-body .ta-main a:not(.btn):not(.ta-menu-link) {
+    color: var(--lpf-link);
+}
+
+html.dark body.front-body .ta-main .ta-link,
+html.dark body.front-body .ta-main .match-link {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main [class*="text-slate-"],
+html.dark body.front-body .ta-main [class*="text-gray-"] {
+    color: var(--lpf-muted) !important;
+}
+
+/* Évolution équipe, logos placeholder */
+html.dark body.front-body .ta-main .team-evolution-bar-track {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .ta-main .ranking-team-logo-placeholder {
+    background: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .ta-badge:not(.ta-badge-success):not(.ta-badge-warning):not([class*="joker"]) {
+    background: var(--lpf-surface-raised) !important;
+    border: 1px solid var(--lpf-border);
+    color: var(--lpf-text) !important;
+}

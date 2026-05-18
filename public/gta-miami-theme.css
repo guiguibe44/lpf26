@@ -1,0 +1,326 @@
+/**
+ * LPF'26 — GTA clair « Miami Vice »
+ * Actif avec html.lpf-gta-theme.lpf-gta-miami (sans classe .dark).
+ * Surcharge les variables de gta-premium-theme.css.
+ */
+
+html.lpf-gta-theme.lpf-gta-miami {
+    color-scheme: light;
+
+    /* Palette Miami Vice — rose, cyan, violet, coucher de soleil */
+    --bg-main: #f6f0ff;
+    --bg-secondary: #fff8fc;
+    --bg-card: #ffffff;
+    --border-dark: #e8b4f8;
+    --text-main: #1a0a2e;
+    --text-secondary: #5c3d6e;
+    --text-muted: #8b6b9e;
+    --bonus: #00d4ff;
+    --malus: #ff2d95;
+    --spy: #7b61ff;
+    --steal: #ff6ec7;
+    --shield: #3aefe8;
+    --gold: #ffb347;
+    --mexico: #00c896;
+    --usa: #4d9fff;
+    --canada: #ff4d6d;
+
+    --gta-shadow-hard: 3px 3px 0 rgb(255 45 149 / 18%);
+    --gta-shadow-deep: 4px 4px 0 rgb(0 212 255 / 15%);
+    --gta-shadow-card: 0 8px 28px rgb(123 97 255 / 12%), 0 2px 8px rgb(255 45 149 / 8%);
+    --gta-glow-bonus: 0 0 22px rgb(0 212 255 / 35%);
+    --gta-glow-gold: 0 0 20px rgb(255 179 71 / 40%);
+
+    --gta-grad-border-primary: linear-gradient(135deg, #ff6ec7, #00d4ff 45%, #7b61ff 100%);
+    --gta-grad-border-danger: linear-gradient(135deg, #ff8ac4, var(--malus) 50%, #7b61ff 100%);
+    --gta-grad-border-spy: linear-gradient(135deg, var(--spy), var(--bonus) 55%, var(--steal) 100%);
+    --gta-grad-border-gold: linear-gradient(135deg, #ffe066, var(--gold) 40%, #ff6ec7 100%);
+    --gta-grad-border-neutral: linear-gradient(135deg, #e8b4f8, #c4b5fd 50%, #a5f3fc 100%);
+
+    --lpf-navy: #1a0a2e;
+    --lpf-text: #1a0a2e;
+    --lpf-muted: #6b5080;
+    --lpf-border: #e8b4f8;
+    --lpf-surface: #ffffff;
+    --lpf-surface-raised: #fff8fc;
+    --lpf-bg: #f6f0ff;
+    --lpf-primary: #00d4ff;
+    --lpf-link: #7b61ff;
+    --th-ui-primary: #00d4ff;
+    --th-ui-primary-hover: #3de8ff;
+    --th-ui-menu-muted: #6b5080;
+}
+
+/* Fond sunset / néons */
+html.lpf-gta-theme.lpf-gta-miami body::before {
+    background:
+        radial-gradient(ellipse 100% 70% at 0% 0%, rgb(255 110 199 / 22%), transparent 55%),
+        radial-gradient(ellipse 90% 60% at 100% 10%, rgb(0 212 255 / 20%), transparent 50%),
+        radial-gradient(ellipse 80% 50% at 50% 100%, rgb(123 97 255 / 15%), transparent 55%),
+        linear-gradient(165deg, #fff5fc 0%, #f0f9ff 35%, #f6f0ff 70%, #ede9fe 100%);
+    opacity: 1;
+}
+
+html.lpf-gta-theme.lpf-gta-miami body::after {
+    opacity: 0.12;
+    mix-blend-mode: soft-light;
+}
+
+html.lpf-gta-theme.lpf-gta-miami ::selection {
+    background: rgb(255 45 149 / 25%);
+    color: var(--text-main);
+}
+
+html.lpf-gta-theme.lpf-gta-miami ::-webkit-scrollbar-track {
+    background: #ede9fe;
+}
+
+html.lpf-gta-theme.lpf-gta-miami ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6ec7, #00d4ff);
+    border-radius: 6px;
+}
+
+html.lpf-gta-theme.lpf-gta-miami ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff2d95, #7b61ff);
+}
+
+/* Liens */
+html.lpf-gta-theme.lpf-gta-miami a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit) {
+    color: #7b61ff;
+}
+
+html.lpf-gta-theme.lpf-gta-miami a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit):hover {
+    color: #ff2d95;
+}
+
+/* Shell connecté (sans lpf-app-dark) */
+html.lpf-gta-theme.lpf-gta-miami .ta-sidebar,
+html.lpf-gta-theme.lpf-gta-miami .ta-mobile-bar {
+    background: rgb(255 255 255 / 88%) !important;
+    border-color: rgb(232 180 248 / 65%) !important;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 24px rgb(123 97 255 / 10%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-menu-link {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-menu-link:hover {
+    background: rgb(0 212 255 / 10%) !important;
+    color: #7b61ff !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-menu-link.active {
+    background: linear-gradient(90deg, rgb(255 45 149 / 12%), rgb(0 212 255 / 14%)) !important;
+    color: #1a0a2e !important;
+    border-left: 3px solid #ff2d95;
+    box-shadow: inset 0 0 20px rgb(0 212 255 / 8%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-main {
+    background: transparent !important;
+}
+
+/* Cartes */
+html.lpf-gta-theme.lpf-gta-miami body .ta-card,
+html.lpf-gta-theme.lpf-gta-miami .ta-card,
+html.lpf-gta-theme.lpf-gta-miami .rounded-box {
+    background: var(--bg-card) !important;
+    border: 1px solid rgb(232 180 248 / 55%) !important;
+    box-shadow: var(--gta-shadow-card) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-card::after,
+html.lpf-gta-theme.lpf-gta-miami .rounded-box::after {
+    background: linear-gradient(135deg, rgb(255 110 199 / 8%), rgb(0 212 255 / 6%));
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-card:hover,
+html.lpf-gta-theme.lpf-gta-miami .rounded-box:hover {
+    border-color: rgb(0 212 255 / 45%) !important;
+    box-shadow: var(--gta-shadow-card), var(--gta-glow-bonus) !important;
+}
+
+/* Boutons — primaire cyan / outline rose */
+html.lpf-gta-theme.lpf-gta-miami .btn.btn-primary,
+html.lpf-gta-theme.lpf-gta-miami .ta-auth-submit,
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap button[type="submit"] {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b61ff 100%) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .btn.btn-primary:hover:not(:disabled),
+html.lpf-gta-theme.lpf-gta-miami .ta-auth-submit:hover:not(:disabled) {
+    background: linear-gradient(135deg, #3de8ff 0%, #9d86ff 100%) !important;
+    box-shadow: 4px 4px 0 rgb(255 45 149 / 20%), var(--gta-glow-bonus) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .btn.btn-outline,
+html.lpf-gta-theme.lpf-gta-miami .btn.btn-outline.btn-primary {
+    background: #fff !important;
+    color: #ff2d95 !important;
+    border: 2px solid #ff6ec7 !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .btn.btn-outline:hover:not(:disabled) {
+    background: rgb(255 45 149 / 8%) !important;
+    color: #7b61ff !important;
+    border-color: #00d4ff !important;
+}
+
+/* Titres néon doux */
+html.lpf-gta-theme.lpf-gta-miami .ta-page-title,
+html.lpf-gta-theme.lpf-gta-miami .ta-card-title {
+    background: linear-gradient(90deg, #ff2d95, #7b61ff 50%, #00d4ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    text-shadow: none;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-page-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+/* Badges jokers / matchs */
+html.lpf-gta-theme.lpf-gta-miami .ta-badge,
+html.lpf-gta-theme.lpf-gta-miami .joker-guide-badge--offensive {
+    border-color: rgb(255 110 199 / 45%);
+}
+
+/* Auth (sans lpf-auth-dark) */
+html.lpf-gta-theme.lpf-gta-miami body.front-body--auth {
+    background: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap {
+    background: transparent;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-auth-aside {
+    background: linear-gradient(160deg, rgb(255 110 199 / 12%), rgb(0 212 255 / 10%));
+    border-right: 1px solid rgb(232 180 248 / 50%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-auth-form-wrap {
+    background: rgb(255 255 255 / 75%);
+    backdrop-filter: blur(8px);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap label,
+html.lpf-gta-theme.lpf-gta-miami .ta-auth-lead {
+    color: var(--text-secondary) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap input[type="email"],
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap input[type="password"],
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap input[type="text"] {
+    background: #fff !important;
+    border: 1px solid rgb(232 180 248 / 70%) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .auth-wrap input:focus {
+    border-color: #00d4ff !important;
+    box-shadow: 0 0 0 3px rgb(0 212 255 / 20%) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .flash {
+    background: #fff;
+    border: 1px solid rgb(232 180 248 / 60%);
+    color: var(--text-main);
+}
+
+/* Switcher */
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher__track {
+    border-color: rgb(232 180 248 / 70%);
+    background: rgb(255 255 255 / 80%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher__legend {
+    color: var(--text-muted);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher__option.is-active,
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher__option[aria-pressed="true"] {
+    background: linear-gradient(135deg, rgb(255 45 149 / 15%), rgb(0 212 255 / 18%));
+    color: #7b61ff;
+    box-shadow: 0 0 14px rgb(0 212 255 / 25%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher__option--miami.is-active {
+    color: #ff2d95;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .lpf-theme-switcher--floating {
+    background: rgb(255 255 255 / 92%);
+    border-color: rgb(232 180 248 / 65%);
+    box-shadow: 0 12px 40px rgb(123 97 255 / 18%);
+}
+
+/* Miami : boutons GTA (lpf-gta-buttons) */
+html.lpf-gta-theme.lpf-gta-miami .ta-shell .btn.btn-primary,
+html.lpf-gta-theme.lpf-gta-miami body.front-body--auth .auth-wrap .ta-auth-submit,
+html.lpf-gta-theme.lpf-gta-miami body.front-body--auth .auth-wrap button[type="submit"] {
+    background: linear-gradient(135deg, #00d4ff, #7b61ff) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-shell .btn.btn-outline.btn-primary {
+    background: #fff !important;
+    color: #ff2d95 !important;
+    border: 2px solid #ff6ec7 !important;
+}
+
+/* KPI / tableaux lisibles */
+html.lpf-gta-theme.lpf-gta-miami .ta-kpi,
+html.lpf-gta-theme.lpf-gta-miami .tabs-box,
+html.lpf-gta-theme.lpf-gta-miami .match-card,
+html.lpf-gta-theme.lpf-gta-miami .match-live-team-card {
+    background: var(--bg-card) !important;
+    border-color: rgb(232 180 248 / 45%) !important;
+    color: var(--text-main) !important;
+}
+
+html.lpf-gta-theme.lpf-gta-miami .ta-kpi-label,
+html.lpf-gta-theme.lpf-gta-miami .match-meta,
+html.lpf-gta-theme.lpf-gta-miami .match-time {
+    color: var(--text-muted) !important;
+}
+
+/* Variables typo GTA (lpf-gta-typography.css) */
+html.lpf-gta-theme.lpf-gta-miami {
+    --lpf-gta-bg-main: var(--bg-main);
+    --lpf-gta-text-main: var(--text-main);
+    --lpf-gta-text-secondary: var(--text-secondary);
+    --lpf-gta-text-muted: var(--text-muted);
+    --lpf-gta-bonus: var(--bonus);
+    --lpf-gta-bonus-hover: #3de8ff;
+    --lpf-gta-malus: var(--malus);
+    --lpf-gta-spy: var(--spy);
+    --lpf-gta-steal: var(--steal);
+    --lpf-gta-shield: var(--shield);
+    --lpf-gta-gold: var(--gold);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .title-bonus,
+html.lpf-gta-theme.lpf-gta-miami .neon-green {
+    color: #00b8d9;
+    text-shadow: 0 0 12px rgb(0 212 255 / 40%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .title-danger,
+html.lpf-gta-theme.lpf-gta-miami .neon-red {
+    color: #ff2d95;
+    text-shadow: 0 0 12px rgb(255 45 149 / 35%);
+}
+
+html.lpf-gta-theme.lpf-gta-miami .neon-blue {
+    color: #7b61ff;
+    text-shadow: 0 0 12px rgb(123 97 255 / 35%);
+}

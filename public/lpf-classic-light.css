@@ -1,0 +1,293 @@
+/**
+ * LPF'26 — classique clair (TailAdmin / Public Sans, vert LPF)
+ * Actif avec html.lpf-classic-light (sans .dark ni .lpf-gta-theme).
+ */
+
+html.lpf-classic-light {
+    --lpf-bg: #f8fafc;
+    --lpf-surface: #ffffff;
+    --lpf-surface-raised: #f1f5f9;
+    --lpf-border: #e2e8f0;
+    --lpf-text: #0f172a;
+    --lpf-muted: #64748b;
+    --lpf-primary: #16a34a;
+    --lpf-primary-hover: #15803d;
+    --lpf-primary-muted: rgb(22 163 74 / 12%);
+    --lpf-danger: #dc2626;
+    --lpf-warning: #d97706;
+    --lpf-link: #15803d;
+    --lpf-navy: #1b2d4f;
+
+    color-scheme: light;
+}
+
+html.lpf-classic-light,
+html.lpf-classic-light body,
+html.lpf-classic-light body.front-body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+    font-family: "Public Sans", system-ui, sans-serif;
+}
+
+/* --- Shell connecté --- */
+html.lpf-classic-light .ta-shell {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light .ta-main {
+    background: transparent;
+    color: var(--lpf-text);
+}
+
+html.lpf-classic-light .ta-sidebar,
+html.lpf-classic-light .ta-mobile-bar {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 6%);
+}
+
+html.lpf-classic-light .ta-mobile-bar {
+    border-bottom: 1px solid var(--lpf-border);
+}
+
+html.lpf-classic-light .ta-sidebar-brand,
+html.lpf-classic-light .ta-sidebar-footer {
+    border-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light .ta-menu-link {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-menu-link:hover {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.lpf-classic-light .ta-menu-link.active {
+    background: var(--lpf-primary) !important;
+    color: #fff !important;
+}
+
+html.lpf-classic-light .ta-sidebar-notify {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-navy) !important;
+}
+
+html.lpf-classic-light .ta-sidebar-notify:hover,
+html.lpf-classic-light .ta-sidebar-notify--current {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Cartes & typo --- */
+html.lpf-classic-light .ta-card,
+html.lpf-classic-light article.ta-card,
+html.lpf-classic-light .rounded-box {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 6%);
+}
+
+html.lpf-classic-light .ta-page-title,
+html.lpf-classic-light .ta-card-title,
+html.lpf-classic-light .match-day-title,
+html.lpf-classic-light h1,
+html.lpf-classic-light h2,
+html.lpf-classic-light h3 {
+    color: var(--lpf-navy) !important;
+}
+
+html.lpf-classic-light .ta-page-subtitle,
+html.lpf-classic-light .ta-card-text,
+html.lpf-classic-light .ta-kpi-label,
+html.lpf-classic-light .match-day-nav-label {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-kpi-value {
+    color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit) {
+    color: var(--lpf-link);
+}
+
+html.lpf-classic-light a:not(.btn):not(.ta-menu-link):hover {
+    color: var(--lpf-primary-hover);
+}
+
+/* --- Tables --- */
+html.lpf-classic-light .ta-table th {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-muted) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light .ta-table td,
+html.lpf-classic-light .table th,
+html.lpf-classic-light .table td {
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+/* --- Formulaires --- */
+html.lpf-classic-light .ta-form-label,
+html.lpf-classic-light label {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-form-input,
+html.lpf-classic-light .ta-form-select,
+html.lpf-classic-light .ta-form-textarea,
+html.lpf-classic-light input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html.lpf-classic-light select,
+html.lpf-classic-light textarea {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light input:focus,
+html.lpf-classic-light select:focus,
+html.lpf-classic-light textarea:focus {
+    border-color: var(--lpf-primary) !important;
+    box-shadow: 0 0 0 2px rgb(22 163 74 / 20%);
+}
+
+/* --- Boutons --- */
+html.lpf-classic-light .btn-primary,
+html.lpf-classic-light .ta-auth-submit,
+html.lpf-classic-light .auth-wrap button[type="submit"] {
+    background: var(--lpf-primary) !important;
+    border-color: var(--lpf-primary) !important;
+    color: #fff !important;
+}
+
+html.lpf-classic-light .btn-primary:hover:not(:disabled),
+html.lpf-classic-light .ta-auth-submit:hover:not(:disabled) {
+    background: var(--lpf-primary-hover) !important;
+    border-color: var(--lpf-primary-hover) !important;
+}
+
+html.lpf-classic-light .btn-outline.btn-primary:hover:not(:disabled) {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Flash & badges --- */
+html.lpf-classic-light .flash-success {
+    background: rgb(22 163 74 / 10%);
+    border: 1px solid var(--lpf-primary);
+    color: var(--lpf-link);
+}
+
+html.lpf-classic-light .flash-danger {
+    background: rgb(220 38 38 / 8%);
+    border: 1px solid var(--lpf-danger);
+    color: var(--lpf-danger);
+}
+
+html.lpf-classic-light .ta-badge {
+    background: var(--lpf-surface-raised);
+    color: var(--lpf-text);
+    border: 1px solid var(--lpf-border);
+}
+
+html.lpf-classic-light .bg-base-100 {
+    background-color: var(--lpf-surface) !important;
+}
+
+html.lpf-classic-light .border-base-300 {
+    border-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light .text-base-content {
+    color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light .tabs-box {
+    background: var(--lpf-surface);
+    border-color: var(--lpf-border);
+}
+
+/* --- Auth --- */
+html.lpf-classic-light body.front-body--auth {
+    background: var(--lpf-bg) !important;
+}
+
+html.lpf-classic-light .auth-wrap {
+    background: var(--lpf-bg);
+}
+
+html.lpf-classic-light .ta-auth-aside {
+    background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+    border-right: 1px solid var(--lpf-border);
+}
+
+html.lpf-classic-light .ta-auth-form-wrap {
+    background: var(--lpf-surface);
+}
+
+html.lpf-classic-light .auth-wrap .section-title,
+html.lpf-classic-light .ta-auth-title {
+    color: var(--lpf-navy) !important;
+}
+
+html.lpf-classic-light .auth-wrap label,
+html.lpf-classic-light .ta-auth-lead {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .auth-wrap input[type="email"],
+html.lpf-classic-light .auth-wrap input[type="password"],
+html.lpf-classic-light .auth-wrap input[type="text"] {
+    background: var(--lpf-surface) !important;
+    border: 1px solid var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light .auth-wrap input:focus {
+    border-color: var(--lpf-primary) !important;
+    box-shadow: 0 0 0 3px rgb(22 163 74 / 18%);
+}
+
+html.lpf-classic-light .ta-auth-slogan {
+    color: var(--lpf-muted);
+}
+
+/* --- Switcher (classique clair) --- */
+html.lpf-classic-light .lpf-theme-switcher__legend {
+    color: var(--lpf-muted);
+}
+
+html.lpf-classic-light .lpf-theme-switcher__track {
+    border-color: var(--lpf-border);
+    background: var(--lpf-surface-raised);
+}
+
+html.lpf-classic-light .lpf-theme-switcher__option {
+    color: var(--lpf-muted);
+}
+
+html.lpf-classic-light .lpf-theme-switcher__option.is-active,
+html.lpf-classic-light .lpf-theme-switcher__option[aria-pressed="true"] {
+    background: var(--lpf-surface);
+    color: var(--lpf-primary);
+    box-shadow: 0 1px 4px rgb(15 23 42 / 10%);
+}
+
+html.lpf-classic-light .lpf-theme-switcher--floating {
+    background: rgb(255 255 255 / 95%);
+    border-color: var(--lpf-border);
+    box-shadow: 0 12px 32px rgb(15 23 42 / 12%);
+}
+
+@import url("lpf-classic-light-front.css");

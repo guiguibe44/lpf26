@@ -1,0 +1,30 @@
+{# Logos : classique sombre (blanc) | classique clair (couleur) | GTA #}
+<span class="lpf-brand-logo-wrap {{ wrap_class|default('') }}">
+    <img
+        src="{{ asset('images/lpf26-logo-white.png') }}"
+        alt="LPF'26"
+        class="lpf-brand-logo lpf-brand-logo--classic-dark {{ img_class|default('') }}"
+        {% if width is defined %}width="{{ width }}"{% endif %}
+        {% if height is defined %}height="{{ height }}"{% endif %}
+        loading="{{ loading|default('lazy') }}"
+        decoding="async"
+    >
+    <img
+        src="{{ asset('images/lpf26-logo-color.png') }}"
+        alt="LPF'26"
+        class="lpf-brand-logo lpf-brand-logo--classic-light {{ img_class|default('') }}"
+        {% if width is defined %}width="{{ width }}"{% endif %}
+        {% if height is defined %}height="{{ height }}"{% endif %}
+        loading="{{ loading|default('lazy') }}"
+        decoding="async"
+    >
+    <img
+        src="{{ asset('images/lpf26-logo-gta.png') }}"
+        alt="LPF'26"
+        class="lpf-brand-logo lpf-brand-logo--gta {{ img_class|default('') }}"
+        {% if width is defined %}width="{{ width }}"{% endif %}
+        {% if height is defined %}height="{{ height }}"{% endif %}
+        loading="{{ loading|default('lazy') }}"
+        decoding="async"
+    >
+</span>

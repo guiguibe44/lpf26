@@ -1,0 +1,463 @@
+/* =========================================================
+   LPF'26 — TYPOGRAPHIE GTA (surcharge html.lpf-gta-theme)
+   Style GTA x FIFA FUT x Coupe du Monde 2026
+========================================================= */
+
+/* Polices : preconnect + <link> dans base.html.twig */
+
+html.lpf-gta-theme {
+    --lpf-gta-bg-main: #050505;
+    --lpf-gta-text-main: #f5f5f5;
+    --lpf-gta-text-secondary: #bdbdbd;
+    --lpf-gta-text-muted: #7a7a7a;
+    --lpf-gta-bonus: #59ff6a;
+    --lpf-gta-bonus-hover: #8bff96;
+    --lpf-gta-malus: #ff4d4d;
+    --lpf-gta-spy: #4db8ff;
+    --lpf-gta-steal: #b266ff;
+    --lpf-gta-shield: #80d8ff;
+    --lpf-gta-gold: #f4c542;
+    --lpf-gta-shadow-black: 0 4px 12px rgba(0, 0, 0, 0.9);
+    --lpf-gta-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* --- Base --- */
+html.lpf-gta-theme body.front-body,
+html.lpf-gta-theme body.front-body--auth {
+    font-family: "Montserrat", sans-serif !important;
+    color: var(--lpf-gta-text-main) !important;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.2px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* =========================================================
+   Classes utilitaires (fournies)
+========================================================= */
+
+html.lpf-gta-theme .hero-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--lpf-gta-text-main);
+    text-shadow:
+        0 3px 0 rgba(0, 0, 0, 0.95),
+        0 8px 24px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+html.lpf-gta-theme .section-title {
+    font-family: "Bebas Neue", sans-serif !important;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--lpf-gta-text-main) !important;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(255, 255, 255, 0.05);
+    margin-bottom: 1rem;
+}
+
+html.lpf-gta-theme .subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--lpf-gta-text-secondary) !important;
+    opacity: 0.95;
+}
+
+html.lpf-gta-theme .small-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--lpf-gta-text-main);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-bonus {
+    color: var(--lpf-gta-bonus) !important;
+    text-shadow:
+        0 0 8px rgba(89, 255, 106, 0.6),
+        0 0 22px rgba(89, 255, 106, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-danger {
+    color: var(--lpf-gta-malus) !important;
+    text-shadow:
+        0 0 8px rgba(255, 77, 77, 0.55),
+        0 0 22px rgba(255, 77, 77, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-spy {
+    color: var(--lpf-gta-spy) !important;
+    text-shadow:
+        0 0 8px rgba(77, 184, 255, 0.55),
+        0 0 22px rgba(77, 184, 255, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-steal {
+    color: var(--lpf-gta-steal) !important;
+    text-shadow:
+        0 0 8px rgba(178, 102, 255, 0.55),
+        0 0 22px rgba(178, 102, 255, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-shield {
+    color: var(--lpf-gta-shield) !important;
+    text-shadow:
+        0 0 8px rgba(128, 216, 255, 0.55),
+        0 0 22px rgba(128, 216, 255, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+html.lpf-gta-theme .title-legendary {
+    background: linear-gradient(180deg, #fff2b2 0%, #f4c542 45%, #c58b1b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(244, 197, 66, 0.25);
+}
+
+html.lpf-gta-theme .body-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.2px;
+    color: var(--lpf-gta-text-main);
+}
+
+html.lpf-gta-theme .secondary-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.96rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--lpf-gta-text-secondary) !important;
+}
+
+html.lpf-gta-theme .muted-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--lpf-gta-text-muted) !important;
+}
+
+html.lpf-gta-theme .caption {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--lpf-gta-text-muted);
+}
+
+html.lpf-gta-theme .badge-text {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+html.lpf-gta-theme .score-text {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--lpf-gta-text-main) !important;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(255, 255, 255, 0.08);
+}
+
+html.lpf-gta-theme .score-elite {
+    background: linear-gradient(180deg, #fff2b2 0%, #f4c542 45%, #c58b1b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 14px rgba(244, 197, 66, 0.22);
+}
+
+html.lpf-gta-theme .neon-green {
+    color: var(--lpf-gta-bonus);
+    text-shadow:
+        0 0 8px rgba(89, 255, 106, 0.6),
+        0 0 25px rgba(89, 255, 106, 0.25);
+}
+
+html.lpf-gta-theme .neon-red {
+    color: var(--lpf-gta-malus);
+    text-shadow:
+        0 0 8px rgba(255, 77, 77, 0.6),
+        0 0 25px rgba(255, 77, 77, 0.25);
+}
+
+html.lpf-gta-theme .neon-blue {
+    color: var(--lpf-gta-spy);
+    text-shadow:
+        0 0 8px rgba(77, 184, 255, 0.6),
+        0 0 25px rgba(77, 184, 255, 0.25);
+}
+
+html.lpf-gta-theme .neon-gold {
+    background: linear-gradient(180deg, #fff2b2, #f4c542);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Liens (contenu principal + auth, pas le menu sidebar) */
+html.lpf-gta-theme .ta-main a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit),
+html.lpf-gta-theme .auth-wrap a:not(.btn):not(.ta-auth-submit),
+html.lpf-gta-theme .link-primary {
+    position: relative;
+    color: var(--lpf-gta-bonus) !important;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+html.lpf-gta-theme .ta-main a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit):hover,
+html.lpf-gta-theme .auth-wrap a:not(.btn):not(.ta-auth-submit):hover,
+html.lpf-gta-theme .link-primary:hover {
+    color: var(--lpf-gta-bonus-hover) !important;
+    text-shadow: 0 0 12px rgba(89, 255, 106, 0.45);
+}
+
+html.lpf-gta-theme .link-secondary {
+    color: var(--lpf-gta-text-secondary);
+    text-decoration: none;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+html.lpf-gta-theme .link-secondary:hover {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
+}
+
+/* =========================================================
+   Mapping classes LPF existantes
+========================================================= */
+
+/* Titres page / section */
+html.lpf-gta-theme .ta-page-title,
+html.lpf-gta-theme .match-day-title,
+html.lpf-gta-theme .dashboard-buteur-form-card__title,
+html.lpf-gta-theme .dashboard-buteur-taken-card__title,
+html.lpf-gta-theme .joker-guide-card-name,
+html.lpf-gta-theme .joker-dialog-title,
+html.lpf-gta-theme .lpf-admin-guide .ta-card-title {
+    font-family: "Bebas Neue", sans-serif !important;
+    font-size: clamp(1.75rem, 4vw, 2.5rem) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    line-height: 1 !important;
+    color: var(--lpf-gta-text-main) !important;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(255, 255, 255, 0.05) !important;
+}
+
+html.lpf-gta-theme .ta-auth-title.section-title {
+    font-size: clamp(2rem, 5vw, 3.2rem) !important;
+}
+
+html.lpf-gta-theme .match-day-section--live > .match-day-title {
+    color: var(--lpf-gta-gold) !important;
+    text-shadow:
+        0 0 8px rgba(244, 197, 66, 0.35),
+        0 2px 0 rgba(0, 0, 0, 0.9) !important;
+}
+
+html.lpf-gta-theme .match-day-section--featured > .match-day-title {
+    color: var(--lpf-gta-spy) !important;
+}
+
+/* Petits titres cartes */
+html.lpf-gta-theme .ta-card-title,
+html.lpf-gta-theme .joker-overview-name,
+html.lpf-gta-theme .match-live-buteurs-title,
+html.lpf-gta-theme .match-espion-section-title,
+html.lpf-gta-theme .admin-preview-section-title,
+html.lpf-gta-theme .small-title {
+    font-family: "Bebas Neue", sans-serif !important;
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: var(--lpf-gta-text-main) !important;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Sous-titres & lead */
+html.lpf-gta-theme .ta-page-subtitle,
+html.lpf-gta-theme .ta-auth-lead,
+html.lpf-gta-theme .subtitle {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: var(--lpf-gta-text-secondary) !important;
+    opacity: 0.95;
+}
+
+/* Texte carte / corps */
+html.lpf-gta-theme .ta-card-text,
+html.lpf-gta-theme .ta-form-help,
+html.lpf-gta-theme .push-notifications-card__list,
+html.lpf-gta-theme .body-text {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.7 !important;
+    color: var(--lpf-gta-text-main) !important;
+}
+
+/* Texte secondaire / muted */
+html.lpf-gta-theme .ta-kpi-label,
+html.lpf-gta-theme .match-day-nav-label,
+html.lpf-gta-theme .match-meta,
+html.lpf-gta-theme .match-live-prono-label,
+html.lpf-gta-theme .match-live-prono-meta,
+html.lpf-gta-theme .ta-auth-check,
+html.lpf-gta-theme .ta-auth-link-row,
+html.lpf-gta-theme .dashboard-buteur-hint,
+html.lpf-gta-theme .secondary-text,
+html.lpf-gta-theme .muted-text {
+    font-family: "Montserrat", sans-serif !important;
+    color: var(--lpf-gta-text-muted) !important;
+}
+
+html.lpf-gta-theme .ta-page-subtitle,
+html.lpf-gta-theme .match-live-score-hint,
+html.lpf-gta-theme .match-partner-empty {
+    color: var(--lpf-gta-text-secondary) !important;
+}
+
+/* Scores & KPI */
+html.lpf-gta-theme .ta-kpi-value,
+html.lpf-gta-theme .match-time,
+html.lpf-gta-theme .match-final-score,
+html.lpf-gta-theme .match-live-score-display,
+html.lpf-gta-theme .match-live-prono-score,
+html.lpf-gta-theme .match-partner-score,
+html.lpf-gta-theme .team-show-prono-score {
+    font-family: "Bebas Neue", sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    color: var(--lpf-gta-text-main) !important;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.9),
+        0 0 12px rgba(255, 255, 255, 0.08) !important;
+}
+
+html.lpf-gta-theme .ta-kpi-up,
+html.lpf-gta-theme .match-live-buteur-points,
+html.lpf-gta-theme .match-live-team-total,
+html.lpf-gta-theme .team-show-prono-pts {
+    color: var(--lpf-gta-bonus) !important;
+    text-shadow: 0 0 8px rgba(89, 255, 106, 0.35) !important;
+}
+
+html.lpf-gta-theme .match-final-score--live,
+html.lpf-gta-theme .match-link--live {
+    color: var(--lpf-gta-gold) !important;
+}
+
+/* Espion / jokers */
+html.lpf-gta-theme .match-espion-title,
+html.lpf-gta-theme .joker-dialog-buteur-note {
+    color: var(--lpf-gta-spy) !important;
+    font-weight: 700 !important;
+    text-shadow:
+        0 0 8px rgba(77, 184, 255, 0.55),
+        0 0 22px rgba(77, 184, 255, 0.25),
+        0 2px 0 rgba(0, 0, 0, 0.9) !important;
+}
+
+html.lpf-gta-theme .match-card-kdo-badge,
+html.lpf-gta-theme .match-live-kdo-row--winner td {
+    font-family: "Bebas Neue", sans-serif !important;
+    letter-spacing: 1px;
+}
+
+html.lpf-gta-theme .ta-link,
+html.lpf-gta-theme .ranking-team-link,
+html.lpf-gta-theme .match-link {
+    color: var(--lpf-gta-bonus) !important;
+    font-weight: 600 !important;
+}
+
+html.lpf-gta-theme .ta-link:hover,
+html.lpf-gta-theme .ranking-team-link:hover .ranking-team-name,
+html.lpf-gta-theme .match-link:hover {
+    color: var(--lpf-gta-bonus-hover) !important;
+    text-shadow: 0 0 12px rgba(89, 255, 106, 0.45);
+}
+
+html.lpf-gta-theme .ta-menu-link {
+    font-family: "Montserrat", sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+}
+
+html.lpf-gta-theme .ta-menu-link.active {
+    font-family: "Bebas Neue", sans-serif !important;
+    letter-spacing: 1px !important;
+}
+
+html.lpf-gta-theme .ta-badge,
+html.lpf-gta-theme .badge-text {
+    font-family: "Bebas Neue", sans-serif !important;
+    letter-spacing: 0.5px;
+}
+
+/* Labels formulaires */
+html.lpf-gta-theme .ta-form-label {
+    font-family: "Montserrat", sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: var(--lpf-gta-text-muted) !important;
+}
+
+@media (max-width: 768px) {
+    html.lpf-gta-theme .hero-title {
+        line-height: 1;
+        letter-spacing: 1px;
+    }
+
+    html.lpf-gta-theme .section-title,
+    html.lpf-gta-theme .ta-auth-title.section-title {
+        letter-spacing: 1px;
+    }
+
+    html.lpf-gta-theme .subtitle,
+    html.lpf-gta-theme .ta-page-subtitle {
+        font-size: 0.9rem !important;
+    }
+
+    html.lpf-gta-theme .body-text,
+    html.lpf-gta-theme .ta-card-text {
+        font-size: 0.95rem !important;
+    }
+}

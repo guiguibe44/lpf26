@@ -1,0 +1,661 @@
+/**
+ * LPF'26 — front connecté (shell ta-*)
+ * Fichier autonome : chargé en <link> après tailadmin + importmap.
+ */
+@import url("https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css");
+
+html.dark {
+    --lpf-bg: #09090b;
+    --lpf-surface: #18181b;
+    --lpf-surface-raised: #27272a;
+    --lpf-border: #3f3f46;
+    --lpf-text: #fafafa;
+    --lpf-muted: #a1a1aa;
+    --lpf-primary: #22c55e;
+    --lpf-primary-hover: #16a34a;
+    --lpf-primary-muted: rgb(34 197 94 / 15%);
+    --lpf-danger: #ef4444;
+    --lpf-warning: #f59e0b;
+    --lpf-link: #4ade80;
+}
+
+html.dark,
+html.dark body,
+html.dark body.front-body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+    font-family: "Public Sans", system-ui, sans-serif;
+    color-scheme: dark;
+}
+
+/* --- Layout shell --- */
+html.dark .ta-shell {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-main {
+    background: transparent;
+    color: var(--lpf-text);
+}
+
+html.dark .ta-sidebar {
+    background: var(--lpf-surface) !important;
+    border-right-color: var(--lpf-border) !important;
+}
+
+html.dark .ta-sidebar-brand,
+html.dark .ta-sidebar-footer {
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark .ta-mobile-bar {
+    background: var(--lpf-surface) !important;
+    border-bottom: 1px solid var(--lpf-border);
+}
+
+html.dark .ta-menu-link {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .ta-menu-link:hover {
+    background: var(--lpf-primary-muted) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark .ta-menu-link.active {
+    background: var(--lpf-primary) !important;
+    color: var(--lpf-bg) !important;
+}
+
+html.dark .ta-sidebar-notify {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-sidebar-notify:hover,
+html.dark .ta-sidebar-notify--current {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Cartes & typo --- */
+html.dark .ta-card,
+html.dark article.ta-card,
+html.dark .rounded-box {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-page-title,
+html.dark .ta-card-title,
+html.dark .match-day-title,
+html.dark h1,
+html.dark h2,
+html.dark h3 {
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-page-subtitle,
+html.dark .ta-card-text,
+html.dark .ta-kpi-label,
+html.dark .match-day-nav-label {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .ta-kpi-value {
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-link,
+html.dark a.ta-link,
+html.dark .ranking-team-link {
+    color: var(--lpf-link) !important;
+}
+
+html.dark a:not(.btn):not(.ta-menu-link):not(.ta-auth-submit) {
+    color: var(--lpf-link);
+}
+
+html.dark a:not(.btn):not(.ta-menu-link):hover {
+    color: var(--lpf-primary-hover);
+}
+
+/* --- Tables --- */
+html.dark .ta-table-wrap {
+    border-color: var(--lpf-border);
+}
+
+html.dark .ta-table th {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-muted) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark .ta-table td,
+html.dark .table th,
+html.dark .table td {
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .table {
+    color: var(--lpf-text);
+}
+
+/* --- Formulaires --- */
+html.dark .ta-form-label,
+html.dark label {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .ta-form-input,
+html.dark .ta-form-select,
+html.dark .ta-form-textarea,
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html.dark select,
+html.dark textarea {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .ta-form-input:focus,
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+    border-color: var(--lpf-primary) !important;
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(34 197 94 / 25%);
+}
+
+html.dark .ta-form-help {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Boutons --- */
+html.dark .btn {
+    border-radius: 0.5rem;
+}
+
+html.dark .btn-primary,
+html.dark .ta-auth-submit,
+html.dark .auth-wrap button[type="submit"] {
+    background: var(--lpf-primary) !important;
+    border-color: var(--lpf-primary) !important;
+    color: #052e16 !important;
+}
+
+html.dark .btn-primary:hover:not(:disabled),
+html.dark .ta-auth-submit:hover:not(:disabled) {
+    background: var(--lpf-primary-hover) !important;
+    border-color: var(--lpf-primary-hover) !important;
+}
+
+html.dark .btn-outline,
+html.dark .btn-outline.btn-primary {
+    background: transparent !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .btn-outline.btn-primary:hover:not(:disabled) {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Badges & alertes --- */
+html.dark .ta-badge {
+    background: var(--lpf-surface-raised);
+    color: var(--lpf-text);
+    border: 1px solid var(--lpf-border);
+}
+
+html.dark .ta-badge-success {
+    background: rgb(34 197 94 / 15%) !important;
+    color: var(--lpf-link) !important;
+    border-color: var(--lpf-primary) !important;
+}
+
+html.dark .ta-badge-warning {
+    background: rgb(245 158 11 / 15%) !important;
+    color: var(--lpf-warning) !important;
+    border-color: var(--lpf-warning) !important;
+}
+
+html.dark .flash-success {
+    background: rgb(34 197 94 / 12%);
+    border: 1px solid var(--lpf-primary);
+    color: var(--lpf-link);
+}
+
+html.dark .flash-danger {
+    background: rgb(239 68 68 / 12%);
+    border: 1px solid var(--lpf-danger);
+    color: #fca5a5;
+}
+
+html.dark .flash-info {
+    background: rgb(59 130 246 / 12%);
+    border: 1px solid #3b82f6;
+    color: #93c5fd;
+}
+
+html.dark .alert-warning {
+    background: rgb(245 158 11 / 12%);
+    border-color: var(--lpf-warning);
+    color: var(--lpf-warning);
+}
+
+/* --- Daisy / FlyonUI compat --- */
+html.dark .bg-base-100 {
+    background-color: var(--lpf-surface) !important;
+}
+
+html.dark .border-base-300 {
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark .text-base-content {
+    color: var(--lpf-text) !important;
+}
+
+html.dark .text-base-content\/70 {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Onglets --- */
+html.dark .tabs-box {
+    background: var(--lpf-surface);
+    border-color: var(--lpf-border);
+}
+
+html.dark .tab {
+    color: var(--lpf-muted);
+}
+
+html.dark .tab-active {
+    background: var(--lpf-primary-muted);
+    color: var(--lpf-link);
+}
+
+/* --- Matchs (sélection courante) --- */
+html.dark .match-card,
+html.dark .match-pronostic,
+html.dark .match-live-team-card,
+html.dark .match-live-score-card {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark .match-team,
+html.dark .match-time,
+html.dark .match-live-score-display,
+html.dark .match-live-score-team,
+html.dark .ranking-team-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark .match-live-buteur-country,
+html.dark .match-live-score-sep,
+html.dark .match-live-simulator-field,
+html.dark .match-meta {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .match-live-buteur-points,
+html.dark .ta-kpi-up {
+    color: var(--lpf-link) !important;
+}
+
+/* --- Texte résiduel (anti-bleu tailadmin) --- */
+html.dark .ta-main,
+html.dark .auth-wrap {
+    --tw-prose-body: var(--lpf-muted);
+}
+
+html.dark .ta-main :where(.match-espion-title, .joker-dialog-buteur-note) {
+    color: #93c5fd !important;
+}
+
+/* --- Burger LPF --- */
+html.dark .lpf-burger {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+html.dark .ta-burger.lpf-burger {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+html.dark .lpf-burger__line {
+    display: block;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--lpf-text);
+    transition: all 0.35s ease;
+}
+
+html.dark .lpf-burger__line:nth-child(1) {
+    width: 28px;
+}
+
+html.dark .lpf-burger__line:nth-child(2) {
+    width: 18px;
+}
+
+html.dark .lpf-burger__line:nth-child(3) {
+    width: 28px;
+}
+
+html.dark .lpf-burger__ball {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    margin-top: -4.5px;
+    border-radius: 50%;
+    background-color: var(--lpf-primary);
+}
+
+html.dark .lpf-burger.open .lpf-burger__line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+html.dark .lpf-burger.open .lpf-burger__line:nth-child(2) {
+    opacity: 0;
+    width: 0;
+}
+
+html.dark .lpf-burger.open .lpf-burger__line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+html.dark .lpf-burger.open .lpf-burger__ball {
+    opacity: 0;
+}
+
+/* --- Anti textes bleus / navy résiduels --- */
+html.dark .ta-main,
+html.dark .auth-wrap {
+    color: var(--lpf-text);
+}
+
+html.dark .ta-main *:not(.btn):not(.btn *):not(.ta-menu-link):not(.ta-badge):not(.ta-badge *),
+html.dark .auth-wrap *:not(.btn):not(.btn *):not(.ta-auth-submit) {
+    color: inherit;
+}
+
+html.dark [class*="text-slate-"],
+html.dark [class*="text-gray-"],
+html.dark [style*="color: rgb(15, 23, 42)"],
+html.dark [style*="color: rgb(30, 41, 59)"] {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Priorité > tailadmin (#0f172a !important) --- */
+html.dark body.front-body .ta-shell,
+html.dark body.front-body .ta-main {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-shell .text-base-content,
+html.dark body.front-body .ta-main .text-base-content {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .ta-page-title,
+html.dark body.front-body .ta-main .ta-card-title,
+html.dark body.front-body .ta-main .section-title,
+html.dark body.front-body .ta-main h1,
+html.dark body.front-body .ta-main h2,
+html.dark body.front-body .ta-main h3 {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .bg-base-100 {
+    background-color: var(--lpf-surface) !important;
+}
+
+html.dark body.front-body .ta-sidebar-backdrop {
+    background: rgb(0 0 0 / 55%);
+}
+
+/* --- Bandeau cotisation --- */
+html.dark .app-cotisation-banner.app-cotisation-banner--alert {
+    background: linear-gradient(180deg, rgb(69 26 3 / 0.95) 0%, rgb(124 45 18 / 0.9) 100%) !important;
+    border-bottom-color: var(--lpf-warning) !important;
+    color: #fed7aa !important;
+    box-shadow: 0 2px 10px rgb(245 158 11 / 20%);
+}
+
+html.dark .app-cotisation-banner.app-cotisation-banner--alert:hover {
+    background: linear-gradient(180deg, rgb(124 45 18 / 0.95) 0%, rgb(154 52 18 / 0.9) 100%) !important;
+}
+
+html.dark .app-cotisation-banner__title {
+    color: #fdba74 !important;
+}
+
+html.dark .app-cotisation-dialog::backdrop {
+    background: rgb(0 0 0 / 65%);
+}
+
+html.dark .app-cotisation-dialog__panel {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    box-shadow: 0 20px 50px rgb(0 0 0 / 45%);
+}
+
+html.dark .app-cotisation-dialog__header {
+    background: var(--lpf-surface-raised) !important;
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark .app-cotisation-dialog__title,
+html.dark .app-cotisation-dialog__subtitle {
+    color: var(--lpf-text) !important;
+}
+
+html.dark .app-cotisation-dialog__body,
+html.dark .app-cotisation-dialog__lead {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .app-cotisation-dialog__close {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark .app-cotisation-dialog__close:hover {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-text) !important;
+}
+
+/* --- Guide admin (accueil) --- */
+html.dark body.front-body .lpf-admin-guide {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__item {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__item[open] {
+    border-color: var(--lpf-primary) !important;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+html.dark body.front-body .lpf-admin-guide__item > summary {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__item > summary::after {
+    border-right-color: var(--lpf-muted);
+    border-bottom-color: var(--lpf-muted);
+}
+
+html.dark body.front-body .lpf-admin-guide__body {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__body code {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__body a {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .lpf-admin-guide__body a:hover {
+    color: var(--lpf-primary-hover) !important;
+}
+
+/* --- Dashboard buteur (picker, stats, pris par d'autres) --- */
+html.dark body.front-body .dashboard-buteur-form-card,
+html.dark body.front-body .dashboard-buteur-taken-card {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-form-card__title,
+html.dark body.front-body .dashboard-buteur-taken-card__title {
+    border-bottom-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-card__intro,
+html.dark body.front-body .dashboard-buteur-taken-card__empty,
+html.dark body.front-body .dashboard-buteur-subtitle,
+html.dark body.front-body .dashboard-buteur-hint,
+html.dark body.front-body .dashboard-buteur-preview-label,
+html.dark body.front-body .dashboard-partner-email,
+html.dark body.front-body .dashboard-partner-buteur-pays,
+html.dark body.front-body .dashboard-partner-buteur-pending,
+html.dark body.front-body .dashboard-current-buteur {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-row {
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-name,
+html.dark body.front-body .dashboard-buteur-preview,
+html.dark body.front-body .dashboard-partner-buteur-name {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-pays {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-photo,
+html.dark body.front-body .dashboard-buteur-footer-buteur-photo,
+html.dark body.front-body .dashboard-buteur-footer-buteur-photo--empty,
+html.dark body.front-body .dashboard-buteur-preview-img {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-taken-photo--placeholder,
+html.dark body.front-body .dashboard-buteur-footer-avatar--placeholder,
+html.dark body.front-body .dashboard-buteur-footer-buteur-photo--placeholder,
+html.dark body.front-body .dashboard-buteur-preview-photo--placeholder,
+html.dark body.front-body .dashboard-buteur-result-item-photo--placeholder {
+    background: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-card-footer,
+html.dark body.front-body .dashboard-partner-buteurs {
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-footer-avatar,
+html.dark body.front-body .dashboard-buteur-footer-avatar--placeholder,
+html.dark body.front-body .dashboard-buteur-footer-buteur-photo {
+    border-color: var(--lpf-surface) !important;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+}
+
+html.dark body.front-body .dashboard-buteur-stats {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-stats__row--muted,
+html.dark body.front-body .dashboard-buteur-stats__hint {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-result-list {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-result-item {
+    border-bottom-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-result-item:hover {
+    background: var(--lpf-primary-muted) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-results > .dashboard-buteur-hint,
+html.dark body.front-body .dashboard-buteur-results > .dashboard-buteur-error,
+html.dark body.front-body .dashboard-buteur-result-panel {
+    border-color: var(--lpf-border) !important;
+    background: var(--lpf-surface) !important;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 35%);
+}
+
+html.dark body.front-body .dashboard-buteur-result-group + .dashboard-buteur-result-group {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-result-group-label {
+    color: var(--lpf-muted) !important;
+    background: var(--lpf-bg) !important;
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-result-item-photo {
+    background: var(--lpf-bg) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-preview-img {
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .dashboard-buteur-error {
+    color: #fca5a5 !important;
+}
+
+@import url("lpf-app-dark-front.css");
+@import url("lpf-app-dark-canvas.css");

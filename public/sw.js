@@ -1,6 +1,6 @@
 /* Service worker LPF'26 — réception des notifications push */
 const DEFAULT_TITLE = "LPF'26";
-const DEFAULT_ICON = '/images/lpf26-logo-color.png';
+const DEFAULT_ICON = '/images/lpf26-logo-gta.png';
 
 self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());

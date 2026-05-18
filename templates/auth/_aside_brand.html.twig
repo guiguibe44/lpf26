@@ -18,14 +18,11 @@
     "De aquí pal real.",
 ] %}
 <div class="ta-auth-brand-block">
-    <img
-        class="ta-auth-logo"
-        src="{{ asset('images/lpf26-logo-white.png') }}"
-        alt="LPF'26"
-        width="280"
-        height="280"
-        loading="eager"
-        decoding="async"
-    >
+    {% include '_lpf_brand_logo.html.twig' with {
+        img_class: 'ta-auth-logo',
+        width: 480,
+        height: 480,
+        loading: 'eager'
+    } %}
     <p class="ta-auth-slogan">{{ random(auth_slogans) }}</p>
 </div>

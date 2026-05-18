@@ -1,0 +1,51 @@
+{# Thèmes visibles : sombre | clair — GTA / Miami conservés mais masqués (réactivables) #}
+<div class="lpf-theme-switcher{% if modifier is defined and modifier %} lpf-theme-switcher--{{ modifier }}{% endif %}" data-lpf-theme-switcher>
+    <span class="lpf-theme-switcher__legend" id="{{ switcher_id|default('lpf-theme-switcher-label') }}">Thème</span>
+    <div
+        class="lpf-theme-switcher__track lpf-theme-switcher__track--dual"
+        role="group"
+        aria-labelledby="{{ switcher_id|default('lpf-theme-switcher-label') }}"
+    >
+        <button
+            type="button"
+            class="lpf-theme-switcher__option"
+            data-lpf-theme-option="classic"
+            aria-pressed="false"
+            title="Thème sombre"
+        >
+            Sombre
+        </button>
+        <button
+            type="button"
+            class="lpf-theme-switcher__option lpf-theme-switcher__option--classic-light"
+            data-lpf-theme-option="classic-light"
+            aria-pressed="false"
+            title="Thème clair"
+        >
+            Clair
+        </button>
+        {# Masqués pour l’instant — retirer la classe --hidden pour réafficher #}
+        <button
+            type="button"
+            class="lpf-theme-switcher__option lpf-theme-switcher__option--hidden"
+            data-lpf-theme-option="gta"
+            aria-pressed="false"
+            aria-hidden="true"
+            tabindex="-1"
+            title="Thème GTA sombre"
+        >
+            GTA
+        </button>
+        <button
+            type="button"
+            class="lpf-theme-switcher__option lpf-theme-switcher__option--miami lpf-theme-switcher__option--hidden"
+            data-lpf-theme-option="miami"
+            aria-pressed="false"
+            aria-hidden="true"
+            tabindex="-1"
+            title="GTA clair Miami Vice"
+        >
+            Miami
+        </button>
+    </div>
+</div>

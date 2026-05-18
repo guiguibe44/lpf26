@@ -1,0 +1,12 @@
+{# @var entry array @var joker App\Entity\Joker #}
+{% if joker.description %}
+    <p class="joker-guide-card-summary">{{ joker.description }}</p>
+{% endif %}
+
+{% if entry.details is not empty %}
+    <ul class="joker-guide-card-details">
+        {% for detail in entry.details %}
+            <li>{{ detail }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

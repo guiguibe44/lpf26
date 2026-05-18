@@ -4,13 +4,7 @@
     <div class="ta-sidebar-inner">
         <div class="ta-sidebar-brand">
             <a href="{{ path('app_homepage') }}" class="ta-sidebar-logo-link" title="Accueil LPF'26">
-                <img
-                    src="{{ asset('images/ChatGPT Image 14 mai 2026, 19_50_28.png') }}"
-                    alt="LPF'26"
-                    class="ta-sidebar-logo"
-                    loading="lazy"
-                    decoding="async"
-                >
+                {% include '_lpf_brand_logo.html.twig' with { img_class: 'ta-sidebar-logo' } %}
             </a>
         </div>
 
@@ -70,6 +64,7 @@
         </nav>
 
         <div class="ta-sidebar-footer">
+            {% include '_gta_theme_switcher.html.twig' with { switcher_id: 'lpf-theme-switcher-sidebar' } %}
             <a
                 href="{{ path('app_account') }}#notifications"
                 class="ta-sidebar-notify {{ currentRoute == 'app_account' ? 'ta-sidebar-notify--current' : '' }}"

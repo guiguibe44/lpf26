@@ -287,7 +287,7 @@ export default class extends Controller {
             const registration = await navigator.serviceWorker.ready;
             await registration.showNotification('LPF\'26 — test', {
                 body: 'Si vous voyez cette alerte, l’affichage local fonctionne.',
-                icon: '/images/lpf26-logo-color.png',
+                icon: '/images/lpf26-logo-gta.png',
                 tag: 'lpf26-push-test',
             });
             this.setStatus('Notification de test affichée.', 'success');

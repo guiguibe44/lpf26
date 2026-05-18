@@ -1,0 +1,384 @@
+/**
+ * LPF'26 — pages auth (non connecté)
+ * Fichier autonome : chargé en <link> (pas via importmap).
+ * Mise en page 2 colonnes, fond sombre partout.
+ */
+@import url("https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css");
+
+:root {
+    --auth-bg: #09090b;
+    --auth-panel: #141416;
+    --auth-panel-alt: #18181b;
+    --auth-border: #3f3f46;
+    --auth-text: #fafafa;
+    --auth-muted: #a1a1aa;
+    --auth-primary: #22c55e;
+    --auth-primary-hover: #16a34a;
+    --auth-danger: #ef4444;
+    --auth-link: #4ade80;
+}
+
+/* --- Page entière --- */
+html.dark,
+html.dark body,
+html.dark body.front-body,
+html.dark body.front-body--auth {
+    margin: 0;
+    min-height: 100%;
+    background: var(--auth-bg) !important;
+    color: var(--auth-text) !important;
+    font-family: "Public Sans", system-ui, sans-serif;
+    color-scheme: dark;
+}
+
+html.dark .auth-wrap {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: var(--auth-bg);
+}
+
+/* Grille 2 colonnes */
+html.dark .auth-grid,
+html.dark .ta-auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(100vh, auto);
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    gap: 0;
+    align-items: stretch;
+}
+
+/* Colonne gauche — logo & slogan */
+html.dark .auth-aside,
+html.dark .ta-auth-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--auth-panel) !important;
+    color: var(--auth-text) !important;
+    border-right: 1px solid var(--auth-border);
+    min-height: 100vh;
+}
+
+html.dark .ta-auth-brand-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: min(36rem, 100%);
+    margin: 0 auto;
+}
+
+html.dark .ta-auth-logo {
+    display: block;
+    width: min(480px, 88vw);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+html.dark .ta-auth-slogan {
+    margin: 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--auth-muted) !important;
+    max-width: 20rem;
+}
+
+/* Colonne droite — formulaire */
+html.dark .ta-auth-form-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem clamp(1.5rem, 5vw, 3.5rem);
+    background: var(--auth-bg) !important;
+    color: var(--auth-text) !important;
+    min-height: 100vh;
+}
+
+html.dark .ta-auth-title,
+html.dark .section-title {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.75rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--auth-text) !important;
+}
+
+/* Spécificité > auth-tailwind-overrides / front-dashboard (#0f172a !important) */
+html.dark body.front-body--auth .auth-wrap .ta-auth-form-wrap {
+    background: var(--auth-bg) !important;
+    color: var(--auth-text) !important;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-form-wrap .section-title,
+html.dark body.front-body--auth .auth-wrap .ta-auth-form-wrap .ta-auth-title {
+    color: var(--auth-text) !important;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-form-wrap .ta-auth-lead {
+    color: var(--auth-muted) !important;
+}
+
+html.dark .ta-auth-lead {
+    margin: 0 0 1.25rem;
+    color: var(--auth-muted) !important;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+html.dark .ta-auth-form {
+    display: grid;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 28rem;
+}
+
+html.dark .ta-auth-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+}
+
+@media (min-width: 640px) {
+    html.dark .ta-auth-form-row-2 {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1rem;
+    }
+}
+
+/* Labels & champs */
+html.dark .ta-auth-form-wrap form label,
+html.dark .ta-auth-form-wrap .ta-form-label,
+html.dark .ta-auth-check label {
+    display: block;
+    margin-top: 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--auth-muted) !important;
+}
+
+html.dark .ta-auth-form-wrap form input[type="text"],
+html.dark .ta-auth-form-wrap form input[type="email"],
+html.dark .ta-auth-form-wrap form input[type="password"],
+html.dark .ta-auth-form-wrap .ta-form-input,
+html.dark .ta-auth-form-wrap .ta-form-select,
+html.dark .ta-auth-form-wrap .ta-form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.25rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--auth-text) !important;
+    background: var(--auth-panel-alt) !important;
+    border: 1px solid var(--auth-border) !important;
+    border-radius: 0.5rem;
+}
+
+html.dark .ta-auth-form-wrap form input::placeholder,
+html.dark .ta-auth-form-wrap .ta-form-input::placeholder {
+    color: #71717a;
+}
+
+html.dark .ta-auth-form-wrap form input:focus,
+html.dark .ta-auth-form-wrap .ta-form-input:focus,
+html.dark .ta-auth-form-wrap .ta-form-select:focus,
+html.dark .ta-auth-form-wrap .ta-form-textarea:focus {
+    outline: none;
+    border-color: var(--auth-primary) !important;
+    box-shadow: 0 0 0 2px rgb(34 197 94 / 25%);
+}
+
+html.dark .ta-auth-check {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 0.875rem;
+    color: var(--auth-muted) !important;
+}
+
+html.dark .ta-auth-check input {
+    accent-color: var(--auth-primary);
+}
+
+/* Bouton submit — layout uniquement (style visuel : lpf-gta-buttons.css) */
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
+html.dark body.front-body--auth .auth-wrap button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 28rem;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit .ti {
+    font-size: 1.1rem;
+}
+
+/* Liens */
+html.dark .ta-auth-link-row {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    color: var(--auth-muted) !important;
+}
+
+html.dark .ta-auth-form-wrap a:not(.ta-auth-submit) {
+    color: var(--auth-link) !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+html.dark .ta-auth-form-wrap a:not(.ta-auth-submit):hover {
+    color: var(--auth-primary-hover) !important;
+    text-decoration: underline;
+}
+
+/* Séparateur inscription */
+html.dark .ta-auth-separator {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 1rem 0;
+    font-size: 0.8rem;
+    color: var(--auth-muted) !important;
+}
+
+html.dark .ta-auth-separator::before,
+html.dark .ta-auth-separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--auth-border);
+}
+
+/* Flash & erreurs */
+html.dark .auth-wrap > .flash {
+    max-width: 28rem;
+    margin: 1rem auto 0;
+    padding: 0.75rem 1rem;
+    padding-left: clamp(1.5rem, 5vw, 3.5rem);
+    padding-right: clamp(1.5rem, 5vw, 3.5rem);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+html.dark .auth-wrap .ta-auth-form-wrap .flash {
+    max-width: none;
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+}
+
+html.dark .auth-wrap .flash-success {
+    background: rgb(34 197 94 / 12%);
+    border: 1px solid var(--auth-primary);
+    color: var(--auth-link);
+}
+
+html.dark .auth-wrap .flash-danger {
+    background: rgb(239 68 68 / 12%);
+    border: 1px solid var(--auth-danger);
+    color: #fca5a5;
+}
+
+html.dark .auth-wrap .flash-info {
+    background: rgb(59 130 246 / 12%);
+    border: 1px solid #3b82f6;
+    color: #93c5fd;
+}
+
+html.dark .ta-form-errors,
+html.dark .ta-form-errors--alert {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+    color: #fca5a5 !important;
+}
+
+html.dark .ta-form-help {
+    font-size: 0.8rem;
+    color: var(--auth-muted) !important;
+}
+
+/* Bloc test users (login local) */
+html.dark .auth-wrap hr {
+    max-width: 56rem;
+    margin: 2rem auto;
+    border: none;
+    border-top: 1px solid var(--auth-border);
+}
+
+html.dark .auth-wrap hr + h2,
+html.dark .auth-wrap hr ~ h2 {
+    max-width: 56rem;
+    margin: 0 auto 1rem;
+    padding: 0 1.5rem;
+    color: var(--auth-text);
+}
+
+html.dark .auth-wrap hr ~ ul {
+    max-width: 56rem;
+    margin: 0 auto 2rem;
+    padding: 0 1.5rem 2rem;
+    color: var(--auth-muted);
+}
+
+html.dark .auth-wrap code {
+    padding: 0.1rem 0.35rem;
+    background: var(--auth-panel-alt);
+    border: 1px solid var(--auth-border);
+    border-radius: 0.25rem;
+    color: var(--auth-link);
+    font-size: 0.85em;
+}
+
+/* Symfony form choice expanded */
+html.dark .ta-form-choice-expanded {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+html.dark .ta-form-choice-item label {
+    color: var(--auth-text) !important;
+}
+
+/* Mobile : colonnes empilées */
+@media (max-width: 900px) {
+    html.dark .auth-grid,
+    html.dark .ta-auth-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        min-height: auto;
+    }
+
+    html.dark .auth-aside,
+    html.dark .ta-auth-aside {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--auth-border);
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    html.dark .ta-auth-logo {
+        width: min(360px, 94vw);
+    }
+
+    html.dark .ta-auth-form-wrap {
+        min-height: auto;
+        padding: 2rem 1.25rem 2.5rem;
+    }
+
+    html.dark body.front-body--auth .ta-auth-form,
+    html.dark body.front-body--auth .auth-wrap .ta-auth-submit {
+        max-width: none;
+    }
+}

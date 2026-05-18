@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* Mode sombre Tailwind : classe .dark sur <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+    --color-lpf-bg: #09090b;
+    --color-lpf-surface: #18181b;
+    --color-lpf-surface-raised: #27272a;
+    --color-lpf-border: #3f3f46;
+    --color-lpf-text: #fafafa;
+    --color-lpf-muted: #a1a1aa;
+    --color-lpf-primary: #22c55e;
+    --color-lpf-primary-hover: #16a34a;
+    --color-lpf-danger: #ef4444;
+    --color-lpf-warning: #f59e0b;
+}
+
+@layer base {
+    html.dark {
+        color-scheme: dark;
+    }
+
+    html.dark body {
+        @apply bg-zinc-950 text-zinc-50 antialiased;
+        font-family: var(--font-sans);
+    }
+}

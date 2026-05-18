@@ -1274,12 +1274,38 @@ button.match-card-joker-badge {
 }
 
 .joker-guide-rules-card {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-rules-accordion {
+    padding: 0;
+    overflow: hidden;
+}
+
+.joker-guide-rules-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+}
+
+.joker-guide-rules-summary::-webkit-details-marker {
+    display: none;
+}
+
+.joker-guide-rules-summary-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .joker-guide-rules-list {
-    margin: 0.75rem 0 0;
-    padding-left: 1.25rem;
+    margin: 0;
+    padding: 0 1.25rem 1.25rem 2.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -1287,56 +1313,294 @@ button.match-card-joker-badge {
     font-size: 0.9375rem;
 }
 
-.joker-guide-catalog {
+.joker-guide-chevron {
+    flex-shrink: 0;
+    color: var(--lpf-text-muted, #6b7280);
+    transition: transform 0.2s ease;
+}
+
+details[open] > summary .joker-guide-chevron {
+    transform: rotate(180deg);
+}
+
+.joker-guide-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-toolbar-label {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--lpf-text-muted, #6b7280);
+}
+
+.joker-guide-view-switch {
+    display: inline-flex;
+    padding: 0.2rem;
+    border-radius: 999px;
+    background: var(--lpf-surface-muted, #f3f4f6);
+    border: 1px solid var(--lpf-border, #e5e7eb);
+}
+
+.joker-guide-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--lpf-text-muted, #6b7280);
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.joker-guide-view-btn.is-active {
+    background: #fff;
+    color: var(--lpf-navy, #1b2d4f);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.joker-guide-panel {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.joker-guide-panel--carousel {
+    overflow: hidden;
+}
+
+/* Carrousel */
+.joker-guide-carousel {
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.joker-guide-carousel-viewport {
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.joker-guide-carousel-track {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-wrap: nowrap;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
-.joker-guide-card {
+.joker-guide-slide {
+    flex: 0 0 auto;
     margin: 0;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
 }
 
-.joker-guide-card-inner {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.25rem;
-    padding: 1.25rem;
+.joker-guide-slide-card {
+    padding: 1.25rem 1rem 1rem;
+    border-top: 4px solid var(--lpf-border, #e5e7eb);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.joker-guide-slide-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-slide-image,
+.joker-guide-slide-placeholder {
+    width: 7.5rem;
+    height: 7.5rem;
+    border-radius: 1rem;
+    object-fit: cover;
+    box-shadow: 0 8px 24px rgb(124 58 237 / 18%);
+}
+
+.joker-guide-slide-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+}
+
+.joker-guide-slide-head {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.joker-guide-slide-head .joker-guide-card-badges {
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.joker-guide-slide-body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    min-width: 0;
+}
+
+.joker-guide-slide-head .joker-guide-card-name {
+    overflow-wrap: anywhere;
+}
+
+.joker-guide-slide-head .joker-guide-card-badges {
+    max-width: 100%;
+}
+
+.joker-guide-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.65rem 1.25rem;
+    border-top: 1px solid var(--lpf-border, #e5e7eb);
+    background: var(--lpf-surface-muted, #f9fafb);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.joker-guide-carousel-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: min(100%, 12rem);
+}
+
+.joker-guide-carousel-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.joker-guide-carousel-dot.is-active {
+    background: #7c3aed;
+    transform: scale(1.25);
+}
+
+.joker-guide-carousel-prev:disabled,
+.joker-guide-carousel-next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Accordéon liste */
+.joker-guide-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.joker-guide-accordion-item {
     border-radius: 0.75rem;
     border: 1px solid var(--lpf-border, #e5e7eb);
     background: var(--lpf-surface, #fff);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+    overflow: hidden;
+    border-left-width: 4px;
 }
 
-.joker-guide-card--offensive {
-    border-left: 4px solid #dc2626;
+.joker-guide-accordion-summary {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    list-style: none;
 }
 
-.joker-guide-card--defense {
-    border-left: 4px solid #2563eb;
+.joker-guide-accordion-summary::-webkit-details-marker {
+    display: none;
 }
 
-.joker-guide-card--points {
-    border-left: 4px solid #7c3aed;
-}
-
-.joker-guide-card--buteur {
-    border-left: 4px solid #059669;
-}
-
-.joker-guide-card--intel {
-    border-left: 4px solid #d97706;
-}
-
-.joker-guide-card-media {
+.joker-guide-accordion-thumb {
     position: relative;
     flex-shrink: 0;
 }
 
-.joker-guide-card-image,
+.joker-guide-accordion-thumb img,
+.joker-guide-accordion-thumb .joker-guide-card-placeholder {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    display: block;
+}
+
+.joker-guide-accordion-thumb .joker-guide-card-order {
+    top: -0.25rem;
+    left: -0.25rem;
+}
+
+.joker-guide-accordion-title-wrap {
+    min-width: 0;
+}
+
+.joker-guide-accordion-title {
+    display: block;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+}
+
+.joker-guide-accordion-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.joker-guide-accordion-panel {
+    padding: 0 1rem 1rem 4.85rem;
+}
+
+@media (max-width: 640px) {
+    .joker-guide-accordion-panel {
+        padding: 0 1rem 1rem;
+    }
+
+    .joker-guide-accordion-summary {
+        grid-template-columns: auto 1fr auto;
+    }
+}
+
 .joker-guide-card-placeholder {
     width: 5rem;
     height: 5rem;
@@ -1355,27 +1619,28 @@ button.match-card-joker-badge {
 
 .joker-guide-card-order {
     position: absolute;
-    top: -0.35rem;
-    left: -0.35rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.15rem 0.5rem;
+    min-width: 1.5rem;
+    height: auto;
     border-radius: 999px;
     background: var(--lpf-navy, #1b2d4f);
     color: #fff;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
-.joker-guide-card-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
+.joker-guide-slide-hero .joker-guide-card-order {
+    position: static;
+    transform: none;
+    background: #ede9fe;
+    color: #5b21b6;
 }
 
 .joker-guide-card-name {
@@ -1455,14 +1720,42 @@ button.match-card-joker-badge {
     flex-shrink: 0;
 }
 
-@media (max-width: 640px) {
-    .joker-guide-card-inner {
-        grid-template-columns: 1fr;
-    }
+.joker-guide-card--offensive .joker-guide-slide-card {
+    border-top-color: #dc2626;
+}
 
-    .joker-guide-card-media {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
+.joker-guide-card--defense .joker-guide-slide-card {
+    border-top-color: #2563eb;
+}
+
+.joker-guide-card--points .joker-guide-slide-card {
+    border-top-color: #7c3aed;
+}
+
+.joker-guide-card--buteur .joker-guide-slide-card {
+    border-top-color: #059669;
+}
+
+.joker-guide-card--intel .joker-guide-slide-card {
+    border-top-color: #d97706;
+}
+
+.joker-guide-card--offensive.joker-guide-accordion-item {
+    border-left-color: #dc2626;
+}
+
+.joker-guide-card--defense.joker-guide-accordion-item {
+    border-left-color: #2563eb;
+}
+
+.joker-guide-card--points.joker-guide-accordion-item {
+    border-left-color: #7c3aed;
+}
+
+.joker-guide-card--buteur.joker-guide-accordion-item {
+    border-left-color: #059669;
+}
+
+.joker-guide-card--intel.joker-guide-accordion-item {
+    border-left-color: #d97706;
 }
