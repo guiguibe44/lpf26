@@ -44,6 +44,21 @@ html.lpf-classic-light body.front-body .ta-main .match-card--kdo {
     box-shadow: 0 0 0 1px rgb(245 158 11 / 25%);
 }
 
+html.lpf-classic-light body.front-body .ta-main .match-card--favorite-country {
+    border-color: #2563eb !important;
+    background: linear-gradient(145deg, #eff6ff 0%, var(--lpf-surface) 52%) !important;
+    box-shadow: 0 0 0 1px rgb(37 99 235 / 18%) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-card-favorite-badge {
+    background: #2563eb !important;
+    color: #eff6ff !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-team--favorite-country > span {
+    color: #1d4ed8 !important;
+}
+
 html.lpf-classic-light body.front-body .ta-main .match-card-kdo-badge {
     background: var(--lpf-warning) !important;
     color: #422006 !important;
@@ -174,17 +189,6 @@ html.lpf-classic-light body.front-body .ta-main .ranking-team-logo-placeholder {
         background: var(--lpf-surface) !important;
     }
 
-    html.lpf-classic-light body.front-body .ta-burger {
-        border-color: var(--lpf-border) !important;
-        background: var(--lpf-surface-raised) !important;
-        color: var(--lpf-text) !important;
-    }
-
-    html.lpf-classic-light body.front-body.ta-nav-open .ta-burger {
-        background: var(--lpf-primary) !important;
-        border-color: var(--lpf-primary) !important;
-        color: #052e16 !important;
-    }
 }
 
 html.lpf-classic-light body.front-body .ta-main .ta-form-label {
@@ -313,9 +317,20 @@ html.lpf-classic-light body.front-body .ta-main .match-joker-popover {
     border-color: var(--lpf-border) !important;
 }
 
+html.lpf-classic-light body.front-body .joker-drawer__panel,
 html.lpf-classic-light body.front-body .ta-main .joker-dialog-panel {
     background: var(--lpf-surface) !important;
     color: var(--lpf-text) !important;
+}
+
+html.lpf-classic-light body.front-body .joker-drawer__head {
+    background: var(--lpf-surface) !important;
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light body.front-body .joker-dialog-note {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .joker-dialog-close {

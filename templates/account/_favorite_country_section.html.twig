@@ -1,0 +1,46 @@
+{# favorite_country_form, favorite_country_state, competition_start_at #}
+<section class="account-card-favorite-country rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+    <div class="account-jokers-head">
+        <h2 class="mb-1 text-lg font-semibold">Joker « Équipe favorite »</h2>
+        <a href="{{ path('app_jokers') }}#joker-equipe-favorite" class="btn btn-outline btn-sm account-jokers-guide-link">
+            <i class="ti ti-book-2" aria-hidden="true"></i>
+            Règles
+        </a>
+    </div>
+    <p class="ta-card-text mb-4">
+        Choisissez la <strong>sélection nationale</strong> que votre équipe soutient.
+        Ce choix reste <strong>secret</strong> et protège votre équipe sur les matchs de poule où ce pays joue.
+        {% if competition_start_at and favorite_country_state.can_manage %}
+            Modifiable jusqu’au <strong>{{ competition_start_at|date('d/m/Y à H\\hi') }}</strong> (début de la compétition).
+        {% endif %}
+    </p>
+
+    {% if favorite_country_state.locked %}
+        <div class="alert alert-warning mb-4 text-sm">
+            <span>
+                {% if favorite_country_state.country_name %}
+                    Équipe favorite enregistrée : <strong>{{ favorite_country_state.country_name }}</strong>.
+                {% else %}
+                    Aucune équipe favorite n’a été enregistrée avant le début de la compétition.
+                {% endif %}
+                {{ favorite_country_state.lock_reason }}
+            </span>
+        </div>
+    {% elseif not favorite_country_state.can_manage and favorite_country_state.lock_reason %}
+        <p class="ta-card-text mb-4">{{ favorite_country_state.lock_reason }}</p>
+    {% endif %}
+
+    {% if favorite_country_form and favorite_country_state.can_manage %}
+        {{ form_start(favorite_country_form, {'attr': {'class': 'space-y-3'}}) }}
+            {{ form_row(favorite_country_form.favoriteCountry) }}
+            <button type="submit" class="btn btn-primary">
+                Enregistrer l’équipe favorite
+                <i class="ti ti-device-floppy" aria-hidden="true"></i>
+            </button>
+        {{ form_end(favorite_country_form) }}
+    {% elseif favorite_country_state.country_name and not favorite_country_state.locked %}
+        <p class="ta-card-text">
+            Équipe favorite actuelle : <strong>{{ favorite_country_state.country_name }}</strong>.
+        </p>
+    {% endif %}
+</section>

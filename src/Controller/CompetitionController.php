@@ -14,6 +14,7 @@ use App\Service\KdoMatchWinnerService;
 use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
 use App\Service\MatchEspionService;
+use App\Service\TeamFavoriteCountryService;
 use App\Service\TeamJokerService;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
@@ -33,6 +34,7 @@ class CompetitionController extends AbstractController
         TeamMemberRepository $teamMemberRepository,
         DefaultPronosticService $defaultPronosticService,
         TeamJokerService $teamJokerService,
+        TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
     ): Response
     {
@@ -55,6 +57,9 @@ class CompetitionController extends AbstractController
             ? $matchEspionService->buildIntelByMatchIdForTeam($team, $matches, $now)
             : [];
         $matchdayNav = $this->buildMatchdayNavEntries($matches);
+        $team_favorite_highlight = $team instanceof Team
+            ? $teamFavoriteCountryService->buildMatchCardHighlight($team, $matches)
+            : null;
 
         return $this->render('competition/matches.html.twig', [
             'matches' => $matches,
@@ -67,6 +72,7 @@ class CompetitionController extends AbstractController
             'joker_usage_by_match_id' => $joker_usage_by_match_id,
             'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
+            'team_favorite_highlight' => $team_favorite_highlight,
         ]);
     }
 

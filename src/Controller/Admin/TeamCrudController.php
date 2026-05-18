@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Team;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -21,6 +22,7 @@ class TeamCrudController extends AbstractAppCrudController
             'name',
             'logo',
             'slogan',
+            'favoriteCountry.nom',
         ];
     }
 
@@ -30,6 +32,9 @@ class TeamCrudController extends AbstractAppCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('name'),
             TextField::new('slogan')->hideOnIndex(),
+            AssociationField::new('favoriteCountry', 'Équipe favorite (pays)')
+                ->setHelp('Joker « Équipe favorite » : sélection nationale secrète de l’équipe.')
+                ->autocomplete(),
             ImageField::new('logo')
                 ->setLabel('Logo')
                 ->setBasePath('')

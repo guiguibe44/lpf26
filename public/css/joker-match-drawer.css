@@ -1,0 +1,465 @@
+/**
+ * Panneau jokers match — tiroir depuis la droite (~92 % largeur).
+ */
+
+/* Priorité sur d’éventuelles règles legacy `.joker-dialog` */
+dialog.joker-drawer.joker-dialog {
+    max-width: 92vw;
+    width: min(52rem, 92vw);
+    border-radius: 0;
+    padding: 0;
+}
+
+dialog.joker-drawer.joker-dialog .joker-dialog-panel,
+dialog.joker-drawer .joker-drawer__panel {
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.joker-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    width: min(52rem, 92vw);
+    max-width: 92vw;
+    height: 100%;
+    max-height: 100dvh;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    box-shadow: -12px 0 48px rgb(0 0 0 / 28%);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    overflow: hidden;
+}
+
+.joker-drawer[open] {
+    transform: translateX(0);
+}
+
+.joker-drawer::backdrop {
+    background: rgb(15 23 42 / 55%);
+    backdrop-filter: blur(2px);
+}
+
+.joker-drawer__panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100dvh;
+    background: var(--lpf-surface, #ffffff);
+    color: var(--lpf-text, #0f172a);
+    border-left: 1px solid var(--lpf-border, #e2e8f0);
+}
+
+.joker-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface, #fff);
+}
+
+.joker-drawer__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--lpf-navy, var(--lpf-text, #0f172a));
+}
+
+.joker-drawer__close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    border-radius: 0.5rem;
+    background: var(--lpf-bg, #f8fafc);
+    color: var(--lpf-muted, #64748b);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.joker-drawer__close:hover {
+    background: var(--lpf-surface-raised, #f1f5f9);
+    color: var(--lpf-text, #0f172a);
+    border-color: var(--lpf-primary, #16a34a);
+}
+
+/* Joker actif (hors liste) */
+.joker-drawer__hero {
+    flex-shrink: 0;
+    padding: 0.85rem 1rem 0;
+}
+
+.joker-drawer__hero[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.joker-drawer__message {
+    margin: 0;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.joker-drawer__message[hidden],
+.joker-drawer__match-label[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__message--success {
+    color: var(--lpf-link, #15803d);
+}
+
+.joker-drawer__message--error {
+    color: var(--lpf-danger, #dc2626);
+}
+
+.joker-drawer__active[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.joker-drawer__list-item {
+    margin: 0;
+    padding: 0;
+}
+
+.joker-drawer__list-title {
+    margin: 0;
+    padding: 0.85rem 1.25rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lpf-muted, #64748b);
+}
+
+.joker-drawer__list-title[hidden] {
+    display: none !important;
+}
+
+/* Carte joker : visuel pleine hauteur | texte + actions sous la description */
+.joker-drawer__card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface, #fff);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.joker-drawer__hero .joker-drawer__card {
+    margin-bottom: 0.85rem;
+}
+
+.joker-drawer__card-top {
+    display: flex;
+    align-items: stretch;
+    min-height: 10.5rem;
+}
+
+.joker-drawer__card-visual {
+    flex: 0 0 min(38%, 10.5rem);
+    width: min(38%, 10.5rem);
+    max-width: 11rem;
+    min-height: 10.5rem;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.joker-drawer__card-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 10.5rem;
+    object-fit: cover;
+    object-position: center top;
+    border: none;
+    border-radius: 0;
+}
+
+.joker-drawer__card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 10.5rem;
+    border: none;
+    border-radius: 0;
+    background: linear-gradient(180deg, #1b2d4f 0%, #334155 100%);
+    color: #fff;
+    font-size: 2.75rem;
+}
+
+.joker-drawer__card-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    padding: 1rem 1.15rem 1.05rem;
+}
+
+.joker-drawer__card-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 3.5vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0.01em;
+    color: var(--lpf-navy, var(--lpf-text, #0f172a));
+}
+
+.joker-drawer__card-desc {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--lpf-muted, #64748b);
+}
+
+.joker-drawer__card-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--lpf-primary, #16a34a);
+}
+
+.joker-drawer__card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--lpf-border, #e2e8f0);
+}
+
+.joker-drawer__card-actions[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__unavailable {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .joker-drawer__unavailable {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .joker-drawer__unavailable .joker-drawer__use-btn {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    .joker-drawer__unavailable-reason {
+        flex: 1;
+        min-width: 10rem;
+    }
+}
+
+.joker-drawer__use-btn {
+    width: auto;
+    max-width: 100%;
+    align-self: flex-start;
+    justify-content: center;
+}
+
+.joker-drawer__use-btn--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.joker-drawer__unavailable-reason {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--lpf-muted, #64748b);
+}
+
+.joker-drawer__unavailable-reason .ti {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    font-size: 1rem;
+    color: #b45309;
+}
+
+.joker-drawer__item-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    width: 100%;
+}
+
+.joker-drawer__status-badge {
+    font-size: 0.75rem;
+}
+
+.joker-drawer__active-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.joker-drawer__note {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--lpf-muted, #64748b);
+}
+
+.joker-drawer__note--warn {
+    color: #b45309;
+    font-weight: 600;
+}
+
+.joker-drawer__note--shield {
+    color: #047857;
+    font-weight: 600;
+}
+
+.joker-drawer__note--blocked {
+    color: var(--lpf-muted, #64748b);
+    font-weight: 600;
+}
+
+.joker-drawer__remove-btn {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+}
+
+.joker-dialog-note {
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--lpf-muted, #64748b);
+    border-bottom: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface-raised, #f8fafc);
+}
+
+.joker-drawer__target-picker {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface-raised, #f8fafc);
+}
+
+.joker-drawer__target-picker[hidden],
+.joker-drawer__espion[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__target-label {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.joker-drawer__target-select {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface, #fff);
+    color: var(--lpf-text, #0f172a);
+    font: inherit;
+}
+
+.joker-drawer__target-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.joker-drawer__loading {
+    margin: 0;
+    padding: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--lpf-muted, #64748b);
+    text-align: center;
+}
+
+.joker-drawer__loading[hidden] {
+    display: none !important;
+}
+
+.joker-drawer__espion.match-espion-panel {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #bfdbfe;
+    background: #eff6ff;
+    width: 100%;
+    text-align: left;
+}
+
+@media (max-width: 640px) {
+    .joker-drawer {
+        width: 94vw;
+        max-width: 94vw;
+    }
+
+    .joker-drawer__head {
+        padding: 0.85rem 1rem;
+    }
+
+    .joker-drawer__card-visual {
+        flex: 0 0 36%;
+        width: 36%;
+        max-width: 9rem;
+    }
+
+    .joker-drawer__card-copy {
+        padding: 0.9rem 1rem;
+    }
+
+    .joker-drawer__list {
+        padding: 0.5rem 0.85rem 1rem;
+        gap: 0.75rem;
+    }
+}

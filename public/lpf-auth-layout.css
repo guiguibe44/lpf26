@@ -1,0 +1,252 @@
+/**
+ * LPF'26 — mise en page auth 2 colonnes (classique sombre + classique clair).
+ * Couleurs : lpf-auth-dark.css (html.dark) et lpf-classic-light.css (html.lpf-classic-light).
+ */
+
+html.dark .auth-wrap,
+html.lpf-classic-light .auth-wrap {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+html.dark .auth-grid,
+html.dark .ta-auth-grid,
+html.lpf-classic-light .auth-grid,
+html.lpf-classic-light .ta-auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(100vh, auto);
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    gap: 0;
+    align-items: stretch;
+}
+
+html.dark .auth-aside,
+html.dark .ta-auth-aside,
+html.lpf-classic-light .auth-aside,
+html.lpf-classic-light .ta-auth-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    min-height: 100vh;
+}
+
+html.dark .ta-auth-brand-block,
+html.lpf-classic-light .ta-auth-brand-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: min(36rem, 100%);
+    margin: 0 auto;
+}
+
+html.dark .ta-auth-logo,
+html.lpf-classic-light .ta-auth-logo,
+html.dark .lpf-brand-logo-wrap .ta-auth-logo,
+html.lpf-classic-light .lpf-brand-logo-wrap .ta-auth-logo {
+    display: block;
+    width: min(480px, 88vw);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+html.dark .ta-auth-form-wrap,
+html.lpf-classic-light .ta-auth-form-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem clamp(1.5rem, 5vw, 3.5rem);
+    min-height: 100vh;
+}
+
+html.dark .ta-auth-title,
+html.dark .section-title,
+html.lpf-classic-light .ta-auth-title,
+html.lpf-classic-light .section-title {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.75rem, 4vw, 2rem);
+    font-weight: 700;
+}
+
+html.dark .ta-auth-lead,
+html.lpf-classic-light .ta-auth-lead {
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+html.dark .ta-auth-form,
+html.lpf-classic-light .ta-auth-form {
+    display: grid;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 28rem;
+}
+
+html.dark .ta-auth-form-row-2,
+html.lpf-classic-light .ta-auth-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+}
+
+@media (min-width: 640px) {
+    html.dark .ta-auth-form-row-2,
+    html.lpf-classic-light .ta-auth-form-row-2 {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1rem;
+    }
+}
+
+html.dark .ta-auth-form-wrap form label,
+html.dark .ta-auth-form-wrap .ta-form-label,
+html.dark .ta-auth-check label,
+html.lpf-classic-light .ta-auth-form-wrap form label,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-label,
+html.lpf-classic-light .ta-auth-check label {
+    display: block;
+    margin-top: 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+html.dark .ta-auth-form-wrap form input[type="text"],
+html.dark .ta-auth-form-wrap form input[type="email"],
+html.dark .ta-auth-form-wrap form input[type="password"],
+html.dark .ta-auth-form-wrap .ta-form-input,
+html.dark .ta-auth-form-wrap .ta-form-select,
+html.dark .ta-auth-form-wrap .ta-form-textarea,
+html.lpf-classic-light .ta-auth-form-wrap form input[type="text"],
+html.lpf-classic-light .ta-auth-form-wrap form input[type="email"],
+html.lpf-classic-light .ta-auth-form-wrap form input[type="password"],
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-input,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-select,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.25rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border-radius: 0.5rem;
+}
+
+html.dark .ta-auth-check,
+html.lpf-classic-light .ta-auth-check {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 0.875rem;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
+html.dark body.front-body--auth .auth-wrap button[type="submit"],
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit,
+html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 28rem;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+
+html.dark .ta-auth-link-row,
+html.lpf-classic-light .ta-auth-link-row {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+}
+
+html.dark .ta-auth-separator,
+html.lpf-classic-light .ta-auth-separator {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 1rem 0;
+    font-size: 0.8rem;
+}
+
+html.dark .ta-auth-separator::before,
+html.dark .ta-auth-separator::after,
+html.lpf-classic-light .ta-auth-separator::before,
+html.lpf-classic-light .ta-auth-separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+}
+
+html.dark .auth-wrap > .flash,
+html.lpf-classic-light .auth-wrap > .flash {
+    max-width: 28rem;
+    margin: 1rem auto 0;
+    padding: 0.75rem 1rem;
+    padding-left: clamp(1.5rem, 5vw, 3.5rem);
+    padding-right: clamp(1.5rem, 5vw, 3.5rem);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+html.dark .auth-wrap .ta-auth-form-wrap .flash,
+html.lpf-classic-light .auth-wrap .ta-auth-form-wrap .flash {
+    max-width: none;
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+}
+
+html.dark .ta-form-choice-expanded,
+html.lpf-classic-light .ta-form-choice-expanded {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+@media (max-width: 900px) {
+    html.dark .auth-grid,
+    html.dark .ta-auth-grid,
+    html.lpf-classic-light .auth-grid,
+    html.lpf-classic-light .ta-auth-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        min-height: auto;
+    }
+
+    html.dark .auth-aside,
+    html.dark .ta-auth-aside,
+    html.lpf-classic-light .auth-aside,
+    html.lpf-classic-light .ta-auth-aside {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--auth-border, var(--lpf-border, #e2e8f0));
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    html.dark .ta-auth-logo,
+    html.lpf-classic-light .ta-auth-logo,
+    html.dark .lpf-brand-logo-wrap .ta-auth-logo,
+    html.lpf-classic-light .lpf-brand-logo-wrap .ta-auth-logo {
+        width: min(360px, 94vw);
+    }
+
+    html.dark .ta-auth-form-wrap,
+    html.lpf-classic-light .ta-auth-form-wrap {
+        min-height: auto;
+        padding: 2rem 1.25rem 2.5rem;
+    }
+
+    html.dark body.front-body--auth .ta-auth-form,
+    html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
+    html.lpf-classic-light body.front-body--auth .ta-auth-form,
+    html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit {
+        max-width: none;
+    }
+}

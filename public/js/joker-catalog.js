@@ -86,13 +86,23 @@
     };
 
     const onDocumentClick = (event) => {
-        const btn = event.target.closest('[data-joker-open]');
-        if (!btn) {
+        const catalog = document.querySelector('[data-joker-catalog]');
+        if (!catalog) {
+            return;
+        }
+
+        const btn =
+            event.target.closest('[data-joker-catalog-open]') ||
+            event.target.closest('[data-joker-open]');
+        if (!btn || !catalog.contains(btn)) {
             return;
         }
 
         event.preventDefault();
-        openDetail(btn.getAttribute('data-joker-open') || '0');
+        event.stopPropagation();
+        const index =
+            btn.getAttribute('data-joker-catalog-open') || btn.getAttribute('data-joker-open') || '0';
+        openDetail(index);
     };
 
     const init = () => {

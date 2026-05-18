@@ -9,7 +9,8 @@
     </div>
     <p class="ta-card-text mb-4">
         Chaque joker ne peut être utilisé qu’<strong>une fois</strong> par équipe.
-        Une seule mise en jeu à la fois (sur un match donné).
+        Vous pouvez en planifier plusieurs sur des <strong>matchs différents</strong> (un seul joker par match).
+        L’<strong>équipe favorite</strong> (pays) se choisit dans la section dédiée ci-dessus, avant le début de la compétition.
     </p>
 
     {% if team_joker_overview is empty %}
@@ -37,7 +38,11 @@
                         {% if joker.description %}
                             <p class="joker-overview-desc">{{ joker.description }}</p>
                         {% endif %}
-                        {% if usage %}
+                        {% if row.favorite_country_name %}
+                            <p class="joker-overview-usage">
+                                Sélection : <strong>{{ row.favorite_country_name }}</strong> (choix secret, enregistré sur le compte équipe).
+                            </p>
+                        {% elseif usage %}
                             {% set um = usage.match %}
                             <p class="joker-overview-usage">
                                 Posé sur
@@ -50,8 +55,6 @@
                                 {% endif %}
                                 · le {{ usage.placedAt|date('d/m/Y H:i') }}
                             </p>
-                        {% elseif row.status == 'blocked' %}
-                            <p class="joker-overview-hint">Terminez ou jouez le match avec le joker en cours avant d’en utiliser un autre.</p>
                         {% endif %}
                     </div>
                 </li>

@@ -6,6 +6,9 @@
 {% if team_form %}
     {% form_theme team_form 'form/tailadmin_theme.html.twig' %}
 {% endif %}
+{% if favorite_country_form %}
+    {% form_theme favorite_country_form 'form/tailadmin_theme.html.twig' %}
+{% endif %}
 {% if invitation_form %}
     {% form_theme invitation_form 'form/tailadmin_theme.html.twig' %}
 {% endif %}
@@ -153,6 +156,10 @@
 
         {% if team %}
         <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
+            {% if favorite_country_state %}
+                {% include 'account/_favorite_country_section.html.twig' %}
+            {% endif %}
+
             {% if has_team_member %}
                 {% include 'account/_jokers_section.html.twig' with { team_joker_overview: team_joker_overview } only %}
             {% endif %}

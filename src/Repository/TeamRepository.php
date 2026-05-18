@@ -65,7 +65,7 @@ class TeamRepository extends ServiceEntityRepository
      */
     public function findTeamIdsWithFavoriteCountryInGroupMatch(GameMatch $match): array
     {
-        if (null === GameMatch::extractGroupStandingLetter($match->getPhase())) {
+        if (!$match->isGroupStageMatch()) {
             return [];
         }
 

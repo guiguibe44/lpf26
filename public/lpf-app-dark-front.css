@@ -49,6 +49,27 @@ html.dark body.front-body .ta-main .match-card-kdo-badge {
     color: #422006 !important;
 }
 
+html.dark body.front-body .ta-main .match-card--favorite-country {
+    border-color: #3b82f6 !important;
+    background: linear-gradient(145deg, rgb(30 58 138 / 0.45) 0%, var(--lpf-surface) 52%) !important;
+    box-shadow:
+        0 0 0 1px rgb(59 130 246 / 30%),
+        0 10px 28px rgb(0 0 0 / 22%) !important;
+}
+
+html.dark body.front-body .ta-main .match-card-favorite-mark__label {
+    color: #93c5fd !important;
+}
+
+html.dark body.front-body .ta-main .match-card-favorite-badge {
+    background: #2563eb !important;
+    color: #eff6ff !important;
+}
+
+html.dark body.front-body .ta-main .match-team--favorite-country > span {
+    color: #93c5fd !important;
+}
+
 html.dark body.front-body .ta-main .match-final-score--live,
 html.dark body.front-body .ta-main .match-link--live {
     color: var(--lpf-warning) !important;
@@ -313,9 +334,30 @@ html.dark body.front-body .ta-main .match-joker-popover {
     border-color: var(--lpf-border) !important;
 }
 
+html.dark body.front-body .joker-drawer__panel,
 html.dark body.front-body .ta-main .joker-dialog-panel {
     background: var(--lpf-surface) !important;
     color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .joker-drawer__head {
+    background: var(--lpf-surface) !important;
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .joker-drawer__card {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    box-shadow: none !important;
+}
+
+html.dark body.front-body .joker-dialog-note {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .joker-drawer__card-visual {
+    background: #0f172a !important;
 }
 
 html.dark body.front-body .ta-main .joker-dialog-close {

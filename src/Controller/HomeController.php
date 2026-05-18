@@ -16,6 +16,7 @@ use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
 use App\Service\MatchStatusResolver;
 use App\Service\MatchEspionService;
+use App\Service\TeamFavoriteCountryService;
 use App\Service\TeamJokerService;
 use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +39,7 @@ class HomeController extends AbstractController
         DefaultPronosticService $defaultPronosticService,
         MatchStatusResolver $matchStatusResolver,
         TeamJokerService $teamJokerService,
+        TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
     ): Response {
         $user = $this->getUser();
@@ -107,6 +109,10 @@ class HomeController extends AbstractController
             ];
         }
 
+        $team_favorite_highlight = $team instanceof Team
+            ? $teamFavoriteCountryService->buildMatchCardHighlight($team, $dashboardMatchList)
+            : null;
+
         return $this->render('home/index.html.twig', [
             'live_matches' => $liveMatches,
             'last_completed_matchday' => $lastCompletedMatchday,
@@ -124,6 +130,7 @@ class HomeController extends AbstractController
             'joker_usage_by_match_id' => $joker_usage_by_match_id,
             'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
+            'team_favorite_highlight' => $team_favorite_highlight,
         ]);
     }
 

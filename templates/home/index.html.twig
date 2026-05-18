@@ -37,7 +37,8 @@
                                 prono_access_blocked: prono_access_blocked,
                                 joker_usage_by_match_id: joker_usage_by_match_id,
                                 espion_intel_by_match_id: espion_intel_by_match_id|default({}),
-                                show_joker_ui: show_joker_ui|default(false)
+                                show_joker_ui: show_joker_ui|default(false),
+                                team_favorite_highlight: team_favorite_highlight|default(null)
                             } only %}
                         {% endfor %}
                     </div>
@@ -57,7 +58,8 @@
                                 prono_access_blocked: prono_access_blocked,
                                 joker_usage_by_match_id: joker_usage_by_match_id,
                                 espion_intel_by_match_id: espion_intel_by_match_id|default({}),
-                                show_joker_ui: show_joker_ui|default(false)
+                                show_joker_ui: show_joker_ui|default(false),
+                                team_favorite_highlight: team_favorite_highlight|default(null)
                             } only %}
                         {% endfor %}
                     </div>
@@ -77,7 +79,8 @@
                                 prono_access_blocked: prono_access_blocked,
                                 joker_usage_by_match_id: joker_usage_by_match_id,
                                 espion_intel_by_match_id: espion_intel_by_match_id|default({}),
-                                show_joker_ui: show_joker_ui|default(false)
+                                show_joker_ui: show_joker_ui|default(false),
+                                team_favorite_highlight: team_favorite_highlight|default(null)
                             } only %}
                         {% endfor %}
                     </div>
@@ -94,6 +97,6 @@
 {% block javascripts %}
     {{ parent() }}
     {% if app.user %}
-        <script src="{{ asset('js/joker-match.js') }}?v=9" defer></script>
+        <script src="{{ asset('js/joker-match.js') }}?v=16" defer></script>
     {% endif %}
 {% endblock %}

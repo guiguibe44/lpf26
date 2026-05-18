@@ -4,21 +4,16 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=4">
 {% endblock %}
 
 {% block body %}
     <section class="ta-topbar joker-guide-topbar">
-        <div>
-            <h1 class="ta-page-title">Guide des jokers</h1>
-            <p class="ta-page-subtitle">
-                Chaque équipe dispose de jokers uniques. Cliquez sur un joker pour voir le détail.
-            </p>
-        </div>
-        <a href="{{ path('app_matches') }}" class="btn btn-primary btn-sm joker-guide-cta">
-            <i class="ti ti-ball-football" aria-hidden="true"></i>
-            Voir les matchs
-        </a>
+        <h1 class="ta-page-title">Guide des jokers</h1>
+        <p class="ta-page-subtitle">
+            Chaque équipe dispose de jokers uniques. Retrouvez ici le détail de chaque carte.
+        </p>
     </section>
 
     <details class="ta-card joker-guide-rules-card joker-guide-rules-accordion">
@@ -31,7 +26,8 @@
         </summary>
         <ul class="joker-guide-rules-list">
             <li>Chaque type de joker ne peut être utilisé qu’<strong>une seule fois</strong> par équipe sur toute la compétition.</li>
-            <li>Une seule mise en jeu à la fois : tant qu’un joker est « en cours » sur un match non terminé, vous ne pouvez pas en poser un autre.</li>
+            <li><strong>Un joker par match</strong> : vous pouvez planifier des jokers différents sur plusieurs matchs à venir en même temps.</li>
+            <li><strong>Équipe favorite</strong> : le pays se choisit dans <a href="{{ path('app_account') }}#tab-equipe">Mon compte → Mon équipe</a>, avant le début de la compétition uniquement.</li>
             <li>Les jokers se posent sur un <strong>match à venir</strong>, avant le coup d’envoi (retirables sauf mention contraire).</li>
             <li>La cotisation de l’équipe doit être réglée pour gérer les jokers.</li>
             <li>Les jokers <strong>offensifs</strong> (pique, inversions) peuvent être neutralisés si la cible est protégée : le joker est alors consommé sans effet sur elle.</li>
@@ -43,86 +39,13 @@
             <p class="ta-card-text">Aucun joker actif pour le moment.</p>
         </section>
     {% else %}
-        <ul class="joker-catalog-grid" role="list" data-joker-catalog>
+        <ul class="joker-catalog-list" role="list">
             {% for entry in joker_catalog %}
-                {% set joker = entry.joker %}
-                <li class="joker-catalog-grid__item">
-                    <button
-                        type="button"
-                        class="joker-catalog-tile"
-                        data-joker-open="{{ loop.index0 }}"
-                        aria-haspopup="dialog"
-                        aria-controls="joker-guide-detail-dialog"
-                    >
-                        {% if joker.image %}
-                            <img
-                                src="{{ asset(joker.image) }}"
-                                alt=""
-                                class="joker-catalog-tile__image"
-                                width="200"
-                                height="200"
-                                loading="lazy"
-                                decoding="async"
-                            >
-                        {% else %}
-                            <span class="joker-catalog-tile__placeholder" aria-hidden="true">
-                                <i class="ti ti-wand"></i>
-                            </span>
-                        {% endif %}
-                        <span class="joker-catalog-tile__name">{{ joker.name }}</span>
-                    </button>
-                </li>
+                {% include 'competition/_joker_catalog_card.html.twig' with {
+                    entry: entry,
+                    joker: entry.joker,
+                } only %}
             {% endfor %}
         </ul>
-
-        {% for entry in joker_catalog %}
-            {% set joker = entry.joker %}
-            <template id="joker-guide-detail-{{ loop.index0 }}">
-                <div class="joker-guide-detail-template" data-joker-title="{{ joker.name|e('html_attr') }}">
-                    <div class="joker-guide-detail-template__hero">
-                        {% if joker.image %}
-                            <img src="{{ asset(joker.image) }}" alt="" class="joker-guide-detail-template__image" width="120" height="120">
-                        {% else %}
-                            <span class="joker-catalog-tile__placeholder joker-guide-detail-template__placeholder" aria-hidden="true">
-                                <i class="ti ti-wand"></i>
-                            </span>
-                        {% endif %}
-                    </div>
-                    <div class="joker-guide-detail-template__badges">
-                        <span class="ta-badge joker-guide-badge joker-guide-badge--{{ entry.category }}">{{ entry.category_label }}</span>
-                        {% if entry.irreversible %}
-                            <span class="ta-badge joker-guide-badge joker-guide-badge--warn">Définitif</span>
-                        {% endif %}
-                        {% if entry.targets_opponent %}
-                            <span class="ta-badge joker-guide-badge joker-guide-badge--target">Cible adverse</span>
-                        {% endif %}
-                    </div>
-                    <div class="joker-guide-detail-template__content">
-                        {% include 'competition/_joker_guide_entry_body.html.twig' with { entry: entry, joker: joker } only %}
-                    </div>
-                </div>
-            </template>
-        {% endfor %}
-    {% endif %}
-
-    <dialog id="joker-guide-detail-dialog" class="joker-guide-detail-dialog" aria-labelledby="joker-guide-detail-dialog-title">
-        <div class="joker-guide-detail-dialog__panel">
-            <header class="joker-guide-detail-dialog__head">
-                <h2 id="joker-guide-detail-dialog-title" class="joker-guide-detail-dialog__title"></h2>
-                <button type="button" class="joker-guide-detail-dialog__close" data-joker-detail-close aria-label="Fermer">
-                    <i class="ti ti-x" aria-hidden="true"></i>
-                </button>
-            </header>
-            <div class="joker-guide-detail-dialog__hero" data-joker-detail-hero></div>
-            <div class="joker-guide-detail-dialog__badges" data-joker-detail-badges></div>
-            <div class="joker-guide-detail-dialog__body" data-joker-detail-body></div>
-        </div>
-    </dialog>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {% if joker_catalog is not empty %}
-        <script src="{{ asset('js/joker-catalog.js') }}?v=2" defer></script>
     {% endif %}
 {% endblock %}

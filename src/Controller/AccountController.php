@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Buteur;
+use App\Entity\Country;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\AccountPasswordType;
 use App\Form\AccountProfileType;
 use App\Form\CreateTeamInvitationType;
 use App\Form\ResendTeamInvitationType;
+use App\Form\TeamFavoriteCountryType;
 use App\Form\TeamManageType;
 use App\Repository\ButRepository;
 use App\Repository\TeamInvitationRepository;
@@ -16,6 +18,7 @@ use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
 use App\Service\CompetitionStatus;
+use App\Service\TeamFavoriteCountryService;
 use App\Service\TeamInvitationService;
 use App\Service\TeamJokerService;
 use App\Service\WebPushService;
@@ -45,6 +48,7 @@ class AccountController extends AbstractController
         FormFactoryInterface $formFactory,
         SluggerInterface $slugger,
         TeamJokerService $teamJokerService,
+        TeamFavoriteCountryService $teamFavoriteCountryService,
         ButRepository $butRepository,
         UserRepository $userRepository,
         ButeurGoalScoringService $buteurGoalScoringService,
@@ -74,8 +78,10 @@ class AccountController extends AbstractController
 
         $profileForm = null;
         $teamForm = null;
+        $favoriteCountryForm = null;
         $invitationForm = null;
         $teamSetupForm = null;
+        $favoriteCountryState = null;
 
         if ($hasTeamMember && null !== $teamMember && null !== $team) {
             $profileForm = $formFactory->createNamed('profile_form', AccountProfileType::class, $user);
@@ -86,6 +92,15 @@ class AccountController extends AbstractController
                 'lock_team_name' => $competitionStatus->isStarted(),
             ]);
             $teamForm->handleRequest($request);
+
+            $favoriteCountryState = $teamFavoriteCountryService->buildAccountState($team, $user);
+            $favoriteCountryForm = $formFactory->createNamed(
+                'favorite_country_form',
+                TeamFavoriteCountryType::class,
+                $team,
+                ['disabled' => !$favoriteCountryState['can_manage']],
+            );
+            $favoriteCountryForm->handleRequest($request);
         } elseif ($needsProfileSetup && null !== $team) {
             $profileForm = $formFactory->createNamed('profile_form', AccountProfileType::class, $user);
             $profileForm->handleRequest($request);
@@ -207,6 +222,26 @@ class AccountController extends AbstractController
             }
         }
 
+        if ($favoriteCountryForm?->isSubmitted() && $favoriteCountryForm->isValid() && null !== $team) {
+            try {
+                $teamFavoriteCountryService->assertCanManageFavoriteCountry($user);
+                $entityManager->flush();
+                $country = $team->getFavoriteCountry();
+                if ($country instanceof Country) {
+                    $this->addFlash('success', sprintf(
+                        'Équipe favorite enregistrée : %s. Ce choix reste secret.',
+                        (string) $country->getNom(),
+                    ));
+                } else {
+                    $this->addFlash('success', 'Équipe favorite effacée.');
+                }
+
+                return $this->redirect($this->generateUrl('app_account').'#tab-equipe');
+            } catch (\InvalidArgumentException $e) {
+                $favoriteCountryForm->addError(new FormError($e->getMessage()));
+            }
+        }
+
         if ($teamForm?->isSubmitted() && $teamForm->isValid() && null !== $team) {
             $nameLocked = $competitionStatus->isStarted();
             $originalTeamName = (string) $team->getName();
@@ -264,6 +299,8 @@ class AccountController extends AbstractController
             'profile_form' => $profileForm?->createView(),
             'password_form' => $passwordForm->createView(),
             'team_form' => $teamForm?->createView(),
+            'favorite_country_form' => $favoriteCountryForm?->createView(),
+            'favorite_country_state' => $favoriteCountryState,
             'invitation_form' => $invitationForm?->createView(),
             'team_setup_form' => $teamSetupForm?->createView(),
             'team' => $team,

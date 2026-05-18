@@ -1,20 +1,63 @@
 (function () {
-    const dialog = document.getElementById('joker-match-dialog');
-    if (!dialog || typeof dialog.showModal !== 'function') {
-        return;
-    }
+    let dialog = null;
+    let titleEl = null;
+    let matchLabelEl = null;
+    let messageEl = null;
+    let activeEl = null;
+    let listEl = null;
+    let loadingEl = null;
+    let targetPickerEl = null;
+    let targetSelectEl = null;
+    let targetConfirmEl = null;
+    let targetCancelEl = null;
+    let espionEl = null;
+    let heroEl = null;
+    let listLabelEl = null;
 
-    const titleEl = document.getElementById('joker-dialog-title');
-    const matchLabelEl = document.getElementById('joker-dialog-match-label');
-    const messageEl = document.getElementById('joker-dialog-message');
-    const activeEl = document.getElementById('joker-dialog-active');
-    const listEl = document.getElementById('joker-dialog-list');
-    const loadingEl = document.getElementById('joker-dialog-loading');
-    const targetPickerEl = document.getElementById('joker-dialog-target-picker');
-    const targetSelectEl = document.getElementById('joker-dialog-target-select');
-    const targetConfirmEl = document.getElementById('joker-dialog-target-confirm');
-    const targetCancelEl = document.getElementById('joker-dialog-target-cancel');
-    const espionEl = document.getElementById('joker-dialog-espion');
+    const bindElements = () => {
+        dialog = document.getElementById('joker-match-dialog');
+        if (!dialog || typeof dialog.showModal !== 'function') {
+            return false;
+        }
+
+        titleEl = document.getElementById('joker-drawer-title');
+        matchLabelEl = document.getElementById('joker-dialog-match-label');
+        messageEl = document.getElementById('joker-dialog-message');
+        activeEl = document.getElementById('joker-dialog-active');
+        listEl = document.getElementById('joker-dialog-list');
+        loadingEl = document.getElementById('joker-dialog-loading');
+        targetPickerEl = document.getElementById('joker-dialog-target-picker');
+        targetSelectEl = document.getElementById('joker-dialog-target-select');
+        targetConfirmEl = document.getElementById('joker-dialog-target-confirm');
+        targetCancelEl = document.getElementById('joker-dialog-target-cancel');
+        espionEl = document.getElementById('joker-dialog-espion');
+        heroEl = document.getElementById('joker-dialog-hero');
+        listLabelEl = document.getElementById('joker-dialog-list-label');
+
+        return true;
+    };
+
+    const bindDialogEvents = () => {
+        if (!dialog || dialog.dataset.jokerMatchBound === '1') {
+            return;
+        }
+
+        dialog.dataset.jokerMatchBound = '1';
+        dialog.addEventListener('cancel', (event) => {
+            event.preventDefault();
+            closeDialog();
+        });
+    };
+
+    const init = () => {
+        if (!bindElements()) {
+            return false;
+        }
+
+        bindDialogEvents();
+
+        return true;
+    };
 
     let currentMatchId = null;
     let currentStateUrl = null;
@@ -326,7 +369,7 @@
         }
 
         espionEl.hidden = false;
-        espionEl.className = 'joker-dialog-espion match-espion-panel';
+        espionEl.className = 'joker-drawer__espion joker-dialog-espion match-espion-panel';
         espionEl.replaceChildren();
 
         const title = document.createElement('p');
@@ -407,84 +450,241 @@
         }
     };
 
-    const renderActive = (active) => {
-        if (!activeEl) {
-            return;
-        }
-        if (!active) {
-            activeEl.hidden = true;
-            activeEl.replaceChildren();
+    const createJokerCardShell = () => {
+        const card = document.createElement('article');
+        card.className = 'joker-drawer__card';
 
-            return;
-        }
+        const top = document.createElement('div');
+        top.className = 'joker-drawer__card-top';
 
-        activeEl.hidden = false;
-        activeEl.replaceChildren();
+        const visual = document.createElement('div');
+        visual.className = 'joker-drawer__card-visual';
 
-        const wrap = document.createElement('div');
-        wrap.className = 'joker-dialog-active-card';
+        const copy = document.createElement('div');
+        copy.className = 'joker-drawer__card-copy';
 
-        const imgUrl = assetUrl(active.image);
+        const actions = document.createElement('div');
+        actions.className = 'joker-drawer__card-actions';
+        actions.hidden = true;
+
+        top.appendChild(visual);
+        top.appendChild(copy);
+        copy.appendChild(actions);
+        card.appendChild(top);
+
+        return { card, visual, copy, actions };
+    };
+
+    const fillJokerCardVisual = (visual, imagePath) => {
+        visual.replaceChildren();
+        const imgUrl = assetUrl(imagePath);
         if (imgUrl) {
             const img = document.createElement('img');
             img.src = imgUrl;
             img.alt = '';
-            img.className = 'joker-dialog-active-image';
-            img.width = 40;
-            img.height = 40;
-            wrap.appendChild(img);
+            img.className = 'joker-drawer__card-image';
+            visual.appendChild(img);
+
+            return;
         }
 
-        const text = document.createElement('p');
-        text.className = 'joker-dialog-active-text';
-        let activeText = escapeHtml(active.name);
-        if (active.target_team_name) {
-            activeText += ' <span class="joker-dialog-active-target">→ ' + escapeHtml(active.target_team_name) + '</span>';
-        }
-        text.innerHTML = '<strong>Joker actif :</strong> ' + activeText;
-        wrap.appendChild(text);
+        const ph = document.createElement('span');
+        ph.className = 'joker-drawer__card-placeholder';
+        ph.innerHTML = '<i class="ti ti-wand" aria-hidden="true"></i>';
+        visual.appendChild(ph);
+    };
 
-        if (active.code === 'espion') {
-            const irreversible = document.createElement('p');
-            irreversible.className = 'joker-dialog-irreversible-note';
-            irreversible.textContent = 'Ce joker est définitif : il ne peut pas être retiré.';
-            wrap.appendChild(irreversible);
-        }
+    const fillJokerCardCopy = (copy, name, description, metaText) => {
+        const actions = copy.querySelector('.joker-drawer__card-actions');
+        copy.replaceChildren();
 
-        if (active.code === 'bouclier') {
-            const shieldNote = document.createElement('p');
-            shieldNote.className = 'joker-dialog-shield-note';
-            shieldNote.textContent = 'Votre équipe est protégée pour toute la journée de ce match contre les jokers adverses qui vous ciblent.';
-            wrap.appendChild(shieldNote);
-        }
+        const title = document.createElement('h3');
+        title.className = 'joker-drawer__card-title';
+        title.textContent = name;
+        copy.appendChild(title);
 
-        if (active.code === 'equipe_favorite' && active.favorite_country_name) {
-            const favoriteNote = document.createElement('p');
-            favoriteNote.className = 'joker-dialog-favorite-note';
-            favoriteNote.textContent =
-                'Équipe favorite : ' +
-                active.favorite_country_name +
-                '. Choix secret — protection sur les matchs de poule où cette sélection joue.';
-            wrap.appendChild(favoriteNote);
+        if (description) {
+            const desc = document.createElement('p');
+            desc.className = 'joker-drawer__card-desc';
+            desc.textContent = description;
+            copy.appendChild(desc);
         }
 
-        if (active.effect_blocked) {
-            const blockedNote = document.createElement('p');
-            blockedNote.className = 'joker-dialog-blocked-note';
-            blockedNote.textContent = 'Sans effet : la cible est protégée sur ce match (joker consommé).';
-            wrap.appendChild(blockedNote);
+        if (metaText) {
+            const meta = document.createElement('p');
+            meta.className = 'joker-drawer__card-meta';
+            meta.textContent = metaText;
+            copy.appendChild(meta);
+        }
+
+        const actionsEl = actions || document.createElement('div');
+        if (!actions) {
+            actionsEl.className = 'joker-drawer__card-actions';
+            actionsEl.hidden = true;
+        } else {
+            actionsEl.replaceChildren();
+            actionsEl.hidden = true;
+        }
+        copy.appendChild(actionsEl);
+    };
+
+    const appendActiveFootContent = (actions, active) => {
+        actions.replaceChildren();
+
+        const hasNotes =
+            active.code === 'espion' ||
+            active.code === 'bouclier' ||
+            (active.code === 'equipe_favorite' && active.favorite_country_name) ||
+            active.effect_blocked;
+
+        if (hasNotes) {
+            const notesWrap = document.createElement('div');
+            notesWrap.className = 'joker-drawer__active-notes';
+
+            if (active.code === 'espion') {
+                const irreversible = document.createElement('p');
+                irreversible.className = 'joker-drawer__note joker-drawer__note--warn';
+                irreversible.textContent = 'Ce joker est définitif : il ne peut pas être retiré.';
+                notesWrap.appendChild(irreversible);
+            }
+
+            if (active.code === 'bouclier') {
+                const shieldNote = document.createElement('p');
+                shieldNote.className = 'joker-drawer__note joker-drawer__note--shield';
+                shieldNote.textContent =
+                    'Votre équipe est protégée pour toute la journée de ce match contre les jokers adverses qui vous ciblent.';
+                notesWrap.appendChild(shieldNote);
+            }
+
+            if (active.code === 'equipe_favorite' && active.favorite_country_name) {
+                const favoriteNote = document.createElement('p');
+                favoriteNote.className = 'joker-drawer__note';
+                favoriteNote.textContent =
+                    'Équipe favorite : ' +
+                    active.favorite_country_name +
+                    '. Choix secret — protection sur les matchs de poule où cette sélection joue.';
+                notesWrap.appendChild(favoriteNote);
+            }
+
+            if (active.effect_blocked) {
+                const blockedNote = document.createElement('p');
+                blockedNote.className = 'joker-drawer__note joker-drawer__note--blocked';
+                blockedNote.textContent = 'Sans effet : la cible est protégée sur ce match (joker consommé).';
+                notesWrap.appendChild(blockedNote);
+            }
+
+            actions.appendChild(notesWrap);
         }
 
         if (active.can_remove) {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
-            removeBtn.className = 'btn btn-outline btn-sm joker-dialog-remove-btn';
+            removeBtn.className = 'btn btn-outline btn-sm joker-drawer__remove-btn';
             removeBtn.dataset.jokerRemoveDialog = '1';
             removeBtn.innerHTML = '<i class="ti ti-x" aria-hidden="true"></i> Retirer ce joker';
-            wrap.appendChild(removeBtn);
+            actions.appendChild(removeBtn);
         }
 
-        activeEl.appendChild(wrap);
+        actions.hidden = actions.childElementCount === 0;
+    };
+
+    const renderActiveCard = (active) => {
+        if (!heroEl) {
+            return;
+        }
+
+        if (activeEl) {
+            activeEl.hidden = true;
+            activeEl.replaceChildren();
+        }
+
+        if (!active) {
+            heroEl.hidden = true;
+            heroEl.replaceChildren();
+
+            return;
+        }
+
+        heroEl.hidden = false;
+        heroEl.replaceChildren();
+
+        const shell = createJokerCardShell();
+        fillJokerCardVisual(shell.visual, active.image);
+
+        let metaText = null;
+        if (active.target_team_name) {
+            metaText = 'Cible : ' + active.target_team_name;
+        }
+
+        fillJokerCardCopy(shell.copy, active.name, active.description || null, metaText);
+        appendActiveFootContent(shell.actions, active);
+        heroEl.appendChild(shell.card);
+    };
+
+    const appendJokerUseAction = (actions, joker) => {
+        if (joker.can_play) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-primary btn-sm joker-drawer__use-btn';
+            btn.textContent = 'Utiliser ce joker';
+            btn.dataset.jokerPlay = String(joker.id);
+            if (joker.requires_target_team) {
+                btn.dataset.jokerRequiresTarget = '1';
+            }
+            if (joker.requires_favorite_country) {
+                btn.dataset.jokerRequiresFavorite = '1';
+            }
+            if (joker.requires_confirmation) {
+                btn.dataset.jokerRequiresConfirm = '1';
+            }
+            actions.appendChild(btn);
+
+            actions.hidden = false;
+
+            return;
+        }
+
+        if (joker.already_used) {
+            const status = document.createElement('div');
+            status.className = 'joker-drawer__item-status joker-drawer__item-status--used';
+            const badge = document.createElement('span');
+            badge.className = 'ta-badge joker-drawer__status-badge';
+            badge.textContent = 'Déjà utilisé';
+            status.appendChild(badge);
+            actions.appendChild(status);
+
+            if (joker.disabled_reason) {
+                const hint = document.createElement('p');
+                hint.className = 'joker-drawer__unavailable-reason';
+                hint.textContent = joker.disabled_reason;
+                actions.appendChild(hint);
+            }
+
+            actions.hidden = false;
+
+            return;
+        }
+
+        const blocked = document.createElement('div');
+        blocked.className = 'joker-drawer__unavailable';
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-outline btn-sm joker-drawer__use-btn joker-drawer__use-btn--disabled';
+        btn.disabled = true;
+        btn.textContent = 'Utiliser ce joker';
+        blocked.appendChild(btn);
+
+        const reason = document.createElement('p');
+        reason.className = 'joker-drawer__unavailable-reason';
+        reason.innerHTML =
+            '<i class="ti ti-info-circle" aria-hidden="true"></i><span>' +
+            escapeHtml(joker.disabled_reason || 'Ce joker n\'est pas disponible pour ce match.') +
+            '</span>';
+        blocked.appendChild(reason);
+        actions.appendChild(blocked);
+
+        actions.hidden = actions.childElementCount === 0;
     };
 
     const renderList = (state) => {
@@ -507,12 +707,31 @@
             messageEl.hidden = true;
         }
 
-        renderActive(state.active_on_match);
+        renderActiveCard(state.active_on_match);
 
-        if (state.pending_elsewhere && !state.active_on_match) {
+        if (titleEl) {
+            if (state.active_on_match?.name) {
+                titleEl.textContent = state.active_on_match.name;
+            } else if (state.match_label) {
+                titleEl.textContent = 'Jokers — ' + state.match_label;
+            }
+        }
+
+        if (listLabelEl) {
+            const showList =
+                !state.espion_intel && state.jokers && state.jokers.length > 0 && !state.active_on_match;
+            listLabelEl.hidden = !showList;
+        }
+
+        const plannedElsewhere = state.planned_on_other_matches || [];
+        if (plannedElsewhere.length > 0 && !state.active_on_match) {
             const note = document.createElement('p');
-            note.className = 'joker-dialog-note';
-            note.textContent = 'Joker en cours sur ' + state.pending_elsewhere.match_label + ' (« ' + state.pending_elsewhere.joker_name + ' »).';
+            note.className = 'joker-dialog-note joker-dialog-note--planned';
+            const parts = plannedElsewhere.map(
+                (row) => '« ' + row.joker_name + ' » sur ' + row.match_label,
+            );
+            note.textContent =
+                'Jokers déjà planifiés sur d\'autres matchs : ' + parts.join(' · ') + '.';
             listEl.appendChild(note);
         }
 
@@ -554,77 +773,24 @@
             listEl.appendChild(buteurNote);
         }
 
+        if (state.espion_intel) {
+            if (listLabelEl) {
+                listLabelEl.hidden = true;
+            }
+
+            return;
+        }
+
         (state.jokers || []).forEach((joker) => {
             const item = document.createElement('li');
-            item.className = 'joker-dialog-item';
+            item.className = 'joker-drawer__list-item joker-dialog-item';
 
-            const media = document.createElement('div');
-            media.className = 'joker-dialog-item-media';
-            const imgUrl = assetUrl(joker.image);
-            if (imgUrl) {
-                const img = document.createElement('img');
-                img.src = imgUrl;
-                img.alt = '';
-                img.className = 'joker-dialog-item-image';
-                img.width = 48;
-                img.height = 48;
-                media.appendChild(img);
-            } else {
-                const ph = document.createElement('span');
-                ph.className = 'joker-dialog-item-placeholder';
-                ph.innerHTML = '<i class="ti ti-wand" aria-hidden="true"></i>';
-                media.appendChild(ph);
-            }
+            const shell = createJokerCardShell();
+            fillJokerCardVisual(shell.visual, joker.image);
+            fillJokerCardCopy(shell.copy, joker.name, joker.description || null, null);
+            appendJokerUseAction(shell.actions, joker);
 
-            const body = document.createElement('div');
-            body.className = 'joker-dialog-item-body';
-            const name = document.createElement('h3');
-            name.className = 'joker-dialog-item-name';
-            name.textContent = joker.name;
-            body.appendChild(name);
-
-            if (joker.description) {
-                const desc = document.createElement('p');
-                desc.className = 'joker-dialog-item-desc';
-                desc.textContent = joker.description;
-                body.appendChild(desc);
-            }
-
-            if (joker.disabled_reason) {
-                const reason = document.createElement('p');
-                reason.className = 'joker-dialog-item-reason';
-                reason.textContent = joker.disabled_reason;
-                body.appendChild(reason);
-            }
-
-            const itemActions = document.createElement('div');
-            itemActions.className = 'joker-dialog-item-actions';
-            if (joker.can_play) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn btn-primary btn-sm';
-                btn.textContent = 'Jouer ce joker';
-                btn.dataset.jokerPlay = String(joker.id);
-                if (joker.requires_target_team) {
-                    btn.dataset.jokerRequiresTarget = '1';
-                }
-                if (joker.requires_favorite_country) {
-                    btn.dataset.jokerRequiresFavorite = '1';
-                }
-                if (joker.requires_confirmation) {
-                    btn.dataset.jokerRequiresConfirm = '1';
-                }
-                itemActions.appendChild(btn);
-            } else if (joker.already_used) {
-                const badge = document.createElement('span');
-                badge.className = 'ta-badge';
-                badge.textContent = 'Déjà utilisé';
-                itemActions.appendChild(badge);
-            }
-
-            item.appendChild(media);
-            item.appendChild(body);
-            item.appendChild(itemActions);
+            item.appendChild(shell.card);
             listEl.appendChild(item);
         });
     };
@@ -664,7 +830,9 @@
             return;
         }
         messageEl.hidden = false;
-        messageEl.className = 'joker-dialog-message ta-card-text' + (isError ? ' joker-dialog-message--error' : ' joker-dialog-message--success');
+        messageEl.className =
+            'joker-drawer__message joker-dialog-message ta-card-text' +
+            (isError ? ' joker-drawer__message--error joker-dialog-message--error' : ' joker-drawer__message--success joker-dialog-message--success');
         messageEl.textContent = message;
     };
 
@@ -770,14 +938,37 @@
         }
         if (messageEl) {
             messageEl.hidden = true;
-            messageEl.className = 'joker-dialog-message ta-card-text';
+            messageEl.className = 'joker-drawer__message joker-dialog-message ta-card-text';
+        }
+        if (heroEl) {
+            heroEl.hidden = true;
+            heroEl.replaceChildren();
+        }
+        if (activeEl) {
+            activeEl.hidden = true;
+            activeEl.replaceChildren();
+        }
+        if (espionEl) {
+            espionEl.hidden = true;
+            espionEl.replaceChildren();
+        }
+        if (listLabelEl) {
+            listLabelEl.hidden = true;
         }
 
         dialog.showModal();
         loadState();
     };
 
-    document.addEventListener('click', (event) => {
+    const onDocumentClick = (event) => {
+        if (!bindElements()) {
+            return;
+        }
+
+        if (event.target.closest('[data-joker-catalog]')) {
+            return;
+        }
+
         const badgeToggle = event.target.closest('[data-joker-badge-toggle]');
         if (badgeToggle) {
             event.preventDefault();
@@ -861,10 +1052,14 @@
         if (closeBtn || event.target === dialog) {
             closeDialog();
         }
-    });
+    };
 
-    dialog.addEventListener('cancel', (event) => {
-        event.preventDefault();
-        closeDialog();
-    });
+    document.addEventListener('click', onDocumentClick);
+    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('turbo:load', init);
+    document.addEventListener('turbo:render', init);
+
+    if (document.readyState !== 'loading') {
+        init();
+    }
 })();

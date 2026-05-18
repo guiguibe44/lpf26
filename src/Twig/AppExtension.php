@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Entity\GameMatch;
 use App\Service\MatchStatusResolver;
+use App\Service\TeamFavoriteCountryService;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -12,6 +13,7 @@ final class AppExtension extends AbstractExtension
 {
     public function __construct(
         private readonly MatchStatusResolver $matchStatusResolver,
+        private readonly TeamFavoriteCountryService $teamFavoriteCountryService,
     ) {
     }
 
@@ -30,7 +32,16 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_is_finished', [$this, 'isMatchFinished']),
             new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
             new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
+            new TwigFunction('match_is_team_favorite_highlight', [$this, 'isTeamFavoriteHighlight']),
         ];
+    }
+
+    /**
+     * @param array{country_id?: int}|null $highlight
+     */
+    public function isTeamFavoriteHighlight(GameMatch $match, ?array $highlight): bool
+    {
+        return $this->teamFavoriteCountryService->isMatchHighlighted($highlight, $match);
     }
 
     public function isMatchLive(GameMatch $match, ?\DateTimeInterface $now = null): bool

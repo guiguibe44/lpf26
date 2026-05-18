@@ -58,7 +58,7 @@ final class JokerDefenseService
 
     public function isTeamProtectedByFavoriteOnGroupMatch(Team $team, GameMatch $match): bool
     {
-        if (null === $match->getGroupStandingLetter()) {
+        if (!$match->isGroupStageMatch()) {
             return false;
         }
 

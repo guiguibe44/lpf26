@@ -172,7 +172,11 @@ class GameMatch
             return null;
         }
 
-        if (1 === preg_match('/^Group\s+([A-L])\b/iu', trim($phase), $m)) {
+        if (1 === preg_match('/^(?:Group|Groupe)\s+([A-L])\b/iu', trim($phase), $m)) {
+            return mb_strtoupper($m[1]);
+        }
+
+        if (1 === preg_match('/\b(?:Group|Groupe)\s+([A-L])\b/iu', trim($phase), $m)) {
             return mb_strtoupper($m[1]);
         }
 
@@ -182,6 +186,24 @@ class GameMatch
     public function getGroupStandingLetter(): ?string
     {
         return self::extractGroupStandingLetter($this->phase);
+    }
+
+    /** Match de phase de poules (phase « Group X » ou deux sélections du même groupe). */
+    public function isGroupStageMatch(): bool
+    {
+        if (null !== $this->getGroupStandingLetter()) {
+            return true;
+        }
+
+        $home = $this->getPaysDomicile();
+        $away = $this->getPaysExterieur();
+        $homeGroup = $home?->getGroupe();
+        $awayGroup = $away?->getGroupe();
+
+        return null !== $homeGroup
+            && '' !== $homeGroup
+            && null !== $awayGroup
+            && $homeGroup === $awayGroup;
     }
 
     public function setPhase(?string $phase): static

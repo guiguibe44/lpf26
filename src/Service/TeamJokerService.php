@@ -34,6 +34,7 @@ final class TeamJokerService
         private readonly GameMatchRepository $gameMatchRepository,
         private readonly CountryRepository $countryRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly CompetitionStatus $competitionStatus,
     ) {
     }
 
@@ -55,23 +56,22 @@ final class TeamJokerService
             }
         }
 
-        $pendingUsage = $this->findPendingUsageForTeam($team);
-        $pendingMatchId = $pendingUsage?->getMatch()?->getId();
-
         $rows = [];
         foreach ($this->jokerRepository->findAllOrdered() as $joker) {
             $jokerId = (int) $joker->getId();
             $usage = $usagesByJokerId[$jokerId] ?? null;
 
+            $favoriteCountryName = null;
             if ($usage instanceof TeamJokerUsage) {
                 $status = 'used';
                 $statusLabel = 'Utilisé';
+            } elseif (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode() && $team->getFavoriteCountry() instanceof Country) {
+                $status = 'used';
+                $statusLabel = 'Utilisé';
+                $favoriteCountryName = (string) $team->getFavoriteCountry()->getNom();
             } elseif (!$joker->isActive()) {
                 $status = 'inactive';
                 $statusLabel = 'Indisponible';
-            } elseif (null !== $pendingUsage) {
-                $status = 'blocked';
-                $statusLabel = 'Un autre joker est déjà en cours';
             } else {
                 $status = 'available';
                 $statusLabel = 'Disponible';
@@ -82,7 +82,7 @@ final class TeamJokerService
                 'usage' => $usage,
                 'status' => $status,
                 'status_label' => $statusLabel,
-                'blocked_match_id' => 'blocked' === $status ? $pendingMatchId : null,
+                'favorite_country_name' => $favoriteCountryName,
             ];
         }
 
@@ -122,7 +122,7 @@ final class TeamJokerService
      *     can_manage: bool,
      *     reason: ?string,
      *     active_on_match: ?array{id: int, name: string, image: ?string, code: string},
-     *     pending_elsewhere: ?array{match_id: int, match_label: string, joker_name: string},
+     *     planned_on_other_matches: list<array{match_id: int, match_label: string, joker_name: string}>,
      *     jokers: list<array{
      *         id: int,
      *         code: string,
@@ -143,7 +143,7 @@ final class TeamJokerService
                 'can_manage' => false,
                 'reason' => 'Rejoignez une équipe pour utiliser les jokers.',
                 'active_on_match' => null,
-                'pending_elsewhere' => null,
+                'planned_on_other_matches' => [],
                 'jokers' => [],
                 'opponent_teams' => [],
             ];
@@ -154,7 +154,7 @@ final class TeamJokerService
                 'can_manage' => false,
                 'reason' => 'Réglez votre cotisation pour utiliser les jokers.',
                 'active_on_match' => null,
-                'pending_elsewhere' => null,
+                'planned_on_other_matches' => [],
                 'jokers' => [],
                 'opponent_teams' => [],
             ];
@@ -170,6 +170,7 @@ final class TeamJokerService
             $activeOnMatch = [
                 'id' => (int) $joker?->getId(),
                 'name' => (string) $joker?->getName(),
+                'description' => $joker?->getDescription(),
                 'image' => $joker?->getImage(),
                 'code' => (string) $joker?->getCode(),
                 'target_team_id' => $target?->getId(),
@@ -182,19 +183,7 @@ final class TeamJokerService
             ];
         }
 
-        $pendingUsage = $this->findPendingUsageForTeam($team);
-        $pendingElsewhere = null;
-        if ($pendingUsage instanceof TeamJokerUsage) {
-            $pendingMatch = $pendingUsage->getMatch();
-            $pendingMatchId = $pendingMatch?->getId();
-            if (null !== $pendingMatchId && (int) $pendingMatchId !== (int) $match->getId()) {
-                $pendingElsewhere = [
-                    'match_id' => (int) $pendingMatchId,
-                    'match_label' => $this->formatMatchLabel($pendingMatch),
-                    'joker_name' => (string) $pendingUsage->getJoker()?->getName(),
-                ];
-            }
-        }
+        $plannedOnOtherMatches = $this->buildPlannedOnOtherMatches($team, $match);
 
         $canPlaceOnThisMatch = $this->canPlaceOnMatch($team, $match);
         $usagesByJokerId = [];
@@ -220,20 +209,20 @@ final class TeamJokerService
                 $disabledReason = 'Un joker est déjà posé sur ce match.';
             } elseif ($alreadyUsed) {
                 $disabledReason = 'Ce joker a déjà été utilisé par votre équipe.';
-            } elseif (null !== $pendingElsewhere) {
-                $disabledReason = sprintf(
-                    'Joker « %s » en cours sur %s.',
-                    $pendingElsewhere['joker_name'],
-                    $pendingElsewhere['match_label'],
-                );
             } elseif (!$canPlaceOnThisMatch['allowed']) {
                 $disabledReason = $canPlaceOnThisMatch['reason'];
             } elseif (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode() && !$this->buteurJokerPointsService->isMatchEligibleForDoubleButeurJoker($team, $match)) {
                 $disabledReason = $this->formatDoubleButeurIneligibleReason($team);
             } elseif (Joker::CODE_INVERSE_BUTEUR === $joker->getCode() && !$this->hasOpponentEligibleForInvertButeurOnMatch($team, $match)) {
                 $disabledReason = 'Aucune équipe adverse n\'a un buteur dont le pays joue ce match.';
-            } elseif (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode() && $team->getFavoriteCountry() instanceof Country) {
-                $disabledReason = 'Votre équipe favorite est déjà choisie (choix secret).';
+            } elseif (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode()) {
+                if ($team->getFavoriteCountry() instanceof Country) {
+                    $disabledReason = 'Équipe favorite déjà enregistrée (Mon compte → Mon équipe).';
+                } elseif ($this->competitionStatus->isStarted()) {
+                    $disabledReason = 'Le choix de l\'équipe favorite n\'est plus possible.';
+                } else {
+                    $disabledReason = 'Enregistrez votre sélection dans Mon compte → Mon équipe.';
+                }
             } else {
                 $canPlay = true;
             }
@@ -251,7 +240,7 @@ final class TeamJokerService
                 'description' => $joker->getDescription(),
                 'image' => $joker->getImage(),
                 'requires_target_team' => \in_array($joker->getCode(), [Joker::CODE_PIQUE_POINTS, Joker::CODE_INVERSE_BUTEUR, Joker::CODE_INVERSE_SCORE], true),
-                'requires_favorite_country' => Joker::CODE_EQUIPE_FAVORITE === $joker->getCode(),
+                'requires_favorite_country' => false,
                 'requires_confirmation' => $isEspion,
                 'confirmation_message' => $isEspion ? Joker::ESPION_PLACE_CONFIRMATION : null,
                 'can_play' => $canPlay,
@@ -312,7 +301,7 @@ final class TeamJokerService
             'can_manage' => true,
             'reason' => null,
             'active_on_match' => $activeOnMatch,
-            'pending_elsewhere' => $pendingElsewhere,
+            'planned_on_other_matches' => $plannedOnOtherMatches,
             'jokers' => $jokers,
             'opponent_teams' => $opponentTeams,
             'espion_intel' => $espionIntel,
@@ -344,17 +333,6 @@ final class TeamJokerService
             ];
         }
 
-        $pending = $this->findPendingUsageForTeam($team);
-        if ($pending instanceof TeamJokerUsage) {
-            return [
-                'allowed' => false,
-                'reason' => sprintf(
-                    'Un joker est déjà en cours sur %s.',
-                    $this->formatMatchLabel($pending->getMatch()),
-                ),
-            ];
-        }
-
         return ['allowed' => true, 'reason' => null];
     }
 
@@ -380,10 +358,10 @@ final class TeamJokerService
         }
 
         if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode()) {
-            if ($team->getFavoriteCountry() instanceof Country) {
-                throw new \InvalidArgumentException('Votre équipe favorite est déjà choisie.');
-            }
-        } elseif ($this->teamJokerUsageRepository->findOneByTeamAndJoker($team, $joker) instanceof TeamJokerUsage) {
+            throw new \InvalidArgumentException('Enregistrez votre équipe favorite dans Mon compte → Mon équipe (avant le début de la compétition).');
+        }
+
+        if ($this->teamJokerUsageRepository->findOneByTeamAndJoker($team, $joker) instanceof TeamJokerUsage) {
             throw new \InvalidArgumentException('Votre équipe a déjà utilisé ce joker.');
         }
 
@@ -487,16 +465,39 @@ final class TeamJokerService
         return $map;
     }
 
-    public function findPendingUsageForTeam(Team $team): ?TeamJokerUsage
+    /**
+     * Jokers déjà planifiés sur d'autres matchs à venir (informatif, ne bloque pas).
+     *
+     * @return list<array{match_id: int, match_label: string, joker_name: string}>
+     */
+    private function buildPlannedOnOtherMatches(Team $team, GameMatch $currentMatch): array
     {
+        $currentMatchId = $currentMatch->getId();
+        $planned = [];
+
         foreach ($this->teamJokerUsageRepository->findByTeamOrdered($team) as $usage) {
-            $match = $usage->getMatch();
-            if ($match instanceof GameMatch && !$this->matchStatusResolver->isMatchFinished($match)) {
-                return $usage;
+            $usageMatch = $usage->getMatch();
+            if (!$usageMatch instanceof GameMatch) {
+                continue;
             }
+
+            $usageMatchId = $usageMatch->getId();
+            if (null === $usageMatchId || (null !== $currentMatchId && (int) $usageMatchId === (int) $currentMatchId)) {
+                continue;
+            }
+
+            if ($this->matchStatusResolver->isMatchFinished($usageMatch)) {
+                continue;
+            }
+
+            $planned[] = [
+                'match_id' => (int) $usageMatchId,
+                'match_label' => $this->formatMatchLabel($usageMatch),
+                'joker_name' => (string) $usage->getJoker()?->getName(),
+            ];
         }
 
-        return null;
+        return $planned;
     }
 
     public function isMatchOpenForJoker(GameMatch $match): bool

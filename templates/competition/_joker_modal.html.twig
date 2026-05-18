@@ -1,24 +1,33 @@
-<dialog id="joker-match-dialog" class="joker-dialog">
-    <div class="joker-dialog-panel">
-        <header class="joker-dialog-head">
-            <h2 id="joker-dialog-title" class="joker-dialog-title">Jokers</h2>
-            <button type="button" class="joker-dialog-close" data-joker-close aria-label="Fermer">
+<dialog id="joker-match-dialog" class="joker-drawer joker-dialog" aria-labelledby="joker-drawer-title">
+    <div class="joker-drawer__panel joker-dialog-panel">
+        <header class="joker-drawer__head joker-dialog-head">
+            <h2 id="joker-drawer-title" class="joker-drawer__title joker-dialog-title">Jokers</h2>
+            <button type="button" class="joker-drawer__close joker-dialog-close" data-joker-close aria-label="Fermer">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </button>
         </header>
-        <p class="joker-dialog-match" id="joker-dialog-match-label" hidden></p>
-        <p class="joker-dialog-message ta-card-text" id="joker-dialog-message" hidden></p>
-        <div class="joker-dialog-active" id="joker-dialog-active" hidden></div>
-        <div class="joker-dialog-espion" id="joker-dialog-espion" hidden></div>
-        <div class="joker-dialog-target-picker" id="joker-dialog-target-picker" hidden>
-            <p class="joker-dialog-target-label ta-card-text">Équipe adverse à cibler</p>
-            <select id="joker-dialog-target-select" class="joker-dialog-target-select"></select>
-            <div class="joker-dialog-target-actions">
-                <button type="button" class="btn btn-primary btn-sm" id="joker-dialog-target-confirm">Confirmer</button>
-                <button type="button" class="btn btn-outline btn-sm" id="joker-dialog-target-cancel">Annuler</button>
+
+        <div class="joker-drawer__hero" id="joker-dialog-hero" hidden></div>
+
+        <div class="joker-drawer__scroll">
+            <p class="joker-drawer__match-label joker-dialog-match" id="joker-dialog-match-label" hidden></p>
+            <p class="joker-drawer__message joker-dialog-message ta-card-text" id="joker-dialog-message" hidden></p>
+
+            <div class="joker-drawer__active joker-dialog-active" id="joker-dialog-active" hidden></div>
+            <div class="joker-drawer__espion joker-dialog-espion" id="joker-dialog-espion" hidden></div>
+
+            <div class="joker-drawer__target-picker joker-dialog-target-picker" id="joker-dialog-target-picker" hidden>
+                <p class="joker-drawer__target-label joker-dialog-target-label ta-card-text">Équipe adverse à cibler</p>
+                <select id="joker-dialog-target-select" class="joker-drawer__target-select joker-dialog-target-select"></select>
+                <div class="joker-drawer__target-actions joker-dialog-target-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="joker-dialog-target-confirm">Confirmer</button>
+                    <button type="button" class="btn btn-outline btn-sm" id="joker-dialog-target-cancel">Annuler</button>
+                </div>
             </div>
+
+            <p class="joker-drawer__list-title" id="joker-dialog-list-label" hidden>Choisir un joker</p>
+            <ul class="joker-drawer__list joker-dialog-list" id="joker-dialog-list"></ul>
+            <p class="joker-drawer__loading joker-dialog-loading ta-card-text" id="joker-dialog-loading">Chargement…</p>
         </div>
-        <ul class="joker-dialog-list" id="joker-dialog-list"></ul>
-        <p class="joker-dialog-loading ta-card-text" id="joker-dialog-loading">Chargement…</p>
     </div>
 </dialog>

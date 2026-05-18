@@ -53,6 +53,120 @@ html.lpf-classic-light .ta-mobile-bar {
     border-bottom: 1px solid var(--lpf-border);
 }
 
+/* --- Burger LPF (même logique que html.dark dans lpf-app-dark.css) --- */
+html.lpf-classic-light .lpf-burger {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+html.lpf-classic-light .ta-burger.lpf-burger {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: none !important;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none;
+    color: inherit;
+}
+
+html.lpf-classic-light.ta-nav-open .ta-burger.lpf-burger,
+html.lpf-classic-light body.ta-nav-open .ta-burger.lpf-burger {
+    background: transparent !important;
+    border: none !important;
+    color: inherit;
+}
+
+html.lpf-classic-light .lpf-burger__line {
+    display: block;
+    flex-shrink: 0;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--lpf-navy, #1b2d4f) !important;
+    transition: transform 0.35s ease, opacity 0.35s ease, width 0.35s ease;
+    transform-origin: center;
+}
+
+html.lpf-classic-light .lpf-burger__line:nth-child(1) {
+    width: 28px;
+}
+
+html.lpf-classic-light .lpf-burger__line:nth-child(2) {
+    width: 18px;
+}
+
+html.lpf-classic-light .lpf-burger__line:nth-child(3) {
+    width: 28px;
+}
+
+html.lpf-classic-light .lpf-burger__ball {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    margin-top: -4.5px;
+    border-radius: 50%;
+    background-color: var(--lpf-primary, #16a34a) !important;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+html.lpf-classic-light .lpf-burger:not(.open):hover .lpf-burger__ball {
+    transform: scale(1.15);
+}
+
+html.lpf-classic-light .lpf-burger.open .lpf-burger__line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+html.lpf-classic-light .lpf-burger.open .lpf-burger__line:nth-child(2) {
+    opacity: 0;
+    width: 0;
+}
+
+html.lpf-classic-light .lpf-burger.open .lpf-burger__line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+html.lpf-classic-light .lpf-burger.open .lpf-burger__ball {
+    opacity: 0;
+}
+
+@media (max-width: 1024px) {
+    html.lpf-classic-light .ta-mobile-bar__logo-link .lpf-brand-logo-wrap {
+        width: auto;
+        max-width: 100%;
+    }
+
+    html.lpf-classic-light .ta-mobile-bar__logo {
+        height: 2.75rem !important;
+        max-height: 2.75rem !important;
+        min-height: 0 !important;
+        max-width: min(220px, calc(100vw - 5.5rem)) !important;
+        width: auto !important;
+        object-fit: contain;
+    }
+
+    html.lpf-classic-light .ta-burger.lpf-burger {
+        align-items: flex-start;
+        justify-content: center;
+    }
+}
+
 html.lpf-classic-light .ta-sidebar-brand,
 html.lpf-classic-light .ta-sidebar-footer {
     border-color: var(--lpf-border) !important;
@@ -218,9 +332,12 @@ html.lpf-classic-light .tabs-box {
     border-color: var(--lpf-border);
 }
 
-/* --- Auth --- */
+/* --- Auth (couleurs — layout : lpf-auth-layout.css) --- */
 html.lpf-classic-light body.front-body--auth {
     background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+    font-family: "Public Sans", system-ui, sans-serif;
+    color-scheme: light;
 }
 
 html.lpf-classic-light .auth-wrap {
@@ -228,39 +345,90 @@ html.lpf-classic-light .auth-wrap {
 }
 
 html.lpf-classic-light .ta-auth-aside {
-    background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+    background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%) !important;
+    color: var(--lpf-text) !important;
     border-right: 1px solid var(--lpf-border);
 }
 
-html.lpf-classic-light .ta-auth-form-wrap {
-    background: var(--lpf-surface);
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-form-wrap {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
 }
 
 html.lpf-classic-light .auth-wrap .section-title,
-html.lpf-classic-light .ta-auth-title {
+html.lpf-classic-light .ta-auth-title,
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-form-wrap .section-title,
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-form-wrap .ta-auth-title {
     color: var(--lpf-navy) !important;
 }
 
 html.lpf-classic-light .auth-wrap label,
-html.lpf-classic-light .ta-auth-lead {
+html.lpf-classic-light .ta-auth-lead,
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-form-wrap .ta-auth-lead,
+html.lpf-classic-light .ta-auth-form-wrap form label,
+html.lpf-classic-light .ta-auth-check label {
     color: var(--lpf-muted) !important;
 }
 
-html.lpf-classic-light .auth-wrap input[type="email"],
-html.lpf-classic-light .auth-wrap input[type="password"],
-html.lpf-classic-light .auth-wrap input[type="text"] {
+html.lpf-classic-light .ta-auth-form-wrap form input[type="text"],
+html.lpf-classic-light .ta-auth-form-wrap form input[type="email"],
+html.lpf-classic-light .ta-auth-form-wrap form input[type="password"],
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-input,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-select,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-textarea {
+    color: var(--lpf-text) !important;
     background: var(--lpf-surface) !important;
     border: 1px solid var(--lpf-border) !important;
-    color: var(--lpf-text) !important;
 }
 
-html.lpf-classic-light .auth-wrap input:focus {
+html.lpf-classic-light .ta-auth-form-wrap form input:focus,
+html.lpf-classic-light .ta-auth-form-wrap .ta-form-input:focus {
     border-color: var(--lpf-primary) !important;
     box-shadow: 0 0 0 3px rgb(22 163 74 / 18%);
 }
 
 html.lpf-classic-light .ta-auth-slogan {
-    color: var(--lpf-muted);
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-auth-form-wrap a:not(.ta-auth-submit) {
+    color: var(--lpf-link) !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+html.lpf-classic-light .ta-auth-form-wrap a:not(.ta-auth-submit):hover {
+    color: var(--lpf-primary-hover) !important;
+    text-decoration: underline;
+}
+
+html.lpf-classic-light .ta-auth-link-row {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-auth-check {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .auth-wrap .flash-success {
+    background: rgb(22 163 74 / 10%);
+    border: 1px solid var(--lpf-primary);
+    color: var(--lpf-link);
+}
+
+html.lpf-classic-light .auth-wrap .flash-danger {
+    background: rgb(220 38 38 / 8%);
+    border: 1px solid var(--lpf-danger);
+    color: var(--lpf-danger);
+}
+
+html.lpf-classic-light .ta-auth-separator {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light .ta-auth-separator::before,
+html.lpf-classic-light .ta-auth-separator::after {
+    background: var(--lpf-border);
 }
 
 /* --- Switcher (classique clair) --- */
@@ -290,4 +458,3 @@ html.lpf-classic-light .lpf-theme-switcher--floating {
     box-shadow: 0 12px 32px rgb(15 23 42 / 12%);
 }
 
-@import url("lpf-classic-light-front.css");
