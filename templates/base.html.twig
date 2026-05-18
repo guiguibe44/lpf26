@@ -3,38 +3,25 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
-<html lang="fr" class="dark">
+<html lang="fr" class="lpf-classic-light">
     <head>
         <script>
             (function () {
-                var key = 'lpfTheme';
-                var legacy = 'lpfGtaTheme';
-                var theme = 'classic';
                 try {
-                    var v = localStorage.getItem(key);
-                    if (v === 'classic' || v === 'classic-light') {
-                        theme = v;
-                    } else if (v === 'gta' || v === 'miami') {
-                        theme = 'classic';
-                    } else if (localStorage.getItem(legacy) === '0') {
-                        theme = 'classic';
-                    } else if (localStorage.getItem(legacy) === '1') {
-                        theme = 'classic';
-                    }
+                    localStorage.setItem('lpfTheme', 'classic-light');
+                    localStorage.setItem('lpfGtaTheme', '0');
                 } catch (e) {
-                    theme = 'classic';
+                    /* ignore */
                 }
                 var html = document.documentElement;
-                html.classList.toggle('dark', theme === 'classic' || theme === 'gta');
-                html.classList.toggle('lpf-classic-light', theme === 'classic-light');
-                html.classList.toggle('lpf-gta-theme', theme === 'gta' || theme === 'miami');
-                html.classList.toggle('lpf-gta-miami', theme === 'miami');
+                html.classList.remove('dark', 'lpf-gta-theme', 'lpf-gta-miami');
+                html.classList.add('lpf-classic-light');
             })();
         </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <meta name="theme-color" content="#09090b">
+        <meta name="theme-color" content="#f8fafc">
         <title>{% block title %}LPF 2026{% endblock %}</title>
         <link rel="icon" href="{{ asset('images/favicon-lpf/favicon.ico') }}" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-lpf/favicon-32x32.png') }}">
@@ -44,7 +31,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         {% if not isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-menu-spacing">
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-sidebar-fix">
         {% endif %}
         {% block stylesheets %}
         {% endblock %}
@@ -63,8 +50,7 @@
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">
         {% endif %}
-        <link rel="stylesheet" href="{{ asset('lpf-theme-switcher.css') }}?v=5">
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=5">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=6">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=2">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
@@ -84,7 +70,6 @@
     </head>
     <body class="front-body{{ isAuthPage ? ' front-body--auth' : '' }}{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
         {% if isAuthPage %}
-            {% include '_gta_theme_switcher.html.twig' with { modifier: 'floating', switcher_id: 'lpf-theme-switcher-auth' } %}
             <main class="auth-wrap">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
@@ -141,6 +126,6 @@
                 </main>
             </div>
         {% endif %}
-        <script src="{{ asset('js/lpf-theme-switcher.js') }}?v=5"></script>
+        <script src="{{ asset('js/lpf-theme-light.js') }}?v=1"></script>
     </body>
 </html>

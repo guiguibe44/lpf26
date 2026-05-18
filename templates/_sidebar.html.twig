@@ -41,6 +41,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ path('app_reglement') }}" class="ta-menu-link {{ currentRoute == 'app_reglement' ? 'active' : '' }}">
+                        <i class="ti ti-file-text" aria-hidden="true"></i>
+                        Règlement
+                    </a>
+                </li>
+                <li>
                     <a href="{{ path('app_account') }}" class="ta-menu-link {{ currentRoute == 'app_account' ? 'active' : '' }}">
                         <i class="ti ti-user" aria-hidden="true"></i>
                         Compte et équipe
@@ -64,7 +70,7 @@
         </nav>
 
         <div class="ta-sidebar-footer">
-            {% include '_gta_theme_switcher.html.twig' with { switcher_id: 'lpf-theme-switcher-sidebar' } %}
+            {% include '_sidebar_user.html.twig' %}
             <a
                 href="{{ path('app_account') }}#notifications"
                 class="ta-sidebar-notify {{ currentRoute == 'app_account' ? 'ta-sidebar-notify--current' : '' }}"

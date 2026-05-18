@@ -1,0 +1,60 @@
+.reglement-topbar {
+    margin-bottom: 1.25rem;
+}
+
+.reglement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.reglement-item {
+    padding: 0;
+    overflow: hidden;
+}
+
+.reglement-item__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+}
+
+.reglement-item__summary::-webkit-details-marker {
+    display: none;
+}
+
+.reglement-item__summary > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reglement-item__chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.reglement-item[open] > summary .reglement-item__chevron {
+    transform: rotate(180deg);
+}
+
+.reglement-item__body {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+}
+
+.reglement-item__body ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.reglement-item__more {
+    margin: 1rem 0 0;
+}

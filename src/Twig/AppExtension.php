@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Entity\GameMatch;
+use App\Service\ConnectedPlayerContext;
 use App\Service\MatchStatusResolver;
 use App\Service\TeamFavoriteCountryService;
 use Twig\Extension\AbstractExtension;
@@ -14,6 +15,7 @@ final class AppExtension extends AbstractExtension
     public function __construct(
         private readonly MatchStatusResolver $matchStatusResolver,
         private readonly TeamFavoriteCountryService $teamFavoriteCountryService,
+        private readonly ConnectedPlayerContext $connectedPlayerContext,
     ) {
     }
 
@@ -33,7 +35,16 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
             new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
             new TwigFunction('match_is_team_favorite_highlight', [$this, 'isTeamFavoriteHighlight']),
+            new TwigFunction('connected_player_sidebar', [$this, 'getConnectedPlayerSidebar']),
         ];
+    }
+
+    /**
+     * @return array{nickname: string, avatar: string|null, initials: string, email: string}|null
+     */
+    public function getConnectedPlayerSidebar(): ?array
+    {
+        return $this->connectedPlayerContext->getSidebarProfile();
     }
 
     /**

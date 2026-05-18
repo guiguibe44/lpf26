@@ -1,0 +1,24 @@
+{% set player = connected_player_sidebar() %}
+{% if player %}
+    <a href="{{ path('app_account') }}" class="ta-sidebar-user {{ currentRoute == 'app_account' ? 'ta-sidebar-user--current' : '' }}">
+        <span class="ta-sidebar-user__avatar" aria-hidden="true">
+            {% if player.avatar %}
+                <img
+                    src="{{ player.avatar starts with '/' ? player.avatar : asset(player.avatar) }}"
+                    alt=""
+                    class="ta-sidebar-user__avatar-img"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <span class="ta-sidebar-user__avatar-fallback">{{ player.initials }}</span>
+            {% endif %}
+        </span>
+        <span class="ta-sidebar-user__copy">
+            <span class="ta-sidebar-user__nickname">{{ player.nickname }}</span>
+            <span class="ta-sidebar-user__hint">Mon compte</span>
+        </span>
+    </a>
+{% endif %}

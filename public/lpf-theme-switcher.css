@@ -213,17 +213,6 @@ html.lpf-gta-theme .lpf-theme-switcher--floating {
     }
 }
 
-.ta-sidebar-footer {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.65rem;
-}
-
-.ta-sidebar-footer .lpf-theme-switcher {
-    margin-top: 0;
-    width: 100%;
-}
-
 .ta-sidebar-footer .ta-sidebar-notify {
     align-self: center;
 }

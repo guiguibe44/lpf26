@@ -177,7 +177,7 @@ html.lpf-classic-light .ta-sidebar .ta-menu-link {
 }
 
 html.lpf-classic-light .ta-sidebar .ta-menu-link:hover {
-    transform: translateX(5px);
+    padding-left: 1.2rem !important;
     background: var(--lpf-surface-raised) !important;
     border-color: var(--lpf-primary) !important;
     color: var(--lpf-link) !important;
@@ -198,6 +198,21 @@ html.lpf-classic-light .ta-sidebar-nav .menu > li:last-child {
 html.lpf-classic-light .ta-sidebar-notify {
     background: var(--lpf-surface-raised) !important;
     border-color: var(--lpf-border) !important;
+    color: var(--lpf-navy) !important;
+}
+
+html.lpf-classic-light .ta-sidebar-user {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light .ta-sidebar-user:hover,
+html.lpf-classic-light .ta-sidebar-user--current {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+html.lpf-classic-light .ta-sidebar-user__nickname {
     color: var(--lpf-navy) !important;
 }
 

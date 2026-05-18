@@ -61,7 +61,7 @@ html.dark .ta-sidebar .ta-menu-link {
 }
 
 html.dark .ta-sidebar .ta-menu-link:hover {
-    transform: translateX(5px);
+    padding-left: 1.2rem;
     background: var(--lpf-surface-raised) !important;
     border-color: var(--lpf-primary) !important;
     color: var(--lpf-link) !important;
