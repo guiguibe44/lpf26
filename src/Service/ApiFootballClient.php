@@ -93,6 +93,26 @@ final class ApiFootballClient
     }
 
     /**
+     * @return array<string, mixed>|null ligne "response" brute d’un match (fixture + teams + goals).
+     */
+    public function fetchFixtureById(int $fixtureId): ?array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException('API_FOOTBALL_KEY manquante.');
+        }
+
+        $data = $this->requestJson('/fixtures', ['id' => $fixtureId]);
+        $rows = $data['response'] ?? [];
+        if (!\is_array($rows) || [] === $rows) {
+            return null;
+        }
+
+        $row = $rows[0] ?? null;
+
+        return \is_array($row) ? $row : null;
+    }
+
+    /**
      * @return list<array<string, mixed>>
      */
     public function fetchFixtureEvents(int $fixtureId): array

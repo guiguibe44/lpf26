@@ -29,7 +29,8 @@
                                 joker_usage_by_match_id: joker_usage_by_match_id,
                                 espion_intel_by_match_id: espion_intel_by_match_id|default({}),
                                 show_joker_ui: show_joker_ui|default(false),
-                                team_favorite_highlight: team_favorite_highlight|default(null)
+                                team_favorite_highlight: team_favorite_highlight|default(null),
+                                match_goals: goals_by_match_id[match.id] ?? [],
                             } only %}
                         {% endfor %}
                     </div>
@@ -50,7 +51,8 @@
                                 joker_usage_by_match_id: joker_usage_by_match_id,
                                 espion_intel_by_match_id: espion_intel_by_match_id|default({}),
                                 show_joker_ui: show_joker_ui|default(false),
-                                team_favorite_highlight: team_favorite_highlight|default(null)
+                                team_favorite_highlight: team_favorite_highlight|default(null),
+                                match_goals: goals_by_match_id[match.id] ?? [],
                             } only %}
                         {% endfor %}
                     </div>
@@ -89,5 +91,8 @@
     {{ parent() }}
     {% if app.user %}
         <script src="{{ asset('js/joker-match.js') }}?v=20" defer></script>
+    {% endif %}
+    {% if has_live_matches|default(false) %}
+        <script src="{{ asset('js/live-match-feed.js') }}?v=1" defer></script>
     {% endif %}
 {% endblock %}

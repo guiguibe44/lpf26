@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Service\DefaultPronosticService;
+use App\Service\MatchStatusResolver;
 use App\Service\PronosticScoringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +26,7 @@ class PronosticController extends AbstractController
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
         DefaultPronosticService $defaultPronosticService,
+        MatchStatusResolver $matchStatusResolver,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -32,7 +34,7 @@ class PronosticController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            $this->handleSubmit($request, $user, $gameMatchRepository, $pronosticRepository, $entityManager, $pronosticScoringService);
+            $this->handleSubmit($request, $user, $gameMatchRepository, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
 
             return $this->redirectToRoute('app_pronostics');
         }
@@ -64,13 +66,14 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        MatchStatusResolver $matchStatusResolver,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
         }
 
-        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService);
+        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
 
         return $this->redirectToRoute('app_matches');
     }
@@ -82,6 +85,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        MatchStatusResolver $matchStatusResolver,
     ): void {
         $matchId = (int) $request->request->get('match_id');
 
@@ -92,7 +96,7 @@ class PronosticController extends AbstractController
             return;
         }
 
-        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService);
+        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
     }
 
     private function savePronostic(
@@ -102,6 +106,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        MatchStatusResolver $matchStatusResolver,
     ): void {
         if (!$user->isCotisationPayee()) {
             $this->addFlash('danger', 'Réglez votre cotisation (10 € par joueur) pour pouvoir pronostiquer.');
@@ -109,7 +114,7 @@ class PronosticController extends AbstractController
             return;
         }
 
-        if (!$this->canEditPronostic($match)) {
+        if (!$matchStatusResolver->canEditBeforeKickoff($match)) {
             $this->addFlash('danger', 'Ce match a déjà commencé, le pronostic ne peut plus être modifié.');
 
             return;
@@ -152,14 +157,5 @@ class PronosticController extends AbstractController
 
         $entityManager->flush();
         $this->addFlash('success', 'Pronostic enregistré.');
-    }
-
-    private function canEditPronostic(GameMatch $match): bool
-    {
-        $dateHeure = $match->getDateHeure();
-
-        return 'SCHEDULED' === $match->getStatut()
-            && null !== $dateHeure
-            && $dateHeure > new \DateTimeImmutable();
     }
 }

@@ -51,6 +51,7 @@ security:
         - { path: ^/invitation, roles: PUBLIC_ACCESS }
         # API JSON : cookie « se souvenir de moi » (évite une réponse HTML sur fetch / JSON).
         - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
+        - { path: ^/api/matchs/live-feed, roles: IS_AUTHENTICATED }
         - { path: ^/admin/sync/wc2026/goals, roles: ROLE_ADMIN }
         - { path: ^/admin/sync, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }

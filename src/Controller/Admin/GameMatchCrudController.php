@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\GameMatch;
 use App\Service\PronosticScoringService;
+use App\Service\Wc2026SyncService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -18,6 +19,7 @@ class GameMatchCrudController extends AbstractAppCrudController
 {
     public function __construct(
         private readonly PronosticScoringService $pronosticScoringService,
+        private readonly Wc2026SyncService $wc2026SyncService,
     ) {
     }
 
@@ -64,7 +66,11 @@ class GameMatchCrudController extends AbstractAppCrudController
             ]),
             TextField::new('phase')->setRequired(false),
             BooleanField::new('isKdoMatch')->setLabel('Match KDO (cadeau)'),
+            BooleanField::new('apiFootballSyncEnabled')->setLabel('Synchro API-Football'),
             IntegerField::new('apiFootballFixtureId')->setRequired(false)->onlyOnDetail(),
+            IntegerField::new('liveElapsedMinute')->setLabel('Minute live')->onlyOnDetail(),
+            DateTimeField::new('liveScoresFinalizedAt')->setLabel('Scores finalisés le')->onlyOnDetail(),
+            DateTimeField::new('apiFootballLastSyncedAt')->setLabel('Dernière synchro API')->onlyOnDetail(),
             TextField::new('venueName')->setRequired(false),
             TextField::new('referee')->setRequired(false),
             IntegerField::new('scoreDomicile')->setRequired(false),
@@ -94,6 +100,9 @@ class GameMatchCrudController extends AbstractAppCrudController
 
         if ($entityInstance instanceof GameMatch) {
             $this->pronosticScoringService->rescoreForMatch($entityInstance);
+            if ('FINISHED' === $entityInstance->getStatut() || 'CANCELLED' === $entityInstance->getStatut()) {
+                $this->wc2026SyncService->finalizeMatchAfterFullTime($entityInstance);
+            }
         }
     }
 }

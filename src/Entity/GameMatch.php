@@ -73,6 +73,18 @@ class GameMatch
     #[ORM\Column(options: ['default' => false])]
     private bool $isKdoMatch = false;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $apiFootballSyncEnabled = true;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $liveElapsedMinute = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $liveScoresFinalizedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $apiFootballLastSyncedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -346,6 +358,54 @@ class GameMatch
     public function setIsKdoMatch(bool $isKdoMatch): static
     {
         $this->isKdoMatch = $isKdoMatch;
+
+        return $this;
+    }
+
+    public function isApiFootballSyncEnabled(): bool
+    {
+        return $this->apiFootballSyncEnabled;
+    }
+
+    public function setApiFootballSyncEnabled(bool $apiFootballSyncEnabled): static
+    {
+        $this->apiFootballSyncEnabled = $apiFootballSyncEnabled;
+
+        return $this;
+    }
+
+    public function getLiveElapsedMinute(): ?int
+    {
+        return $this->liveElapsedMinute;
+    }
+
+    public function setLiveElapsedMinute(?int $liveElapsedMinute): static
+    {
+        $this->liveElapsedMinute = $liveElapsedMinute;
+
+        return $this;
+    }
+
+    public function getLiveScoresFinalizedAt(): ?\DateTimeImmutable
+    {
+        return $this->liveScoresFinalizedAt;
+    }
+
+    public function setLiveScoresFinalizedAt(?\DateTimeImmutable $liveScoresFinalizedAt): static
+    {
+        $this->liveScoresFinalizedAt = $liveScoresFinalizedAt;
+
+        return $this;
+    }
+
+    public function getApiFootballLastSyncedAt(): ?\DateTimeImmutable
+    {
+        return $this->apiFootballLastSyncedAt;
+    }
+
+    public function setApiFootballLastSyncedAt(?\DateTimeImmutable $apiFootballLastSyncedAt): static
+    {
+        $this->apiFootballLastSyncedAt = $apiFootballLastSyncedAt;
 
         return $this;
     }

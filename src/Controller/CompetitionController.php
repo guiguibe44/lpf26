@@ -6,6 +6,7 @@ use App\Entity\GameMatch;
 use App\Entity\Team;
 use App\Entity\TeamMember;
 use App\Entity\User;
+use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\TeamRepository;
 use App\Service\DefaultPronosticService;
@@ -36,6 +37,7 @@ class CompetitionController extends AbstractController
         TeamJokerService $teamJokerService,
         TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
+        ButRepository $butRepository,
     ): Response
     {
         $user = $this->getUser();
@@ -44,6 +46,11 @@ class CompetitionController extends AbstractController
         }
 
         $matches = $gameMatchRepository->findBy([], ['dateHeure' => 'ASC']);
+        $matchIds = array_values(array_filter(array_map(
+            static fn (GameMatch $m): ?int => $m->getId(),
+            $matches,
+        )));
+        $goalsByMatchId = $butRepository->findGoalRowsIndexedByMatchIds($matchIds);
         $defaultPronosticService->ensureDefaultsForUser($user, $matches);
         $partnerIds = $teamMemberRepository->findPartnerPlayerIds($user);
         $teamMember = $teamMemberRepository->findOneBy(['player' => $user]);
@@ -73,6 +80,7 @@ class CompetitionController extends AbstractController
             'espion_intel_by_match_id' => $espion_intel_by_match_id,
             'show_joker_ui' => true,
             'team_favorite_highlight' => $team_favorite_highlight,
+            'goals_by_match_id' => $goalsByMatchId,
         ]);
     }
 

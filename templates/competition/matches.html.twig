@@ -130,7 +130,8 @@
                     joker_usage_by_match_id: joker_usage_by_match_id|default({}),
                     espion_intel_by_match_id: espion_intel_by_match_id|default({}),
                     show_joker_ui: show_joker_ui|default(false),
-                    team_favorite_highlight: team_favorite_highlight|default(null)
+                    team_favorite_highlight: team_favorite_highlight|default(null),
+                    match_goals: goals_by_match_id[match.id] ?? [],
                 } only %}
 
                 {% if loop.last %}

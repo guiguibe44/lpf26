@@ -454,6 +454,107 @@ final class Wc2026SyncService
     }
 
     /**
+     * Met à jour un match depuis GET /fixtures?id=… (score, statut, minute).
+     *
+     * @return array{updated:bool, score_changed:bool, status_changed:bool, old_status:string, new_status:string}
+     */
+    public function syncMatchFromApi(GameMatch $match): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $fixtureId = $match->getApiFootballFixtureId();
+        if (null === $fixtureId) {
+            throw new \InvalidArgumentException('Ce match n’a pas d’identifiant API-Football (fixture).');
+        }
+
+        $oldStatus = $match->getStatut();
+        $oldScoreDomicile = $match->getScoreDomicile();
+        $oldScoreExterieur = $match->getScoreExterieur();
+
+        $row = $this->apiFootballClient->fetchFixtureById($fixtureId);
+        if (null === $row) {
+            throw new \RuntimeException(sprintf('Fixture API %d introuvable.', $fixtureId));
+        }
+
+        $parsed = $this->parseApiFootballFixtureRow($row);
+        if (null === $parsed) {
+            throw new \RuntimeException(sprintf('Réponse API invalide pour la fixture %d.', $fixtureId));
+        }
+
+        $match
+            ->setStatut($this->mapApiFootballFixtureStatus($parsed['status_short']))
+            ->setScoreDomicile($parsed['score_home'])
+            ->setScoreExterieur($parsed['score_away'])
+            ->setLiveElapsedMinute($parsed['elapsed'])
+            ->setApiFootballLastSyncedAt(new \DateTimeImmutable());
+
+        if (null !== $parsed['venue_name']) {
+            $match->setVenueName($parsed['venue_name']);
+        }
+
+        if (null !== $parsed['referee']) {
+            $match->setReferee($parsed['referee']);
+        }
+
+        $scoreChanged = ($oldScoreDomicile !== $match->getScoreDomicile())
+            || ($oldScoreExterieur !== $match->getScoreExterieur());
+        $statusChanged = $oldStatus !== $match->getStatut();
+
+        if ($scoreChanged) {
+            $this->pronosticScoringService->rescoreForMatch($match);
+        }
+
+        return [
+            'updated' => $scoreChanged || $statusChanged,
+            'score_changed' => $scoreChanged,
+            'status_changed' => $statusChanged,
+            'old_status' => $oldStatus,
+            'new_status' => $match->getStatut(),
+        ];
+    }
+
+    /**
+     * Importe les buts d’un seul match (événements Goal).
+     *
+     * @return array{created:int, skipped:int}
+     */
+    public function syncGoalsForMatch(GameMatch $match): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $fixtureId = $match->getApiFootballFixtureId();
+        if (null === $fixtureId) {
+            return ['created' => 0, 'skipped' => 0];
+        }
+
+        $events = $this->apiFootballClient->fetchFixtureEvents($fixtureId);
+
+        return $this->importGoalEventsForMatch($match, $fixtureId, $events);
+    }
+
+    /**
+     * Recalcule pronostics, points buteurs et classement équipes après la fin du match.
+     */
+    public function finalizeMatchAfterFullTime(GameMatch $match): void
+    {
+        if (null !== $match->getLiveScoresFinalizedAt()) {
+            return;
+        }
+
+        if ('FINISHED' !== $match->getStatut() && 'CANCELLED' !== $match->getStatut()) {
+            return;
+        }
+
+        if (null !== $match->getScoreDomicile() && null !== $match->getScoreExterieur()) {
+            $this->pronosticScoringService->rescoreForMatch($match);
+        }
+
+        $this->buteurGoalScoringService->rescoreAll();
+        $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+        $match->setLiveScoresFinalizedAt(new \DateTimeImmutable());
+    }
+
+    /**
      * Importe les buts depuis /fixtures/events (types Goal). Requiert des buteurs avec api_sports_player_id renseigné.
      *
      * @return array{created:int, skipped:int, api_calls:int}
@@ -489,60 +590,16 @@ final class Wc2026SyncService
                 continue;
             }
 
+            if (!$match->isApiFootballSyncEnabled()) {
+                continue;
+            }
+
             $events = $this->apiFootballClient->fetchFixtureEvents($fixtureId);
             ++$apiCalls;
 
-            $goalOrdinal = 0;
-            foreach ($events as $event) {
-                if (!\is_array($event)) {
-                    ++$skipped;
-                    continue;
-                }
-
-                $type = strtoupper(trim((string) ($event['type'] ?? '')));
-                if ('GOAL' !== $type) {
-                    continue;
-                }
-
-                $player = $event['player'] ?? null;
-                if (!\is_array($player)) {
-                    ++$skipped;
-                    continue;
-                }
-
-                $playerId = $player['id'] ?? null;
-                if (!is_numeric($playerId)) {
-                    ++$skipped;
-                    continue;
-                }
-
-                $playerId = (int) $playerId;
-                $buteur = $this->buteurRepository->findOneByApiSportsPlayerId($playerId);
-                if (!$buteur instanceof Buteur) {
-                    ++$skipped;
-                    continue;
-                }
-
-                $time = $event['time'] ?? null;
-                $elapsed = \is_array($time) ? (int) ($time['elapsed'] ?? 0) : 0;
-                $extra = \is_array($time) ? (int) ($time['extra'] ?? 0) : 0;
-                $eventKey = sprintf('f%d-g%d-p%d-e%d-x%d', $fixtureId, $goalOrdinal, $playerId, $elapsed, $extra);
-                ++$goalOrdinal;
-
-                $existing = $this->butRepository->findOneBy(['apiSportsEventKey' => $eventKey]);
-                if ($existing instanceof But) {
-                    continue;
-                }
-
-                $but = (new But())
-                    ->setButeur($buteur)
-                    ->setMatchRef($match)
-                    ->setMinute($elapsed > 0 ? $elapsed : null)
-                    ->setApiSportsEventKey($eventKey);
-                $this->buteurGoalScoringService->scoreBut($but);
-                $this->entityManager->persist($but);
-                ++$created;
-            }
+            $import = $this->importGoalEventsForMatch($match, $fixtureId, $events);
+            $created += $import['created'];
+            $skipped += $import['skipped'];
         }
 
         $this->entityManager->flush();
@@ -556,6 +613,80 @@ final class Wc2026SyncService
         }
 
         return ['created' => $created, 'skipped' => $skipped, 'api_calls' => $apiCalls];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $events
+     *
+     * @return array{created:int, skipped:int}
+     */
+    private function importGoalEventsForMatch(GameMatch $match, int $fixtureId, array $events): array
+    {
+        $created = 0;
+        $skipped = 0;
+        $goalOrdinal = 0;
+
+        foreach ($events as $event) {
+            if (!\is_array($event)) {
+                ++$skipped;
+                continue;
+            }
+
+            $type = strtoupper(trim((string) ($event['type'] ?? '')));
+            if ('GOAL' !== $type) {
+                continue;
+            }
+
+            $player = $event['player'] ?? null;
+            if (!\is_array($player)) {
+                ++$skipped;
+                continue;
+            }
+
+            $playerId = $player['id'] ?? null;
+            if (!is_numeric($playerId)) {
+                ++$skipped;
+                continue;
+            }
+
+            $playerId = (int) $playerId;
+            $buteur = $this->buteurRepository->findOneByApiSportsPlayerId($playerId);
+            if (!$buteur instanceof Buteur) {
+                ++$skipped;
+                continue;
+            }
+
+            $time = $event['time'] ?? null;
+            $elapsed = \is_array($time) ? (int) ($time['elapsed'] ?? 0) : 0;
+            $extra = \is_array($time) ? (int) ($time['extra'] ?? 0) : 0;
+            $eventKey = sprintf('f%d-g%d-p%d-e%d-x%d', $fixtureId, $goalOrdinal, $playerId, $elapsed, $extra);
+            ++$goalOrdinal;
+
+            $existing = $this->butRepository->findOneBy(['apiSportsEventKey' => $eventKey]);
+            if ($existing instanceof But) {
+                continue;
+            }
+
+            $minute = $elapsed > 0 ? $elapsed : null;
+            if ($extra > 0 && null !== $minute) {
+                $minute = $minute + $extra;
+            }
+
+            $but = (new But())
+                ->setButeur($buteur)
+                ->setMatchRef($match)
+                ->setMinute($minute)
+                ->setApiSportsEventKey($eventKey);
+            $this->buteurGoalScoringService->scoreBut($but);
+            $this->entityManager->persist($but);
+            ++$created;
+        }
+
+        if ($created > 0) {
+            $this->buteurGoalScoringService->rescoreAll();
+        }
+
+        return ['created' => $created, 'skipped' => $skipped];
     }
 
     private function assertApiFootballConfigured(): void
@@ -581,6 +712,7 @@ final class Wc2026SyncService
      *     status_short: string,
      *     score_home: ?int,
      *     score_away: ?int,
+     *     elapsed: ?int,
      *     round: ?string,
      *     venue_name: ?string,
      *     referee: ?string
@@ -611,6 +743,10 @@ final class Wc2026SyncService
 
         $status = $fixture['status'] ?? null;
         $statusShort = \is_array($status) ? (string) ($status['short'] ?? '') : '';
+        $elapsed = null;
+        if (\is_array($status) && isset($status['elapsed']) && is_numeric($status['elapsed'])) {
+            $elapsed = (int) $status['elapsed'];
+        }
 
         $home = $this->extractTeamFromFixtureTeams($row['teams'] ?? null, 'home');
         $away = $this->extractTeamFromFixtureTeams($row['teams'] ?? null, 'away');
@@ -651,6 +787,7 @@ final class Wc2026SyncService
             'status_short' => $statusShort,
             'score_home' => $scoreHome,
             'score_away' => $scoreAway,
+            'elapsed' => $elapsed,
             'round' => $round,
             'venue_name' => $venueName,
             'referee' => $referee,

@@ -52,4 +52,50 @@ class ButRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Buts groupés par identifiant de match, triés par minute.
+     *
+     * @param list<int> $matchIds
+     *
+     * @return array<int, list<array{buteur_id: int, name: string, minute: ?int, points: int}>>
+     */
+    public function findGoalRowsIndexedByMatchIds(array $matchIds): array
+    {
+        if ([] === $matchIds) {
+            return [];
+        }
+
+        /** @var list<But> $buts */
+        $buts = $this->createQueryBuilder('b')
+            ->addSelect('bu', 'm')
+            ->join('b.buteur', 'bu')
+            ->join('b.matchRef', 'm')
+            ->andWhere('m.id IN (:matchIds)')
+            ->setParameter('matchIds', $matchIds)
+            ->orderBy('b.minute', 'ASC')
+            ->addOrderBy('b.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        foreach ($buts as $but) {
+            $match = $but->getMatchRef();
+            $buteur = $but->getButeur();
+            if (null === $match?->getId() || null === $buteur) {
+                continue;
+            }
+
+            $matchId = (int) $match->getId();
+            $indexed[$matchId] ??= [];
+            $indexed[$matchId][] = [
+                'buteur_id' => (int) $buteur->getId(),
+                'name' => trim(sprintf('%s %s', (string) $buteur->getPrenom(), (string) $buteur->getNom())),
+                'minute' => $but->getMinute(),
+                'points' => $but->getPointsAttribues(),
+            ];
+        }
+
+        return $indexed;
+    }
 }

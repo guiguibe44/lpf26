@@ -72,6 +72,12 @@ services:
             $apiFootballWorldCupSeason: '%env(int:API_FOOTBALL_WC_SEASON)%'
             $apiFootballSyncGoalsMaxRequests: '%env(int:API_FOOTBALL_SYNC_GOALS_MAX_REQUESTS)%'
 
+    App\Service\LiveMatchSyncService:
+        arguments:
+            $liveSyncEnabled: '%env(bool:API_FOOTBALL_LIVE_SYNC_ENABLED)%'
+            $lookaheadMinutes: '%env(int:API_FOOTBALL_LIVE_SYNC_LOOKAHEAD_MINUTES)%'
+            $graceAfterKickoffMinutes: '%env(int:API_FOOTBALL_LIVE_SYNC_GRACE_MINUTES)%'
+
     App\Controller\Admin\DashboardController:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'

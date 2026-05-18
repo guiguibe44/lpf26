@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Buteur;
+use App\Entity\GameMatch;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\ButeurRepository;
@@ -85,6 +86,11 @@ class HomeController extends AbstractController
             }
         }
         $dashboardMatchList = array_values($dashboardMatches);
+        $dashboardMatchIds = array_values(array_filter(array_map(
+            static fn (GameMatch $m): ?int => $m->getId(),
+            $dashboardMatchList,
+        )));
+        $goalsByMatchId = $butRepository->findGoalRowsIndexedByMatchIds($dashboardMatchIds);
 
         $defaultPronosticService->ensureDefaultsForUser($user, $dashboardMatchList);
 
@@ -134,6 +140,8 @@ class HomeController extends AbstractController
             'show_joker_ui' => true,
             'team_favorite_highlight' => $team_favorite_highlight,
             'precomp_checklist' => $preCompetitionDashboard->buildChecklist($user),
+            'goals_by_match_id' => $goalsByMatchId,
+            'has_live_matches' => [] !== $liveMatches,
         ]);
     }
 

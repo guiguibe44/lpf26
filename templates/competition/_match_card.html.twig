@@ -1,4 +1,5 @@
-{# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false, joker_usage_by_match_id: array, show_joker_ui: bool|false, team_favorite_highlight: array|null #}
+{# match: GameMatch, pronostic: Pronostic|null, partner_pronostics: list<Pronostic>, now: DateTimeImmutable, prono_access_blocked: bool|false, joker_usage_by_match_id: array, show_joker_ui: bool|false, team_favorite_highlight: array|null, match_goals: list<array>|null #}
+{% set match_goals = match_goals ?? [] %}
 {% set prono_access_blocked = prono_access_blocked ?? false %}
 {% set joker_usage_by_match_id = joker_usage_by_match_id ?? {} %}
 {% set espion_intel_by_match_id = espion_intel_by_match_id ?? {} %}
@@ -125,8 +126,15 @@
             </div>
         {% elseif is_live %}
             <div class="match-live-actions">
-                <div class="match-final-score match-final-score--live">
-                    {{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }} - {{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}
+                <div class="match-final-score match-final-score--live" data-match-score>
+                    <span data-match-score-home>{{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }}</span>
+                    <span class="match-live-score-sep">-</span>
+                    <span data-match-score-away>{{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}</span>
+                    {% if match.liveElapsedMinute %}
+                        <span class="match-live-minute" data-match-elapsed>{{ match.liveElapsedMinute }}'</span>
+                    {% else %}
+                        <span class="match-live-minute" data-match-elapsed hidden></span>
+                    {% endif %}
                 </div>
                 <a
                     href="{{ path('app_match_live', { id: match.id }) }}"
@@ -167,6 +175,12 @@
             match: match,
             joker: match_joker,
         } only %}
+    {% endif %}
+
+    {% if is_live or is_finished %}
+        <div class="match-goals-wrap">
+            {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
+        </div>
     {% endif %}
 
     <div class="match-partner">

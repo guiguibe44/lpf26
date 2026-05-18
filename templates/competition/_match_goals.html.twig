@@ -1,0 +1,15 @@
+{# goals: list<{name: string, minute: ?int, points: int}> #}
+{% if goals is not empty %}
+    <ul class="match-goals-list" data-match-goals>
+        {% for goal in goals %}
+            <li class="match-goals-item">
+                <span class="match-goals-scorer">{{ goal.name }}</span>
+                {% if goal.minute %}
+                    <span class="match-goals-minute">{{ goal.minute }}'</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <ul class="match-goals-list" data-match-goals hidden></ul>
+{% endif %}

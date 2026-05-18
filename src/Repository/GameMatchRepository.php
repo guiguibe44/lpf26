@@ -33,9 +33,51 @@ class GameMatchRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('m')
             ->andWhere('m.apiFootballFixtureId IS NOT NULL')
+            ->andWhere('m.apiFootballSyncEnabled = true')
             ->andWhere('m.statut IN (:statuses)')
             ->setParameter('statuses', ['FINISHED', 'LIVE'])
             ->orderBy('m.dateHeure', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Matchs à interroger pour la synchro live automatique.
+     *
+     * @return list<GameMatch>
+     */
+    public function findForApiLiveSync(
+        \DateTimeImmutable $now,
+        int $lookaheadMinutes,
+        int $graceAfterKickoffMinutes,
+    ): array {
+        $lookaheadMinutes = max(0, $lookaheadMinutes);
+        $graceAfterKickoffMinutes = max(30, $graceAfterKickoffMinutes);
+
+        $kickoffFrom = $now->modify(sprintf('-%d minutes', $lookaheadMinutes));
+        $kickoffUntil = $now->modify(sprintf('+%d minutes', $graceAfterKickoffMinutes));
+
+        $liveStatuses = ['LIVE', '1H', '2H', 'HT', 'ET', 'BT', 'INT', 'P'];
+
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.apiFootballSyncEnabled = true')
+            ->andWhere('m.apiFootballFixtureId IS NOT NULL')
+            ->andWhere('m.liveScoresFinalizedAt IS NULL')
+            ->andWhere(
+                '(m.statut IN (:liveStatuses))'
+                .' OR (m.statut = :finished)'
+                .' OR (m.statut = :scheduled AND m.dateHeure >= :kickoffFrom AND m.dateHeure <= :kickoffUntil)'
+                .' OR (m.dateHeure <= :now AND m.statut NOT IN (:closed))'
+            )
+            ->setParameter('liveStatuses', $liveStatuses)
+            ->setParameter('finished', 'FINISHED')
+            ->setParameter('scheduled', 'SCHEDULED')
+            ->setParameter('kickoffFrom', $kickoffFrom)
+            ->setParameter('kickoffUntil', $kickoffUntil)
+            ->setParameter('now', $now)
+            ->setParameter('closed', ['FINISHED', 'CANCELLED'])
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
             ->getQuery()
             ->getResult();
     }
