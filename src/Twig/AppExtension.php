@@ -6,6 +6,7 @@ use App\Entity\GameMatch;
 use App\Service\ConnectedPlayerContext;
 use App\Service\MatchStatusResolver;
 use App\Service\TeamFavoriteCountryService;
+use App\Service\UserNotificationContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -16,6 +17,7 @@ final class AppExtension extends AbstractExtension
         private readonly MatchStatusResolver $matchStatusResolver,
         private readonly TeamFavoriteCountryService $teamFavoriteCountryService,
         private readonly ConnectedPlayerContext $connectedPlayerContext,
+        private readonly UserNotificationContext $userNotificationContext,
     ) {
     }
 
@@ -36,6 +38,7 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
             new TwigFunction('match_is_team_favorite_highlight', [$this, 'isTeamFavoriteHighlight']),
             new TwigFunction('connected_player_sidebar', [$this, 'getConnectedPlayerSidebar']),
+            new TwigFunction('unread_notifications_count', [$this, 'getUnreadNotificationsCount']),
         ];
     }
 
@@ -45,6 +48,11 @@ final class AppExtension extends AbstractExtension
     public function getConnectedPlayerSidebar(): ?array
     {
         return $this->connectedPlayerContext->getSidebarProfile();
+    }
+
+    public function getUnreadNotificationsCount(): int
+    {
+        return $this->userNotificationContext->getUnreadCount();
     }
 
     /**

@@ -1,0 +1,35 @@
+{# @param form form Symfony (ForumPostType) #}
+{# @param placeholder string #}
+{# @param compact bool #}
+{# @param mention_suggestions_url string #}
+{% set compact = compact|default(false) %}
+{% set mention_suggestions_url = mention_suggestions_url|default('') %}
+<div
+    class="forum-editor{% if compact %} forum-editor--compact{% endif %}"
+    data-controller="forum-editor forum-mention"
+    {% if mention_suggestions_url %}data-forum-mention-suggestions-url-value="{{ mention_suggestions_url }}"{% endif %}
+>
+    {% include 'forum/_editor_toolbar.html.twig' %}
+    <div class="forum-editor__mention-wrap">
+        <div
+            class="forum-editor__surface"
+            contenteditable="true"
+            role="textbox"
+            aria-multiline="true"
+            spellcheck="true"
+            data-forum-editor-target="editor"
+            data-forum-mention-target="editor"
+            data-placeholder="{{ placeholder }}"
+            data-action="input->forum-editor#sync blur->forum-editor#sync keydown->forum-mention#keydown input->forum-mention#onInput"
+        ></div>
+        <ul class="forum-mention-suggestions" hidden data-forum-mention-target="list" role="listbox"></ul>
+    </div>
+    {{ form_widget(form.content, { attr: { 'data-forum-editor-target': 'input', 'data-forum-mention-target': 'input', class: 'forum-editor__hidden' } }) }}
+    {% if form.content.vars.errors|length > 0 %}
+        <ul class="forum-editor__errors">
+            {% for error in form.content.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

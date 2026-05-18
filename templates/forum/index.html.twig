@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum | LPF 2026{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar forum-topbar">
+        <h1 class="ta-page-title">Forum</h1>
+        <p class="ta-page-subtitle">
+            Échangez avec les autres joueurs. Utilisez <strong>@surnom</strong> pour mentionner quelqu'un
+            (notification push si activée).
+        </p>
+    </section>
+
+    {% include 'forum/_body.html.twig' %}
+{% endblock %}

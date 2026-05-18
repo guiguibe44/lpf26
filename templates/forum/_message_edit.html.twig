@@ -1,0 +1,30 @@
+{% if edit_forms[message.id] is defined %}
+    <div
+        id="forum-edit-{{ message.id }}"
+        class="forum-edit-form-wrap forum-collapsible-form-wrap"
+        hidden
+        data-forum-reply-target="panel"
+    >
+        {{ form_start(edit_forms[message.id], {
+            attr: {
+                class: 'forum-edit-form',
+                'data-turbo': 'false',
+                'data-action': 'submit->forum-editor#onSubmit',
+            },
+        }) }}
+            {% if is_panel|default(false) %}
+                <input type="hidden" name="_forum_panel" value="1">
+            {% endif %}
+            {% include 'forum/_composer.html.twig' with {
+                form: edit_forms[message.id],
+                placeholder: 'Modifier votre message…',
+                compact: true,
+                mention_suggestions_url: mention_suggestions_url|default(''),
+            } %}
+            <div class="forum-reply-form__actions">
+                <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-action="forum-reply#cancel">Annuler</button>
+            </div>
+        {{ form_end(edit_forms[message.id]) }}
+    </div>
+{% endif %}

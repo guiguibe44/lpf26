@@ -3,8 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Repository\TeamMemberRepository;
 use App\Service\UploadedImageFinalizeService;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -12,6 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserCrudController extends AbstractAppCrudController
@@ -21,6 +26,7 @@ class UserCrudController extends AbstractAppCrudController
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UploadedImageFinalizeService $uploadedImageFinalize,
+        private readonly TeamMemberRepository $teamMemberRepository,
     ) {
     }
     public static function getEntityFqcn(): string
@@ -39,11 +45,31 @@ class UserCrudController extends AbstractAppCrudController
         ];
     }
 
+    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    {
+        $this->hydrateNicknameFromTeamMember($entityDto->getInstance());
+
+        return parent::createEditFormBuilder($entityDto, $formOptions, $context);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('email'),
+            TextField::new('nickname', 'Surnom')
+                ->setHelp('Surnom affiché dans le jeu et le forum (enregistré sur la fiche membre d’équipe).')
+                ->formatValue(function (?string $value, ?User $user): string {
+                    if (null !== $value && '' !== $value) {
+                        return $value;
+                    }
+                    if (!$user instanceof User || null === $user->getId()) {
+                        return '—';
+                    }
+                    $nickname = $this->teamMemberRepository->findOneBy(['player' => $user])?->getNickname();
+
+                    return null !== $nickname && '' !== $nickname ? $nickname : '—';
+                }),
             TextField::new('plainPassword', 'Mot de passe')
                 ->setFormType(PasswordType::class)
                 ->onlyOnForms()
@@ -73,6 +99,7 @@ class UserCrudController extends AbstractAppCrudController
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, true);
             $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
+            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -83,9 +110,36 @@ class UserCrudController extends AbstractAppCrudController
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, false);
             $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
+            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function hydrateNicknameFromTeamMember(object $entityInstance): void
+    {
+        if (!$entityInstance instanceof User || null === $entityInstance->getId()) {
+            return;
+        }
+
+        $nickname = $this->teamMemberRepository->findOneBy(['player' => $entityInstance])?->getNickname();
+        $entityInstance->setNickname($nickname);
+    }
+
+    private function syncNicknameToTeamMember(EntityManagerInterface $entityManager, User $user): void
+    {
+        $nickname = $user->getNickname();
+        $member = $this->teamMemberRepository->findOneBy(['player' => $user]);
+        if (null === $member) {
+            return;
+        }
+
+        if (null === $nickname || '' === $nickname) {
+            return;
+        }
+
+        $member->setNickname($nickname);
+        $entityManager->persist($member);
     }
 
     private function applyPasswordAndRoles(User $user, bool $isNew): void

@@ -1,0 +1,129 @@
+{# @param post ForumPost #}
+{# @param author_map array #}
+{# @param reply_forms array #}
+{# @param edit_forms array #}
+{% set author_id = post.author.id %}
+{% set author = author_map[author_id]|default({ nickname: 'Joueur', avatar: null, initials: '?' }) %}
+<article id="forum-post-{{ post.id }}" class="ta-card forum-post">
+    <header class="forum-post__header">
+        <span class="forum-post__avatar" aria-hidden="true">
+            {% if author.avatar %}
+                <img
+                    src="{{ author.avatar starts with '/' ? author.avatar : asset(author.avatar) }}"
+                    alt=""
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <span class="forum-post__avatar-fallback">{{ author.initials }}</span>
+            {% endif %}
+        </span>
+        <div class="forum-post__meta">
+            <strong class="forum-post__author">{{ author.nickname }}</strong>
+            <time class="forum-post__time" datetime="{{ post.createdAt|date('c') }}">
+                {{ post.createdAt|fr_datetime }}
+                {% if post.updatedAt %}
+                    <span class="forum-post__edited">(modifié)</span>
+                {% endif %}
+            </time>
+        </div>
+    </header>
+
+    <div class="forum-post__body forum-rich-text">
+        {{ post.content|raw }}
+    </div>
+
+    <footer class="forum-post__footer">
+        <button
+            type="button"
+            class="btn btn-sm btn-ghost forum-post__reply-toggle"
+            data-action="click->forum-reply#toggle"
+            aria-expanded="false"
+            aria-controls="forum-reply-{{ post.id }}"
+        >
+            <i class="ti ti-message-reply" aria-hidden="true"></i>
+            Répondre
+            {% if post.replies|length > 0 %}
+                <span class="forum-post__reply-count">({{ post.replies|length }})</span>
+            {% endif %}
+        </button>
+        {% include 'forum/_message_manage.html.twig' with { message: post } %}
+    </footer>
+    {% include 'forum/_message_edit.html.twig' with { message: post } %}
+
+    {% if post.replies|length > 0 %}
+        <ol class="forum-replies">
+            {% for reply in post.replies %}
+                {% set reply_author_id = reply.author.id %}
+                {% set reply_author = author_map[reply_author_id]|default({ nickname: 'Joueur', avatar: null, initials: '?' }) %}
+                <li id="forum-reply-{{ reply.id }}" class="forum-reply">
+                    <header class="forum-reply__header">
+                        <span class="forum-post__avatar forum-post__avatar--sm" aria-hidden="true">
+                            {% if reply_author.avatar %}
+                                <img
+                                    src="{{ reply_author.avatar starts with '/' ? reply_author.avatar : asset(reply_author.avatar) }}"
+                                    alt=""
+                                    width="32"
+                                    height="32"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% else %}
+                                <span class="forum-post__avatar-fallback">{{ reply_author.initials }}</span>
+                            {% endif %}
+                        </span>
+                        <div class="forum-reply__meta">
+                            <strong>{{ reply_author.nickname }}</strong>
+                            <time datetime="{{ reply.createdAt|date('c') }}">
+                                {{ reply.createdAt|fr_datetime }}
+                                {% if reply.updatedAt %}
+                                    <span class="forum-post__edited">(modifié)</span>
+                                {% endif %}
+                            </time>
+                        </div>
+                    </header>
+                    <div class="forum-reply__body forum-rich-text">
+                        {{ reply.content|raw }}
+                    </div>
+                    <footer class="forum-reply__footer">
+                        {% include 'forum/_message_manage.html.twig' with { message: reply } %}
+                    </footer>
+                    {% include 'forum/_message_edit.html.twig' with { message: reply } %}
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+
+    {% if reply_forms[post.id] is defined %}
+        <div
+            id="forum-reply-{{ post.id }}"
+            class="forum-reply-form-wrap forum-collapsible-form-wrap"
+            hidden
+            data-forum-reply-target="panel"
+        >
+            {{ form_start(reply_forms[post.id], {
+                attr: {
+                    class: 'forum-reply-form',
+                    'data-turbo': 'false',
+                    'data-action': 'submit->forum-editor#onSubmit',
+                },
+            }) }}
+                {% if is_panel|default(false) %}
+                    <input type="hidden" name="_forum_panel" value="1">
+                {% endif %}
+                {% include 'forum/_composer.html.twig' with {
+                    form: reply_forms[post.id],
+                    placeholder: 'Votre réponse… (tapez @ pour mentionner)',
+                    compact: true,
+                    mention_suggestions_url: mention_suggestions_url|default(''),
+                } %}
+                <div class="forum-reply-form__actions">
+                    <button type="submit" class="btn btn-primary btn-sm">Publier la réponse</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-action="forum-reply#cancel">Annuler</button>
+                </div>
+            {{ form_end(reply_forms[post.id]) }}
+        </div>
+    {% endif %}
+</article>

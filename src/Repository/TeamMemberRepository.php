@@ -44,6 +44,49 @@ class TeamMemberRepository extends ServiceEntityRepository
     /**
      * @return list<int>
      */
+    /**
+     * Joueurs mentionnables (@surnom) pour le forum.
+     *
+     * @return list<array{id: int, nickname: string, team_name: string, avatar: string|null}>
+     */
+    public function searchPlayersForForumMention(string $query, ?int $excludeUserId = null, int $limit = 10): array
+    {
+        $query = trim($query);
+
+        $qb = $this->createQueryBuilder('tm')
+            ->select('u.id AS id', 'tm.nickname AS nickname', 't.name AS team_name', 'u.avatar AS avatar')
+            ->innerJoin('tm.player', 'u')
+            ->innerJoin('tm.team', 't')
+            ->orderBy('tm.nickname', 'ASC')
+            ->setMaxResults($limit);
+
+        if ('' !== $query) {
+            $qb->andWhere('LOWER(tm.nickname) LIKE :q')
+                ->setParameter('q', mb_strtolower($query).'%');
+        }
+
+        if (null !== $excludeUserId && $excludeUserId > 0) {
+            $qb->andWhere('u.id != :exclude')->setParameter('exclude', $excludeUserId);
+        }
+
+        $rows = $qb->getQuery()->getArrayResult();
+        $results = [];
+        foreach ($rows as $row) {
+            $id = (int) ($row['id'] ?? 0);
+            if ($id <= 0) {
+                continue;
+            }
+            $results[] = [
+                'id' => $id,
+                'nickname' => (string) ($row['nickname'] ?? ''),
+                'team_name' => (string) ($row['team_name'] ?? ''),
+                'avatar' => isset($row['avatar']) ? (string) $row['avatar'] : null,
+            ];
+        }
+
+        return $results;
+    }
+
     public function findPartnerPlayerIds(User $player): array
     {
         $member = $this->findOneBy(['player' => $player]);

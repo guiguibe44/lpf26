@@ -1,0 +1,41 @@
+{# Panneau forum type chatbot + bouton flottant (shell connecté uniquement) #}
+<div
+    class="forum-shell"
+    data-controller="forum-panel"
+    data-forum-panel-panel-url-value="{{ path('app_forum_panel') }}"
+>
+    <button
+        type="button"
+        class="forum-fab"
+        title="Ouvrir le forum"
+        aria-label="Ouvrir le forum"
+        aria-controls="forum-panel-dialog"
+        data-action="forum-panel#open"
+    >
+        <i class="ti ti-messages" aria-hidden="true"></i>
+        <span class="forum-fab__label">Forum</span>
+    </button>
+
+    <dialog id="forum-panel-dialog" class="forum-panel-dialog" aria-labelledby="forum-panel-title">
+        <div class="forum-panel-dialog__panel">
+            <header class="forum-panel-dialog__head">
+                <h2 id="forum-panel-title" class="forum-panel-dialog__title">Forum LPF'26</h2>
+                <a href="{{ path('app_forum') }}" class="btn btn-ghost btn-sm forum-panel-dialog__page-link" title="Page forum complète">
+                    <i class="ti ti-external-link" aria-hidden="true"></i>
+                </a>
+                <button type="button" class="forum-panel-dialog__close" data-action="forum-panel#close" aria-label="Fermer le forum">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                </button>
+            </header>
+            <div class="forum-panel-dialog__body">
+                <turbo-frame
+                    id="forum-panel-frame"
+                    data-forum-panel-target="frame"
+                    data-action="turbo:frame-missing->forum-panel#onFrameMissing"
+                >
+                    <p class="forum-panel-dialog__loading ta-card-text">Ouvrez le forum pour charger les discussions…</p>
+                </turbo-frame>
+            </div>
+        </div>
+    </dialog>
+</div>

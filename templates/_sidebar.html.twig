@@ -41,6 +41,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ path('app_forum') }}" class="ta-menu-link {{ currentRoute in ['app_forum', 'app_forum_reply'] ? 'active' : '' }}">
+                        <i class="ti ti-messages" aria-hidden="true"></i>
+                        Forum
+                    </a>
+                </li>
+                <li>
                     <a href="{{ path('app_reglement') }}" class="ta-menu-link {{ currentRoute == 'app_reglement' ? 'active' : '' }}">
                         <i class="ti ti-file-text" aria-hidden="true"></i>
                         Règlement
@@ -71,14 +77,7 @@
 
         <div class="ta-sidebar-footer">
             {% include '_sidebar_user.html.twig' %}
-            <a
-                href="{{ path('app_account') }}#notifications"
-                class="ta-sidebar-notify {{ currentRoute == 'app_account' ? 'ta-sidebar-notify--current' : '' }}"
-                title="Notifications"
-                aria-label="Notifications — mon compte"
-            >
-                <i class="ti ti-bell" aria-hidden="true"></i>
-            </a>
+            {% include '_notification_bell.html.twig' %}
         </div>
     </div>
 </aside>

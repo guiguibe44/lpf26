@@ -52,6 +52,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /** Non mappé : reflète ROLE_ADMIN en base pour les formulaires (voir {@see syncGrantAdminFromStoredRoles}). */
     private bool $grantAdmin = false;
 
+    /** Non mappé : surnom du joueur (stocké sur {@see TeamMember}), éditable dans l’admin utilisateurs. */
+    private ?string $nickname = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -186,6 +189,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGrantAdmin(bool $grantAdmin): static
     {
         $this->grantAdmin = $grantAdmin;
+
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): static
+    {
+        $this->nickname = null !== $nickname && '' !== trim($nickname) ? trim($nickname) : null;
 
         return $this;
     }

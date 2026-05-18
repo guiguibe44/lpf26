@@ -1,0 +1,49 @@
+{% set unread = unread_notifications_count() %}
+<div
+    class="ta-notifications-wrap"
+    data-controller="notification-center"
+    data-notification-center-list-url-value="{{ path('api_notifications_list') }}"
+    data-notification-center-count-url-value="{{ path('api_notifications_unread_count') }}"
+    data-notification-center-read-url-value="{{ path('api_notifications_mark_read') }}"
+    data-notification-center-initial-count-value="{{ unread }}"
+>
+    <button
+        type="button"
+        class="ta-sidebar-notify ta-sidebar-notify--dropdown"
+        title="Notifications"
+        aria-label="Notifications{% if unread > 0 %} — {{ unread }} non lue{{ unread > 1 ? 's' : '' }}{% endif %}"
+        aria-expanded="false"
+        aria-controls="notification-dropdown"
+        data-action="notification-center#toggle"
+        data-notification-center-target="toggle"
+    >
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        <span
+            class="ta-notifications-badge"
+            data-notification-center-target="badge"
+            {% if unread < 1 %}hidden{% endif %}
+        >{{ unread > 99 ? '99+' : unread }}</span>
+    </button>
+
+    <div
+        id="notification-dropdown"
+        class="notification-dropdown"
+        hidden
+        data-notification-center-target="dropdown"
+    >
+        <div class="notification-dropdown__head">
+            <strong>Notifications</strong>
+            <button type="button" class="btn btn-ghost btn-xs" data-action="notification-center#markAllRead">
+                Tout marquer lu
+            </button>
+        </div>
+        <ul class="notification-dropdown__list" data-notification-center-target="list">
+            <li class="notification-dropdown__empty ta-card-text">Chargement…</li>
+        </ul>
+        <div class="notification-dropdown__foot">
+            <a href="{{ path('app_account') }}#notifications" class="notification-dropdown__settings">
+                Réglages push
+            </a>
+        </div>
+    </div>
+</div>

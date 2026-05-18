@@ -1,0 +1,53 @@
+{# Contenu forum partagé (page dédiée + panneau latéral) #}
+<section class="forum-compose-card{% if is_panel %} forum-compose-card--panel{% else %} ta-card{% endif %}">
+    {% if not is_panel %}
+        <h2 class="ta-card-title forum-compose-card__title">Nouveau message</h2>
+    {% endif %}
+    {{ form_start(new_post_form, {
+        attr: {
+            class: 'forum-compose-form',
+            'data-turbo': is_panel ? 'false' : 'false',
+            'data-action': 'submit->forum-editor#onSubmit',
+        },
+    }) }}
+        {% if is_panel %}
+            <input type="hidden" name="_forum_panel" value="1">
+        {% endif %}
+        {% include 'forum/_composer.html.twig' with {
+            form: new_post_form,
+            placeholder: is_panel ? 'Votre message… (tapez @ pour mentionner)' : 'Partagez une idée… (tapez @ pour mentionner un joueur)',
+            mention_suggestions_url: mention_suggestions_url,
+        } %}
+        <div class="forum-compose-form__actions">
+            <button type="submit" class="btn btn-primary{{ is_panel ? ' btn-sm' : '' }}">Publier</button>
+            {% if is_panel %}
+                <a href="{{ path('app_forum') }}" class="btn btn-ghost btn-sm">Ouvrir la page forum</a>
+            {% endif %}
+        </div>
+    {{ form_end(new_post_form) }}
+</section>
+
+<section class="forum-feed" data-controller="forum-reply">
+  {% if not is_panel %}
+    <h2 class="forum-feed__heading">Discussions récentes</h2>
+  {% endif %}
+
+    {% if posts is empty %}
+        <p class="ta-card-text forum-feed__empty">
+            Aucun message pour le moment. Soyez le premier à lancer la discussion&nbsp;!
+        </p>
+    {% else %}
+        <div class="forum-feed__list">
+            {% for post in posts %}
+                {% include 'forum/_post.html.twig' with {
+                    post: post,
+                    author_map: author_map,
+                    reply_forms: reply_forms,
+                    edit_forms: edit_forms|default({}),
+                    is_panel: is_panel,
+                    mention_suggestions_url: mention_suggestions_url,
+                } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>

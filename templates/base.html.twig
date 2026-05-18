@@ -59,6 +59,8 @@
         <link rel="stylesheet" href="{{ asset('lpf-gta-buttons.css') }}?v=3">
         {% if not isAuthPage %}
             <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=6">
+            <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
+            <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=3">
         {% endif %}
 
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
@@ -124,6 +126,9 @@
                     {% endfor %}
                     {{ block('body') }}
                 </main>
+                {% if app.user %}
+                    {% include 'forum/_shell.html.twig' %}
+                {% endif %}
             </div>
         {% endif %}
         <script src="{{ asset('js/lpf-theme-light.js') }}?v=1"></script>

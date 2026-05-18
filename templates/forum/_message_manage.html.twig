@@ -1,0 +1,31 @@
+{# Boutons modifier / supprimer (auteur, sans réponse) #}
+{% if edit_forms[message.id] is defined %}
+    <div class="forum-post__manage">
+        <button
+            type="button"
+            class="btn btn-sm btn-ghost forum-post__edit-toggle"
+            data-action="click->forum-reply#toggle"
+            aria-expanded="false"
+            aria-controls="forum-edit-{{ message.id }}"
+        >
+            <i class="ti ti-pencil" aria-hidden="true"></i>
+            Modifier
+        </button>
+        <form
+            method="post"
+            action="{{ path('app_forum_delete', { id: message.id }) }}"
+            class="forum-post__delete-form"
+            data-turbo="false"
+            data-action="submit->forum-reply#confirmDelete"
+        >
+            <input type="hidden" name="_token" value="{{ csrf_token('forum_delete_' ~ message.id) }}">
+            {% if is_panel|default(false) %}
+                <input type="hidden" name="_forum_panel" value="1">
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-ghost forum-post__delete-btn">
+                <i class="ti ti-trash" aria-hidden="true"></i>
+                Supprimer
+            </button>
+        </form>
+    </div>
+{% endif %}

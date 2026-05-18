@@ -1,0 +1,246 @@
+/* Bouton flottant + panneau forum (style chatbot) */
+.forum-shell {
+    position: static;
+    z-index: auto;
+}
+
+.forum-fab {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 4700;
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--lpf-accent, #2563eb);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--lpf-accent, #2563eb) 45%, transparent);
+    cursor: pointer;
+}
+
+.forum-fab:hover,
+.forum-fab:focus-visible {
+    filter: brightness(1.06);
+    outline: none;
+}
+
+.forum-fab .ti {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 640px) {
+    .forum-fab__label {
+        display: none;
+    }
+
+    .forum-fab {
+        width: 3.25rem;
+        height: 3.25rem;
+        padding: 0;
+        justify-content: center;
+        border-radius: 999px;
+    }
+}
+
+.forum-panel-dialog:not([open]) {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.forum-panel-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 4600;
+    pointer-events: auto;
+    width: min(28rem, 100vw);
+    max-width: 100vw;
+    height: 100%;
+    max-height: 100dvh;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    box-shadow: -12px 0 40px rgb(0 0 0 / 22%);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    overflow: hidden;
+}
+
+.forum-panel-dialog[open] {
+    transform: translateX(0);
+}
+
+.forum-panel-dialog::backdrop {
+    background: rgb(15 23 42 / 50%);
+    backdrop-filter: blur(2px);
+}
+
+.forum-panel-dialog__panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100dvh;
+    background: var(--lpf-surface, #fff);
+    border-left: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.forum-panel-dialog__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.forum-panel-dialog__title {
+    margin: 0;
+    flex: 1;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.forum-panel-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.forum-panel-dialog__close:hover {
+    background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.forum-panel-dialog__body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0.85rem 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.forum-panel-dialog__body #forum-panel-frame {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
+.forum-compose-card--panel {
+    margin-bottom: 1rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.forum-panel-dialog__loading {
+    margin: 0;
+    opacity: 0.7;
+}
+
+/* Notifications cloche */
+.ta-notifications-wrap {
+    position: relative;
+}
+
+.ta-notifications-badge {
+    position: absolute;
+    top: -0.2rem;
+    right: -0.2rem;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.1rem;
+    text-align: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.5rem);
+    z-index: 200;
+    width: min(18rem, 85vw);
+    max-height: 20rem;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.65rem;
+    border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    background: var(--lpf-surface, #fff);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+}
+
+.notification-dropdown__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+    font-size: 0.85rem;
+}
+
+.notification-dropdown__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    flex: 1;
+}
+
+.notification-dropdown__item--unread {
+    background: color-mix(in srgb, var(--lpf-accent, #2563eb) 8%, transparent);
+}
+
+.notification-dropdown__link {
+    display: block;
+    padding: 0.55rem 0.65rem;
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+.notification-dropdown__link strong {
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.notification-dropdown__link span {
+    opacity: 0.8;
+}
+
+.notification-dropdown__empty {
+    padding: 0.75rem 0.65rem;
+    margin: 0;
+}
+
+.notification-dropdown__foot {
+    padding: 0.45rem 0.65rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+    font-size: 0.78rem;
+}
+
+.notification-dropdown__settings {
+    color: var(--lpf-accent, #2563eb);
+}
