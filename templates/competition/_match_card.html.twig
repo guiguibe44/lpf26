@@ -14,6 +14,7 @@
 {% set can_pronostic = can_edit_before_kickoff and not prono_access_blocked %}
 {% set match_prono_blocked_cotisation = prono_access_blocked and can_edit_before_kickoff %}
 {% set can_place_joker = (show_joker_ui|default(false)) and can_edit_before_kickoff %}
+{% set show_joker_actions = can_place_joker or match_joker %}
 {% set cotes_visible = match_cotes_visible(match, now) or espion_intel %}
 
 <article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}" data-match-id="{{ match.id }}">
@@ -45,26 +46,17 @@
             <span class="ta-badge match-card-favorite-badge">Poule · équipe favorite</span>
         {% endif %}
         {% if match_joker %}
-            {% if can_place_joker %}
-                <button
-                    type="button"
-                    class="match-card-joker-badge"
-                    data-joker-badge
-                    data-joker-badge-toggle
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                    title="Afficher les actions joker"
-                >Joker : {{ match_joker.name }}{% if match_joker.target_team_name|default('') %} → {{ match_joker.target_team_name }}{% endif %}</button>
-            {% else %}
-                <span class="match-card-joker-badge match-card-joker-badge--static" data-joker-badge>Joker : {{ match_joker.name }}{% if match_joker.target_team_name|default('') %} → {{ match_joker.target_team_name }}{% endif %}</span>
-            {% endif %}
+            {% include 'competition/_match_card_joker_badge.html.twig' with {
+                joker: match_joker,
+                interactive: can_place_joker,
+            } only %}
         {% endif %}
         {% if is_finished %}
             <span class="ta-badge ta-badge-success">Terminé</span>
         {% elseif is_live %}
             <span class="ta-badge ta-badge-warning">En direct</span>
         {% elseif can_pronostic %}
-            <span class="ta-badge ta-badge-warning">À venir</span>
+            <span class="ta-badge ta-badge-warning match-card-status-badge match-card-status-badge--upcoming">À venir</span>
         {% else %}
             <span class="ta-badge">En cours</span>
         {% endif %}
@@ -107,32 +99,45 @@
         {% if match_prono_blocked_cotisation %}
             <p class="match-prono-cotisation-msg">Pronostics disponibles après réglage de la cotisation (10&nbsp;€ par joueur).</p>
         {% elseif can_pronostic %}
-            <form method="post" action="{{ path('app_match_pronostic_save', { id: match.id }) }}" class="match-pronostic-form">
-                <input
-                    type="number"
-                    name="score_domicile"
-                    min="0"
-                    value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
-                    class="ta-form-input match-score-input"
-                    required
-                >
-                <span>-</span>
-                <input
-                    type="number"
-                    name="score_exterieur"
-                    min="0"
-                    value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
-                    class="ta-form-input match-score-input"
-                    required
-                >
-                <button
-                    type="submit"
-                    class="btn btn-primary match-pronostic-submit"
-                    aria-label="{{ pronostic ? 'Modifier le pronostic' : 'Valider le pronostic' }}"
-                >
-                    <i class="ti {{ pronostic ? 'ti-edit' : 'ti-check' }}" aria-hidden="true"></i>
-                </button>
-            </form>
+            <div class="match-pronostic-editor">
+                <form method="post" action="{{ path('app_match_pronostic_save', { id: match.id }) }}" class="match-pronostic-form">
+                    <div class="match-pronostic-form__scores">
+                        <input
+                            type="number"
+                            name="score_domicile"
+                            min="0"
+                            value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
+                            class="ta-form-input match-score-input"
+                            required
+                        >
+                        <span class="match-pronostic-form__sep" aria-hidden="true">-</span>
+                        <input
+                            type="number"
+                            name="score_exterieur"
+                            min="0"
+                            value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
+                            class="ta-form-input match-score-input"
+                            required
+                        >
+                    </div>
+                    <div class="match-pronostic-editor__toolbar">
+                        <button
+                            type="submit"
+                            class="btn btn-primary match-pronostic-submit"
+                            aria-label="{{ pronostic ? 'Modifier le pronostic' : 'Valider le pronostic' }}"
+                        >
+                            <i class="ti {{ pronostic ? 'ti-edit' : 'ti-check' }}" aria-hidden="true"></i>
+                        </button>
+                        {% if show_joker_actions %}
+                            {% include 'competition/_match_card_joker_actions.html.twig' with {
+                                match: match,
+                                match_joker: match_joker,
+                                prono_access_blocked: prono_access_blocked,
+                            } only %}
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
         {% elseif is_live %}
             <div class="match-final-score match-final-score--live">
                 {{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }} - {{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}
@@ -154,40 +159,12 @@
         {% endif %}
     </div>
 
-    {% if can_place_joker or match_joker %}
-        <div
-            class="match-joker-actions"
-            data-joker-actions
-            data-match-id="{{ match.id }}"
-            data-match-label="{{ match.paysDomicile ? match.paysDomicile.nom : '?' }} — {{ match.paysExterieur ? match.paysExterieur.nom : '?' }}"
-            data-joker-state-url="{{ path('app_match_jokers_state', { id: match.id }) }}"
-            data-joker-place-url="{{ path('app_match_joker_place', { id: match.id }) }}"
-            data-joker-remove-url="{{ path('app_match_joker_remove', { id: match.id }) }}"
-        >
-            <button
-                type="button"
-                class="btn btn-outline btn-primary btn-sm match-joker-btn"
-                data-joker-open
-                data-joker-open-initial
-                {% if match_joker %}hidden{% endif %}
-                {% if prono_access_blocked %}disabled title="Réglez la cotisation pour jouer un joker"{% endif %}
-            >
-                <i class="ti ti-wand" aria-hidden="true"></i>
-                Joker
-            </button>
-            <div class="match-joker-popover" data-joker-popover hidden>
-                <button type="button" class="btn btn-outline btn-primary btn-sm match-joker-btn" data-joker-open>
-                    <i class="ti ti-wand" aria-hidden="true"></i>
-                    Gérer
-                </button>
-                {% if match_joker.code|default('') != 'espion' %}
-                    <button type="button" class="btn btn-outline btn-sm match-joker-remove-btn" data-joker-remove>
-                        <i class="ti ti-x" aria-hidden="true"></i>
-                        Retirer
-                    </button>
-                {% endif %}
-            </div>
-        </div>
+    {% if show_joker_actions and not can_pronostic %}
+        {% include 'competition/_match_card_joker_actions.html.twig' with {
+            match: match,
+            match_joker: match_joker,
+            prono_access_blocked: prono_access_blocked,
+        } only %}
     {% endif %}
 
     {% if espion_intel %}

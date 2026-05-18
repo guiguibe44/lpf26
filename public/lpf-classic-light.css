@@ -316,7 +316,7 @@ html.lpf-classic-light textarea:focus {
 }
 
 /* --- Boutons --- */
-html.lpf-classic-light .btn-primary,
+html.lpf-classic-light .btn-primary:not(.btn-outline),
 html.lpf-classic-light .ta-auth-submit,
 html.lpf-classic-light .auth-wrap button[type="submit"] {
     background: var(--lpf-primary) !important;
@@ -324,10 +324,16 @@ html.lpf-classic-light .auth-wrap button[type="submit"] {
     color: #fff !important;
 }
 
-html.lpf-classic-light .btn-primary:hover:not(:disabled),
+html.lpf-classic-light .btn-primary:not(.btn-outline):hover:not(:disabled),
 html.lpf-classic-light .ta-auth-submit:hover:not(:disabled) {
     background: var(--lpf-primary-hover) !important;
     border-color: var(--lpf-primary-hover) !important;
+}
+
+html.lpf-classic-light .btn-outline.btn-primary {
+    background: transparent !important;
+    border-color: rgb(22 163 74 / 38%) !important;
+    color: var(--lpf-link) !important;
 }
 
 html.lpf-classic-light .btn-outline.btn-primary:hover:not(:disabled) {

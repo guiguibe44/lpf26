@@ -31,7 +31,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         {% if not isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-sidebar-fix">
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-prono-layout">
+            <link rel="stylesheet" href="{{ asset('css/mobile-front.css') }}?v=9">
         {% endif %}
         {% block stylesheets %}
         {% endblock %}
@@ -50,8 +51,8 @@
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">
         {% endif %}
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=6">
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=2">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=7">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=6">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}

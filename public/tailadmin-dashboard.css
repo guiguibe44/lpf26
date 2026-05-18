@@ -1639,6 +1639,48 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     flex-wrap: wrap;
 }
 
+.match-pronostic-form__scores {
+    display: contents;
+}
+
+.match-pronostic-editor__toolbar {
+    display: contents;
+}
+
+.match-pronostic-editor__toolbar {
+    align-items: center;
+}
+
+.match-pronostic-editor__toolbar .match-joker-actions {
+    display: contents;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+
+html body .match-pronostic-editor__toolbar .match-pronostic-submit.btn.btn-primary,
+html body .match-pronostic-editor__toolbar .match-joker-btn--discrete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0;
+    margin: 0;
+    border-radius: 0.625rem;
+    box-sizing: border-box;
+}
+
+html body .match-pronostic-editor__toolbar .match-pronostic-submit.btn.btn-primary .ti,
+html body .match-pronostic-editor__toolbar .match-joker-btn--discrete .ti {
+    font-size: 1.15rem;
+    margin: 0;
+    line-height: 1;
+}
+
 .match-score-input {
     max-width: 4.5rem;
     text-align: center;

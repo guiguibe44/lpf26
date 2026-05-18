@@ -166,7 +166,7 @@
         }
     };
 
-    const formatJokerBadgeLabel = (active) => {
+    const buildJokerBadgeTitle = (active) => {
         if (!active) {
             return '';
         }
@@ -182,6 +182,42 @@
         }
 
         return label;
+    };
+
+    const fillJokerBadge = (badge, active, interactive) => {
+        if (!badge || !active) {
+            return;
+        }
+
+        const title = buildJokerBadgeTitle(active);
+        const hint = interactive ? title + ' — Gérer le joker' : title;
+        badge.title = hint;
+        badge.setAttribute('aria-label', hint);
+        badge.replaceChildren();
+
+        const iconWrap = document.createElement('span');
+        iconWrap.className = 'match-card-joker-badge__icon';
+        iconWrap.setAttribute('aria-hidden', 'true');
+
+        if (active.image) {
+            const img = document.createElement('img');
+            img.src = assetUrl(active.image);
+            img.alt = '';
+            img.width = 22;
+            img.height = 22;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            iconWrap.appendChild(img);
+        } else {
+            iconWrap.innerHTML = '<i class="ti ti-wand" aria-hidden="true"></i>';
+        }
+
+        badge.appendChild(iconWrap);
+
+        const sr = document.createElement('span');
+        sr.className = 'sr-only';
+        sr.textContent = title;
+        badge.appendChild(sr);
     };
 
     const hideTargetPicker = () => {
@@ -310,11 +346,10 @@
                 badge.dataset.jokerBadgeToggle = '';
                 badge.setAttribute('aria-expanded', 'false');
                 badge.setAttribute('aria-haspopup', 'true');
-                badge.title = 'Afficher les actions joker';
                 head.insertBefore(badge, head.firstChild);
             }
             if (badge) {
-                badge.textContent = formatJokerBadgeLabel(active);
+                fillJokerBadge(badge, active, true);
                 badge.hidden = false;
             }
         } else if (badge) {

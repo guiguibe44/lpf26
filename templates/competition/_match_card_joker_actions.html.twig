@@ -1,0 +1,53 @@
+{# match, match_joker, can_place_joker, prono_access_blocked #}
+<div
+    class="match-joker-actions"
+    data-joker-actions
+    data-match-id="{{ match.id }}"
+    data-match-label="{{ match.paysDomicile ? match.paysDomicile.nom : '?' }} — {{ match.paysExterieur ? match.paysExterieur.nom : '?' }}"
+    data-joker-state-url="{{ path('app_match_jokers_state', { id: match.id }) }}"
+    data-joker-place-url="{{ path('app_match_joker_place', { id: match.id }) }}"
+    data-joker-remove-url="{{ path('app_match_joker_remove', { id: match.id }) }}"
+>
+    <button
+        type="button"
+        class="btn match-joker-btn match-joker-btn--discrete"
+        data-joker-open
+        data-joker-open-initial
+        {% if match_joker %}hidden{% endif %}
+        {% if prono_access_blocked %}
+            disabled
+            title="Réglez la cotisation pour jouer un joker"
+            aria-label="Réglez la cotisation pour jouer un joker"
+        {% else %}
+            title="Jouer un joker"
+            aria-label="Jouer un joker"
+        {% endif %}
+    >
+        <i class="ti ti-wand" aria-hidden="true"></i>
+        <span class="sr-only">Joker</span>
+    </button>
+    <div class="match-joker-popover" data-joker-popover hidden>
+        <button
+            type="button"
+            class="btn match-joker-btn match-joker-btn--discrete"
+            data-joker-open
+            title="Gérer le joker"
+            aria-label="Gérer le joker"
+        >
+            <i class="ti ti-wand" aria-hidden="true"></i>
+            <span class="sr-only">Gérer</span>
+        </button>
+        {% if match_joker.code|default('') != 'espion' %}
+            <button
+                type="button"
+                class="btn match-joker-btn match-joker-btn--discrete match-joker-btn--remove"
+                data-joker-remove
+                title="Retirer le joker"
+                aria-label="Retirer le joker"
+            >
+                <i class="ti ti-x" aria-hidden="true"></i>
+                <span class="sr-only">Retirer</span>
+            </button>
+        {% endif %}
+    </div>
+</div>

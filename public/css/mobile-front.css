@@ -1,0 +1,303 @@
+/**
+ * Front connecté — lisibilité mobile (textes, boutons, cartes match).
+ */
+@media (max-width: 767px) {
+    .ta-main {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .ta-main .ta-page-title {
+        font-size: 1.65rem;
+        line-height: 1.15;
+    }
+
+    .ta-main .ta-page-subtitle {
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
+
+    .ta-main .btn {
+        min-height: 2.85rem;
+        padding: 0.7rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 0.65rem;
+    }
+
+    .ta-main .btn-sm {
+        min-height: 2.5rem;
+        padding: 0.55rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .ta-main .ta-form-input,
+    .ta-main .ta-form-select,
+    .ta-main select.ta-form-input,
+    .ta-main textarea.ta-form-input {
+        min-height: 3.35rem;
+        padding: 0.85rem 1.05rem;
+        font-size: 1.15rem;
+    }
+
+    .ta-main input[type="number"].ta-form-input,
+    .ta-main input[type="text"].ta-form-input,
+    .ta-main input[type="email"].ta-form-input,
+    .ta-main input[type="password"].ta-form-input,
+    .ta-main input[type="search"].ta-form-input {
+        min-height: 3.35rem;
+        font-size: 1.15rem;
+    }
+
+    .ta-main .ta-form-label {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .ta-main .ta-badge {
+        font-size: 0.82rem;
+        padding: 0.38rem 0.65rem;
+    }
+
+    .ta-main .ta-card-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Carte match : drapeaux côte à côte, noms en dessous, heure au centre */
+    .ta-main .match-card {
+        padding: 1.15rem 1rem 1.05rem;
+    }
+
+    .ta-main .match-fixture {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        align-items: center;
+        column-gap: 0.4rem;
+        row-gap: 0.5rem;
+        margin-top: 0.35rem;
+    }
+
+    .ta-main .match-team {
+        display: contents;
+    }
+
+    .ta-main .match-team-home > span,
+    .ta-main .match-team-away > span {
+        font-size: 1.12rem;
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    .ta-main .match-team-home > span {
+        grid-column: 1;
+        grid-row: 2;
+        justify-self: center;
+    }
+
+    .ta-main .match-team-home > img,
+    .ta-main .match-team-home > .match-flag-placeholder {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: center;
+    }
+
+    .ta-main .match-team-away > img,
+    .ta-main .match-team-away > .match-flag-placeholder {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: center;
+    }
+
+    .ta-main .match-team-away > span {
+        grid-column: 3;
+        grid-row: 2;
+        justify-self: center;
+    }
+
+    .ta-main .match-team img,
+    .ta-main .match-team .match-flag-placeholder {
+        width: 5rem;
+        height: 3.35rem;
+        border-radius: 0.4rem;
+        object-fit: cover;
+    }
+
+    .ta-main .match-flag-placeholder {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .ta-main .match-time {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        align-self: center;
+        margin: 0;
+        padding: 0 0.15rem;
+        font-size: 1.75rem;
+        font-weight: 800;
+        text-align: center;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+    }
+
+    .ta-main .match-meta {
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+
+    .ta-main .match-card-head {
+        min-height: 0;
+        gap: 0.45rem;
+    }
+
+    .ta-main .match-card-status-badge--upcoming {
+        display: none;
+    }
+
+    .ta-main .match-card-joker-badge,
+    .ta-main .match-card-joker-badge--static {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .ta-main .match-card-joker-badge__icon img {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .ta-main .match-card--favorite-country {
+        padding-top: 3.65rem;
+    }
+
+    .ta-main .match-card-favorite-mark__image,
+    .ta-main .match-card-favorite-mark__placeholder {
+        width: 3.25rem;
+        height: 3.25rem;
+    }
+
+    .ta-main .match-card-favorite-mark__label {
+        font-size: 0.8rem;
+    }
+
+    .ta-main .match-pronostic {
+        min-height: 0;
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    .ta-main .match-pronostic-editor {
+        width: 100%;
+    }
+
+    .ta-main .match-pronostic-form {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        width: 100%;
+    }
+
+    .ta-main .match-pronostic-form__scores {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .ta-main .match-pronostic-form__sep {
+        flex-shrink: 0;
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .ta-main .match-pronostic-form__scores .match-score-input {
+        flex: 1 1 4.25rem;
+        width: auto;
+        max-width: 5.75rem;
+        min-height: 3.75rem;
+        height: 3.75rem;
+        padding: 0.5rem 0.65rem;
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .ta-main .match-pronostic-editor__toolbar {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .ta-main .match-pronostic-editor__toolbar .match-joker-actions {
+        display: contents;
+        margin: 0 !important;
+        padding: 0;
+        min-height: 0;
+    }
+
+    html.lpf-classic-light body.front-body .ta-main .match-pronostic-editor__toolbar .match-pronostic-submit.btn,
+    html.lpf-classic-light body.front-body .ta-main .match-pronostic-editor__toolbar .match-joker-btn--discrete {
+        padding: 0 !important;
+    }
+
+    .ta-main .match-final-score,
+    .ta-main .match-locked-pronostic,
+    .ta-main .match-partner-score {
+        font-size: 1.15rem;
+    }
+
+    .ta-main .match-prono-cotisation-msg {
+        font-size: 0.95rem;
+        line-height: 1.45;
+        text-align: center;
+    }
+
+    .ta-main .match-day-nav-link {
+        min-height: 2.75rem;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.95rem;
+    }
+
+    .ta-main .match-day-title {
+        font-size: 1.1rem;
+    }
+
+    .ta-main .match-link {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .ta-main .match-partner-row {
+        gap: 0.65rem;
+        margin-top: 0.5rem;
+    }
+
+    .ta-main .match-partner-avatar-slot,
+    .ta-main .match-partner-avatar-slot img.match-partner-avatar,
+    .ta-main .match-partner-avatar-slot .match-partner-avatar--placeholder {
+        width: 2.75rem !important;
+        height: 2.75rem !important;
+        max-width: 2.75rem !important;
+        max-height: 2.75rem !important;
+        font-size: 1rem;
+    }
+
+    .ta-main .match-partner-score {
+        font-size: 1.1rem;
+    }
+}

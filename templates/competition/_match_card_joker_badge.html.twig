@@ -1,0 +1,60 @@
+{# joker: array, interactive: bool #}
+{% set joker_badge_title = 'Joker : ' ~ joker.name %}
+{% if joker.target_team_name|default('') %}
+    {% set joker_badge_title = joker_badge_title ~ ' → ' ~ joker.target_team_name %}
+{% endif %}
+{% if joker.effect_blocked|default(false) %}
+    {% set joker_badge_title = joker_badge_title ~ ' (sans effet)' %}
+{% endif %}
+{% set joker_badge_hint = interactive ? joker_badge_title ~ ' — Gérer le joker' : joker_badge_title %}
+
+{% if interactive %}
+    <button
+        type="button"
+        class="match-card-joker-badge"
+        data-joker-badge
+        data-joker-badge-toggle
+        aria-expanded="false"
+        aria-haspopup="true"
+        title="{{ joker_badge_hint }}"
+        aria-label="{{ joker_badge_hint }}"
+    >
+        <span class="match-card-joker-badge__icon" aria-hidden="true">
+            {% if joker.image %}
+                <img
+                    src="{{ asset(joker.image) }}"
+                    alt=""
+                    width="22"
+                    height="22"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <i class="ti ti-wand"></i>
+            {% endif %}
+        </span>
+        <span class="sr-only">{{ joker_badge_title }}</span>
+    </button>
+{% else %}
+    <span
+        class="match-card-joker-badge match-card-joker-badge--static"
+        data-joker-badge
+        title="{{ joker_badge_title }}"
+    >
+        <span class="match-card-joker-badge__icon" aria-hidden="true">
+            {% if joker.image %}
+                <img
+                    src="{{ asset(joker.image) }}"
+                    alt=""
+                    width="22"
+                    height="22"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <i class="ti ti-wand"></i>
+            {% endif %}
+        </span>
+        <span class="sr-only">{{ joker_badge_title }}</span>
+    </span>
+{% endif %}
