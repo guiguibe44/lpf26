@@ -401,8 +401,37 @@
     border-top: 1px solid #f1f5f9;
     min-width: 0;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow: visible;
     flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+}
+
+.ta-sidebar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    align-self: center;
+    overflow: visible;
+    padding: 0.35rem 0.2rem 0.1rem;
+}
+
+.ta-sidebar-footer .ta-sidebar-notify:hover {
+    transform: none;
+}
+
+.ta-sidebar-logout:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.ta-sidebar-admin:hover {
+    background: #f5f3ff;
+    border-color: #c4b5fd;
+    color: #6d28d9;
 }
 
 .ta-sidebar-user {

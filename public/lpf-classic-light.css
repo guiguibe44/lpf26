@@ -223,6 +223,22 @@ html.lpf-classic-light .ta-sidebar-notify--current {
     color: var(--lpf-link) !important;
 }
 
+html.lpf-classic-light .ta-sidebar-logout:hover {
+    background: #fef2f2 !important;
+    border-color: #fca5a5 !important;
+    color: #b91c1c !important;
+}
+
+html.lpf-classic-light .ta-sidebar-admin:hover {
+    background: #f5f3ff !important;
+    border-color: #c4b5fd !important;
+    color: #6d28d9 !important;
+}
+
+html.lpf-classic-light .ta-sidebar-footer .ta-sidebar-notify:hover {
+    transform: none !important;
+}
+
 /* --- Cartes & typo --- */
 html.lpf-classic-light .ta-card,
 html.lpf-classic-light article.ta-card,

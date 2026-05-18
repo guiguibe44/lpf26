@@ -58,26 +58,32 @@
                         Compte et équipe
                     </a>
                 </li>
-                {% if is_granted('ROLE_ADMIN') %}
-                <li>
-                    <a href="{{ path('admin') }}" class="ta-menu-link {{ currentRoute starts with 'admin' ? 'active' : '' }}" title="Administration EasyAdmin">
-                        <i class="ti ti-settings" aria-hidden="true"></i>
-                        Administration
-                    </a>
-                </li>
-                {% endif %}
-                <li>
-                    <a href="{{ path('app_logout') }}" class="ta-menu-link">
-                        <i class="ti ti-logout" aria-hidden="true"></i>
-                        Deconnexion
-                    </a>
-                </li>
             </ul>
         </nav>
 
         <div class="ta-sidebar-footer">
             {% include '_sidebar_user.html.twig' %}
-            {% include '_notification_bell.html.twig' %}
+            <div class="ta-sidebar-actions">
+                {% include '_notification_bell.html.twig' %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a
+                        href="{{ path('admin') }}"
+                        class="ta-sidebar-notify ta-sidebar-admin{{ currentRoute starts with 'admin' ? ' ta-sidebar-notify--current' : '' }}"
+                        title="Administration"
+                        aria-label="Administration"
+                    >
+                        <i class="ti ti-settings" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+                <a
+                    href="{{ path('app_logout') }}"
+                    class="ta-sidebar-notify ta-sidebar-logout"
+                    title="Déconnexion"
+                    aria-label="Déconnexion"
+                >
+                    <i class="ti ti-logout" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
     </div>
 </aside>

@@ -92,6 +92,22 @@ html.dark .ta-sidebar-notify--current {
     color: var(--lpf-link) !important;
 }
 
+html.dark .ta-sidebar-footer .ta-sidebar-notify:hover {
+    transform: none !important;
+}
+
+html.dark .ta-sidebar-logout:hover {
+    background: rgb(127 29 29 / 35%) !important;
+    border-color: #f87171 !important;
+    color: #fecaca !important;
+}
+
+html.dark .ta-sidebar-admin:hover {
+    background: rgb(91 33 182 / 30%) !important;
+    border-color: #a78bfa !important;
+    color: #e9d5ff !important;
+}
+
 /* --- Cartes & typo --- */
 html.dark .ta-card,
 html.dark article.ta-card,

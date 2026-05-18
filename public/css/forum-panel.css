@@ -157,6 +157,8 @@
 /* Notifications cloche */
 .ta-notifications-wrap {
     position: relative;
+    overflow: visible;
+    flex-shrink: 0;
 }
 
 .ta-notifications-badge {
