@@ -119,6 +119,7 @@ final class PronosticSimulationService
                     $home,
                     $away,
                     $standardPoints,
+                    $coefficient,
                 )
                 : null;
 
@@ -146,6 +147,31 @@ final class PronosticSimulationService
         }
 
         return $lines;
+    }
+
+    /**
+     * Cote moyenne du match (identique à {@see GameMatch::getCoteMoyenne()} après score).
+     *
+     * @param array<string, int>                          $occurrencesByScore
+     * @param array<int, array{home: int, away: int}> $effectiveByPronosticId
+     */
+    public function computeMatchFinalCote(int $totalPronostics, array $occurrencesByScore, array $effectiveByPronosticId): float
+    {
+        if ($totalPronostics <= 0 || [] === $effectiveByPronosticId) {
+            return 1.0;
+        }
+
+        $sum = 0.0;
+        $count = 0;
+        foreach ($effectiveByPronosticId as $effective) {
+            $scoreKey = sprintf('%d-%d', $effective['home'], $effective['away']);
+            $sameScoreCount = max(1, (int) ($occurrencesByScore[$scoreKey] ?? 1));
+            $coefficientBrut = $totalPronostics / $sameScoreCount;
+            $sum += min($coefficientBrut, self::MAX_COTE_COEFFICIENT);
+            ++$count;
+        }
+
+        return round($sum / max(1, $count), 2);
     }
 
     public function computeBasePoints(

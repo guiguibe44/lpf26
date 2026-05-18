@@ -23,7 +23,7 @@ final class JokerScoringApplicatorTest extends TestCase
         $this->applicator = new JokerScoringApplicator(new PronosticSimulationService($inversion));
     }
 
-    public function testDoubleEquipeDoublesStandardPointsForGoodProno(): void
+    public function testDoubleEquipeExactScoreIsTripleCoteTimesTwo(): void
     {
         $match = $this->createMatch();
         $result = $this->applicator->applyForTeam(
@@ -33,15 +33,35 @@ final class JokerScoringApplicatorTest extends TestCase
             1,
             2,
             1,
-            9.0,
+            6.0,
+            2.0,
         );
 
         self::assertNotNull($result);
-        self::assertSame(0.0, $result['playerPoints']);
-        self::assertSame(18.0, $result['teamPoints']);
+        self::assertSame(12.0, $result['playerPoints']);
+        self::assertSame(12.0, $result['teamPoints']);
     }
 
-    public function testDoubleEquipeAppliesFixedPenaltyForWrongProno(): void
+    public function testDoubleEquipeGoodResultIsCoteTimesTwo(): void
+    {
+        $match = $this->createMatch();
+        $result = $this->applicator->applyForTeam(
+            Joker::CODE_DOUBLE_EQUIPE,
+            $match,
+            2,
+            1,
+            2,
+            0,
+            2.0,
+            2.5,
+        );
+
+        self::assertNotNull($result);
+        self::assertSame(5.0, $result['playerPoints']);
+        self::assertSame(5.0, $result['teamPoints']);
+    }
+
+    public function testDoubleEquipeWrongResultIsMinusTripleCote(): void
     {
         $match = $this->createMatch();
         $result = $this->applicator->applyForTeam(
@@ -52,17 +72,18 @@ final class JokerScoringApplicatorTest extends TestCase
             0,
             0,
             0.0,
+            2.0,
         );
 
         self::assertNotNull($result);
-        self::assertSame(0.0, $result['playerPoints']);
-        self::assertSame(-5.0, $result['teamPoints']);
+        self::assertSame(-6.0, $result['playerPoints']);
+        self::assertSame(-6.0, $result['teamPoints']);
     }
 
     public function testReturnsNullWhenNoJoker(): void
     {
         $match = $this->createMatch();
-        self::assertNull($this->applicator->applyForTeam(null, $match, 1, 0, 1, 0, 3.0));
+        self::assertNull($this->applicator->applyForTeam(null, $match, 1, 0, 1, 0, 3.0, 1.5));
     }
 
     private function createMatch(): GameMatch

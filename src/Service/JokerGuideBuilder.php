@@ -71,9 +71,10 @@ final class JokerGuideBuilder
                 'targets_opponent' => false,
                 'details' => [
                     'À poser sur un match à venir, avant le coup d\'envoi.',
-                    'Double les points équipe des bons pronostics (base × cote) sur ce match.',
-                    'Les points joueur individuels ne sont pas doublés (affichés à 0 sur ce match).',
-                    'Chaque mauvais résultat retire 5 pts à l\'équipe (−10 si les deux membres se trompent).',
+                    'Chaque joueur est noté sur sa propre cote (×2 sur le barème du match).',
+                    'Score exact : 3 × cote × 2. Bon résultat (sans score exact) : 1 × cote × 2.',
+                    'Mauvais résultat : −3 × cote (cote individuelle du pronostic).',
+                    'Le total équipe sur le match est la somme des deux joueurs.',
                 ],
             ],
             Joker::CODE_PIQUE_POINTS => [

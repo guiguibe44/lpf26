@@ -94,7 +94,6 @@ final class PronosticScoringService
         $realHome = $match->getScoreDomicile();
         $realAway = $match->getScoreExterieur();
         $hasFinalScore = null !== $realHome && null !== $realAway;
-
         foreach ($pronostics as $pronostic) {
             $pronosticId = $pronostic->getId();
             if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
@@ -131,6 +130,7 @@ final class PronosticScoringService
                     $home,
                     $away,
                     $pointsFinaux,
+                    $coefficient,
                 )
                 : null;
 
