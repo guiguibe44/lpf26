@@ -116,6 +116,9 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   exit 0
 fi
 
+echo "==> Permissions favicons / images statiques (lecture web) …"
+ssh ${SSH_EXTRA} "${REMOTE}" "F='${RPATH}/public/images/favicon-lpf'; if [[ -d \"\$F\" ]]; then find \"\$F\" -type d -exec chmod 755 {} +; find \"\$F\" -type f -exec chmod 644 {} +; fi; [[ -f '${RPATH}/public/favicon.ico' ]] && chmod 644 '${RPATH}/public/favicon.ico' || true"
+
 echo "==> Composer (installateur sur le serveur si absent) …"
 ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && if [[ ! -f composer.phar ]]; then curl -sS https://getcomposer.org/installer | php; fi"
 
