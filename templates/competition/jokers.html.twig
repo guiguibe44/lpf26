@@ -5,7 +5,12 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=7">
-    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=9">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/joker-catalog.js') }}?v=1" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -47,5 +52,36 @@
                 } only %}
             {% endfor %}
         </ul>
+
+        <dialog
+            id="joker-catalog-lightbox"
+            class="joker-catalog-lightbox"
+            aria-labelledby="joker-catalog-lightbox-caption"
+        >
+            <div class="joker-catalog-lightbox__panel" role="document">
+                <button
+                    type="button"
+                    class="joker-catalog-lightbox__close"
+                    data-joker-lightbox-close
+                    aria-label="Fermer"
+                >
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                </button>
+                <figure class="joker-catalog-lightbox__figure">
+                    <img
+                        src=""
+                        alt=""
+                        class="joker-catalog-lightbox__image"
+                        data-joker-lightbox-image
+                        decoding="async"
+                    >
+                    <figcaption
+                        id="joker-catalog-lightbox-caption"
+                        class="joker-catalog-lightbox__caption"
+                        data-joker-lightbox-caption
+                    ></figcaption>
+                </figure>
+            </div>
+        </dialog>
     {% endif %}
 {% endblock %}

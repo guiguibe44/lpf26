@@ -1,54 +1,32 @@
 (function () {
-    const DIALOG_ID = 'joker-guide-detail-dialog';
+    const DIALOG_ID = 'joker-catalog-lightbox';
 
     const getDialog = () => document.getElementById(DIALOG_ID);
 
-    const openDetail = (index) => {
+    const closeLightbox = () => {
         const dialog = getDialog();
-        if (!dialog) {
+        if (dialog?.open) {
+            dialog.close();
+        }
+    };
+
+    const openLightbox = (src, title) => {
+        const dialog = getDialog();
+        if (!dialog || !src) {
             return;
         }
 
-        const template = document.getElementById('joker-guide-detail-' + index);
-        const titleEl = dialog.querySelector('.joker-guide-detail-dialog__title');
-        const heroEl = dialog.querySelector('[data-joker-detail-hero]');
-        const badgesEl = dialog.querySelector('[data-joker-detail-badges]');
-        const bodyEl = dialog.querySelector('[data-joker-detail-body]');
+        const img = dialog.querySelector('[data-joker-lightbox-image]');
+        const caption = dialog.querySelector('[data-joker-lightbox-caption]');
 
-        if (!template || !titleEl || !bodyEl) {
-            return;
+        if (img) {
+            img.src = src;
+            img.alt = title || '';
         }
 
-        const root =
-            template.content.querySelector('.joker-guide-detail-template') ||
-            template.content.firstElementChild;
-
-        if (!root) {
-            return;
-        }
-
-        titleEl.textContent = root.dataset.jokerTitle || '';
-
-        if (heroEl) {
-            heroEl.innerHTML = '';
-            const heroSource = root.querySelector('.joker-guide-detail-template__hero');
-            if (heroSource) {
-                heroEl.appendChild(heroSource.cloneNode(true));
-            }
-        }
-
-        if (badgesEl) {
-            badgesEl.innerHTML = '';
-            const badgesSource = root.querySelector('.joker-guide-detail-template__badges');
-            if (badgesSource) {
-                badgesEl.appendChild(badgesSource.cloneNode(true));
-            }
-        }
-
-        bodyEl.innerHTML = '';
-        const contentSource = root.querySelector('.joker-guide-detail-template__content');
-        if (contentSource) {
-            bodyEl.appendChild(contentSource.cloneNode(true));
+        if (caption) {
+            caption.textContent = title || '';
+            caption.hidden = !title;
         }
 
         if (typeof dialog.showModal === 'function') {
@@ -56,61 +34,47 @@
         }
     };
 
-    const closeDialog = () => {
+    const bindLightbox = () => {
         const dialog = getDialog();
-        if (dialog?.open) {
-            dialog.close();
-        }
-    };
-
-    const bindDialogChrome = () => {
-        const dialog = getDialog();
-        if (!dialog || dialog.dataset.jokerCatalogBound === '1') {
+        if (!dialog || dialog.dataset.jokerLightboxBound === '1') {
             return;
         }
 
-        dialog.dataset.jokerCatalogBound = '1';
+        dialog.dataset.jokerLightboxBound = '1';
 
-        dialog.querySelector('[data-joker-detail-close]')?.addEventListener('click', closeDialog);
+        dialog.querySelector('[data-joker-lightbox-close]')?.addEventListener('click', closeLightbox);
 
         dialog.addEventListener('click', (event) => {
             if (event.target === dialog) {
-                closeDialog();
+                closeLightbox();
             }
         });
 
         dialog.addEventListener('cancel', (event) => {
             event.preventDefault();
-            closeDialog();
+            closeLightbox();
         });
     };
 
     const onDocumentClick = (event) => {
-        const catalog = document.querySelector('[data-joker-catalog]');
-        if (!catalog) {
-            return;
-        }
-
-        const btn =
-            event.target.closest('[data-joker-catalog-open]') ||
-            event.target.closest('[data-joker-open]');
-        if (!btn || !catalog.contains(btn)) {
+        const trigger = event.target.closest('[data-joker-lightbox-open]');
+        if (!trigger) {
             return;
         }
 
         event.preventDefault();
-        event.stopPropagation();
-        const index =
-            btn.getAttribute('data-joker-catalog-open') || btn.getAttribute('data-joker-open') || '0';
-        openDetail(index);
+        openLightbox(
+            trigger.getAttribute('data-joker-lightbox-src') || '',
+            trigger.getAttribute('data-joker-lightbox-title') || '',
+        );
     };
 
     const init = () => {
-        if (!document.querySelector('[data-joker-catalog]')) {
+        if (!getDialog()) {
             return;
         }
 
-        bindDialogChrome();
+        bindLightbox();
     };
 
     document.addEventListener('click', onDocumentClick);

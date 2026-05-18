@@ -4,13 +4,26 @@
         <div class="joker-drawer__card-top">
             <div class="joker-drawer__card-visual">
                 {% if joker.image %}
-                    <img
-                        src="{{ asset(joker.image) }}"
-                        alt=""
-                        class="joker-drawer__card-image"
-                        loading="lazy"
-                        decoding="async"
+                    {% set joker_display_title = joker.title ?? joker.name %}
+                    <button
+                        type="button"
+                        class="joker-catalog-card__image-btn"
+                        data-joker-lightbox-open
+                        data-joker-lightbox-src="{{ asset(joker.image) }}"
+                        data-joker-lightbox-title="{{ joker_display_title }}"
+                        aria-label="Agrandir l’image : {{ joker_display_title }}"
                     >
+                        <img
+                            src="{{ asset(joker.image) }}"
+                            alt=""
+                            class="joker-drawer__card-image"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                        <span class="joker-catalog-card__zoom-hint" aria-hidden="true">
+                            <i class="ti ti-zoom-in"></i>
+                        </span>
+                    </button>
                 {% else %}
                     <span class="joker-drawer__card-placeholder" aria-hidden="true">
                         <i class="ti ti-wand"></i>
