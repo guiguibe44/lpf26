@@ -211,14 +211,9 @@ html.dark .ta-auth-check input {
 /* Bouton submit — layout uniquement (style visuel : lpf-gta-buttons.css) */
 html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
 html.dark body.front-body--auth .auth-wrap button[type="submit"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    max-width: 28rem;
-    margin-top: 1rem;
-    cursor: pointer;
+    width: auto;
+    max-width: 100%;
+    justify-self: start;
 }
 
 html.dark body.front-body--auth .auth-wrap .ta-auth-submit .ti {

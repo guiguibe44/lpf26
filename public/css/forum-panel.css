@@ -34,17 +34,9 @@
     font-size: 1.2rem;
 }
 
-@media (max-width: 640px) {
-    .forum-fab__label {
-        display: none;
-    }
-
+@media (max-width: 1024px) {
     .forum-fab {
-        width: 3.25rem;
-        height: 3.25rem;
-        padding: 0;
-        justify-content: center;
-        border-radius: 999px;
+        display: none !important;
     }
 }
 

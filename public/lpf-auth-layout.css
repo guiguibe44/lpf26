@@ -155,10 +155,70 @@ html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"] {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    width: 100%;
-    max-width: 28rem;
+    width: auto;
+    max-width: 100%;
     margin-top: 1rem;
+    padding: 0.7rem 1.5rem;
+    justify-self: start;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 2px solid transparent;
+    border-radius: 0;
     cursor: pointer;
+    box-sizing: border-box;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
+html.dark body.front-body--auth .auth-wrap button[type="submit"] {
+    color: #fff;
+    background-color: var(--auth-primary, #22c55e);
+    border-color: var(--auth-primary, #22c55e);
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit:hover:not(:disabled),
+html.dark body.front-body--auth .auth-wrap button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--auth-primary-hover, #16a34a);
+    border-color: var(--auth-primary-hover, #16a34a);
+}
+
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit,
+html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"] {
+    color: #fff;
+    background-color: var(--lpf-primary, #16a34a);
+    border-color: var(--lpf-primary, #16a34a);
+}
+
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:hover:not(:disabled),
+html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--lpf-primary-hover, #15803d);
+    border-color: var(--lpf-primary-hover, #15803d);
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit:active:not(:disabled),
+html.dark body.front-body--auth .auth-wrap button[type="submit"]:active:not(:disabled),
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:active:not(:disabled),
+html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit:disabled,
+html.dark body.front-body--auth .auth-wrap button[type="submit"]:disabled,
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:disabled,
+html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+html.dark body.front-body--auth .auth-wrap .ta-auth-submit .ti,
+html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit .ti {
+    font-size: 1.05rem;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 html.dark .ta-auth-link-row,
@@ -244,9 +304,7 @@ html.lpf-classic-light .ta-form-choice-expanded {
     }
 
     html.dark body.front-body--auth .ta-auth-form,
-    html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
-    html.lpf-classic-light body.front-body--auth .ta-auth-form,
-    html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit {
+    html.lpf-classic-light body.front-body--auth .ta-auth-form {
         max-width: none;
     }
 }

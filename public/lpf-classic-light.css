@@ -153,10 +153,10 @@ html.lpf-classic-light .lpf-burger.open .lpf-burger__ball {
     }
 
     html.lpf-classic-light .ta-mobile-bar__logo {
-        height: 2.75rem !important;
-        max-height: 2.75rem !important;
+        height: 5.5rem !important;
+        max-height: 5.5rem !important;
         min-height: 0 !important;
-        max-width: min(220px, calc(100vw - 5.5rem)) !important;
+        max-width: min(480px, calc(100vw - 5.5rem)) !important;
         width: auto !important;
         object-fit: contain;
     }

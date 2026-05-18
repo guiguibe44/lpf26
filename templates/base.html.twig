@@ -31,8 +31,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         {% if not isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-prono-layout">
-            <link rel="stylesheet" href="{{ asset('css/mobile-front.css') }}?v=9">
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-match-kdo-live">
+            <link rel="stylesheet" href="{{ asset('css/mobile-front.css') }}?v=16">
         {% endif %}
         {% block stylesheets %}
         {% endblock %}
@@ -44,15 +44,15 @@
         {% endblock %}
 
         {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=1">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=2">
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
             <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=4">
         {% else %}
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">
         {% endif %}
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=7">
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=6">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=9">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=12">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -61,7 +61,7 @@
         {% if not isAuthPage %}
             <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=6">
             <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
-            <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=3">
+            <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=4">
         {% endif %}
 
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
@@ -90,7 +90,7 @@
             <div class="ta-shell" data-controller="mobile-nav">
                 <header class="ta-mobile-bar">
                     <a href="{{ path('app_homepage') }}" class="ta-mobile-bar__logo-link" title="Accueil LPF'26">
-                        {% include '_lpf_brand_logo.html.twig' with { img_class: 'ta-mobile-bar__logo' } %}
+                        {% include '_lpf_brand_logo.html.twig' with { img_class: 'ta-mobile-bar__logo', front_logo: true } %}
                     </a>
                     <button
                         type="button"

@@ -8,15 +8,10 @@
     <div class="precomp-dashboard__grid">
         {% set account = precomp_checklist.account %}
         <article class="precomp-card ta-card {{ account.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
+            {% include 'home/_precomp_card_status_mark.html.twig' with { done: account.done } only %}
             <div class="precomp-card__head">
-                <span class="precomp-card__icon" aria-hidden="true"><i class="ti ti-users-group"></i></span>
-                <div>
-                    <h3 class="precomp-card__title">Finaliser son compte et son équipe</h3>
-                    <p class="precomp-card__desc">Avatar, inviter son partenaire, slogan et image d’équipe.</p>
-                </div>
-                <span class="precomp-card__status ta-badge {{ account.done ? 'precomp-card__status--ok' : '' }}">
-                    {{ account.done ? 'OK' : 'À faire' }}
-                </span>
+                <h3 class="precomp-card__title">Finaliser son compte et son équipe</h3>
+                <p class="precomp-card__desc">Avatar, inviter son partenaire, slogan et image d’équipe.</p>
             </div>
             <ul class="precomp-checklist">
                 {% for check in account.checks %}
@@ -31,21 +26,16 @@
 
         {% set buteur = precomp_checklist.buteur %}
         <article class="precomp-card ta-card {{ buteur.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
+            {% include 'home/_precomp_card_status_mark.html.twig' with { done: buteur.done } only %}
             <div class="precomp-card__head">
-                <span class="precomp-card__icon" aria-hidden="true"><i class="ti ti-ball-football"></i></span>
-                <div>
-                    <h3 class="precomp-card__title">Choisir son buteur</h3>
-                    <p class="precomp-card__desc">
-                        {% if buteur.done and app.user.buteurChoisi %}
-                            Choix actuel : <strong>{{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
-                        {% else %}
-                            Sélectionnez le buteur qui comptera pour votre score.
-                        {% endif %}
-                    </p>
-                </div>
-                <span class="precomp-card__status ta-badge {{ buteur.done ? 'precomp-card__status--ok' : '' }}">
-                    {{ buteur.done ? 'OK' : 'À faire' }}
-                </span>
+                <h3 class="precomp-card__title">Choisir son buteur</h3>
+                <p class="precomp-card__desc">
+                    {% if buteur.done and app.user.buteurChoisi %}
+                        Choix actuel : <strong>{{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
+                    {% else %}
+                        Sélectionnez le buteur qui comptera pour votre score.
+                    {% endif %}
+                </p>
             </div>
             {% if buteur.blocked_by_cotisation and not buteur.done %}
                 <p class="precomp-card__hint">Réglez votre cotisation pour pouvoir enregistrer un buteur.</p>
@@ -55,15 +45,10 @@
 
         {% set favorite = precomp_checklist.favorite %}
         <article class="precomp-card ta-card {{ favorite.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
+            {% include 'home/_precomp_card_status_mark.html.twig' with { done: favorite.done } only %}
             <div class="precomp-card__head">
-                <span class="precomp-card__icon" aria-hidden="true"><i class="ti ti-flag"></i></span>
-                <div>
-                    <h3 class="precomp-card__title">Choisir son équipe favorite</h3>
-                    <p class="precomp-card__desc">Joker « équipe favorite » : protège votre équipe sur les matchs de ce pays.</p>
-                </div>
-                <span class="precomp-card__status ta-badge {{ favorite.done ? 'precomp-card__status--ok' : '' }}">
-                    {{ favorite.done ? 'OK' : 'À faire' }}
-                </span>
+                <h3 class="precomp-card__title">Choisir son équipe favorite</h3>
+                <p class="precomp-card__desc">Joker « équipe favorite » : protège votre équipe sur les matchs de ce pays.</p>
             </div>
             <a href="{{ path('app_account') }}#{{ favorite.hash }}" class="btn btn-primary btn-sm precomp-card__cta">
                 {{ favorite.available ? 'Choisir mon équipe favorite' : 'Configurer mon équipe' }}
@@ -72,15 +57,10 @@
 
         {% set notifications = precomp_checklist.notifications %}
         <article class="precomp-card ta-card {{ notifications.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
+            {% include 'home/_precomp_card_status_mark.html.twig' with { done: notifications.done } only %}
             <div class="precomp-card__head">
-                <span class="precomp-card__icon" aria-hidden="true"><i class="ti ti-bell"></i></span>
-                <div>
-                    <h3 class="precomp-card__title">Activer les notifications</h3>
-                    <p class="precomp-card__desc">Mentions forum, messages et rappels importants sur cet appareil.</p>
-                </div>
-                <span class="precomp-card__status ta-badge {{ notifications.done ? 'precomp-card__status--ok' : '' }}">
-                    {{ notifications.done ? 'OK' : 'À faire' }}
-                </span>
+                <h3 class="precomp-card__title">Activer les notifications</h3>
+                <p class="precomp-card__desc">Mentions forum, messages et rappels importants sur cet appareil.</p>
             </div>
             {% if not notifications.configured %}
                 <p class="precomp-card__hint">Configuration serveur en cours : les notifications seront bientôt disponibles.</p>

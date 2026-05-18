@@ -19,32 +19,25 @@
 
 <article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}" data-match-id="{{ match.id }}">
     {% if is_favorite_country_match %}
-        <div class="match-card-favorite-mark" title="{{ team_favorite_highlight.joker_name }} — votre sélection joue ce match (poule)">
-            {% if team_favorite_highlight.joker_image %}
-                <img
-                    src="{{ asset(team_favorite_highlight.joker_image) }}"
-                    alt=""
-                    class="match-card-favorite-mark__image"
-                    width="56"
-                    height="56"
-                    loading="lazy"
-                    decoding="async"
-                >
-            {% else %}
-                <span class="match-card-favorite-mark__placeholder" aria-hidden="true">
-                    <i class="ti ti-shield-star"></i>
-                </span>
-            {% endif %}
-            <span class="match-card-favorite-mark__label">{{ team_favorite_highlight.joker_name }}</span>
+        <div
+            class="match-card-favorite-mark"
+            title="{{ team_favorite_highlight.joker_name }} — votre sélection joue ce match (poule)"
+        >
+            <span class="match-card-favorite-mark__shield" aria-hidden="true">
+                <i class="ti ti-shield-star"></i>
+            </span>
+            <span class="sr-only">Équipe favorite — {{ team_favorite_highlight.joker_name }}</span>
+        </div>
+    {% endif %}
+    {% if match.isKdoMatch %}
+        <div class="match-card-kdo-mark" title="Match KDO — pronostic à cœur pour gagner la cagnotte">
+            <span class="match-card-kdo-mark__icon" aria-hidden="true">
+                <i class="ti ti-gift"></i>
+            </span>
+            <span class="sr-only">Match KDO</span>
         </div>
     {% endif %}
     <div class="match-card-head">
-        {% if match.isKdoMatch %}
-            <span class="ta-badge match-card-kdo-badge">KDO</span>
-        {% endif %}
-        {% if is_favorite_country_match %}
-            <span class="ta-badge match-card-favorite-badge">Poule · équipe favorite</span>
-        {% endif %}
         {% if match_joker %}
             {% include 'competition/_match_card_joker_badge.html.twig' with {
                 joker: match_joker,
@@ -53,18 +46,15 @@
         {% endif %}
         {% if is_finished %}
             <span class="ta-badge ta-badge-success">Terminé</span>
-        {% elseif is_live %}
-            <span class="ta-badge ta-badge-warning">En direct</span>
         {% elseif can_pronostic %}
             <span class="ta-badge ta-badge-warning match-card-status-badge match-card-status-badge--upcoming">À venir</span>
-        {% else %}
-            <span class="ta-badge">En cours</span>
         {% endif %}
     </div>
 
     <div class="match-fixture">
         <div class="match-team match-team-home{% if favorite_country_id and match.paysDomicile and match.paysDomicile.id == favorite_country_id %} match-team--favorite-country{% endif %}">
-            <span>{{ match.paysDomicile ? match.paysDomicile.nom : '-' }}</span>
+            <span class="match-team__label match-team__label--full">{{ match.paysDomicile ? match.paysDomicile.nom : '-' }}</span>
+            <span class="match-team__label match-team__label--short" aria-hidden="true">{{ country_short_label(match.paysDomicile) }}</span>
             {% include 'components/_country_flag_img.html.twig' with { country: match.paysDomicile } only %}
         </div>
 
@@ -74,7 +64,8 @@
 
         <div class="match-team match-team-away{% if favorite_country_id and match.paysExterieur and match.paysExterieur.id == favorite_country_id %} match-team--favorite-country{% endif %}">
             {% include 'components/_country_flag_img.html.twig' with { country: match.paysExterieur } only %}
-            <span>{{ match.paysExterieur ? match.paysExterieur.nom : '-' }}</span>
+            <span class="match-team__label match-team__label--full">{{ match.paysExterieur ? match.paysExterieur.nom : '-' }}</span>
+            <span class="match-team__label match-team__label--short" aria-hidden="true">{{ country_short_label(match.paysExterieur) }}</span>
         </div>
     </div>
 
@@ -139,12 +130,18 @@
                 </form>
             </div>
         {% elseif is_live %}
-            <div class="match-final-score match-final-score--live">
-                {{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }} - {{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}
+            <div class="match-live-actions">
+                <div class="match-final-score match-final-score--live">
+                    {{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }} - {{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}
+                </div>
+                <a
+                    href="{{ path('app_match_live', { id: match.id }) }}"
+                    class="btn btn-warning match-card-live-btn"
+                    aria-label="Suivre en direct"
+                >
+                    <i class="ti ti-live-photo" aria-hidden="true"></i>
+                </a>
             </div>
-            <a href="{{ path('app_match_live', { id: match.id }) }}" class="match-link match-link--live">
-                Suivre en direct
-            </a>
         {% elseif is_finished %}
             <div class="match-final-score">
                 {{ match.scoreDomicile }} - {{ match.scoreExterieur }}

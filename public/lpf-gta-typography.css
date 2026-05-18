@@ -377,8 +377,7 @@ html.lpf-gta-theme .team-show-prono-pts {
     text-shadow: 0 0 8px rgba(89, 255, 106, 0.35) !important;
 }
 
-html.lpf-gta-theme .match-final-score--live,
-html.lpf-gta-theme .match-link--live {
+html.lpf-gta-theme .match-final-score--live {
     color: var(--lpf-gta-gold) !important;
 }
 

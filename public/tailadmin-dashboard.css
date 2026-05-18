@@ -586,6 +586,12 @@
     max-width: 100%;
 }
 
+.lpf-brand-logo-wrap picture {
+    display: block;
+    line-height: 0;
+    max-width: 100%;
+}
+
 .ta-sidebar-logo-link {
     display: block;
     line-height: 0;
@@ -605,7 +611,7 @@
     display: block;
     width: 100%;
     height: auto;
-    max-height: 7.5rem;
+    max-height: 11.5rem;
     object-fit: contain;
     object-position: center;
     background: transparent;
@@ -1135,6 +1141,9 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
+    row-gap: 1.85rem;
+    padding-top: 0.85rem;
+    overflow: visible;
 }
 
 .match-card {
@@ -1146,70 +1155,80 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .match-card--kdo {
+    overflow: visible;
     border-color: #fbbf24;
-    background: linear-gradient(180deg, #fffbeb 0%, #ffffff 42%);
-    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.2);
+    background: #fff;
+}
+
+.match-card-kdo-mark {
+    position: absolute;
+    top: -1.15rem;
+    left: 0.7rem;
+    right: auto;
+    z-index: 3;
+    display: block;
+    pointer-events: none;
+}
+
+.match-card-kdo-mark__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(145deg, #d97706, #f59e0b);
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 4px 14px rgb(217 119 6 / 40%);
+}
+
+.match-card-kdo-mark__icon .ti {
+    line-height: 1;
+}
+
+.match-card--favorite-country.match-card--kdo .match-card-favorite-mark {
+    left: 3.5rem;
 }
 
 .match-card--favorite-country {
+    overflow: visible;
     border-color: #3b82f6;
     background: linear-gradient(145deg, #eff6ff 0%, #ffffff 48%);
     box-shadow:
         0 0 0 1px rgb(59 130 246 / 22%),
         0 10px 28px rgb(37 99 235 / 10%);
-    padding-top: 3.35rem;
 }
 
 .match-card-favorite-mark {
     position: absolute;
-    top: 0.55rem;
-    left: 0.65rem;
-    right: 0.65rem;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    max-width: calc(100% - 1.3rem);
+    top: -1.15rem;
+    left: 0.7rem;
+    right: auto;
+    z-index: 3;
+    display: block;
     pointer-events: none;
 }
 
-.match-card-favorite-mark__image {
-    flex-shrink: 0;
-    width: 2.85rem;
-    height: 2.85rem;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 10px rgb(37 99 235 / 28%));
-}
-
-.match-card-favorite-mark__placeholder {
-    flex-shrink: 0;
+.match-card-favorite-mark__shield {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.85rem;
-    height: 2.85rem;
+    width: 2.3rem;
+    height: 2.3rem;
     border-radius: 0.55rem;
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    background: linear-gradient(145deg, #1d4ed8, #2563eb);
     color: #fff;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 4px 14px rgb(37 99 235 / 35%);
 }
 
-.match-card-favorite-mark__label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #1d4ed8;
-    line-height: 1.2;
-}
-
-.match-card-favorite-badge {
-    margin-right: auto;
-    background: #2563eb;
-    color: #eff6ff;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    font-size: 0.68rem;
+.match-card-favorite-mark__shield .ti {
+    line-height: 1;
 }
 
 .match-team--favorite-country > span {
@@ -1218,8 +1237,8 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .match-card--favorite-country.match-card--kdo {
-    border-color: #6366f1;
-    background: linear-gradient(145deg, #eef2ff 0%, #fffbeb 38%, #ffffff 72%);
+    border-color: #fbbf24;
+    background: #fff;
 }
 
 .match-card-kdo-badge {
@@ -1258,9 +1277,43 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     font-weight: 700;
 }
 
-.match-link--live {
-    color: #b45309;
-    font-weight: 600;
+.match-live-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+html body .match-card-live-btn.btn.btn-warning {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #d97706;
+    border-radius: 0.625rem;
+    background: #f59e0b;
+    color: #fff;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+html body .match-card-live-btn.btn.btn-warning:hover {
+    background: #d97706;
+    border-color: #b45309;
+    color: #fff;
+}
+
+html body .match-card-live-btn.btn.btn-warning .ti {
+    font-size: 1.15rem;
+    margin: 0;
+    line-height: 1;
 }
 
 .match-live-score-card {
@@ -1563,6 +1616,10 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     margin-top: 0.25rem;
 }
 
+.match-team__label--short {
+    display: none;
+}
+
 .match-team {
     display: flex;
     align-items: center;
@@ -1826,7 +1883,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
         left: 0;
         right: 0;
         z-index: 2500;
-        height: 4.25rem;
+        height: 6rem;
         padding: 0 0.65rem 0 0.85rem;
         border-bottom: 1px solid #e2e8f0;
         background: #ffffff;
@@ -1848,9 +1905,9 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     .ta-mobile-bar__logo {
         display: block;
         width: auto;
-        max-width: min(320px, 90vw);
-        height: 3.5rem;
-        min-height: 3.5rem;
+        max-width: min(480px, 90vw);
+        height: 5.5rem;
+        min-height: 5.5rem;
         object-fit: contain;
         object-position: left center;
     }
@@ -1945,7 +2002,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
         width: 100%;
         max-width: 100%;
         min-width: 0;
-        padding: 5.15rem 1rem 1.25rem;
+        padding: 6.75rem 1rem 1.25rem;
         box-sizing: border-box;
         overflow-x: clip;
     }
@@ -2317,6 +2374,9 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
+    row-gap: 1.85rem;
+    padding-top: 0.85rem;
+    overflow: visible;
 }
 
 @media (min-width: 768px) {
@@ -2326,6 +2386,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .precomp-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -2333,6 +2394,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     border: 1px solid #e2e8f0;
     border-radius: 0.85rem;
     background: #fff;
+    overflow: visible;
 }
 
 .precomp-card--done {
@@ -2341,10 +2403,47 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .precomp-card__head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.65rem 0.75rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+}
+
+.precomp-card__status-mark {
+    position: absolute;
+    top: -1.15rem;
+    right: 0.7rem;
+    left: auto;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 0.55rem;
+    pointer-events: none;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.precomp-card__status-mark .ti {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.precomp-card__status-mark--ok {
+    background: linear-gradient(145deg, #15803d, #16a34a);
+    color: #fff;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 4px 14px rgb(22 163 74 / 35%);
+}
+
+.precomp-card__status-mark--pending {
+    background: linear-gradient(145deg, #d97706, #f59e0b);
+    color: #fff;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 4px 14px rgb(217 119 6 / 35%);
 }
 
 .precomp-card__icon {
@@ -2365,6 +2464,8 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .precomp-card__title {
+    display: block;
+    width: 100%;
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
@@ -2372,22 +2473,12 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .precomp-card__desc {
-    margin: 0.25rem 0 0;
+    display: block;
+    width: 100%;
+    margin: 0;
     font-size: 0.82rem;
     line-height: 1.45;
     color: #64748b;
-}
-
-.precomp-card__status {
-    align-self: start;
-    font-size: 0.72rem;
-    font-weight: 600;
-}
-
-.precomp-card__status--ok {
-    background: #dcfce7;
-    color: #166534;
-    border: none;
 }
 
 .precomp-checklist {

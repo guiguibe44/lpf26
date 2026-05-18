@@ -3,31 +3,51 @@
  */
 @media (max-width: 767px) {
     .ta-main {
-        font-size: 1rem;
-        line-height: 1.5;
+        font-size: 1.125rem;
+        line-height: 1.55;
     }
 
     .ta-main .ta-page-title {
-        font-size: 1.65rem;
+        font-size: 1.9rem;
         line-height: 1.15;
     }
 
     .ta-main .ta-page-subtitle {
-        font-size: 0.95rem;
-        line-height: 1.45;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .ta-main .ta-card-title {
+        font-size: 1.35rem;
+        line-height: 1.25;
+    }
+
+    .ta-main .ta-kpi-label {
+        font-size: 1rem;
+    }
+
+    .ta-main .ta-kpi-value {
+        font-size: 1.5rem;
+    }
+
+    .ta-main .ta-table th,
+    .ta-main .ta-table td,
+    .ta-main .table th,
+    .ta-main .table td {
+        font-size: 1.05rem;
     }
 
     .ta-main .btn {
-        min-height: 2.85rem;
-        padding: 0.7rem 1.2rem;
-        font-size: 1rem;
+        min-height: 2.95rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
         border-radius: 0.65rem;
     }
 
     .ta-main .btn-sm {
-        min-height: 2.5rem;
-        padding: 0.55rem 1rem;
-        font-size: 0.95rem;
+        min-height: 2.65rem;
+        padding: 0.6rem 1.05rem;
+        font-size: 1.05rem;
     }
 
     .ta-main .ta-form-input,
@@ -49,18 +69,24 @@
     }
 
     .ta-main .ta-form-label {
-        font-size: 0.95rem;
+        font-size: 1.05rem;
         margin-bottom: 0.5rem;
     }
 
     .ta-main .ta-badge {
-        font-size: 0.82rem;
-        padding: 0.38rem 0.65rem;
+        font-size: 0.92rem;
+        padding: 0.42rem 0.7rem;
     }
 
     .ta-main .ta-card-text {
-        font-size: 0.95rem;
-        line-height: 1.5;
+        font-size: 1.1rem;
+        line-height: 1.55;
+    }
+
+    .ta-main p,
+    .ta-main li {
+        font-size: 1.1rem;
+        line-height: 1.55;
     }
 
     /* Carte match : drapeaux côte à côte, noms en dessous, heure au centre */
@@ -82,16 +108,35 @@
         display: contents;
     }
 
-    .ta-main .match-team-home > span,
-    .ta-main .match-team-away > span {
-        font-size: 1.12rem;
+    .ta-main .match-team-home > .match-team__label,
+    .ta-main .match-team-away > .match-team__label {
+        font-size: 1.25rem;
         font-weight: 700;
         line-height: 1.2;
         text-align: center;
         word-break: break-word;
     }
 
-    .ta-main .match-team-home > span {
+    .ta-main .match-team__label--full {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .ta-main .match-team__label--short {
+        display: inline;
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+    }
+
+    .ta-main .match-team-home > .match-team__label {
         grid-column: 1;
         grid-row: 2;
         justify-self: center;
@@ -111,7 +156,7 @@
         justify-self: center;
     }
 
-    .ta-main .match-team-away > span {
+    .ta-main .match-team-away > .match-team__label {
         grid-column: 3;
         grid-row: 2;
         justify-self: center;
@@ -138,18 +183,19 @@
         grid-row: 1 / span 2;
         align-self: center;
         margin: 0;
-        padding: 0 0.15rem;
-        font-size: 1.75rem;
-        font-weight: 800;
+        padding: 0 0.1rem;
+        font-size: 1.15rem;
+        font-weight: 700;
         text-align: center;
-        letter-spacing: -0.02em;
+        letter-spacing: 0;
         white-space: nowrap;
+        color: #64748b;
     }
 
     .ta-main .match-meta {
         margin-top: 0.75rem;
-        font-size: 0.9rem;
-        line-height: 1.45;
+        font-size: 1.05rem;
+        line-height: 1.5;
     }
 
     .ta-main .match-card-head {
@@ -173,17 +219,44 @@
     }
 
     .ta-main .match-card--favorite-country {
-        padding-top: 3.65rem;
+        overflow: visible;
     }
 
-    .ta-main .match-card-favorite-mark__image,
-    .ta-main .match-card-favorite-mark__placeholder {
-        width: 3.25rem;
-        height: 3.25rem;
+    .ta-main .match-card-grid {
+        row-gap: 2rem;
+        padding-top: 1rem;
     }
 
-    .ta-main .match-card-favorite-mark__label {
-        font-size: 0.8rem;
+    .ta-main .match-card-favorite-mark {
+        top: -1.3rem;
+        left: 0.75rem;
+        right: auto;
+    }
+
+    .ta-main .match-card-favorite-mark__shield {
+        width: 2.65rem;
+        height: 2.65rem;
+        font-size: 1.35rem;
+    }
+
+    .ta-main .match-card--kdo {
+        overflow: visible;
+    }
+
+    .ta-main .match-card-kdo-mark {
+        top: -1.3rem;
+        left: 0.75rem;
+        right: auto;
+    }
+
+    .ta-main .match-card--favorite-country.match-card--kdo .match-card-favorite-mark {
+        left: 3.75rem;
+    }
+
+    .ta-main .match-card-kdo-mark__icon {
+        width: 2.65rem;
+        height: 2.65rem;
+        font-size: 1.35rem;
     }
 
     .ta-main .match-pronostic {
@@ -257,29 +330,38 @@
     .ta-main .match-final-score,
     .ta-main .match-locked-pronostic,
     .ta-main .match-partner-score {
-        font-size: 1.15rem;
+        font-size: 1.35rem;
     }
 
     .ta-main .match-prono-cotisation-msg {
-        font-size: 0.95rem;
-        line-height: 1.45;
+        font-size: 1.1rem;
+        line-height: 1.5;
         text-align: center;
     }
 
+    .ta-main .match-day-nav-label {
+        font-size: 1.05rem;
+    }
+
+    .ta-main .match-day-nav-link,
+    .ta-main .match-day-nav-select {
+        min-height: 2.85rem;
+        font-size: 1.1rem;
+    }
+
     .ta-main .match-day-nav-link {
-        min-height: 2.75rem;
-        padding: 0.65rem 0.85rem;
-        font-size: 0.95rem;
+        padding: 0.7rem 0.95rem;
     }
 
     .ta-main .match-day-title {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
+        line-height: 1.3;
     }
 
     .ta-main .match-link {
         display: inline-block;
         margin-top: 0.5rem;
-        font-size: 1rem;
+        font-size: 1.15rem;
     }
 
     .ta-main .match-partner-row {
@@ -298,6 +380,23 @@
     }
 
     .ta-main .match-partner-score {
-        font-size: 1.1rem;
+        font-size: 1.25rem;
+    }
+
+    .ta-main .precomp-dashboard__grid {
+        row-gap: 2rem;
+        padding-top: 1rem;
+    }
+
+    .ta-main .precomp-card__status-mark {
+        top: -1.3rem;
+        right: 0.75rem;
+        left: auto;
+        width: 2.55rem;
+        height: 2.55rem;
+    }
+
+    .ta-main .precomp-card__status-mark .ti {
+        font-size: 1.25rem;
     }
 }

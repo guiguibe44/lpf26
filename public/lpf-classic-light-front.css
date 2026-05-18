@@ -40,33 +40,67 @@ html.lpf-classic-light body.front-body .ta-main .match-day-section--live > .matc
 /* ========== Matchs — cartes & scores ========== */
 html.lpf-classic-light body.front-body .ta-main .match-card--kdo {
     border-color: var(--lpf-warning) !important;
-    background: linear-gradient(180deg, rgb(69 26 3 / 0.35) 0%, var(--lpf-surface) 42%) !important;
-    box-shadow: 0 0 0 1px rgb(245 158 11 / 25%);
+    background: var(--lpf-surface) !important;
+    box-shadow: none !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-card--favorite-country {
+    overflow: visible;
     border-color: #2563eb !important;
     background: linear-gradient(145deg, #eff6ff 0%, var(--lpf-surface) 52%) !important;
     box-shadow: 0 0 0 1px rgb(37 99 235 / 18%) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-card-favorite-badge {
-    background: #2563eb !important;
-    color: #eff6ff !important;
+html.lpf-classic-light body.front-body .ta-main .precomp-card__status-mark {
+    box-shadow: 0 0 0 2px var(--lpf-surface);
+}
+
+html.lpf-classic-light body.front-body .ta-main .precomp-card__status-mark--ok {
+    box-shadow:
+        0 0 0 2px var(--lpf-surface),
+        0 4px 14px rgb(22 163 74 / 35%) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .precomp-card__status-mark--pending {
+    box-shadow:
+        0 0 0 2px var(--lpf-surface),
+        0 4px 14px rgb(217 119 6 / 35%) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-card-favorite-mark__shield {
+    background: linear-gradient(145deg, #1d4ed8, #2563eb) !important;
+    color: #fff !important;
+    box-shadow:
+        0 0 0 2px var(--lpf-surface),
+        0 4px 14px rgb(37 99 235 / 35%) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-team--favorite-country > span {
     color: #1d4ed8 !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-card-kdo-badge {
-    background: var(--lpf-warning) !important;
-    color: #422006 !important;
+html.lpf-classic-light body.front-body .ta-main .match-card-kdo-mark__icon {
+    background: linear-gradient(145deg, #d97706, #f59e0b) !important;
+    color: #fff !important;
+    box-shadow:
+        0 0 0 2px var(--lpf-surface),
+        0 4px 14px rgb(217 119 6 / 40%) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-final-score--live,
-html.lpf-classic-light body.front-body .ta-main .match-link--live {
+html.lpf-classic-light body.front-body .ta-main .match-final-score--live {
     color: var(--lpf-warning) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-card-live-btn.btn.btn-warning {
+    background: var(--lpf-warning) !important;
+    border-color: #d97706 !important;
+    color: #fff !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-card-live-btn.btn.btn-warning:hover {
+    background: #d97706 !important;
+    border-color: #b45309 !important;
+    color: #fff !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-final-score,
@@ -180,6 +214,27 @@ html.lpf-classic-light body.front-body .ta-main .team-show-prono-sep {
 html.lpf-classic-light body.front-body .ta-main .ranking-team-logo-placeholder {
     background: var(--lpf-border) !important;
     color: var(--lpf-muted) !important;
+}
+
+/* ========== Logo header front connecté ========== */
+html.lpf-classic-light body.front-body .ta-sidebar-logo {
+    max-height: 11.5rem;
+}
+
+@media (max-width: 1024px) {
+    html.lpf-classic-light body.front-body .ta-mobile-bar {
+        height: 6rem !important;
+    }
+
+    html.lpf-classic-light body.front-body .ta-mobile-bar__logo {
+        height: 5.5rem !important;
+        max-height: 5.5rem !important;
+        max-width: min(480px, calc(100vw - 5.5rem)) !important;
+    }
+
+    html.lpf-classic-light body.front-body .ta-main {
+        padding-top: 6.75rem !important;
+    }
 }
 
 /* ========== Shell mobile & formulaires ========== */

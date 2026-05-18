@@ -1,0 +1,8 @@
+{# done: bool #}
+<span
+    class="precomp-card__status-mark {{ done ? 'precomp-card__status-mark--ok' : 'precomp-card__status-mark--pending' }}"
+    title="{{ done ? 'Terminé' : 'À faire' }}"
+>
+    <i class="ti {{ done ? 'ti-check' : 'ti-clock' }}" aria-hidden="true"></i>
+    <span class="sr-only">{{ done ? 'OK' : 'À faire' }}</span>
+</span>

@@ -3,7 +3,9 @@
 namespace App\Twig;
 
 use App\Entity\GameMatch;
+use App\Entity\Country;
 use App\Service\ConnectedPlayerContext;
+use App\Service\CountryShortLabelResolver;
 use App\Service\MatchStatusResolver;
 use App\Service\TeamFavoriteCountryService;
 use App\Service\UserNotificationContext;
@@ -16,6 +18,7 @@ final class AppExtension extends AbstractExtension
     public function __construct(
         private readonly MatchStatusResolver $matchStatusResolver,
         private readonly TeamFavoriteCountryService $teamFavoriteCountryService,
+        private readonly CountryShortLabelResolver $countryShortLabelResolver,
         private readonly ConnectedPlayerContext $connectedPlayerContext,
         private readonly UserNotificationContext $userNotificationContext,
     ) {
@@ -37,6 +40,7 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
             new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
             new TwigFunction('match_is_team_favorite_highlight', [$this, 'isTeamFavoriteHighlight']),
+            new TwigFunction('country_short_label', [$this, 'getCountryShortLabel']),
             new TwigFunction('connected_player_sidebar', [$this, 'getConnectedPlayerSidebar']),
             new TwigFunction('unread_notifications_count', [$this, 'getUnreadNotificationsCount']),
         ];
@@ -61,6 +65,11 @@ final class AppExtension extends AbstractExtension
     public function isTeamFavoriteHighlight(GameMatch $match, ?array $highlight): bool
     {
         return $this->teamFavoriteCountryService->isMatchHighlighted($highlight, $match);
+    }
+
+    public function getCountryShortLabel(?Country $country): string
+    {
+        return $this->countryShortLabelResolver->resolve($country);
     }
 
     public function isMatchLive(GameMatch $match, ?\DateTimeInterface $now = null): bool

@@ -772,7 +772,7 @@ html body .lpf-burger--light .lpf-burger__ball {
  * ============================================================================= */
 @media (max-width: 1024px) {
     html body .ta-mobile-bar {
-        height: 4.25rem;
+        height: 6rem;
     }
 
     html body .ta-mobile-bar__logo-link {
@@ -783,15 +783,15 @@ html body .lpf-burger--light .lpf-burger__ball {
     html body .ta-mobile-bar__logo {
         display: block;
         width: auto;
-        height: 3.5rem;
-        min-height: 3.5rem;
-        max-width: min(320px, 90vw);
+        height: 5.5rem;
+        min-height: 5.5rem;
+        max-width: min(480px, 90vw);
         object-fit: contain;
         object-position: left center;
     }
 
     html body .ta-main {
-        padding-top: 5.15rem;
+        padding-top: 6.75rem;
     }
 
     html body.front-body--cotisation-banner .ta-main {

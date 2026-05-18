@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,32 +20,15 @@ class LoginFormAuthenticatorController extends AbstractController
     }
 
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $entityManager): Response
+    public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_homepage');
         }
 
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
-        $testUsers = [];
-
-        if ('dev' === $this->getParameter('kernel.environment')) {
-            $users = $entityManager->getRepository(User::class)->findBy([], ['id' => 'ASC']);
-            foreach ($users as $user) {
-                $email = (string) $user->getEmail();
-                $testUsers[] = [
-                    'email' => $email,
-                    'roles' => implode(', ', $user->getRoles()),
-                    'password_hint' => 'admin@lpf2026.local' === $email ? 'Admin2026!' : 'inconnu',
-                ];
-            }
-        }
-
         return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-            'test_users' => $testUsers,
+            'last_username' => $authenticationUtils->getLastUsername(),
+            'error' => $authenticationUtils->getLastAuthenticationError(),
         ]);
     }
 

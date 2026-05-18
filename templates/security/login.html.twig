@@ -30,18 +30,4 @@
         </form>
     </div>
 </div>
-
-{% if test_users is defined and test_users is not empty %}
-    <hr>
-    <h2>Comptes de test (local)</h2>
-    <ul>
-        {% for test_user in test_users %}
-            <li>
-                <strong>{{ test_user.email }}</strong> - {{ test_user.roles }}
-                <br>
-                Mot de passe de test: <code>{{ test_user.password_hint }}</code>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
 {% endblock %}

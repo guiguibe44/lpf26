@@ -800,7 +800,7 @@ html.lpf-gta-theme .match-card:hover {
 
 html.lpf-gta-theme .match-card--kdo {
     border-color: var(--gold);
-    box-shadow: var(--gta-glow-gold);
+    box-shadow: none;
 }
 
 html.lpf-gta-theme .ta-badge {

@@ -1,12 +1,32 @@
-{# Thème clair uniquement (logo couleur) #}
+{# Thème clair : logo couleur par défaut ; variante front = lpf-front-logo (WebP + PNG) #}
+{% set use_front_logo = front_logo|default(false) %}
+{% set logo_png = use_front_logo ? 'images/lpf-front-logo.png' : 'images/lpf26-logo-color.png' %}
+{% set logo_webp = use_front_logo ? 'images/lpf-front-logo.webp' : null %}
+{% set logo_width = width|default(use_front_logo ? 320 : null) %}
+{% set logo_height = height|default(use_front_logo ? 213 : null) %}
 <span class="lpf-brand-logo-wrap {{ wrap_class|default('') }}">
-    <img
-        src="{{ asset('images/lpf26-logo-color.png') }}"
-        alt="LPF'26"
-        class="lpf-brand-logo {{ img_class|default('') }}"
-        {% if width is defined %}width="{{ width }}"{% endif %}
-        {% if height is defined %}height="{{ height }}"{% endif %}
-        loading="{{ loading|default('lazy') }}"
-        decoding="async"
-    >
+    {% if logo_webp %}
+        <picture>
+            <source srcset="{{ asset(logo_webp) }}" type="image/webp">
+            <img
+                src="{{ asset(logo_png) }}"
+                alt="LPF'26"
+                class="lpf-brand-logo {{ img_class|default('') }}"
+                {% if logo_width %}width="{{ logo_width }}"{% endif %}
+                {% if logo_height %}height="{{ logo_height }}"{% endif %}
+                loading="{{ loading|default('eager') }}"
+                decoding="async"
+            >
+        </picture>
+    {% else %}
+        <img
+            src="{{ asset(logo_png) }}"
+            alt="LPF'26"
+            class="lpf-brand-logo {{ img_class|default('') }}"
+            {% if logo_width %}width="{{ logo_width }}"{% endif %}
+            {% if logo_height %}height="{{ logo_height }}"{% endif %}
+            loading="{{ loading|default('lazy') }}"
+            decoding="async"
+        >
+    {% endif %}
 </span>

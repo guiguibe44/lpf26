@@ -40,8 +40,8 @@ html.dark body.front-body .ta-main .match-day-section--live > .match-day-title {
 /* ========== Matchs — cartes & scores ========== */
 html.dark body.front-body .ta-main .match-card--kdo {
     border-color: var(--lpf-warning) !important;
-    background: linear-gradient(180deg, rgb(69 26 3 / 0.35) 0%, var(--lpf-surface) 42%) !important;
-    box-shadow: 0 0 0 1px rgb(245 158 11 / 25%);
+    background: var(--lpf-surface) !important;
+    box-shadow: none !important;
 }
 
 html.dark body.front-body .ta-main .match-card-kdo-badge {
@@ -50,6 +50,7 @@ html.dark body.front-body .ta-main .match-card-kdo-badge {
 }
 
 html.dark body.front-body .ta-main .match-card--favorite-country {
+    overflow: visible;
     border-color: #3b82f6 !important;
     background: linear-gradient(145deg, rgb(30 58 138 / 0.45) 0%, var(--lpf-surface) 52%) !important;
     box-shadow:
@@ -57,21 +58,17 @@ html.dark body.front-body .ta-main .match-card--favorite-country {
         0 10px 28px rgb(0 0 0 / 22%) !important;
 }
 
-html.dark body.front-body .ta-main .match-card-favorite-mark__label {
-    color: #93c5fd !important;
-}
-
-html.dark body.front-body .ta-main .match-card-favorite-badge {
-    background: #2563eb !important;
-    color: #eff6ff !important;
+html.dark body.front-body .ta-main .match-card-favorite-mark__shield {
+    box-shadow:
+        0 0 0 2px var(--lpf-surface),
+        0 4px 14px rgb(37 99 235 / 45%) !important;
 }
 
 html.dark body.front-body .ta-main .match-team--favorite-country > span {
     color: #93c5fd !important;
 }
 
-html.dark body.front-body .ta-main .match-final-score--live,
-html.dark body.front-body .ta-main .match-link--live {
+html.dark body.front-body .ta-main .match-final-score--live {
     color: var(--lpf-warning) !important;
 }
 
