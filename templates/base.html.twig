@@ -44,7 +44,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         {% if not isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-mobile-nav">
+            <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-menu-spacing">
         {% endif %}
         {% block stylesheets %}
         {% endblock %}
@@ -61,10 +61,10 @@
             <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=4">
         {% else %}
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
-            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=5">
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">
         {% endif %}
         <link rel="stylesheet" href="{{ asset('lpf-theme-switcher.css') }}?v=5">
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=4">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=5">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=2">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">

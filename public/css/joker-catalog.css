@@ -86,6 +86,44 @@ details[open] > summary .joker-guide-chevron {
     scroll-margin-top: 5.5rem;
 }
 
+/* Mobile : visuel au-dessus du texte (page guide uniquement) */
+@media (max-width: 767px) {
+    .joker-catalog-card .joker-drawer__card-top {
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 0;
+    }
+
+    .joker-catalog-card .joker-drawer__card-visual {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        min-height: 0;
+        max-height: none;
+        height: auto;
+    }
+
+    .joker-catalog-card .joker-drawer__card-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    .joker-catalog-card .joker-drawer__card-placeholder {
+        width: 100%;
+        min-height: 10rem;
+        max-height: none;
+    }
+
+    .joker-catalog-card .joker-drawer__card-copy {
+        padding: 1rem 1.15rem 1.05rem;
+    }
+}
+
 .joker-catalog-card__actions {
     display: flex;
     flex-direction: column;

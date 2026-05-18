@@ -480,20 +480,56 @@
     color: #ffffff;
 }
 
+.ta-sidebar-nav .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ta-sidebar-nav .menu > li:last-child {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.ta-sidebar .ta-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.72rem 0.95rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    color: #334155;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background-color 0.22s ease,
+        color 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.ta-sidebar .ta-menu-link:hover {
+    transform: translateX(5px);
+    background: #f8fafc;
+    border-color: #bbf7d0;
+    color: #15803d;
+    box-shadow: 0 3px 10px rgb(22 163 74 / 12%);
+}
+
+.ta-sidebar .ta-menu-link.active {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #15803d;
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 #16a34a;
+}
+
 .ta-menu-link {
     border-radius: 0.5rem;
     color: #334155;
     font-weight: 500;
-}
-
-.ta-menu-link:hover {
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-
-.ta-menu-link.active {
-    background: #dbeafe;
-    color: #1d4ed8;
 }
 
 .ta-main {

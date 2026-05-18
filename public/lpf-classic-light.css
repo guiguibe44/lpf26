@@ -172,18 +172,27 @@ html.lpf-classic-light .ta-sidebar-footer {
     border-color: var(--lpf-border) !important;
 }
 
-html.lpf-classic-light .ta-menu-link {
+html.lpf-classic-light .ta-sidebar .ta-menu-link {
     color: var(--lpf-muted) !important;
 }
 
-html.lpf-classic-light .ta-menu-link:hover {
-    background: var(--lpf-primary-muted) !important;
+html.lpf-classic-light .ta-sidebar .ta-menu-link:hover {
+    transform: translateX(5px);
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-primary) !important;
     color: var(--lpf-link) !important;
+    box-shadow: 0 3px 12px rgb(22 163 74 / 14%) !important;
 }
 
-html.lpf-classic-light .ta-menu-link.active {
+html.lpf-classic-light .ta-sidebar .ta-menu-link.active {
     background: var(--lpf-primary) !important;
+    border-color: var(--lpf-primary) !important;
     color: #fff !important;
+    box-shadow: inset 3px 0 0 #052e16 !important;
+}
+
+html.lpf-classic-light .ta-sidebar-nav .menu > li:last-child {
+    border-top-color: var(--lpf-border) !important;
 }
 
 html.lpf-classic-light .ta-sidebar-notify {

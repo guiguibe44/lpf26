@@ -1195,14 +1195,22 @@ html.lpf-gta-theme body .ta-sidebar .ta-menu-link:not(.active) {
 }
 
 html.lpf-gta-theme body .ta-sidebar .ta-menu-link:hover:not(.active) {
+    transform: translateX(5px);
     color: var(--bonus) !important;
-    background: rgb(89 255 106 / 6%) !important;
+    background: rgb(89 255 106 / 8%) !important;
+    border-color: var(--bonus) !important;
+    box-shadow: 0 3px 14px rgb(89 255 106 / 20%) !important;
 }
 
 html.lpf-gta-theme body .ta-sidebar .ta-menu-link.active {
     color: var(--bg-main) !important;
     background: var(--bonus) !important;
+    border-color: var(--bonus) !important;
     box-shadow: var(--gta-shadow-hard) !important;
+}
+
+html.lpf-gta-theme body .ta-sidebar-nav .menu {
+    gap: 0.5rem;
 }
 
 html.lpf-gta-theme body .ta-sidebar .menu > li:last-child {
