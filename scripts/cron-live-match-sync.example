@@ -1,7 +1,12 @@
 # Synchro scores / buts en direct (API-Football) — toutes les 3 minutes.
-# Sur OVH : espace client → Hébergement → Multisite → ton site → Tâches planifiées (cron),
-# ou en SSH : crontab -e
-#
-# Adapter le chemin (DEPLOY_REMOTE_PATH) et PHP si besoin (which php en SSH).
+# Copier la ligne ci-dessous dans l’espace client OVH → Hébergement → Tâches planifiées (cron).
+# (crontab SSH indisponible sur le mutualisé OVH — passer par le manager.)
 
-*/3 * * * * cd /homez.XXXX/votre_login/lpf26 && php bin/console app:live-match:sync >> var/log/live-match-sync.log 2>&1
+*/3 * * * * cd /homez.1544/lotopou/lpf26 && /usr/local/bin/php8.4 bin/console app:live-match:sync --env=prod --no-interaction >> var/log/live-match-sync.log 2>&1
+
+# Prérequis dans .env.local sur le serveur :
+#   API_FOOTBALL_KEY=…
+#   API_FOOTBALL_LIVE_SYNC_ENABLED=1
+#
+# Test manuel (SSH) :
+#   cd /homez.1544/lotopou/lpf26 && php bin/console app:live-match:sync --env=prod
