@@ -64,6 +64,7 @@ class DashboardController extends AbstractDashboardController
             ]);
 
         yield MenuItem::linkToRoute('Checklist de recette', 'fas fa-list-check', 'admin_qa_checklist');
+        yield MenuItem::linkToRoute('Checklist compétition', 'fas fa-trophy', 'admin_compet_checklist');
 
         yield MenuItem::subMenu('Gestion', 'fas fa-people-group')
             ->setSubItems([

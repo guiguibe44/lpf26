@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Service\LiveMatchSyncService;
 use App\Service\MatchPronosticReminderService;
+use App\Service\TestMatchScenarioRunner;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ final class CronController extends AbstractController
         private readonly ?string $cronSecret,
         private readonly LiveMatchSyncService $liveMatchSyncService,
         private readonly MatchPronosticReminderService $matchPronosticReminderService,
+        private readonly TestMatchScenarioRunner $testMatchScenarioRunner,
     ) {
     }
 
@@ -46,6 +48,63 @@ final class CronController extends AbstractController
         }
 
         return $this->json($this->matchPronosticReminderService->processDueReminders());
+    }
+
+    /**
+     * Étape du scénario match test manuel (France–Allemagne, etc.).
+     * Paramètres : match_id, step, buteur_id, minute, now, dry_run, score_home, score_away.
+     */
+    #[Route('/test-match-step', name: 'cron_test_match_step', methods: ['GET', 'POST'])]
+    public function testMatchStep(Request $request): JsonResponse
+    {
+        $denied = $this->denyUnlessValidToken($request);
+        if (null !== $denied) {
+            return $denied;
+        }
+
+        $matchId = (int) $request->query->get('match_id', 0);
+        $step = (string) $request->query->get('step', '');
+        if ($matchId <= 0 || '' === $step) {
+            return $this->json(
+                ['error' => 'Paramètres match_id et step requis.'],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $params = [
+            'match_id' => $matchId,
+            'step' => $step,
+            'dry_run' => filter_var($request->query->get('dry_run', false), \FILTER_VALIDATE_BOOL),
+            'notify' => !filter_var($request->query->get('no_notify', false), \FILTER_VALIDATE_BOOL),
+        ];
+
+        $buteurId = $request->query->get('buteur_id');
+        if (is_numeric($buteurId)) {
+            $params['buteur_id'] = (int) $buteurId;
+        }
+
+        $minute = $request->query->get('minute');
+        if (is_numeric($minute)) {
+            $params['minute'] = (int) $minute;
+        }
+
+        foreach (['score_home', 'score_away'] as $key) {
+            $value = $request->query->get($key);
+            if (is_numeric($value)) {
+                $params[$key] = (int) $value;
+            }
+        }
+
+        $now = $request->query->get('now');
+        if (\is_string($now) && '' !== $now) {
+            $params['now'] = $now;
+        }
+
+        try {
+            return $this->json($this->testMatchScenarioRunner->run($params));
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     private function denyUnlessValidToken(Request $request): ?JsonResponse

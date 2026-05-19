@@ -24,24 +24,27 @@ Remplace `VOTRE_SECRET` ci-dessous par cette même valeur.
 
 ## 2. URLs à appeler
 
-Base du site : `https://lotopotofoot.fr` (adapter si autre domaine).
+Base du site prod : **`https://26.lotopotofoot.fr`** (sans `/l` — pas de préfixe de chemin).
 
 | Tâche | URL |
 |--------|-----|
-| Synchro scores / buts (3 min) | `https://lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET` |
-| Relances pronostic (5 min) | `https://lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET` |
+| Synchro scores / buts (3 min) | `https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET` |
+| Relances pronostic (5 min) | `https://26.lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET` |
+| Match test manuel (ponctuel) | `https://26.lotopotofoot.fr/cron/test-match-step?token=VOTRE_SECRET&match_id=ID&step=…` |
 
-Test navigateur ou curl (doit renvoyer du JSON, pas une page login) :
+Ne pas utiliser `lotopotofoot.fr` ni `www.lotopotofoot.fr` (redirection vers l’ancien site).
+
+Test (doit renvoyer du JSON, pas une page login) :
 
 ```bash
-curl -sS "https://lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET"
+curl -sS "https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET"
 ```
 
 ## 3. cron-job.org — tâche 1 : synchro live
 
 1. **Cronjobs** → **Create cronjob**
 2. **Title** : `LPF26 — synchro matchs API`
-3. **URL** : `https://lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET`
+3. **URL** : `https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET`
 4. **Schedule** : toutes les **3 minutes** (ou expression `*/3 * * * *`)
 5. **Request method** : **GET**
 6. **Enabled** : oui
@@ -52,7 +55,7 @@ curl -sS "https://lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET"
 
 1. **Create cronjob**
 2. **Title** : `LPF26 — relances pronostic`
-3. **URL** : `https://lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET`
+3. **URL** : `https://26.lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET`
 4. **Schedule** : toutes les **5 minutes** (`*/5 * * * *`)
 5. **GET**, activé
 6. Enregistrer
@@ -67,7 +70,19 @@ Sur le serveur :
 tail -30 var/log/live-match-sync.log
 ```
 
-## 6. Dépannage
+## 6. Match test manuel (scénario France–Allemagne)
+
+Voir le guide complet : [scenario-match-test-france-allemagne.md](scenario-match-test-france-allemagne.md).
+
+Exemple (coup d’envoi) :
+
+```text
+https://26.lotopotofoot.fr/cron/test-match-step?token=VOTRE_SECRET&match_id=42&step=kickoff
+```
+
+Étapes : `info`, `reset-reminder`, `reminder`, `kickoff`, `goal` (+ `buteur_id`, `minute`), `finish`.
+
+## 7. Dépannage
 
 | Réponse | Cause |
 |---------|--------|

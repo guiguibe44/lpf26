@@ -1,0 +1,189 @@
+/* Panneau scénario — checklist compétition */
+
+.admin-compet-scenario {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.06) 0%, transparent 100%);
+}
+
+.admin-compet-scenario__header {
+    margin-bottom: 1rem;
+}
+
+.admin-compet-scenario__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+}
+
+.admin-compet-scenario__subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--lpf-muted, #64748b);
+}
+
+.admin-compet-scenario__tools {
+    margin: 0.75rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--lpf-muted, #64748b);
+}
+
+.admin-compet-scenario__ids {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px dashed rgba(14, 165, 233, 0.4);
+    border-radius: 0.5rem;
+}
+
+.admin-compet-scenario__h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem;
+}
+
+.admin-compet-scenario__hint {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--lpf-muted, #64748b);
+}
+
+.admin-compet-scenario__ids-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.75rem;
+}
+
+.admin-compet-scenario__field--wide {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 640px) {
+    .admin-compet-scenario__field--wide {
+        grid-column: span 2;
+    }
+}
+
+.admin-compet-scenario__label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--lpf-muted, #64748b);
+    margin-bottom: 0.25rem;
+}
+
+.admin-compet-scenario__input {
+    width: 100%;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.875rem;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    border-radius: 0.35rem;
+    font-family: ui-monospace, monospace;
+}
+
+.admin-compet-scenario__details {
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.admin-compet-scenario__summary {
+    cursor: pointer;
+    padding: 0.65rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    list-style: none;
+}
+
+.admin-compet-scenario__summary::-webkit-details-marker {
+    display: none;
+}
+
+.admin-compet-scenario__summary::before {
+    content: '▸ ';
+    display: inline-block;
+    transition: transform 0.15s ease;
+}
+
+.admin-compet-scenario__details[open] > .admin-compet-scenario__summary::before {
+    transform: rotate(90deg);
+}
+
+.admin-compet-scenario__details > :not(summary) {
+    padding: 0 1rem 1rem;
+}
+
+.admin-compet-scenario__table-wrap {
+    overflow-x: auto;
+}
+
+.admin-compet-scenario__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.admin-compet-scenario__table th,
+.admin-compet-scenario__table td {
+    padding: 0.45rem 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    vertical-align: top;
+}
+
+.admin-compet-scenario__table th {
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.admin-compet-scenario__table--timeline .admin-compet-scenario__time {
+    font-weight: 700;
+    white-space: nowrap;
+    color: #0ea5e9;
+}
+
+.admin-compet-scenario__effect {
+    max-width: 14rem;
+}
+
+.admin-compet-scenario__step-code {
+    font-size: 0.7rem;
+    opacity: 0.85;
+}
+
+.admin-compet-scenario__cmd {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.7rem;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+.admin-compet-scenario__cmd--cron {
+    min-height: 2.5em;
+}
+
+.admin-compet-scenario__copy {
+    margin-bottom: 0.15rem;
+}
+
+.admin-compet-scenario__note {
+    font-size: 0.8125rem;
+    color: var(--lpf-muted, #64748b);
+    margin: 0 0 0.75rem;
+    line-height: 1.45;
+}
+
+.admin-compet-scenario__copy--ok {
+    border-color: #22c55e !important;
+    color: #16a34a !important;
+}

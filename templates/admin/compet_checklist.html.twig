@@ -1,0 +1,201 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checklist compétition · Admin{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin-qa-checklist.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/admin-compet-checklist.css') }}?v=1">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin-compet-checklist.js') }}?v=2" defer></script>
+    <script src="{{ asset('js/admin-compet-scenario.js') }}?v=1" defer></script>
+{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar admin-qa-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-trophy" aria-hidden="true"></i>
+                Checklist compétition
+            </h1>
+            <p class="ta-page-subtitle">
+                Scénario match test <strong>France – Allemagne 15h</strong> (sans API) : préparation, crons, buts, points, classement.
+                Cases cochées : ce navigateur. Notes : partagées entre tous les administrateurs.
+            </p>
+        </div>
+        <div class="admin-qa-topbar__actions">
+            <a href="{{ path('admin_qa_checklist') }}" class="btn btn-outline btn-sm">
+                <i class="ti ti-list-check" aria-hidden="true"></i>
+                Checklist QA
+            </a>
+            <button type="button" class="btn btn-outline btn-sm admin-qa-btn-reset" data-admin-qa-action="reset-all">
+                <i class="ti ti-refresh" aria-hidden="true"></i>
+                Réinitialiser les cases
+            </button>
+            <a href="{{ path('admin') }}" class="btn btn-outline btn-sm">
+                <i class="ti ti-settings" aria-hidden="true"></i>
+                EasyAdmin
+            </a>
+        </div>
+    </section>
+
+    {% include 'admin/_compet_scenario_playbook.html.twig' with { scenario: scenario } only %}
+
+    <section
+        class="ta-card admin-qa-progress-card"
+        aria-labelledby="admin-compet-progress-title"
+        data-admin-qa-progress
+        data-total="{{ total_items }}"
+        data-csrf-token="{{ csrf_token('admin_compet_note') }}"
+    >
+        <h2 id="admin-compet-progress-title" class="visually-hidden">Progression globale</h2>
+        <div class="admin-qa-progress-card__row">
+            <span class="admin-qa-progress-card__label">Progression globale (cases cochées)</span>
+            <span class="admin-qa-progress-card__count" data-admin-qa-progress-count>0 / {{ total_items }}</span>
+        </div>
+        <div class="admin-qa-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ total_items }}" aria-valuenow="0" data-admin-qa-progress-bar>
+            <span class="admin-qa-progress-bar__fill" data-admin-qa-progress-fill style="width: 0%"></span>
+        </div>
+    </section>
+
+    <div class="admin-qa-legend ta-card-text">
+        <span class="admin-qa-legend__item admin-qa-legend__item--action">
+            <i class="ti ti-player-play" aria-hidden="true"></i> Action à réaliser
+        </span>
+        <span class="admin-qa-legend__item admin-qa-legend__item--attention">
+            <i class="ti ti-eye" aria-hidden="true"></i> Point d’attention à vérifier
+        </span>
+        <span class="admin-qa-legend__item admin-qa-legend__item--notes">
+            <i class="ti ti-notes" aria-hidden="true"></i> Notes visibles par tous les admins
+        </span>
+    </div>
+
+    <div
+        class="admin-qa-sections"
+        data-admin-qa-root
+        data-note-url-template="{{ path('admin_compet_checklist_note_save', { itemId: '__ITEM__' }) }}"
+    >
+        {% for section in sections %}
+            <section
+                class="ta-card admin-qa-section"
+                id="admin-compet-{{ section.id }}"
+                data-admin-qa-section="{{ section.id }}"
+                aria-labelledby="admin-compet-title-{{ section.id }}"
+            >
+                <header class="admin-qa-section__header">
+                    <div class="admin-qa-section__title-wrap">
+                        <h2 id="admin-compet-title-{{ section.id }}" class="admin-qa-section__title">
+                            <i class="ti {{ section.icon }}" aria-hidden="true"></i>
+                            {{ section.title }}
+                        </h2>
+                        <p class="admin-qa-section__desc">{{ section.description }}</p>
+                    </div>
+                    <span class="admin-qa-section__badge" data-admin-qa-section-badge>0 / {{ section.items|length }}</span>
+                </header>
+
+                <ul class="admin-qa-list">
+                    {% for item in section.items %}
+                        {% set item_notes = notes_by_item[item.id]|default([]) %}
+                        {% set my_note = my_notes_by_item[item.id]|default('') %}
+                        <li
+                            class="admin-qa-list__item admin-qa-list__item--{{ item.kind }}"
+                            data-admin-qa-item-row="{{ item.id }}"
+                        >
+                            <div class="admin-qa-item">
+                                <label class="admin-qa-check">
+                                    <input
+                                        type="checkbox"
+                                        class="admin-qa-check__input"
+                                        data-admin-qa-item="{{ item.id }}"
+                                        id="admin-compet-item-{{ item.id }}"
+                                    >
+                                    <span class="admin-qa-check__box" aria-hidden="true"></span>
+                                    <span class="admin-qa-check__content">
+                                        <span class="admin-qa-check__kind" title="{{ item.kind == 'action' ? 'Action' : 'Point d’attention' }}">
+                                            {% if item.kind == 'action' %}
+                                                <i class="ti ti-player-play" aria-hidden="true"></i>
+                                            {% else %}
+                                                <i class="ti ti-eye" aria-hidden="true"></i>
+                                            {% endif %}
+                                        </span>
+                                        <span class="admin-qa-check__label">{{ item.label }}</span>
+                                        {% if item.route is defined and item.route %}
+                                            <a
+                                                href="{{ path(item.route) }}"
+                                                class="admin-qa-check__link"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {{ item.route_label|default('Ouvrir') }}
+                                                <i class="ti ti-external-link" aria-hidden="true"></i>
+                                            </a>
+                                        {% endif %}
+                                    </span>
+                                </label>
+
+                                {% if item.description %}
+                                    <p class="admin-qa-item__description">
+                                        <i class="ti ti-info-circle" aria-hidden="true"></i>
+                                        {{ item.description }}
+                                    </p>
+                                {% endif %}
+
+                                <div class="admin-qa-notes" data-admin-qa-notes="{{ item.id }}">
+                                    <h3 class="admin-qa-notes__title">
+                                        <i class="ti ti-notes" aria-hidden="true"></i>
+                                        Notes des administrateurs
+                                    </h3>
+
+                                    <ul class="admin-qa-notes__list" data-admin-qa-notes-list>
+                                        {% for note in item_notes %}
+                                            <li class="admin-qa-notes__entry{{ note.is_mine ? ' admin-qa-notes__entry--mine' : '' }}" data-note-id="{{ note.id }}">
+                                                <div class="admin-qa-notes__meta">
+                                                    <strong class="admin-qa-notes__author">{{ note.author_label }}</strong>
+                                                    {% if note.is_mine %}
+                                                        <span class="admin-qa-notes__you">(vous)</span>
+                                                    {% endif %}
+                                                    <time class="admin-qa-notes__time" datetime="{{ note.updated_at|date('c') }}">
+                                                        {{ note.updated_at|date('d/m/Y H:i') }}
+                                                    </time>
+                                                </div>
+                                                <p class="admin-qa-notes__body">{{ note.content|e|nl2br }}</p>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                    <p class="admin-qa-notes__empty{{ item_notes is not empty ? ' admin-qa-notes__empty--hidden' : '' }}" data-admin-qa-notes-empty>
+                                        Aucune note pour ce point. Documentez le match test (IDs, équipes, résultats attendus).
+                                    </p>
+
+                                    <form class="admin-qa-notes__form" data-admin-qa-note-form="{{ item.id }}">
+                                        <label class="admin-qa-notes__label" for="admin-compet-note-{{ item.id }}">
+                                            Votre note (visible par les autres admins)
+                                        </label>
+                                        <textarea
+                                            id="admin-compet-note-{{ item.id }}"
+                                            class="admin-qa-notes__textarea"
+                                            name="content"
+                                            rows="3"
+                                            maxlength="5000"
+                                            placeholder="Ex. match #42, fixture API 123456, équipes Test1/Test2…"
+                                        >{{ my_note }}</textarea>
+                                        <div class="admin-qa-notes__form-actions">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="ti ti-device-floppy" aria-hidden="true"></i>
+                                                Enregistrer ma note
+                                            </button>
+                                            <span class="admin-qa-notes__status" data-admin-qa-note-status aria-live="polite"></span>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endfor %}
+    </div>
+{% endblock %}

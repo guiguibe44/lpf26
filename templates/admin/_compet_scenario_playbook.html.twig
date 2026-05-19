@@ -1,0 +1,239 @@
+{# @param scenario array — AdminCompetChecklistScenario::playbook() #}
+<section
+    class="ta-card admin-compet-scenario"
+    id="admin-compet-scenario"
+    aria-labelledby="admin-compet-scenario-title"
+    data-admin-compet-scenario
+    data-cron-path="{{ scenario.cron_path }}"
+>
+    <header class="admin-compet-scenario__header">
+        <div>
+            <h2 id="admin-compet-scenario-title" class="admin-compet-scenario__title">
+                <i class="ti ti-play-football" aria-hidden="true"></i>
+                {{ scenario.title }}
+            </h2>
+            <p class="admin-compet-scenario__subtitle">{{ scenario.subtitle }} · Score final <strong>{{ scenario.final_score }}</strong></p>
+        </div>
+        <p class="admin-compet-scenario__tools">
+            <code>{{ scenario.cli_command }} app:test-match:step</code>
+            · cron <code>{{ scenario.cron_path }}</code>
+            · <code>{{ scenario.script_path }}</code>
+        </p>
+    </header>
+
+    <div class="admin-compet-scenario__ids ta-card" data-admin-compet-ids-panel>
+        <h3 class="admin-compet-scenario__h3">
+            <i class="ti ti-forms" aria-hidden="true"></i>
+            IDs du scénario <span class="admin-compet-scenario__hint">(sauvegardés dans ce navigateur)</span>
+        </h3>
+        <div class="admin-compet-scenario__ids-grid">
+            <label class="admin-compet-scenario__field">
+                <span class="admin-compet-scenario__label">MATCH_ID</span>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" data-scenario-var="MATCH_ID" placeholder="ex. 42" class="admin-compet-scenario__input">
+            </label>
+            <label class="admin-compet-scenario__field">
+                <span class="admin-compet-scenario__label">BUTEUR_FR_1 (1er but)</span>
+                <input type="text" inputmode="numeric" data-scenario-var="BUTEUR_FR_1" placeholder="ID buteur" class="admin-compet-scenario__input">
+            </label>
+            <label class="admin-compet-scenario__field">
+                <span class="admin-compet-scenario__label">BUTEUR_DE_1 (but DE)</span>
+                <input type="text" inputmode="numeric" data-scenario-var="BUTEUR_DE_1" placeholder="ID buteur" class="admin-compet-scenario__input">
+            </label>
+            <label class="admin-compet-scenario__field">
+                <span class="admin-compet-scenario__label">BUTEUR_FR_2 (2e but)</span>
+                <input type="text" inputmode="numeric" data-scenario-var="BUTEUR_FR_2" placeholder="ID buteur" class="admin-compet-scenario__input">
+            </label>
+            <label class="admin-compet-scenario__field admin-compet-scenario__field--wide">
+                <span class="admin-compet-scenario__label">CRON_SECRET (prod, optionnel)</span>
+                <input type="password" autocomplete="off" data-scenario-var="CRON_SECRET" placeholder="Pour générer les URLs cron" class="admin-compet-scenario__input">
+            </label>
+            <label class="admin-compet-scenario__field admin-compet-scenario__field--wide">
+                <span class="admin-compet-scenario__label">BASE_URL prod</span>
+                <input type="url" data-scenario-var="BASE_URL" value="https://26.lotopotofoot.fr" class="admin-compet-scenario__input">
+            </label>
+        </div>
+    </div>
+
+    <details class="admin-compet-scenario__details" open>
+        <summary class="admin-compet-scenario__summary">Match à créer (EasyAdmin)</summary>
+        <table class="admin-compet-scenario__table">
+            <tbody>
+                {% for row in scenario.match_fields %}
+                    <tr>
+                        <th scope="row">{{ row.label }}</th>
+                        <td>{{ row.value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+    <details class="admin-compet-scenario__details" open>
+        <summary class="admin-compet-scenario__summary">3 équipes · pronos et oublis</summary>
+        <p class="admin-compet-scenario__note">{{ scenario.reminder_note }}</p>
+        <div class="admin-compet-scenario__table-wrap">
+            <table class="admin-compet-scenario__table">
+                <thead>
+                    <tr>
+                        <th>Équipe</th>
+                        <th>Joueur 1</th>
+                        <th>Joueur 2</th>
+                        <th>Pronostic</th>
+                        <th>Buteurs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in scenario.teams_matrix %}
+                        <tr>
+                            <td><strong>{{ row.team }}</strong></td>
+                            <td>{{ row.j1 }}</td>
+                            <td>{{ row.j2 }}</td>
+                            <td>{{ row.prono }}</td>
+                            <td>{{ row.buteur }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </details>
+
+    <details class="admin-compet-scenario__details" open>
+        <summary class="admin-compet-scenario__summary">Buteurs des buts simulés</summary>
+        <table class="admin-compet-scenario__table">
+            <thead>
+                <tr>
+                    <th>Rôle</th>
+                    <th>Exemple</th>
+                    <th>Variable</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in scenario.buteurs_roles %}
+                    <tr>
+                        <td>{{ row.role }}</td>
+                        <td>{{ row.example }}</td>
+                        <td><code>{{ row.var }}</code></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+    <details class="admin-compet-scenario__details" open>
+        <summary class="admin-compet-scenario__summary">Planning horaire · commandes et crons</summary>
+        <div class="admin-compet-scenario__table-wrap">
+            <table class="admin-compet-scenario__table admin-compet-scenario__table--timeline">
+                <thead>
+                    <tr>
+                        <th>Heure</th>
+                        <th>Étape</th>
+                        <th>Effet</th>
+                        <th>CLI</th>
+                        <th>Cron HTTP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in scenario.timeline %}
+                        <tr data-scenario-step="{{ row.step }}">
+                            <td class="admin-compet-scenario__time">{{ row.time }}</td>
+                            <td>
+                                <strong>{{ row.label }}</strong>
+                                <br><code class="admin-compet-scenario__step-code">{{ row.step }}</code>
+                            </td>
+                            <td class="admin-compet-scenario__effect">{{ row.effect }}</td>
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline btn-xs admin-compet-scenario__copy"
+                                    data-copy-text="{{ scenario.cli_command }} {{ row.cli }}"
+                                    title="Copier la commande"
+                                >
+                                    <i class="ti ti-copy" aria-hidden="true"></i>
+                                </button>
+                                <code class="admin-compet-scenario__cmd" data-scenario-cli>{{ scenario.cli_command }} {{ row.cli }}</code>
+                            </td>
+                            <td>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline btn-xs admin-compet-scenario__copy"
+                                    data-copy-cron
+                                    data-cron-params="{{ row.cron_params }}"
+                                    title="Copier l’URL cron"
+                                >
+                                    <i class="ti ti-link" aria-hidden="true"></i>
+                                </button>
+                                <code class="admin-compet-scenario__cmd admin-compet-scenario__cmd--cron" data-scenario-cron data-cron-params="{{ row.cron_params }}"></code>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="admin-compet-scenario__note">
+            Reset relance : <code data-scenario-cli>{{ scenario.cli_command }} app:test-match:step --match-id={MATCH_ID} --step=reset-reminder</code>
+            · Info : <code data-scenario-cli>{{ scenario.cli_command }} app:test-match:step --match-id={MATCH_ID} --step=info</code>
+        </p>
+    </details>
+
+    <details class="admin-compet-scenario__details">
+        <summary class="admin-compet-scenario__summary">Résultats pronos attendus (2-1, sans joker)</summary>
+        <table class="admin-compet-scenario__table">
+            <thead>
+                <tr>
+                    <th>Joueur</th>
+                    <th>Prono effectif</th>
+                    <th>Résultat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in scenario.prono_results %}
+                    <tr>
+                        <td>{{ row.team }}</td>
+                        <td>{{ row.prono }}</td>
+                        <td>{{ row.expected }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+    <details class="admin-compet-scenario__details">
+        <summary class="admin-compet-scenario__summary">Vérifications par étape</summary>
+        <table class="admin-compet-scenario__table">
+            <thead>
+                <tr>
+                    <th>Étape</th>
+                    <th>Contrôles</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in scenario.verifications %}
+                    <tr>
+                        <td><code>{{ row.step }}</code></td>
+                        <td>{{ row.checks }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+    <details class="admin-compet-scenario__details">
+        <summary class="admin-compet-scenario__summary">Dépannage</summary>
+        <table class="admin-compet-scenario__table">
+            <thead>
+                <tr>
+                    <th>Problème</th>
+                    <th>Cause / action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in scenario.troubleshooting %}
+                    <tr>
+                        <td>{{ row.problem }}</td>
+                        <td>{{ row.cause }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+</section>
