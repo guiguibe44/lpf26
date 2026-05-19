@@ -140,6 +140,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Nom de fichier pour EasyAdmin ImageField (avatar en base = chemin public /uploads/avatars/…).
+     */
+    public function getAvatarFilename(): ?string
+    {
+        if (null === $this->avatar || '' === $this->avatar) {
+            return null;
+        }
+
+        return basename($this->avatar);
+    }
+
+    public function setAvatarFilename(?string $filename): static
+    {
+        if (null === $filename || '' === $filename) {
+            return $this;
+        }
+
+        $this->avatar = '/uploads/avatars/'.ltrim($filename, '/');
+
+        return $this;
+    }
+
     public function isCotisationPayee(): bool
     {
         return $this->cotisationPayee;

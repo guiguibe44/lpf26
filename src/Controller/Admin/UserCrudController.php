@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\User;
 use App\Repository\TeamMemberRepository;
 use App\Service\UploadedImageFinalizeService;
+use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -89,8 +90,14 @@ class UserCrudController extends AbstractAppCrudController
             ImageField::new('avatar')
                 ->setLabel('Avatar')
                 ->setBasePath('')
+                ->formatValue(static fn (?string $value, ?User $user): ?string => UploadPathHelper::publicPath($user?->getAvatar(), 'avatars'))
+                ->hideOnForm(),
+            ImageField::new('avatarFilename')
+                ->setLabel('Avatar')
+                ->setBasePath('/uploads/avatars')
                 ->setUploadDir('public/uploads/avatars')
-                ->setRequired(false),
+                ->setRequired(false)
+                ->onlyOnForms(),
         ];
     }
 
@@ -98,7 +105,7 @@ class UserCrudController extends AbstractAppCrudController
     {
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, true);
-            $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
+            $this->applyOptimizedAvatar($entityInstance);
             $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
@@ -109,7 +116,7 @@ class UserCrudController extends AbstractAppCrudController
     {
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, false);
-            $entityInstance->setAvatar($this->finalizeUserAvatar($entityInstance->getAvatar()));
+            $this->applyOptimizedAvatar($entityInstance);
             $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
@@ -185,8 +192,21 @@ class UserCrudController extends AbstractAppCrudController
         $user->setRoles($roles);
     }
 
-    private function finalizeUserAvatar(?string $path): ?string
+    private function applyOptimizedAvatar(User $user): void
     {
-        return $this->uploadedImageFinalize->finalize($path, 'avatars', asPublicPath: true);
+        $avatar = $user->getAvatar();
+        if (null === $avatar || '' === $avatar) {
+            return;
+        }
+
+        $finalized = $this->uploadedImageFinalize->finalize(
+            UploadPathHelper::normalizeStored($avatar, 'avatars') ?? basename($avatar),
+            'avatars',
+            asPublicPath: true,
+        );
+
+        if (null !== $finalized && '' !== $finalized) {
+            $user->setAvatar($finalized);
+        }
     }
 }
