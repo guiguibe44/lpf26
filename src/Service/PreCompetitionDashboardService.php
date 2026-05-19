@@ -22,7 +22,6 @@ final class PreCompetitionDashboardService
         private readonly TeamMemberRepository $teamMemberRepository,
         private readonly TeamInvitationRepository $teamInvitationRepository,
         private readonly PushSubscriptionRepository $pushSubscriptionRepository,
-        private readonly WebPushService $webPushService,
     ) {
     }
 
@@ -135,7 +134,7 @@ final class PreCompetitionDashboardService
         return [
             'done' => $hasSubscription,
             'hash' => 'notifications',
-            'configured' => $this->webPushService->isConfigured(),
+            'configured' => true,
         ];
     }
 }

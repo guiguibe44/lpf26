@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\ForumPost;
 use App\Entity\User;
 use App\Entity\UserNotification;
+use App\Enum\NotificationPreference;
 use App\Enum\UserNotificationType;
 use App\Repository\PushSubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ final class ForumNotificationService
         private readonly ForumAuthorResolver $authorResolver,
         private readonly PushSubscriptionRepository $pushSubscriptionRepository,
         private readonly WebPushService $webPushService,
+        private readonly UserNotificationPreferenceService $preferenceService,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -60,6 +62,10 @@ final class ForumNotificationService
 
     private function sendPushIfSubscribed(User $user, string $title, string $body, string $url): void
     {
+        if (!$this->preferenceService->isEnabled($user, NotificationPreference::ForumMentionPush)) {
+            return;
+        }
+
         $userId = $user->getId();
         if (null === $userId || !$this->webPushService->isConfigured()) {
             return;

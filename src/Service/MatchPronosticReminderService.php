@@ -94,6 +94,10 @@ final class MatchPronosticReminderService
                     $match,
                 );
 
+                if ($result['skipped'] ?? false) {
+                    continue;
+                }
+
                 if (\App\Enum\ReminderChannel::Push === $result['channel']) {
                     $summary['pushSent'] += $result['pushSent'];
                     $summary['pushFailed'] += $result['pushFailed'];

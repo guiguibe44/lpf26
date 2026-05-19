@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\GameMatch;
 use App\Entity\MatchReminderLog;
 use App\Entity\User;
+use App\Enum\NotificationPreference;
 use App\Enum\ReminderChannel;
 use App\Enum\ReminderDeliveryMode;
 use App\Enum\ReminderTrigger;
@@ -21,13 +22,14 @@ final class PlayerReminderDispatcher
         private readonly PushSubscriptionRepository $pushSubscriptionRepository,
         private readonly WebPushService $webPushService,
         private readonly PronosticReminderMailer $pronosticReminderMailer,
+        private readonly UserNotificationPreferenceService $preferenceService,
         private readonly EntityManagerInterface $entityManager,
         private readonly ?LoggerInterface $logger = null,
     ) {
     }
 
     /**
-     * @return array{channel: ReminderChannel, success: bool, error: ?string, pushSent: int, pushFailed: int}
+     * @return array{channel: ?ReminderChannel, success: bool, skipped: bool, error: ?string, pushSent: int, pushFailed: int}
      */
     public function dispatchToUser(
         User $user,
@@ -50,10 +52,22 @@ final class PlayerReminderDispatcher
             ];
         }
 
-        $channel = $this->resolveChannel($userId, $mode);
+        $channel = $this->resolveChannel($user, $mode);
+        if (null === $channel) {
+            return [
+                'channel' => null,
+                'success' => true,
+                'skipped' => true,
+                'error' => null,
+                'pushSent' => 0,
+                'pushFailed' => 0,
+            ];
+        }
+
         $result = [
             'channel' => $channel,
             'success' => false,
+            'skipped' => false,
             'error' => null,
             'pushSent' => 0,
             'pushFailed' => 0,
@@ -105,14 +119,21 @@ final class PlayerReminderDispatcher
         return $result;
     }
 
-    private function resolveChannel(int $userId, ReminderDeliveryMode $mode): ReminderChannel
+    private function resolveChannel(User $user, ReminderDeliveryMode $mode): ?ReminderChannel
     {
-        $hasPush = [] !== $this->pushSubscriptionRepository->findByUserIds([$userId]);
+        $userId = (int) $user->getId();
+        $hasPushSubscription = [] !== $this->pushSubscriptionRepository->findByUserIds([$userId]);
+        $pushAllowed = $this->preferenceService->isEnabled($user, NotificationPreference::PronosticReminderPush)
+            && $hasPushSubscription
+            && $this->webPushService->isConfigured();
+        $emailAllowed = $this->preferenceService->isEnabled($user, NotificationPreference::PronosticReminderEmail);
 
         return match ($mode) {
-            ReminderDeliveryMode::PushOnly => ReminderChannel::Push,
-            ReminderDeliveryMode::EmailOnly => ReminderChannel::Email,
-            ReminderDeliveryMode::PreferPush => $hasPush ? ReminderChannel::Push : ReminderChannel::Email,
+            ReminderDeliveryMode::PushOnly => $pushAllowed ? ReminderChannel::Push : null,
+            ReminderDeliveryMode::EmailOnly => $emailAllowed ? ReminderChannel::Email : null,
+            ReminderDeliveryMode::PreferPush => $pushAllowed
+                ? ReminderChannel::Push
+                : ($emailAllowed ? ReminderChannel::Email : null),
         };
     }
 }

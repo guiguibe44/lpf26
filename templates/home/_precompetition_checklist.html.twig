@@ -65,18 +65,19 @@
         <article class="precomp-card ta-card {{ notifications.done ? 'precomp-card--done' : 'precomp-card--pending' }}">
             {% include 'home/_precomp_card_status_mark.html.twig' with { done: notifications.done } only %}
             <div class="precomp-card__head">
-                <h3 class="precomp-card__title">Activer les notifications</h3>
-                <p class="precomp-card__desc">Mentions forum, messages et rappels importants sur cet appareil.</p>
+                <h3 class="precomp-card__title">Configurer les notifications</h3>
+                <p class="precomp-card__desc">
+                    Relances pronostic, but de votre buteur, mentions forum et messages organisateur :
+                    choisissez ce que vous recevez par e-mail et par push.
+                </p>
             </div>
-            {% if not notifications.configured %}
-                <p class="precomp-card__hint">Configuration serveur en cours : les notifications seront bientôt disponibles.</p>
+            {% if not notifications.done %}
+                <p class="precomp-card__hint">
+                    Choisissez vos e-mails et, si vous le souhaitez, activez aussi les push sur votre téléphone ou ordinateur.
+                </p>
             {% endif %}
-            <a
-                href="{{ path('app_account') }}#{{ notifications.hash }}"
-                class="btn btn-primary btn-sm precomp-card__cta{{ not notifications.configured ? ' btn-disabled' : '' }}"
-                {% if not notifications.configured %}aria-disabled="true" tabindex="-1"{% endif %}
-            >
-                Activer les notifications
+            <a href="{{ path('app_account') }}#{{ notifications.hash }}" class="btn btn-primary btn-sm precomp-card__cta">
+                Gérer mes notifications
             </a>
         </article>
     </div>

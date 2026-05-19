@@ -1,0 +1,53 @@
+{% use 'form/tailadmin_theme.html.twig' %}
+
+{% block choice_widget_collapsed %}
+    {% set placeholder_label = placeholder is not none and placeholder != ''
+        ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain))
+        : 'Choisir…' %}
+    <div
+        class="country-flag-select"
+        data-controller="country-flag-select"
+        data-country-flag-select-placeholder-value="{{ placeholder_label|e('html_attr') }}"
+    >
+        <button
+            type="button"
+            class="country-flag-select__trigger ta-form-input"
+            data-country-flag-select-target="trigger"
+            data-action="country-flag-select#toggle"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            {% if disabled %}disabled{% endif %}
+        >
+            <span class="country-flag-select__trigger-inner">
+                <span class="country-flag-select__flag" data-country-flag-select-target="triggerFlag" aria-hidden="true"></span>
+                <span class="country-flag-select__label" data-country-flag-select-target="triggerLabel">{{ placeholder_label }}</span>
+            </span>
+            <i class="ti ti-chevron-down country-flag-select__chevron" aria-hidden="true"></i>
+        </button>
+        <select
+            {{ block('widget_attributes') }}
+            class="country-flag-select__native"
+            data-country-flag-select-target="select"
+            data-action="change->country-flag-select#syncFromSelect"
+        >
+            {% if placeholder is not none %}
+                <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ placeholder_label }}</option>
+            {% endif %}
+            {% if preferred_choices|length > 0 %}
+                {% set options = preferred_choices %}
+                {{ block('choice_widget_options') }}
+                {% if choices|length > 0 and separator is not none %}
+                    <option disabled="disabled">{{ separator }}</option>
+                {% endif %}
+            {% endif %}
+            {% set options = choices %}
+            {{ block('choice_widget_options') }}
+        </select>
+        <ul
+            class="country-flag-select__list"
+            data-country-flag-select-target="list"
+            role="listbox"
+            hidden
+        ></ul>
+    </div>
+{% endblock %}

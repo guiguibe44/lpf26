@@ -10,7 +10,7 @@ use Twig\Environment;
  */
 final class LpfEmailRenderer
 {
-    private const string LOGO_ASSET = 'images/lpf26-logo-gta.png';
+    private const string LOGO_ASSET = 'images/lpf-front-logo.png';
 
     public function __construct(
         private readonly Environment $twig,

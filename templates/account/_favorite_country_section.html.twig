@@ -19,7 +19,17 @@
         <div class="alert alert-warning mb-4 text-sm">
             <span>
                 {% if favorite_country_state.country_name %}
-                    Équipe favorite enregistrée : <strong>{{ favorite_country_state.country_name }}</strong>.
+                    <span class="country-flag-select-readonly">
+                        Équipe favorite enregistrée :
+                        {% if team.favoriteCountry %}
+                            {% include 'components/_country_flag_img.html.twig' with {
+                                country: team.favoriteCountry,
+                                img_classes: 'country-flag-select-readonly__flag',
+                                placeholder_class: 'country-flag-select-readonly__flag-initial',
+                            } only %}
+                        {% endif %}
+                        <strong>{{ favorite_country_state.country_name }}</strong>.
+                    </span>
                 {% else %}
                     Aucune équipe favorite n’a été enregistrée avant le début de la compétition.
                 {% endif %}
@@ -32,6 +42,7 @@
 
     {% if favorite_country_form and favorite_country_state.can_manage %}
         {{ form_start(favorite_country_form, {'attr': {'class': 'space-y-3'}}) }}
+            {% form_theme favorite_country_form.favoriteCountry 'form/country_flag_select_widget.html.twig' %}
             {{ form_row(favorite_country_form.favoriteCountry) }}
             <button type="submit" class="btn btn-primary">
                 Enregistrer l’équipe favorite
@@ -39,8 +50,16 @@
             </button>
         {{ form_end(favorite_country_form) }}
     {% elseif favorite_country_state.country_name and not favorite_country_state.locked %}
-        <p class="ta-card-text">
-            Équipe favorite actuelle : <strong>{{ favorite_country_state.country_name }}</strong>.
+        <p class="ta-card-text country-flag-select-readonly">
+            Équipe favorite actuelle :
+            {% if team.favoriteCountry %}
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: team.favoriteCountry,
+                    img_classes: 'country-flag-select-readonly__flag',
+                    placeholder_class: 'country-flag-select-readonly__flag-initial',
+                } only %}
+            {% endif %}
+            <strong>{{ favorite_country_state.country_name }}</strong>.
         </p>
     {% endif %}
 </section>

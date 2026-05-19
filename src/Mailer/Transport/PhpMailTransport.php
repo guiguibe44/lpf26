@@ -43,7 +43,8 @@ final class PhpMailTransport extends AbstractTransport
 
         $subject = $email->getSubject() ?? '';
         if (!preg_match('/^[\x20-\x7E]*$/', $subject)) {
-            $subject = mb_encode_mimeheader($subject, 'UTF-8', true);
+            // PHP 8.5+ : 3e argument = encodage de transfert ('B' ou 'Q'), plus un booléen.
+            $subject = mb_encode_mimeheader($subject, 'UTF-8', 'B');
         }
 
         $html = $email->getHtmlBody();

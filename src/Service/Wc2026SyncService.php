@@ -32,6 +32,7 @@ final class Wc2026SyncService
         private readonly EntityManagerInterface $entityManager,
         private readonly PronosticScoringService $pronosticScoringService,
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
+        private readonly ButeurGoalNotificationService $buteurGoalNotificationService,
         private readonly TeamRankingService $teamRankingService,
         private readonly CountryFlagStorage $countryFlagStorage,
         private readonly ButeurPhotoStorage $buteurPhotoStorage,
@@ -679,6 +680,7 @@ final class Wc2026SyncService
                 ->setApiSportsEventKey($eventKey);
             $this->buteurGoalScoringService->scoreBut($but);
             $this->entityManager->persist($but);
+            $this->buteurGoalNotificationService->notifyForNewBut($but);
             ++$created;
         }
 

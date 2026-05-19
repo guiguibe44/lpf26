@@ -8,6 +8,8 @@ use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\AccountPasswordType;
 use App\Form\AccountProfileType;
+use App\Enum\NotificationPreference;
+use App\Form\NotificationPreferencesType;
 use App\Form\CreateTeamInvitationType;
 use App\Form\ResendTeamInvitationType;
 use App\Form\TeamFavoriteCountryType;
@@ -20,10 +22,10 @@ use App\Service\ButeurGoalScoringService;
 use App\Service\CompetitionStatus;
 use App\Enum\UploadImageCategory;
 use App\Service\TeamFavoriteCountryService;
+use App\Service\UserNotificationPreferenceService;
 use App\Service\TeamInvitationService;
 use App\Service\TeamJokerService;
 use App\Service\UploadedImageStorage;
-use App\Service\WebPushService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -45,7 +47,7 @@ class AccountController extends AbstractController
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
         CompetitionStatus $competitionStatus,
-        WebPushService $webPushService,
+        UserNotificationPreferenceService $notificationPreferenceService,
         FormFactoryInterface $formFactory,
         TeamJokerService $teamJokerService,
         TeamFavoriteCountryService $teamFavoriteCountryService,
@@ -77,20 +79,31 @@ class AccountController extends AbstractController
         $passwordForm = $formFactory->createNamed('password_form', AccountPasswordType::class);
         $passwordForm->handleRequest($request);
 
+        $notificationPrefsForm = $formFactory->createNamed(
+            'notification_prefs_form',
+            NotificationPreferencesType::class,
+            $notificationPreferenceService->getResolvedPreferences($user),
+        );
+        $notificationPrefsForm->handleRequest($request);
+
         $profileForm = null;
         $teamForm = null;
         $favoriteCountryForm = null;
         $invitationForm = null;
         $teamSetupForm = null;
         $favoriteCountryState = null;
+        $competitionStarted = $competitionStatus->isStarted();
+        $nicknameLocked = $competitionStarted && $hasTeamMember;
 
         if ($hasTeamMember && null !== $teamMember && null !== $team) {
-            $profileForm = $formFactory->createNamed('profile_form', AccountProfileType::class, $user);
+            $profileForm = $formFactory->createNamed('profile_form', AccountProfileType::class, $user, [
+                'lock_nickname' => $nicknameLocked,
+            ]);
             $profileForm->get('nickname')->setData($teamMember->getNickname());
             $profileForm->handleRequest($request);
 
             $teamForm = $formFactory->createNamed('team_form', TeamManageType::class, $team, [
-                'lock_team_name' => $competitionStatus->isStarted(),
+                'lock_team_name' => $competitionStarted,
             ]);
             $teamForm->handleRequest($request);
 
@@ -121,6 +134,11 @@ class AccountController extends AbstractController
         }
 
         if ($teamSetupForm?->isSubmitted() && $teamSetupForm->isValid()) {
+            if ($competitionStarted) {
+                $teamSetupForm->get('teamName')->addError(new FormError(
+                    'La création d\'équipe est fermée depuis le début de la compétition.'
+                ));
+            } else {
             try {
                 [$team, $invitation] = $teamInvitationService->createTeamAndSendInvitation(
                     $user,
@@ -141,20 +159,27 @@ class AccountController extends AbstractController
             } catch (\InvalidArgumentException $e) {
                 $teamSetupForm->get('teammateEmail')->addError(new FormError($e->getMessage()));
             }
+            }
         }
 
         if ($profileForm?->isSubmitted() && $profileForm->isValid() && null !== $team) {
-            $nickname = (string) $profileForm->get('nickname')->getData();
+            $canChangeNickname = !$nicknameLocked || !$hasTeamMember;
+            $nickname = $canChangeNickname
+                ? (string) $profileForm->get('nickname')->getData()
+                : (string) $teamMember?->getNickname();
 
-            $existingNickname = $teamMemberRepository->findOneBy([
-                'team' => $team,
-                'nickname' => $nickname,
-            ]);
-            if (null !== $existingNickname && (!$hasTeamMember || $existingNickname->getId() !== $teamMember?->getId())) {
-                $profileForm->get('nickname')->addError(new FormError('Ce surnom est déjà utilisé dans cette équipe.'));
-            } else {
+            if ($canChangeNickname) {
+                $existingNickname = $teamMemberRepository->findOneBy([
+                    'team' => $team,
+                    'nickname' => $nickname,
+                ]);
+                if (null !== $existingNickname && (!$hasTeamMember || $existingNickname->getId() !== $teamMember?->getId())) {
+                    $profileForm->get('nickname')->addError(new FormError('Ce surnom est déjà utilisé dans cette équipe.'));
+                }
+            }
+
+            if ($profileForm->isValid()) {
                 $isNewProfile = !$hasTeamMember;
-                $user->setEmail(mb_strtolower((string) $user->getEmail()));
 
                 if (!$hasTeamMember) {
                     $teamMember = (new TeamMember())
@@ -164,7 +189,7 @@ class AccountController extends AbstractController
                     $entityManager->persist($teamMember);
                     $hasTeamMember = true;
                     $needsProfileSetup = false;
-                } else {
+                } elseif ($canChangeNickname) {
                     $teamMember?->setNickname($nickname);
                 }
 
@@ -189,6 +214,16 @@ class AccountController extends AbstractController
 
                 return $this->redirect($this->generateUrl('app_account').'#tab-compte');
             }
+        }
+
+        if ($notificationPrefsForm->isSubmitted() && $notificationPrefsForm->isValid()) {
+            /** @var array<string, bool> $prefsData */
+            $prefsData = $notificationPrefsForm->getData();
+            $notificationPreferenceService->applyToUser($user, $prefsData);
+            $entityManager->flush();
+            $this->addFlash('success', 'Vos préférences de notifications ont été enregistrées.');
+
+            return $this->redirect($this->generateUrl('app_account').'#notifications');
         }
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
@@ -244,13 +279,22 @@ class AccountController extends AbstractController
         }
 
         if ($teamForm?->isSubmitted() && $teamForm->isValid() && null !== $team) {
-            $nameLocked = $competitionStatus->isStarted();
-            $originalTeamName = (string) $team->getName();
+            $teamNameChangeRejected = false;
+            if ($competitionStarted) {
+                $storedTeamName = (string) $entityManager->getConnection()->fetchOne(
+                    'SELECT name FROM team WHERE id = ?',
+                    [$team->getId()],
+                );
+                if ((string) $team->getName() !== $storedTeamName) {
+                    $team->setName($storedTeamName);
+                    $teamForm->get('name')->addError(new FormError(
+                        'Le nom de l\'équipe est verrouillé depuis le début de la compétition.'
+                    ));
+                    $teamNameChangeRejected = true;
+                }
+            }
 
-            if ($nameLocked && (string) $team->getName() !== $originalTeamName) {
-                $team->setName($originalTeamName);
-                $teamForm->get('name')->addError(new FormError('Le nom de l\'équipe est verrouillé depuis le début de la compétition.'));
-            } else {
+            if (!$teamNameChangeRejected) {
                 /** @var UploadedFile|null $logoFile */
                 $logoFile = $teamForm->get('logoFile')->getData();
                 $removeLogo = (bool) $teamForm->get('removeLogo')->getData();
@@ -310,15 +354,24 @@ class AccountController extends AbstractController
             'can_invite_teammate' => $canInviteTeammate,
             'team_is_full' => $teamIsFull,
             'pending_invitation' => $pendingInvitation,
-            'name_locked' => $competitionStatus->isStarted(),
-            'competition_started' => $competitionStatus->isStarted(),
+            'name_locked' => $competitionStarted,
+            'nickname_locked' => $nicknameLocked,
+            'competition_started' => $competitionStarted,
             'competition_start_at' => $competitionStatus->getStartAt(),
             'cotisation_payee' => $user->isCotisationPayee(),
             'dashboard_partners' => $dashboardPartners,
             'buteurs_pris_par_autres_equipes' => $buteursPris,
             'buteur_stats' => $buteur_stats,
             'team_members' => $teamMembers,
-            'push_vapid_configured' => $webPushService->isConfigured(),
+            'notification_prefs_form' => $notificationPrefsForm->createView(),
+            'notification_preference_categories' => NotificationPreference::categoryOrder(),
+            'notification_preferences_by_category' => array_combine(
+                NotificationPreference::categoryOrder(),
+                array_map(
+                    static fn (string $category): array => NotificationPreference::forCategory($category),
+                    NotificationPreference::categoryOrder(),
+                ),
+            ),
             'team_joker_overview' => null !== $team && $hasTeamMember
                 ? $teamJokerService->buildOverviewForTeam($team)
                 : [],

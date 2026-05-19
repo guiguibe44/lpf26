@@ -46,6 +46,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?Buteur $buteurChoisi = null;
 
+    /**
+     * Préférences push / e-mail (clés {@see \App\Enum\NotificationPreference}).
+     *
+     * @var array<string, bool>|null
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $notificationPreferences = null;
+
     /** Non mappé : saisie EasyAdmin / formulaires, jamais persisté tel quel. */
     private ?string $plainPassword = null;
 
@@ -183,6 +191,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setButeurChoisi(?Buteur $buteurChoisi): static
     {
         $this->buteurChoisi = $buteurChoisi;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, bool>|null
+     */
+    public function getNotificationPreferences(): ?array
+    {
+        return $this->notificationPreferences;
+    }
+
+    /**
+     * @param array<string, bool>|null $notificationPreferences
+     */
+    public function setNotificationPreferences(?array $notificationPreferences): static
+    {
+        $this->notificationPreferences = $notificationPreferences;
 
         return $this;
     }

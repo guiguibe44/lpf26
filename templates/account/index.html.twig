@@ -59,8 +59,25 @@
                 <h2 class="mb-4 text-lg font-semibold">
                     {% if needs_profile_setup %}Créer mon profil joueur{% else %}Profil joueur{% endif %}
                 </h2>
+                {% if nickname_locked %}
+                    <div class="alert alert-warning mb-4 text-sm">
+                        <span>
+                            Le surnom est verrouillé depuis le début de la compétition{% if competition_start_at %} ({{ competition_start_at|date('d/m/Y H:i') }}){% endif %}.
+                        </span>
+                    </div>
+                {% endif %}
                 {{ form_start(profile_form, {'attr': {'class': 'space-y-3'}}) }}
-                    {{ form_row(profile_form.email) }}
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text font-medium">Email</span>
+                        </label>
+                        <p class="input input-bordered flex h-auto min-h-12 items-center bg-base-200 text-base-content/80">
+                            {{ app.user.email }}
+                        </p>
+                        <p class="label">
+                            <span class="label-text-alt text-base-content/60">L’adresse e-mail ne peut pas être modifiée ici.</span>
+                        </p>
+                    </div>
                     {{ form_row(profile_form.nickname) }}
                     {{ form_row(profile_form.avatarFile) }}
                     <img
@@ -100,6 +117,9 @@
             {% if team_setup_form %}
             <section id="team-setup" class="account-card-team-setup rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-2 text-lg font-semibold">Créer mon équipe et inviter mon partenaire</h2>
+                {% if competition_started %}
+                    <p class="ta-card-text">La création d’équipe est fermée depuis le début de la compétition.</p>
+                {% else %}
                 <p class="ta-card-text mb-3">
                     Vous n’avez pas encore d’équipe. Choisissez un nom d’équipe et envoyez une invitation par e-mail à votre coéquipier.
                 </p>
@@ -111,6 +131,7 @@
                         <i class="ti ti-send" aria-hidden="true"></i>
                     </button>
                 {{ form_end(team_setup_form) }}
+                {% endif %}
             </section>
             {% endif %}
 
@@ -156,17 +177,20 @@
         </div>
 
         {% if team %}
-        <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel space-y-6" hidden>
+        <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel account-tab-panel--columns" hidden>
             {% if favorite_country_state %}
                 {% include 'account/_favorite_country_section.html.twig' %}
             {% endif %}
 
+            {# Bloc résumé équipe masqué temporairement #}
+            {% if false %}
             <section class="account-card-team-info rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-2 text-lg font-semibold">Équipe {{ team.name }}</h2>
                 {% if team.slogan %}
                     <p class="ta-card-text m-0">{{ team.slogan }}</p>
                 {% endif %}
             </section>
+            {% endif %}
 
             {% if invitation_form and has_team_member %}
             <section id="invitation-equipe" class="account-card-invitation rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">

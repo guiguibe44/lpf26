@@ -128,6 +128,32 @@ Après changement de `.env.local` :
 php bin/console cache:clear --env=prod
 ```
 
+### Notifications push (VAPID)
+
+Les push **serveur** (relances prono, buteur, messages admin) exigent trois variables dans **`.env.local` sur le serveur** (jamais dans Git) :
+
+```env
+VAPID_PUBLIC_KEY=...
+VAPID_PRIVATE_KEY=...
+VAPID_SUBJECT=mailto:no-reply@votredomaine.fr
+```
+
+Génération (une fois) :
+
+```bash
+php bin/console app:generate-vapid-keys
+```
+
+Copier **uniquement** les trois lignes `VAPID_*` dans `.env.local`, puis vider le cache prod.
+
+**Important :** ne pas régénérer les clés en prod sans raison : les abonnements déjà enregistrés sur les téléphones deviennent invalides (erreur FCM 403). Les joueurs doivent alors rouvrir Mon compte → Notifications et réactiver le push sur chaque appareil.
+
+Test :
+
+```bash
+php bin/console app:push-test-send
+```
+
 Pour déboguer ponctuellement (court moment, puis remettre `0`) : `APP_DEBUG=1` uniquement si tu acceptes l’exposition temporaire, ou reproduire l’erreur en local avec la même config.
 
 ## 7. Check-list après chaque livraison

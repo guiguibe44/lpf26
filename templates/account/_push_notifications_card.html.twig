@@ -9,9 +9,16 @@
         Notifications
     </h2>
 
+    {% include 'account/_notification_preferences_form.html.twig' %}
+
+    <hr class="notification-prefs__divider">
+
+    <h3 class="text-base font-semibold mb-2">Notifications push sur cet appareil</h3>
+
     <div class="push-notifications-card__steps">
         <p class="ta-card-text">
-            Recevez les alertes LPF'26 (rappels de pronos, annonces) <strong>même sans ouvrir le site</strong>.
+            Les <strong>e-mails</strong> ci-dessus partent selon vos cases cochées, sans action supplémentaire.
+            Les <strong>push</strong> nécessitent en plus l’activation sur chaque téléphone ou ordinateur (bouton ci-dessous).
         </p>
         <ol class="push-notifications-card__list">
             <li>
@@ -27,25 +34,21 @@
     </div>
 
     <p class="push-notifications-card__status push-notifications-card__status--muted" data-push-notifications-target="status">
-        {% if push_vapid_configured %}
-            Prêt à s'abonner depuis cet appareil.
-        {% else %}
-            Configuration serveur en cours : les notifications seront bientôt disponibles.
-        {% endif %}
+        Vérification de la disponibilité des push…
     </p>
 
     <div class="push-notifications-card__actions">
-        <button type="button" class="btn btn-primary btn-sharp" data-push-notifications-target="enableBtn" {{ not push_vapid_configured ? 'disabled' : '' }}>
-            Activer les notifications
+        <button type="button" class="btn btn-primary btn-sharp" data-push-notifications-target="enableBtn">
+            Activer les notifications sur cet appareil
             <i class="ti ti-bell" aria-hidden="true"></i>
         </button>
         <button type="button" class="btn btn-outline btn-primary btn-sharp" data-push-notifications-target="testBtn" hidden>
-            Tester l’affichage
+            Tester l’affichage local
             <i class="ti ti-bell-ringing" aria-hidden="true"></i>
         </button>
         <button type="button" class="btn btn-outline btn-primary btn-sharp" data-push-notifications-target="disableBtn" hidden>
             Désactiver sur cet appareil
             <i class="ti ti-bell-off" aria-hidden="true"></i>
         </button>
-    </div>
+    </motion.div>
 </section>

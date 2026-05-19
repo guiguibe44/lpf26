@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\PushNotificationLog;
 use App\Entity\User;
 use App\Enum\AdminRecipientScope;
+use App\Enum\NotificationPreference;
 use App\Repository\PushSubscriptionRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,7 @@ final class AdminManualMessageService
         private readonly PushSubscriptionRepository $pushSubscriptionRepository,
         private readonly WebPushService $webPushService,
         private readonly PronosticReminderMailer $mailer,
+        private readonly UserNotificationPreferenceService $preferenceService,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -53,13 +55,16 @@ final class AdminManualMessageService
         ];
 
         if ($sendPush && $this->webPushService->isConfigured()) {
-            $userIds = array_values(array_filter(array_map(
+            $pushUserIds = array_values(array_filter(array_map(
                 static fn (User $u): ?int => $u->getId(),
-                $players,
+                array_filter(
+                    $players,
+                    fn (User $u): bool => $this->preferenceService->isEnabled($u, NotificationPreference::AdminMessagePush),
+                ),
             )));
             $subscriptions = AdminRecipientScope::All === $scope
-                ? $this->pushSubscriptionRepository->findAllForBroadcast()
-                : $this->pushSubscriptionRepository->findByUserIds($userIds);
+                ? $this->pushSubscriptionRepository->findByUserIds($pushUserIds)
+                : $this->pushSubscriptionRepository->findByUserIds($pushUserIds);
 
             if ([] !== $subscriptions) {
                 $pushResult = $this->webPushService->sendToSubscriptions(
@@ -76,6 +81,9 @@ final class AdminManualMessageService
 
         if ($sendEmail) {
             foreach ($players as $player) {
+                if (!$this->preferenceService->isEnabled($player, NotificationPreference::AdminMessageEmail)) {
+                    continue;
+                }
                 try {
                     $this->mailer->send($player, $title, $body, $url ?? '/accueil');
                     ++$summary['emailsSent'];

@@ -2102,8 +2102,11 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     .account-page .account-card-password,
     .account-page .account-card-team-edit,
     .account-page .account-card-team-players,
+    .account-page .account-card-favorite-country,
+    .account-page .account-card-jokers,
     .account-page .account-card-notifications,
-    .account-page .account-buteur-section {
+    .account-page .account-buteur-section,
+    .account-page .account-tab-panel--columns {
         width: 100% !important;
         max-width: 100% !important;
         margin-left: 0 !important;
@@ -2231,6 +2234,165 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
         5px 5px,
         5px 5px;
     background-repeat: no-repeat;
+}
+
+/* Sélect pays avec drapeaux (équipe favorite) */
+.country-flag-select {
+    position: relative;
+    width: 100%;
+}
+
+.country-flag-select__native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.country-flag-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.85rem;
+    text-align: left;
+    cursor: pointer;
+    background-image: none;
+}
+
+.country-flag-select__trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.country-flag-select__trigger-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.country-flag-select__label {
+    font-size: 0.95rem;
+    color: #1e293b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.country-flag-select__chevron {
+    flex: 0 0 auto;
+    font-size: 1.1rem;
+    color: #64748b;
+    transition: transform 0.15s ease;
+}
+
+.country-flag-select__trigger[aria-expanded='true'] .country-flag-select__chevron {
+    transform: rotate(180deg);
+}
+
+.country-flag-select__flag {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 1.35rem;
+    border-radius: 0.2rem;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    box-shadow: inset 0 0 0 1px rgb(15 23 42 / 8%);
+}
+
+.country-flag-select__flag img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.country-flag-select__flag-initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.country-flag-select__list {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    right: 0;
+    max-height: 16rem;
+    margin: 0;
+    padding: 0.35rem;
+    list-style: none;
+    overflow-y: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+}
+
+.country-flag-select__option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.35rem;
+    cursor: pointer;
+}
+
+.country-flag-select__option:hover,
+.country-flag-select__option:focus-visible {
+    background: #f1f5f9;
+}
+
+.country-flag-select__option-label {
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+
+.country-flag-select-readonly {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.country-flag-select-readonly__flag {
+    width: 1.75rem;
+    height: 1.15rem;
+    object-fit: cover;
+    border-radius: 0.15rem;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1px rgb(15 23 42 / 10%);
+}
+
+.country-flag-select-readonly__flag-initial {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.15rem;
+    border-radius: 0.15rem;
+    background: #f1f5f9;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #475569;
 }
 
 .ta-form-errors {
@@ -3298,7 +3460,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     margin-top: 0.35em;
 }
 
-/* Page compte : profil et mot de passe à 50 % de la zone principale */
+/* Page compte : cartes à 50 % (ou grille 2 colonnes sur l’onglet équipe) */
 .account-page .account-card-profile,
 .account-page .account-card-password,
 .account-page .account-card-team-edit,
@@ -3306,12 +3468,38 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 .account-page .account-card-team-info,
 .account-page .account-card-invitation,
 .account-page .account-card-team-setup,
+.account-page .account-card-favorite-country,
+.account-page .account-card-jokers,
 .account-page .account-card-notifications {
     box-sizing: border-box;
     width: 50%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
+}
+
+@media (min-width: 1025px) {
+    .account-page .account-tab-panel--columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .account-page .account-tab-panel--columns > section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .account-page .account-tab-panel--columns {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 }
 
 #notifications {
@@ -3374,6 +3562,52 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 1rem;
+}
+
+.notification-prefs__intro {
+    margin: 0 0 1rem;
+}
+
+.notification-prefs__divider {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-base-content, #334155) 12%, transparent);
+}
+
+.notification-prefs__group {
+    margin: 0;
+}
+
+.notification-prefs__legend {
+    padding: 0 0.25rem;
+}
+
+.notification-prefs__item-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.notification-prefs__item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-prefs__item-text .form-label,
+.notification-prefs__item-text label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.notification-prefs__help {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.notification-prefs__form .form-check {
+    margin: 0.15rem 0 0;
+    flex-shrink: 0;
 }
 
 /* Admin — page envoi push */

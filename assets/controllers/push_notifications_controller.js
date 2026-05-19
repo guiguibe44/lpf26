@@ -49,6 +49,15 @@ export default class extends Controller {
             return;
         }
 
+        if (!window.isSecureContext) {
+            this.setStatus(
+                'Les push web exigent HTTPS ou l’adresse localhost / 127.0.0.1 (pas un nom de domaine local en HTTP).',
+                'warning',
+            );
+            this.hideActions();
+            return;
+        }
+
         if (this.isIos && !this.isStandalone) {
             this.setStatus(
                 'Sur iPhone : ajoutez d’abord LPF’26 à l’écran d’accueil, ouvrez l’icône, puis activez les notifications.',
@@ -56,7 +65,8 @@ export default class extends Controller {
             );
         }
 
-        this.refreshUi();
+        this.vapidConfigured = null;
+        void this.refreshVapidStatus().then(() => this.refreshUi());
     }
 
     disconnect() {
@@ -126,7 +136,10 @@ export default class extends Controller {
 
             const keyData = await keyResponse.json();
             if (!keyData.configured || !keyData.publicKey) {
-                this.setStatus('Clés VAPID manquantes côté serveur (.env).', 'warning');
+                this.setStatus(
+                    'Clés VAPID absentes : ajoutez VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY et VAPID_SUBJECT dans .env.local (php bin/console app:generate-vapid-keys), puis videz le cache.',
+                    'warning',
+                );
                 this.unlockStatus();
                 return;
             }
@@ -212,6 +225,21 @@ export default class extends Controller {
         }
     }
 
+    async refreshVapidStatus() {
+        try {
+            const keyResponse = await fetch('/api/push/vapid-public-key', { credentials: 'same-origin' });
+            if (!keyResponse.ok) {
+                this.vapidConfigured = false;
+                return;
+            }
+            const keyData = await keyResponse.json();
+            this.vapidConfigured = !!(keyData.configured && keyData.publicKey);
+        } catch (error) {
+            console.error('[push-notifications] refreshVapidStatus', error);
+            this.vapidConfigured = false;
+        }
+    }
+
     async refreshUi() {
         if (!this.supported) {
             return;
@@ -232,8 +260,17 @@ export default class extends Controller {
                 this.testBtnTarget.hidden = !subscribed;
             }
 
-            if (subscribed && this.hasStatusTarget && !this.statusTarget.dataset.locked) {
-                this.setStatus('Vous recevrez les alertes LPF’26 sur cet appareil.', 'success');
+            if (this.hasStatusTarget && !this.statusTarget.dataset.locked) {
+                if (subscribed) {
+                    this.setStatus('Notifications push activées sur cet appareil.', 'success');
+                } else if (this.vapidConfigured === false) {
+                    this.setStatus(
+                        'Prêt pour les e-mails. L’activation push serveur sera possible dès que le site l’expose (sinon utilisez les e-mails cochées ci-dessus).',
+                        'muted',
+                    );
+                } else if (this.vapidConfigured === true) {
+                    this.setStatus('Vous pouvez activer les push sur cet appareil avec le bouton ci-dessous.', 'muted');
+                }
             }
         } catch (error) {
             console.error('[push-notifications] refreshUi', error);
@@ -285,8 +322,8 @@ export default class extends Controller {
         try {
             await navigator.serviceWorker.register(this.swScriptUrl(), { scope: '/' });
             const registration = await navigator.serviceWorker.ready;
-            await registration.showNotification('LPF\'26 — test', {
-                body: 'Si vous voyez cette alerte, l’affichage local fonctionne.',
+            await registration.showNotification('LPF\'26 — test local', {
+                body: 'Ceci est un test d’affichage sur cet appareil (pas un envoi depuis le serveur).',
                 icon: '/images/lpf26-logo-gta.png',
                 tag: 'lpf26-push-test',
             });

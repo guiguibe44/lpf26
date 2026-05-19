@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -26,6 +27,7 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         MailerInterface $mailer,
         LpfEmailRenderer $lpfEmailRenderer,
+        LoggerInterface $logger,
     ): Response
     {
         $user = new User();
@@ -66,36 +68,51 @@ class RegistrationController extends AbstractController
 
             $entityManager->flush();
 
-            if ($invitation instanceof TeamInvitation) {
-                $invitationHtml = $lpfEmailRenderer->render('email/content/invitation.html.twig', [
-                    'pageTitle' => 'Invitation équipe — LPF\'26',
+            $emailDeliveryFailed = false;
+
+            try {
+                if ($invitation instanceof TeamInvitation) {
+                    $invitationHtml = $lpfEmailRenderer->render('email/content/invitation.html.twig', [
+                        'pageTitle' => 'Invitation équipe — LPF\'26',
+                        'team' => $team,
+                        'invitation' => $invitation,
+                        'footerNote' => 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
+                    ]);
+
+                    $invitationEmail = (new Email())
+                        ->to((string) $invitation->getInvitedEmail())
+                        ->subject('Invitation à rejoindre votre équipe — LPF\'26')
+                        ->html($invitationHtml);
+                    $mailer->send($invitationEmail);
+                }
+
+                $ownerHtml = $lpfEmailRenderer->render('email/content/team_created.html.twig', [
+                    'pageTitle' => 'Équipe créée — LPF\'26',
                     'team' => $team,
-                    'invitation' => $invitation,
-                    'footerNote' => 'Si vous n\'attendiez pas cette invitation, vous pouvez ignorer cet e-mail.',
+                    'owner' => $owner,
+                    'invitedEmail' => $invitation?->getInvitedEmail(),
+                    'footerNote' => 'Bienvenue sur LPF\'26 — Lotopotofoot.',
                 ]);
 
-                $invitationEmail = (new Email())
-                    ->to((string) $invitation->getInvitedEmail())
-                    ->subject('Invitation à rejoindre votre équipe — LPF\'26')
-                    ->html($invitationHtml);
-                $mailer->send($invitationEmail);
+                $ownerEmail = (new Email())
+                    ->to((string) $user->getEmail())
+                    ->subject('Votre équipe LPF\'26 est créée')
+                    ->html($ownerHtml);
+                $mailer->send($ownerEmail);
+            } catch (\Throwable $e) {
+                $emailDeliveryFailed = true;
+                $logger->error('Échec d\'envoi des e-mails après inscription.', [
+                    'user_email' => $user->getEmail(),
+                    'exception' => $e,
+                ]);
             }
 
-            $ownerHtml = $lpfEmailRenderer->render('email/content/team_created.html.twig', [
-                'pageTitle' => 'Équipe créée — LPF\'26',
-                'team' => $team,
-                'owner' => $owner,
-                'invitedEmail' => $invitation?->getInvitedEmail(),
-                'footerNote' => 'Bienvenue sur LPF\'26 — Lotopotofoot.',
-            ]);
-
-            $ownerEmail = (new Email())
-                ->to((string) $user->getEmail())
-                ->subject('Votre équipe LPF\'26 est créée')
-                ->html($ownerHtml);
-            $mailer->send($ownerEmail);
-
-            if ($invitation instanceof TeamInvitation) {
+            if ($emailDeliveryFailed) {
+                $this->addFlash(
+                    'warning',
+                    'Ton compte et ton équipe sont créés, mais l’envoi des e-mails a échoué. Tu peux te connecter tout de suite ; contacte l’organisateur si tu attends une invitation.'
+                );
+            } elseif ($invitation instanceof TeamInvitation) {
                 $this->addFlash(
                     'success',
                     sprintf(

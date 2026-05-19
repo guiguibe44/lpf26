@@ -1,0 +1,40 @@
+{# notification_prefs_form #}
+{% form_theme notification_prefs_form 'form/tailadmin_theme.html.twig' %}
+
+<div class="notification-prefs">
+    <p class="ta-card-text notification-prefs__intro">
+        Choisissez ce que vous souhaitez recevoir par <strong>e-mail</strong> et par <strong>notification push</strong>
+        (sur l’appareil où vous activez le bouton ci-dessous).
+    </p>
+
+    {{ form_start(notification_prefs_form, {'attr': {'class': 'notification-prefs__form space-y-4'}}) }}
+
+    {% for category in notification_preference_categories %}
+        {% set prefs = notification_preferences_by_category[category] %}
+        <fieldset class="notification-prefs__group rounded-box border border-base-300 p-4">
+            <legend class="notification-prefs__legend text-base font-semibold">
+                {{ prefs[0].categoryLabel() }}
+            </legend>
+            <ul class="notification-prefs__list space-y-3 mt-3">
+                {% for pref in prefs %}
+                    <li class="notification-prefs__item">
+                        <div class="notification-prefs__item-row">
+                            {{ form_widget(notification_prefs_form[pref.value]) }}
+                            <div class="notification-prefs__item-text">
+                                {{ form_label(notification_prefs_form[pref.value]) }}
+                                <p class="notification-prefs__help ta-card-text m-0">{{ pref.description() }}</p>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </fieldset>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">
+        Enregistrer mes préférences
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>
+    </button>
+
+    {{ form_end(notification_prefs_form) }}
+</div>

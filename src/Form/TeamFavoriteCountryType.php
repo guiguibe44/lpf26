@@ -25,6 +25,21 @@ class TeamFavoriteCountryType extends AbstractType
             'disabled' => (bool) $options['disabled'],
             'query_builder' => static fn (CountryRepository $repository) => $repository->createQueryBuilder('c')
                 ->orderBy('c.nom', 'ASC'),
+            'choice_attr' => static function (?Country $country): array {
+                if (!$country instanceof Country) {
+                    return [];
+                }
+
+                $attrs = [
+                    'data-country-initial' => mb_strtoupper(mb_substr((string) $country->getNom(), 0, 1)),
+                ];
+                $flagPath = $country->getDrapeauPublicPath();
+                if (null !== $flagPath && '' !== $flagPath) {
+                    $attrs['data-flag-src'] = $flagPath;
+                }
+
+                return $attrs;
+            },
             'help' => 'Choix secret : les autres équipes ne voient pas votre sélection. Modifiable jusqu’au coup d’envoi de la compétition.',
         ]);
     }
