@@ -67,8 +67,16 @@
                 {% include '_notification_bell.html.twig' %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <a
+                        href="{{ path('admin_qa_checklist') }}"
+                        class="ta-sidebar-notify ta-sidebar-qa{{ currentRoute == 'admin_qa_checklist' ? ' ta-sidebar-notify--current' : '' }}"
+                        title="Checklist de recette"
+                        aria-label="Checklist de recette"
+                    >
+                        <i class="ti ti-list-check" aria-hidden="true"></i>
+                    </a>
+                    <a
                         href="{{ path('admin') }}"
-                        class="ta-sidebar-notify ta-sidebar-admin{{ currentRoute starts with 'admin' ? ' ta-sidebar-notify--current' : '' }}"
+                        class="ta-sidebar-notify ta-sidebar-admin{{ currentRoute starts with 'admin' and currentRoute != 'admin_qa_checklist' ? ' ta-sidebar-notify--current' : '' }}"
                         title="Administration"
                         aria-label="Administration"
                     >

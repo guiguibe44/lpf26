@@ -63,6 +63,8 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history'),
             ]);
 
+        yield MenuItem::linkToRoute('Checklist de recette', 'fas fa-list-check', 'admin_qa_checklist');
+
         yield MenuItem::subMenu('Gestion', 'fas fa-people-group')
             ->setSubItems([
                 MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index'),
