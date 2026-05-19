@@ -49,6 +49,7 @@ security:
         - { path: ^/inscription, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/invitation, roles: PUBLIC_ACCESS }
+        - { path: ^/cron/, roles: PUBLIC_ACCESS }
         # API JSON : cookie « se souvenir de moi » (évite une réponse HTML sur fetch / JSON).
         - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
         - { path: ^/api/matchs/live-feed, roles: IS_AUTHENTICATED }

@@ -93,15 +93,52 @@ Certaines offres OVH permettent de **lier le dépôt GitHub** au hébergement : 
 
 Comparer avec la doc OVH « Git sur hébergement web » pour ton offre exacte.
 
-## 6. Check-list après chaque livraison
+## 6. APP_ENV=prod et détail des erreurs
+
+Sur le serveur, dans **`.env.local`** (non versionné) :
+
+```env
+APP_ENV=prod
+APP_DEBUG=0
+```
+
+- **`APP_ENV=prod`** : cache optimisé, pas de barre de debug Symfony, comportement production.
+- **`APP_DEBUG=0`** : les visiteurs voient une page d’erreur générique (pas de stack trace publique).
+
+**Ne pas mettre `APP_DEBUG=1` en prod ouverte au public** : toute la pile d’appel et des infos sensibles seraient visibles par n’importe qui.
+
+### Où voir le détail des erreurs ?
+
+Monolog en prod utilise le handler **fingers_crossed** : en cas d’erreur, le contexte (niveau debug) est écrit dans :
+
+```text
+var/log/prod.log
+```
+
+Consultation en SSH :
+
+```bash
+cd /homez.1544/lotopou/lpf26
+tail -100 var/log/prod.log
+```
+
+Après changement de `.env.local` :
+
+```bash
+php bin/console cache:clear --env=prod
+```
+
+Pour déboguer ponctuellement (court moment, puis remettre `0`) : `APP_DEBUG=1` uniquement si tu acceptes l’exposition temporaire, ou reproduire l’erreur en local avec la même config.
+
+## 7. Check-list après chaque livraison
 
 - [ ] Migrations appliquées sur la BDD prod si le modèle a changé  
-- [ ] Variables d’environnement à jour (mailer, `DATABASE_URL`, `APP_SECRET`, etc.)  
+- [ ] Variables d’environnement à jour (mailer, `DATABASE_URL`, `APP_SECRET`, `APP_ENV=prod`, `APP_DEBUG=0`, etc.)  
 - [ ] Cache prod vidé / réchauffé  
 - [ ] Test rapide : page d’accueil, login, une action sensible (admin, pronos)  
 - [ ] Sauvegarde BDD avant migration majeure  
 
-## 7. Rollback
+## 8. Rollback
 
 - **Code** : `git revert` sur `main`, push → redéploiement du workflow.  
 - **BDD** : restaurer un dump OVH / point de restauration si la migration a échoué.
@@ -110,7 +147,7 @@ Comparer avec la doc OVH « Git sur hébergement web » pour ton offre exacte.
 
 Pour toute adaptation (SSH + `rsync` au lieu de FTP, environnement de **préprod** sur un sous-domaine, etc.), duplique le workflow avec d’autres secrets (`OVH_FTP_*_STAGING`).
 
-## 8. Dette technique : `composer.json` et `--no-dev`
+## 9. Dette technique : `composer.json` et `--no-dev`
 
 Aujourd’hui, une partie des paquets nécessaires en production (Doctrine, Twig, Security, etc.) figurent dans **`require-dev`**. Tant que ce n’est pas corrigé, le workflow utilise **`composer install`** complet (y compris les dépendances de dev) pour que la console et le compile d’assets fonctionnent.
 
@@ -120,7 +157,7 @@ Aujourd’hui, une partie des paquets nécessaires en production (Doctrine, Twig
 
 Cela réduit la surface d’attaque et la taille du déploiement.
 
-## 9. Déploiement rapide depuis Cursor (SSH + SFTP OVH)
+## 10. Déploiement rapide depuis Cursor (SSH + SFTP OVH)
 
 Si tu as **SSH** sur le mutualisé (en plus du SFTP), tu peux pousser le code **sans passer par GitHub Actions** depuis la machine locale :
 

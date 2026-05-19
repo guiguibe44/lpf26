@@ -78,6 +78,10 @@ services:
             $lookaheadMinutes: '%env(int:API_FOOTBALL_LIVE_SYNC_LOOKAHEAD_MINUTES)%'
             $graceAfterKickoffMinutes: '%env(int:API_FOOTBALL_LIVE_SYNC_GRACE_MINUTES)%'
 
+    App\Controller\CronController:
+        arguments:
+            $cronSecret: '%env(default::CRON_SECRET)%'
+
     App\Controller\Admin\DashboardController:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
