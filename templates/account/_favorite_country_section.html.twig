@@ -41,7 +41,7 @@
     {% endif %}
 
     {% if favorite_country_form and favorite_country_state.can_manage %}
-        {{ form_start(favorite_country_form, {'attr': {'class': 'space-y-3'}}) }}
+        {{ form_start(favorite_country_form, {'attr': {'class': 'space-y-3', 'data-turbo': 'false'}}) }}
             {% form_theme favorite_country_form.favoriteCountry 'form/country_flag_select_widget.html.twig' %}
             {{ form_row(favorite_country_form.favoriteCountry) }}
             <button type="submit" class="btn btn-primary">

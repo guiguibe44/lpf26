@@ -17,11 +17,15 @@ class AccountProfileType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $nicknameAttrs = (bool) $options['lock_nickname']
+            ? ['readonly' => true, 'class' => 'ta-form-input']
+            : [];
+
         $builder
             ->add('nickname', TextType::class, [
                 'mapped' => false,
                 'label' => 'Surnom joueur',
-                'disabled' => (bool) $options['lock_nickname'],
+                'attr' => $nicknameAttrs,
                 'constraints' => [
                     new NotBlank(message: 'Le surnom est obligatoire.'),
                     new Length(min: 3, max: 50),

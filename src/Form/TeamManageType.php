@@ -17,10 +17,14 @@ class TeamManageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $nameAttrs = (bool) $options['lock_team_name']
+            ? ['readonly' => true, 'class' => 'ta-form-input']
+            : [];
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'équipe',
-                'disabled' => (bool) $options['lock_team_name'],
+                'attr' => $nameAttrs,
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'equipe est obligatoire.'),
                     new Length(min: 2, max: 255),
