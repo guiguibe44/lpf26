@@ -112,11 +112,17 @@
             teams: live_view.teams,
             cotes_visible: match_cotes_visible(match),
         } only %}
-        {% include 'competition/_match_live_match_buteurs.html.twig' with {
-            match_buteurs: live_view.matchButeurs,
-            match: match,
-        } only %}
     </section>
+
+    {% if live_view.matchButeurs is not empty %}
+        <section class="ta-card mt-5 match-live-buteurs-section">
+            <h2 class="ta-card-title">Buteurs des pays en lice</h2>
+            <p class="ta-card-text mb-3">
+                Joueurs choisis pour {{ match.paysDomicile.nom }} ou {{ match.paysExterieur.nom }} · cote = 1 pt de base × coefficient (max ×5).
+            </p>
+            {% include 'competition/_match_live_match_buteurs.html.twig' with { match_buteurs: live_view.matchButeurs } only %}
+        </section>
+    {% endif %}
 
     {% if match.isKdoMatch and live_view.kdoOutlook %}
         {% include 'competition/_match_live_kdo.html.twig' with { kdo_outlook: live_view.kdoOutlook } only %}

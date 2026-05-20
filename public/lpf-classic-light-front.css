@@ -167,10 +167,6 @@ html.lpf-classic-light body.front-body .ta-main .match-live-cotes-banner__value 
     color: var(--lpf-link) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-match-buteurs {
-    border-top-color: var(--lpf-border) !important;
-}
-
 html.lpf-classic-light body.front-body .ta-main .match-live-match-buteurs-cote {
     color: var(--lpf-link) !important;
 }

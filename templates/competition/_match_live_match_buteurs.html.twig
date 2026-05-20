@@ -1,55 +1,47 @@
 {# match_buteurs: list<{id, name, photo, country, coefficient, selections_count, teams}> #}
-{% if match_buteurs is not empty %}
-    <div class="match-live-match-buteurs mt-4">
-        <h3 class="match-live-buteurs-title">Buteurs des pays en lice</h3>
-        <p class="ta-card-text match-live-match-buteurs__hint mb-2">
-            Joueurs choisis par les équipes pour {{ match.paysDomicile.nom }} ou {{ match.paysExterieur.nom }} · cote = 1 pt de base × coefficient (max ×5).
-        </p>
-        <div class="overflow-x-auto">
-            <table class="table ta-table table-sm match-live-compact-table match-live-match-buteurs-table">
-                <thead>
-                    <tr>
-                        <th>Buteur</th>
-                        <th>Pays</th>
-                        <th class="ta-num">Cote</th>
-                        <th>Choix</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in match_buteurs %}
-                        <tr>
-                            <td>
-                                <div class="match-live-compact-team-cell">
-                                    {% if row.photo %}
-                                        <img
-                                            class="match-live-buteur-pick__photo"
-                                            src="{{ row.photo starts with 'http' ? row.photo : asset(row.photo) }}"
-                                            alt=""
-                                            width="28"
-                                            height="28"
-                                            loading="lazy"
-                                            decoding="async"
-                                        >
-                                    {% else %}
-                                        <span class="match-live-buteur-pick__photo match-live-buteur-pick__photo--placeholder" aria-hidden="true">{{ row.name|first|upper }}</span>
-                                    {% endif %}
-                                    <span>{{ row.name }}</span>
-                                </div>
-                            </td>
-                            <td>{{ row.country|default('—') }}</td>
-                            <td class="ta-num">
-                                <strong class="match-live-match-buteurs-cote">×{{ row.coefficient|number_format(2, ',', ' ') }}</strong>
-                            </td>
-                            <td class="match-live-match-buteurs-choix">
-                                {{ row.selections_count }} joueur{{ row.selections_count > 1 ? 's' : '' }}
-                                {% if row.teams is not empty %}
-                                    <span class="match-live-match-buteurs-teams ta-card-text">({{ row.teams|join(', ') }})</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-{% endif %}
+<div class="overflow-x-auto match-live-match-buteurs-table-wrap">
+    <table class="table ta-table table-sm match-live-compact-table match-live-match-buteurs-table">
+        <thead>
+            <tr>
+                <th>Buteur</th>
+                <th>Pays</th>
+                <th class="ta-num">Cote</th>
+                <th>Choix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in match_buteurs %}
+                <tr>
+                    <td>
+                        <div class="match-live-compact-team-cell">
+                            {% if row.photo %}
+                                <img
+                                    class="match-live-buteur-pick__photo"
+                                    src="{{ row.photo starts with 'http' ? row.photo : asset(row.photo) }}"
+                                    alt=""
+                                    width="28"
+                                    height="28"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% else %}
+                                <span class="match-live-buteur-pick__photo match-live-buteur-pick__photo--placeholder" aria-hidden="true">{{ row.name|first|upper }}</span>
+                            {% endif %}
+                            <span>{{ row.name }}</span>
+                        </div>
+                    </td>
+                    <td>{{ row.country|default('—') }}</td>
+                    <td class="ta-num">
+                        <strong class="match-live-match-buteurs-cote">×{{ row.coefficient|number_format(2, ',', ' ') }}</strong>
+                    </td>
+                    <td class="match-live-match-buteurs-choix">
+                        {{ row.selections_count }} joueur{{ row.selections_count > 1 ? 's' : '' }}
+                        {% if row.teams is not empty %}
+                            <span class="match-live-match-buteurs-teams ta-card-text">({{ row.teams|join(', ') }})</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
