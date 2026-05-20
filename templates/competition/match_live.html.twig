@@ -28,7 +28,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/match-live.js') }}" defer></script>
     <script>
         window.matchLiveConfig = {
             simulateUrl: {{ simulate_url|json_encode|raw }},
@@ -38,4 +37,5 @@
             cotesVisible: {{ match_cotes_visible(match) ? 'true' : 'false' }}
         };
     </script>
+    <script src="{{ asset('js/match-live.js') }}" defer></script>
 {% endblock %}

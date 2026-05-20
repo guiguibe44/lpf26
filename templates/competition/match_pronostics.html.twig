@@ -25,3 +25,8 @@
         match_active_jokers: match_active_jokers,
     } %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/match-live.js') }}" defer></script>
+{% endblock %}

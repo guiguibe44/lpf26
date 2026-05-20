@@ -1,4 +1,34 @@
 (function () {
+    const teamsRoot = document.getElementById('match-live-teams');
+
+    const initExpandRows = (root) => {
+        if (!root) {
+            return;
+        }
+
+        root.querySelectorAll('[data-match-live-expand]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const detailId = button.getAttribute('aria-controls');
+                if (!detailId) {
+                    return;
+                }
+
+                const detailRow = document.getElementById(detailId);
+                if (!detailRow) {
+                    return;
+                }
+
+                const willOpen = detailRow.hidden;
+                detailRow.hidden = !willOpen;
+                button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                button.classList.toggle('match-live-expand-btn--open', willOpen);
+                button.title = willOpen ? 'Masquer le détail' : 'Afficher le détail';
+            });
+        });
+    };
+
+    initExpandRows(teamsRoot);
+
     const config = window.matchLiveConfig;
     if (!config || !config.simulateUrl) {
         return;
@@ -10,7 +40,6 @@
     const resetBtn = document.getElementById('match-live-reset-score');
     const scoreHomeEl = document.getElementById('match-live-score-home');
     const scoreAwayEl = document.getElementById('match-live-score-away');
-    const teamsRoot = document.getElementById('match-live-teams');
 
     if (!form || !homeInput || !awayInput || !teamsRoot) {
         return;
@@ -327,24 +356,4 @@
             scheduleSimulation();
         });
     }
-
-    teamsRoot.querySelectorAll('[data-match-live-expand]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const detailId = button.getAttribute('aria-controls');
-            if (!detailId) {
-                return;
-            }
-
-            const detailRow = document.getElementById(detailId);
-            if (!detailRow) {
-                return;
-            }
-
-            const willOpen = detailRow.hidden;
-            detailRow.hidden = !willOpen;
-            button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-            button.classList.toggle('match-live-expand-btn--open', willOpen);
-            button.title = willOpen ? 'Masquer le détail' : 'Afficher le détail';
-        });
-    });
 })();
