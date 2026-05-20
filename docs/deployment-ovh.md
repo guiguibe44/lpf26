@@ -84,6 +84,19 @@ Si tu utilises des **secrets d’environnement** (Environment) au lieu des secre
 
 Le workflow **exclut** notamment `public/uploads` pour **ne pas effacer** les fichiers utilisateurs déjà en prod. Les chemins exclus sont listés dans le YAML ; adapte si tu utilises d’autres répertoires persistants.
 
+### Obligatoire après chaque déploiement FTP : vider le cache Symfony sur OVH
+
+Le workflow **n’envoie pas** le dossier `var/` (cache, logs, conteneur compilé). Après un push, les **nouveaux contrôleurs et routes** (ex. `/admin/checklist-compet`) n’existent pas pour PHP tant que le cache prod n’a pas été régénéré : le site peut répondre **404** sur ces URLs alors que les fichiers `src/` sont bien à jour.
+
+En **SSH** depuis la racine du projet sur le serveur :
+
+```bash
+php bin/console cache:clear --env=prod
+php bin/console cache:warmup --env=prod
+```
+
+Sans SSH : supprimer manuellement le contenu de `var/cache/prod/` via le gestionnaire de fichiers OVH (ou tâche planifiée exécutant la commande ci-dessus), puis recharger le site.
+
 ## 5. Alternative : déploiement Git intégré OVH
 
 Certaines offres OVH permettent de **lier le dépôt GitHub** au hébergement : push sur une branche → pull automatique côté serveur. Dans ce cas :
