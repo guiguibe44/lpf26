@@ -25,9 +25,8 @@
         return n.toLocaleString('fr-FR') + ' pts';
     };
 
-    const formatGeneralPoints = (value) => {
-        const n = Math.round(Number(value) || 0);
-        return n.toLocaleString('fr-FR') + ' pts gen.';
+    const formatCellNumber = (value) => {
+        return Math.round(Number(value) || 0).toLocaleString('fr-FR');
     };
 
     const formatCote = (value) => {
@@ -153,14 +152,27 @@
                 simulatedPosEl.textContent = '#' + team.simulatedRankingPosition;
             }
 
-            const matchTotalEl = teamSection.querySelector('[data-team-total]');
-            if (matchTotalEl) {
-                matchTotalEl.textContent = formatPoints(team.matchPoints);
-            }
-
             const generalTotalEl = teamSection.querySelector('[data-team-total-general]');
             if (generalTotalEl) {
-                generalTotalEl.textContent = formatGeneralPoints(team.simulatedTotalPoints);
+                generalTotalEl.textContent = formatCellNumber(team.simulatedTotalPoints);
+            }
+
+            const matchTotalEl = teamSection.querySelector('[data-team-match-total]');
+            if (matchTotalEl) {
+                const matchPts =
+                    Number(team.matchPoints) ||
+                    Number(team.pronosticMatchPoints || 0) + Number(team.buteurMatchPoints || 0);
+                matchTotalEl.textContent = formatCellNumber(matchPts);
+            }
+
+            const pronoMatchEl = teamSection.querySelector('[data-team-prono-points]');
+            if (pronoMatchEl) {
+                pronoMatchEl.textContent = formatCellNumber(team.pronosticMatchPoints);
+            }
+
+            const buteurMatchEl = teamSection.querySelector('[data-team-buteur-points]');
+            if (buteurMatchEl) {
+                buteurMatchEl.textContent = formatCellNumber(team.buteurMatchPoints);
             }
 
             const jokerEl = teamSection.querySelector('[data-team-joker]');
@@ -215,10 +227,7 @@
                         }
                     }
                     if (pointsEl) {
-                        const inChip = pointsEl.classList.contains('match-live-prono-chip__pts');
-                        pointsEl.textContent = inChip
-                            ? Math.round(Number(prono.points) || 0).toLocaleString('fr-FR')
-                            : formatPoints(prono.points);
+                        pointsEl.textContent = formatCellNumber(prono.points);
                     }
                 });
             });

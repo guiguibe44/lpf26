@@ -5,20 +5,26 @@
     <table class="table ta-table table-sm match-live-compact-table">
         <thead>
             <tr>
-                <th class="ta-num match-live-compact-th-rank">#</th>
+                <th class="ta-num match-live-compact-th-rank" title="Classement simulé après ce score">Place</th>
                 <th class="match-live-compact-th-team">Équipe</th>
-                <th class="match-live-compact-th-pronos">Pronostics</th>
+                <th class="ta-num" title="Total général simulé (classement + points de ce match)">Total</th>
+                <th class="ta-num" title="Points pronos + buteurs sur ce match">Match</th>
+                <th class="ta-num match-live-compact-th-prono">Prono 1</th>
+                <th class="ta-num match-live-compact-th-prono">Prono 2</th>
+                <th class="ta-num" title="Points buteurs marqueurs sur ce match">Buteurs</th>
                 <th class="match-live-compact-th-toggle" aria-label="Détail"></th>
             </tr>
         </thead>
         {% for team in teams %}
             {% set detail_id = 'match-live-detail-' ~ team.teamId %}
+            {% set prono1 = team.pronostics[0]|default(null) %}
+            {% set prono2 = team.pronostics[1]|default(null) %}
             <tbody data-team-id="{{ team.teamId }}">
                 <tr class="match-live-row">
                     <td class="match-live-compact-rank ta-num">
-                        <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position title="Classement général simulé">#{{ team.simulatedRankingPosition }}</span>
+                        <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position>#{{ team.simulatedRankingPosition }}</span>
                         {% if team.rankingPosition < 9999 %}
-                            <span class="match-live-team-position match-live-team-position--before" title="Classement avant ce match">({{ team.rankingPosition }})</span>
+                            <span class="match-live-team-position match-live-team-position--before" title="Rang avant ce match">({{ team.rankingPosition }})</span>
                         {% endif %}
                     </td>
                     <td class="match-live-compact-team">
@@ -28,35 +34,30 @@
                             {% else %}
                                 <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
                             {% endif %}
-                            <div class="match-live-compact-team-meta">
-                                <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
-                                <span class="match-live-team-joker ta-badge" data-team-joker{% if not team.activeJoker %} hidden{% endif %} title="Joker actif">
-                                    {%- if team.activeJoker -%}
-                                        {{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}
-                                    {%- endif -%}
-                                </span>
-                                <div class="match-live-compact-team-pts">
-                                    <span class="match-live-team-total" data-team-total title="Points sur ce match">{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
-                                    <span class="match-live-team-total-general" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} gen.</span>
-                                </div>
-                            </div>
+                            <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
                         </div>
                     </td>
-                    <td class="match-live-compact-pronos-cell">
-                        {% if team.pronostics is not empty %}
-                            <div class="match-live-pronos-summary">
-                                {% for prono in team.pronostics %}
-                                    <span class="match-live-prono-chip" data-pronostic-id="{{ prono.pronosticId }}">
-                                        <span class="match-live-prono-chip__label">{{ prono.playerLabel }}</span>
-                                        <span class="match-live-prono-chip__score" data-prono-score><span data-prono-score-value>{{ prono.predHome }}-{{ prono.predAway }}</span></span>
-                                        <span class="match-live-prono-chip__pts ta-badge ta-badge-success" data-prono-points>{{ prono.points|number_format(0, ',', ' ') }}</span>
-                                    </span>
-                                {% endfor %}
-                            </div>
+                    <td class="ta-num match-live-compact-pts" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }}</td>
+                    <td class="ta-num match-live-compact-pts match-live-compact-pts--match" data-team-match-total title="Points sur ce match">{{ team.matchPointsTotal|number_format(0, ',', ' ') }}</td>
+                    <td class="ta-num match-live-compact-prono-cell">
+                        {% if prono1 %}
+                            <span class="match-live-prono-cell" data-pronostic-id="{{ prono1.pronosticId }}">
+                                <span data-prono-score-value>{{ prono1.predHome }}-{{ prono1.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono1.points|number_format(0, ',', ' ') }}</strong>
+                            </span>
                         {% else %}
-                            <span class="match-live-prono-empty">Aucun pronostic</span>
+                            <span class="match-live-prono-empty">—</span>
                         {% endif %}
                     </td>
+                    <td class="ta-num match-live-compact-prono-cell">
+                        {% if prono2 %}
+                            <span class="match-live-prono-cell" data-pronostic-id="{{ prono2.pronosticId }}">
+                                <span data-prono-score-value>{{ prono2.predHome }}-{{ prono2.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono2.points|number_format(0, ',', ' ') }}</strong>
+                            </span>
+                        {% else %}
+                            <span class="match-live-prono-empty">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="ta-num match-live-compact-pts" data-team-buteur-points title="Points buteurs sur ce match">{{ team.buteurMatchPoints|number_format(0, ',', ' ') }}</td>
                     <td class="match-live-compact-toggle ta-num">
                         <button
                             type="button"
@@ -72,8 +73,17 @@
                     </td>
                 </tr>
                 <tr class="match-live-detail-row" id="{{ detail_id }}" data-match-live-detail hidden>
-                    <td colspan="4" class="match-live-detail-row__cell">
+                    <td colspan="8" class="match-live-detail-row__cell">
                         <div class="match-live-detail-panel">
+                            <p class="match-live-detail-meta mb-2">
+                                <span class="match-live-team-joker ta-badge" data-team-joker{% if not team.activeJoker %} hidden{% endif %}>
+                                    {%- if team.activeJoker -%}
+                                        Joker : {{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}
+                                    {%- endif -%}
+                                </span>
+                                <span class="match-live-detail-meta__sep" data-team-joker{% if not team.activeJoker %} hidden{% endif %}> · </span>
+                                Pronos sur ce match : <strong data-team-prono-points>{{ team.pronosticMatchPoints|number_format(0, ',', ' ') }}</strong> pts
+                            </p>
                             {% if team.pronostics is not empty %}
                                 <ul class="match-live-pronos-detail-list">
                                     {% for prono in team.pronostics %}
@@ -101,8 +111,6 @@
                                         </li>
                                     {% endfor %}
                                 </ul>
-                            {% else %}
-                                <p class="match-live-prono-empty mb-0">Aucun pronostic enregistré.</p>
                             {% endif %}
                             {% if team.buteurs is not empty %}
                                 <div class="match-live-buteurs-picks">
@@ -136,7 +144,7 @@
         {% else %}
             <tbody>
                 <tr>
-                    <td colspan="4" class="match-live-prono-empty">Aucune équipe enregistrée.</td>
+                    <td colspan="8" class="match-live-prono-empty">Aucune équipe enregistrée.</td>
                 </tr>
             </tbody>
         {% endfor %}

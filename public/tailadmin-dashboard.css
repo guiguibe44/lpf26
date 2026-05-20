@@ -1606,8 +1606,8 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     width: 3.25rem;
 }
 
-.match-live-compact-th-pronos {
-    min-width: 10rem;
+.match-live-compact-th-prono {
+    min-width: 4.5rem;
 }
 
 .match-live-compact-th-toggle {
@@ -1637,55 +1637,46 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     height: 1.75rem;
 }
 
-.match-live-compact-team-meta {
-    min-width: 0;
-    flex: 1;
-}
-
-.match-live-compact-team-pts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem 0.45rem;
-    margin-top: 0.2rem;
-    font-size: 0.78rem;
-}
-
-.match-live-compact-pronos-cell {
-    vertical-align: top;
+.match-live-compact-team .match-live-team-name {
     min-width: 0;
 }
 
-.match-live-pronos-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.5rem;
-    align-items: center;
-}
-
-.match-live-prono-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.2rem 0.45rem;
-    border-radius: 0.4rem;
-    background: #f1f5f9;
-    font-size: 0.78rem;
-    line-height: 1.25;
-}
-
-.match-live-prono-chip__label {
-    color: #64748b;
-    font-weight: 500;
-}
-
-.match-live-prono-chip__score {
+.match-live-compact-pts {
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.match-live-compact-pts--match {
+    color: #059669;
+}
+
+.match-live-compact-prono-cell {
+    white-space: nowrap;
+    font-size: 0.8rem;
+}
+
+.match-live-prono-cell__sep {
+    margin: 0 0.12rem;
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.match-live-prono-cell [data-prono-score-value] {
+    font-weight: 600;
     color: #0f172a;
 }
 
-.match-live-prono-chip__pts {
-    font-size: 0.68rem;
-    padding: 0.1rem 0.35rem;
+.match-live-prono-cell [data-prono-points] {
+    color: #059669;
+}
+
+.match-live-detail-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.match-live-detail-meta__sep {
+    margin: 0 0.15rem;
 }
 
 .match-live-compact-toggle {

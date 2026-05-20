@@ -100,8 +100,10 @@
     <section class="ta-card mt-5 match-live-teams-section">
         <h2 class="ta-card-title">Pronostics par équipe</h2>
         <p class="ta-card-text mb-3">
-            <span class="match-live-legend">#N</span> = classement simulé,
-            <span class="match-live-legend">(n)</span> = rang avant le match · pronostics anonymes (2 par équipe).
+            <span class="match-live-legend">Place</span> = classement simulé (<span class="match-live-legend">n</span> = rang avant le match).
+            <span class="match-live-legend">Total</span> = points généraux simulés.
+            <span class="match-live-legend">Match</span> = pronos + buteurs sur ce match.
+            Prono 1 / 2 : score simulé · points.
         </p>
         {% include 'competition/_match_live_teams.html.twig' with {
             teams: live_view.teams,

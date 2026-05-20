@@ -16,13 +16,19 @@ final class MatchLiveTeamRow
         public readonly string $teamName,
         public readonly ?string $teamLogo,
         public readonly int $rankingPosition,
-        public readonly int $matchPoints,
+        public readonly int $pronosticMatchPoints,
+        public readonly int $buteurMatchPoints,
         public readonly float $simulatedTotalPoints,
         public readonly int $simulatedRankingPosition,
         public readonly array $pronostics,
         public readonly array $buteurs,
         public readonly ?array $activeJoker = null,
     ) {
+    }
+
+    public function matchPointsTotal(): int
+    {
+        return $this->pronosticMatchPoints + $this->buteurMatchPoints;
     }
 
     /**
@@ -35,7 +41,9 @@ final class MatchLiveTeamRow
             'teamName' => $this->teamName,
             'teamLogo' => $this->teamLogo,
             'rankingPosition' => $this->rankingPosition,
-            'matchPoints' => $this->matchPoints,
+            'pronosticMatchPoints' => $this->pronosticMatchPoints,
+            'buteurMatchPoints' => $this->buteurMatchPoints,
+            'matchPoints' => $this->matchPointsTotal(),
             'simulatedTotalPoints' => $this->simulatedTotalPoints,
             'simulatedRankingPosition' => $this->simulatedRankingPosition,
             'pronostics' => array_map(static fn (SimulatedPronosticLine $line): array => $line->toArray(), $this->pronostics),
