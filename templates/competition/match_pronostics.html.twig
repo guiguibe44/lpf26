@@ -17,5 +17,11 @@
         </a>
     </section>
 
-    {% include 'competition/_match_live_body.html.twig' with { show_simulator: false } only %}
+    {% include 'competition/_match_live_body.html.twig' with {
+        show_simulator: false,
+        match: match,
+        live_view: live_view,
+        match_goals: match_goals,
+        match_active_jokers: match_active_jokers,
+    } %}
 {% endblock %}

@@ -143,12 +143,19 @@
                 </a>
             </div>
         {% elseif is_finished %}
-            <div class="match-final-score">
-                {{ match.scoreDomicile }} - {{ match.scoreExterieur }}
+            <div class="match-finished-actions">
+                <div class="match-final-score">
+                    {{ match.scoreDomicile }} - {{ match.scoreExterieur }}
+                </div>
+                <a
+                    href="{{ path('app_match_pronostics', { id: match.id }) }}"
+                    class="btn btn-primary match-card-pronos-btn"
+                    aria-label="Voir tous les pronostics du match"
+                    title="Voir tous les pronostics"
+                >
+                    <i class="ti ti-list-details" aria-hidden="true"></i>
+                </a>
             </div>
-            <a href="{{ path('app_match_pronostics', { id: match.id }) }}" class="match-link">
-                Voir tous les pronos
-            </a>
         {% elseif pronostic %}
             <span class="match-locked-pronostic">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
         {% else %}

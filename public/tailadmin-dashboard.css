@@ -1391,7 +1391,8 @@ button.match-card-joker-badge {
     letter-spacing: 0.02em;
 }
 
-.match-live-actions {
+.match-live-actions,
+.match-finished-actions {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1511,6 +1512,27 @@ html body .match-card-live-btn.btn.btn-warning:hover {
 }
 
 html body .match-card-live-btn.btn.btn-warning .ti {
+    font-size: 1.15rem;
+    margin: 0;
+    line-height: 1;
+}
+
+html body .match-card-pronos-btn.btn.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0;
+    margin: 0;
+    border-radius: 0.625rem;
+    box-sizing: border-box;
+}
+
+html body .match-card-pronos-btn.btn.btn-primary .ti {
     font-size: 1.15rem;
     margin: 0;
     line-height: 1;
