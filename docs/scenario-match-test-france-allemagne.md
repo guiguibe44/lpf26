@@ -54,7 +54,7 @@ Heures en **Europe/Paris**. Remplacer `MATCH_ID`, `BUTEUR_*`, `VOTRE_SECRET`, `B
 | Heure | Étape | Effet attendu |
 |-------|--------|----------------|
 | **14:00** | `reminder` | E-mail/push aux **3 joueurs** sans ligne : **B-J1, B-J2, C-J2** |
-| **15:00** | `kickoff` | Statut LIVE 0-0 ; **0-0 auto** pour **B-J2** et **C-J2** seulement |
+| **15:00** | *(auto)* ou `kickoff` | **Automatique** via cron `pronostic-reminders` (≤ 5 min après 15h) : LIVE 0-0 + **0-0 auto** pour **B-J2** et **C-J2**. Cron `kickoff` optionnel. |
 | **15:23** | `goal` FR #1 | Score **1-0** ; points buteur si buteur choisi ; notif push |
 | **15:45** | `goal` DE | Score **1-1** ; points buteur si `BUTEUR_DE_1` est coché (ex. Havertz sur A) |
 | **16:07** (~67') | `goal` FR #2 | Score **2-1** |
@@ -86,7 +86,9 @@ php bin/console app:test-match:step --match-id=MATCH_ID --step=finish
 
 ### URLs cron-job.org (prod)
 
-Tâches **ponctuelles** (schedule « once » ou cron à la date du test) :
+Pour générer les mêmes URLs avec ton `CRON_SECRET` sans les écrire dans un fichier Git : voir **`docs/cron-job-org.md`** § *Crons dédiés « match test »* et le script **`scripts/print-test-match-cron-urls.sh`**.
+
+Tâches **ponctuelles** (une tâche par étape ; désactiver après le test) :
 
 ```
 # 14:00 — relances

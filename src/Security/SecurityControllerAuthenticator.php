@@ -44,12 +44,56 @@ class SecurityControllerAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
+        $session = $request->getSession();
+        $targetPath = $this->getTargetPath($session, $firewallName);
+
+        if (null !== $targetPath) {
+            // Toujours consommer la session : sinon une ancienne cible (ex. URL d’API) se réapplique à chaque login.
+            $this->removeTargetPath($session, $firewallName);
+            if ($this->isSafeRedirectAfterLogin($request, $targetPath)) {
+                return new RedirectResponse($targetPath);
+            }
         }
 
         // Admins et joueurs : même accueil front (équipe, pronos). L’admin reste accessible via le menu.
         return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
+    }
+
+    /**
+     * Refuse les redirections post-login vers les endpoints JSON (/api/…) ou hors du même hôte.
+     */
+    private function isSafeRedirectAfterLogin(Request $request, string $targetPath): bool
+    {
+        $targetPath = trim($targetPath);
+        if ('' === $targetPath) {
+            return false;
+        }
+        // URL « protocol-relative » (//autre-domaine/…) : à rejeter.
+        if (str_starts_with($targetPath, '//')) {
+            return false;
+        }
+
+        if (preg_match('#^https?://#i', $targetPath)) {
+            $parsed = parse_url($targetPath);
+            if (($parsed['host'] ?? '') !== $request->getHost()) {
+                return false;
+            }
+            $path = $parsed['path'] ?? '/';
+        } else {
+            if (!str_starts_with($targetPath, '/')) {
+                return false;
+            }
+            $path = parse_url($targetPath, PHP_URL_PATH) ?? $targetPath;
+        }
+
+        if (str_starts_with($path, '//')) {
+            return false;
+        }
+        if (str_starts_with($path, '/api/') || '/api' === $path) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

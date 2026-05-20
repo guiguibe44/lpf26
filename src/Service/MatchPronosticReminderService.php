@@ -19,12 +19,14 @@ final class MatchPronosticReminderService
         private readonly MatchPushReminderPlanner $planner,
         private readonly MatchReminderMessageFactory $messageFactory,
         private readonly PlayerReminderDispatcher $playerReminderDispatcher,
+        private readonly MatchKickoffService $matchKickoffService,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
     /**
      * @return array{
+     *     kickoff: array{matchesChecked: int, matchesStarted: int, pronosticsCreated: int},
      *     matchesChecked: int,
      *     matchesReminded: int,
      *     playersTargeted: int,
@@ -40,6 +42,9 @@ final class MatchPronosticReminderService
         $now ??= new \DateTimeImmutable();
 
         $summary = [
+            'kickoff' => $dryRun
+                ? ['matchesChecked' => 0, 'matchesStarted' => 0, 'pronosticsCreated' => 0]
+                : $this->matchKickoffService->processDueKickoffs($now),
             'matchesChecked' => 0,
             'matchesReminded' => 0,
             'playersTargeted' => 0,

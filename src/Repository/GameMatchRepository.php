@@ -284,6 +284,27 @@ class GameMatchRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Matchs programmés dont l’heure de coup d’envoi est passée (coup d’envoi auto).
+     *
+     * @return list<GameMatch>
+     */
+    public function findScheduledPastKickoff(?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.statut = :scheduled')
+            ->andWhere('m.dateHeure IS NOT NULL')
+            ->andWhere('m.dateHeure <= :now')
+            ->setParameter('scheduled', 'SCHEDULED')
+            ->setParameter('now', $now)
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findLastScoredMatchBefore(GameMatch $match): ?GameMatch
     {
         $date = $match->getDateHeure();

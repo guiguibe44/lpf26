@@ -132,6 +132,8 @@ echo "==> Migrations …"
 ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console doctrine:migrations:migrate --no-interaction"
 
 echo "==> Cache prod …"
-ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console cache:clear --no-interaction && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console cache:warmup --no-interaction"
+# Sur mutualisé OVH, cache:clear seul échoue parfois (« Directory not empty » sur var/cache/prod).
+# On force la suppression puis warmup (équivalent fonctionnel à clear + warmup).
+ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && (chmod -R u+w var/cache 2>/dev/null || true) && rm -rf var/cache/* && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console cache:warmup --no-interaction"
 
 echo "Terminé."

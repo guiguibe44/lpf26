@@ -18,7 +18,7 @@ final class TestMatchManualSyncService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly DefaultPronosticService $defaultPronosticService,
+        private readonly MatchKickoffService $matchKickoffService,
         private readonly PronosticScoringService $pronosticScoringService,
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
         private readonly ButeurGoalNotificationService $buteurGoalNotificationService,
@@ -37,15 +37,7 @@ final class TestMatchManualSyncService
     {
         $this->assertManualTestMatch($match);
 
-        $match
-            ->setStatut('LIVE')
-            ->setLiveElapsedMinute(0);
-
-        if (null === $match->getScoreDomicile() || null === $match->getScoreExterieur()) {
-            $match->setScoreDomicile(0)->setScoreExterieur(0);
-        }
-
-        $this->defaultPronosticService->ensureDefaultsForMatch($match);
+        $this->matchKickoffService->applyKickoff($match);
         $this->entityManager->flush();
     }
 
