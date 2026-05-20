@@ -35,7 +35,12 @@
             ? `<img class="match-goals-photo" src="${escapeAttr(photoUrl)}" alt="" width="28" height="28" loading="lazy" decoding="async">`
             : `<span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">${initial}</span>`;
 
-        return `<li class="match-goals-item">${photoMarkup}<span class="match-goals-name">${escapeHtml(goal.name)}</span></li>`;
+        const minuteMarkup =
+            goal.minute != null && goal.minute !== ''
+                ? `<span class="match-goals-minute">${escapeHtml(goal.minute)}'</span>`
+                : '';
+
+        return `<li class="match-goals-item">${photoMarkup}<span class="match-goals-scorer"><span class="match-goals-name">${escapeHtml(goal.name)}</span>${minuteMarkup}</span></li>`;
     }
 
     function renderGoalsSide(goals, side) {
@@ -97,14 +102,9 @@
                 awayEl.textContent = String(match.score_away ?? 0);
             }
 
-            const elapsedEl = card.querySelector('[data-match-elapsed]');
-            if (elapsedEl) {
-                if (match.elapsed_minute) {
-                    elapsedEl.textContent = `${match.elapsed_minute}'`;
-                    elapsedEl.hidden = false;
-                } else {
-                    elapsedEl.hidden = true;
-                }
+            const clockEl = card.querySelector('[data-match-live-clock]');
+            if (clockEl && match.live_clock) {
+                clockEl.textContent = String(match.live_clock);
             }
 
             updateGoalsList(card, match.goals);

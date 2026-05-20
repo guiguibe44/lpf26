@@ -7,6 +7,7 @@ use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
+use App\Service\MatchLiveClockLabelResolver;
 use App\Service\MatchStatusResolver;
 use App\Service\TeamFavoriteCountryService;
 use App\Service\UserNotificationContext;
@@ -18,6 +19,7 @@ final class AppExtension extends AbstractExtension
 {
     public function __construct(
         private readonly MatchStatusResolver $matchStatusResolver,
+        private readonly MatchLiveClockLabelResolver $matchLiveClockLabelResolver,
         private readonly TeamFavoriteCountryService $teamFavoriteCountryService,
         private readonly CountryShortLabelResolver $countryShortLabelResolver,
         private readonly ConnectedPlayerContext $connectedPlayerContext,
@@ -37,6 +39,7 @@ final class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('match_is_live', [$this, 'isMatchLive']),
+            new TwigFunction('match_live_clock_label', [$this, 'getMatchLiveClockLabel']),
             new TwigFunction('match_is_finished', [$this, 'isMatchFinished']),
             new TwigFunction('match_can_edit_before_kickoff', [$this, 'canEditBeforeKickoff']),
             new TwigFunction('match_cotes_visible', [$this, 'areMatchCotesVisible']),
@@ -92,6 +95,11 @@ final class AppExtension extends AbstractExtension
             : ($now instanceof \DateTimeInterface ? \DateTimeImmutable::createFromInterface($now) : null);
 
         return $this->matchStatusResolver->isMatchLive($match, $at);
+    }
+
+    public function getMatchLiveClockLabel(GameMatch $match): string
+    {
+        return $this->matchLiveClockLabelResolver->resolve($match);
     }
 
     public function isMatchFinished(GameMatch $match, ?\DateTimeInterface $now = null): bool

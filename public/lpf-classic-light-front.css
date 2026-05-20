@@ -148,9 +148,14 @@ html.lpf-classic-light body.front-body .ta-main .match-live-compact-table tbody 
     border-top-color: var(--lpf-border) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-team-details__panel,
+html.lpf-classic-light body.front-body .ta-main .match-live-detail-row__cell,
 html.lpf-classic-light body.front-body .ta-main .match-live-prono-chip {
     background: var(--lpf-bg) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-live-detail-panel {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-buteur-pick__name {
@@ -170,8 +175,15 @@ html.lpf-classic-light body.front-body .ta-main .match-live-score-hint {
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-team-total,
-html.lpf-classic-light body.front-body .ta-main .match-live-buteur-points,
-html.lpf-classic-light body.front-body .ta-main .match-live-minute {
+html.lpf-classic-light body.front-body .ta-main .match-live-buteur-points {
+    color: var(--lpf-warning) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-goals-minute {
+    color: var(--lpf-muted) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-live-clock {
     color: var(--lpf-warning) !important;
 }
 

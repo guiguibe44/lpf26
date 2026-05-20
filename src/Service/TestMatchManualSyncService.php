@@ -71,7 +71,6 @@ final class TestMatchManualSyncService
         $this->entityManager->persist($but);
 
         $this->incrementMatchScoreForButeur($match, $buteur);
-        $match->setLiveElapsedMinute($minute);
 
         if ('SCHEDULED' === $match->getStatut()) {
             $match->setStatut('LIVE');
@@ -108,6 +107,7 @@ final class TestMatchManualSyncService
         }
 
         $match->setStatut('FINISHED');
+        $match->setLiveElapsedMinute(null);
         $this->wc2026SyncService->finalizeMatchAfterFullTime($match);
         $this->entityManager->flush();
     }

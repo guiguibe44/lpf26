@@ -1375,43 +1375,20 @@ button.match-card-joker-badge {
     font-weight: 700;
 }
 
-.match-live-score-block {
+.match-live-score-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.15rem;
+    gap: 0.12rem;
     min-width: 0;
 }
 
-.match-live-minute {
-    display: block;
+.match-live-clock {
     font-size: 0.68rem;
     font-weight: 600;
     line-height: 1.2;
     color: #b45309;
     letter-spacing: 0.02em;
-}
-
-.match-live-minute--pulse {
-    animation: match-live-minute-blink 1.15s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .match-live-minute--pulse {
-        animation: none;
-        opacity: 0.85;
-    }
-}
-
-@keyframes match-live-minute-blink {
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.35;
-    }
 }
 
 .match-live-actions {
@@ -1485,12 +1462,27 @@ button.match-card-joker-badge {
     font-weight: 700;
 }
 
+.match-goals-scorer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
 .match-goals-name {
     font-weight: 600;
     color: #334155;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.match-goals-minute {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: #64748b;
 }
 
 html body .match-card-live-btn.btn.btn-warning {
@@ -1618,6 +1610,10 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     min-width: 10rem;
 }
 
+.match-live-compact-th-toggle {
+    width: 2.75rem;
+}
+
 .match-live-compact-rank {
     vertical-align: top;
     white-space: nowrap;
@@ -1692,38 +1688,50 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     padding: 0.1rem 0.35rem;
 }
 
-.match-live-team-details {
-    margin-top: 0.35rem;
+.match-live-compact-toggle {
+    vertical-align: middle;
+    text-align: center;
+    width: 2.75rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
 }
 
-.match-live-team-details__toggle {
-    display: inline-block;
-    cursor: pointer;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #2563eb;
-    list-style: none;
-    user-select: none;
-}
-
-.match-live-team-details__toggle::-webkit-details-marker {
-    display: none;
-}
-
-.match-live-team-details__toggle::before {
-    content: '▸ ';
-}
-
-.match-live-team-details[open] .match-live-team-details__toggle::before {
-    content: '▾ ';
-}
-
-.match-live-team-details__panel {
-    margin-top: 0.45rem;
-    padding: 0.5rem 0.55rem;
+html body .match-live-expand-btn.btn.btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    padding: 0;
     border-radius: 0.45rem;
+}
+
+.match-live-expand-btn__icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.15s ease;
+}
+
+.match-live-expand-btn--open .match-live-expand-btn__icon {
+    transform: rotate(180deg);
+}
+
+.match-live-detail-row__cell {
+    padding: 0 0.55rem 0.55rem !important;
+    border-top: none;
     background: #f8fafc;
+}
+
+.match-live-detail-panel {
+    padding: 0.55rem 0.6rem;
+    border-radius: 0.45rem;
     border: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+.match-live-row + .match-live-detail-row:not([hidden]) td {
+    border-top: 1px dashed #e2e8f0;
 }
 
 .match-live-pronos-detail-list {

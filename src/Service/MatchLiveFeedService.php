@@ -14,6 +14,7 @@ final class MatchLiveFeedService
         private readonly GameMatchRepository $gameMatchRepository,
         private readonly ButRepository $butRepository,
         private readonly MatchStatusResolver $matchStatusResolver,
+        private readonly MatchLiveClockLabelResolver $matchLiveClockLabelResolver,
     ) {
     }
 
@@ -46,7 +47,7 @@ final class MatchLiveFeedService
                 'score_home' => $match->getScoreDomicile() ?? 0,
                 'score_away' => $match->getScoreExterieur() ?? 0,
                 'status' => $match->getStatut(),
-                'elapsed_minute' => $match->getLiveElapsedMinute(),
+                'live_clock' => $this->matchLiveClockLabelResolver->resolve($match),
                 'goals' => $goalsByMatchId[$matchId] ?? [],
             ];
         }

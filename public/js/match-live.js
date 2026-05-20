@@ -270,4 +270,24 @@
             scheduleSimulation();
         });
     }
+
+    teamsRoot.querySelectorAll('[data-match-live-expand]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const detailId = button.getAttribute('aria-controls');
+            if (!detailId) {
+                return;
+            }
+
+            const detailRow = document.getElementById(detailId);
+            if (!detailRow) {
+                return;
+            }
+
+            const willOpen = detailRow.hidden;
+            detailRow.hidden = !willOpen;
+            button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            button.classList.toggle('match-live-expand-btn--open', willOpen);
+            button.title = willOpen ? 'Masquer le détail' : 'Afficher le détail';
+        });
+    });
 })();

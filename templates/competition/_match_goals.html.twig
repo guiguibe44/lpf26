@@ -17,7 +17,12 @@
                     {% else %}
                         <span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">{{ goal.name|first|upper }}</span>
                     {% endif %}
-                    <span class="match-goals-name">{{ goal.name }}</span>
+                    <span class="match-goals-scorer">
+                        <span class="match-goals-name">{{ goal.name }}</span>
+                        {% if goal.minute %}
+                            <span class="match-goals-minute">{{ goal.minute }}'</span>
+                        {% endif %}
+                    </span>
                 </li>
             {% endif %}
         {% endfor %}
@@ -39,7 +44,12 @@
                     {% else %}
                         <span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">{{ goal.name|first|upper }}</span>
                     {% endif %}
-                    <span class="match-goals-name">{{ goal.name }}</span>
+                    <span class="match-goals-scorer">
+                        <span class="match-goals-name">{{ goal.name }}</span>
+                        {% if goal.minute %}
+                            <span class="match-goals-minute">{{ goal.minute }}'</span>
+                        {% endif %}
+                    </span>
                 </li>
             {% endif %}
         {% endfor %}

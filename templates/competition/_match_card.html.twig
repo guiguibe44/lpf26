@@ -126,17 +126,13 @@
             </div>
         {% elseif is_live %}
             <div class="match-live-actions">
-                <div class="match-live-score-block">
+                <div class="match-live-score-wrap">
                     <div class="match-final-score match-final-score--live" data-match-score>
                         <span data-match-score-home>{{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }}</span>
                         <span class="match-live-score-sep">-</span>
                         <span data-match-score-away>{{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}</span>
                     </div>
-                    {% if match.liveElapsedMinute %}
-                        <span class="match-live-minute match-live-minute--pulse" data-match-elapsed>{{ match.liveElapsedMinute }}'</span>
-                    {% else %}
-                        <span class="match-live-minute match-live-minute--pulse" data-match-elapsed hidden></span>
-                    {% endif %}
+                    <span class="match-live-clock" data-match-live-clock>{{ match_live_clock_label(match) }}</span>
                 </div>
                 <a
                     href="{{ path('app_match_live', { id: match.id }) }}"

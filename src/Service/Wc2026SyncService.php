@@ -552,6 +552,7 @@ final class Wc2026SyncService
 
         $this->buteurGoalScoringService->rescoreAll();
         $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+        $match->setLiveElapsedMinute(null);
         $match->setLiveScoresFinalizedAt(new \DateTimeImmutable());
     }
 
