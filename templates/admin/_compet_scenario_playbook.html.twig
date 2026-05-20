@@ -19,6 +19,12 @@
             · cron <code>{{ scenario.cron_path }}</code>
             · <code>{{ scenario.script_path }}</code>
         </p>
+        <div class="admin-compet-scenario__alert" role="status">
+            <strong>Après un déploiement FTP</strong> : si cette page ou l’icône trophée renvoient une 404,
+            vider le cache prod en ouvrant une fois dans le navigateur :
+            <code>/cron-cache-flush.php?token=VOTRE_CRON_SECRET</code>
+            (même secret que les tâches <code>/cron/</code>). Détails dans le fichier <code>docs/cron-job-org.md</code> du dépôt.
+        </div>
     </header>
 
     <div class="admin-compet-scenario__ids ta-card" data-admin-compet-ids-panel>

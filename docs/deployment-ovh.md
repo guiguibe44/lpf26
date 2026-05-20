@@ -95,7 +95,13 @@ php bin/console cache:clear --env=prod
 php bin/console cache:warmup --env=prod
 ```
 
-Sans SSH : supprimer manuellement le contenu de `var/cache/prod/` via le gestionnaire de fichiers OVH (ou tâche planifiée exécutant la commande ci-dessus), puis recharger le site.
+**Sans SSH** : après chaque déploiement FTP, ouvrir une fois dans le navigateur (même secret que les crons) :
+
+`https://26.lotopotofoot.fr/cron-cache-flush.php?token=VOTRE_CRON_SECRET`
+
+(réponse JSON `{"ok":true,...}`). Ce script supprime `var/cache` **sans passer par le routeur Symfony** (donc il fonctionne même quand les nouvelles routes renvoient encore 404).
+
+Alternative : supprimer manuellement le contenu de `var/cache/prod/` via le gestionnaire de fichiers OVH (ou tâche planifiée exécutant la commande ci-dessus), puis recharger le site.
 
 ## 5. Alternative : déploiement Git intégré OVH
 

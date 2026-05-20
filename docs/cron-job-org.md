@@ -28,11 +28,24 @@ Base du site prod : **`https://26.lotopotofoot.fr`** (sans `/l` — pas de préf
 
 | Tâche | URL |
 |--------|-----|
+| **Vider le cache Symfony après déploiement FTP** (ponctuel) | `https://26.lotopotofoot.fr/cron-cache-flush.php?token=VOTRE_SECRET` |
 | Synchro scores / buts (3 min) | `https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET` |
 | Relances pronostic (5 min) | `https://26.lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET` |
 | Match test manuel (ponctuel) | `https://26.lotopotofoot.fr/cron/test-match-step?token=VOTRE_SECRET&match_id=ID&step=…` |
 
 Ne pas utiliser `lotopotofoot.fr` ni `www.lotopotofoot.fr` (redirection vers l’ancien site).
+
+### Après chaque déploiement FTP (404, nouvelles routes absentes)
+
+Le workflow GitHub **n’envoie pas** `var/cache`. Tant que le cache prod n’est pas vidé, Symfony peut répondre **404** sur les nouvelles pages (ex. `/admin/checklist-compet`) et servir d’anciens templates (icônes manquantes).
+
+**À faire une fois** après un push (navigateur ou curl) :
+
+```bash
+curl -sS "https://26.lotopotofoot.fr/cron-cache-flush.php?token=VOTRE_SECRET"
+```
+
+Réponse attendue : `{"ok":true,...}`. Puis recharger le site (le premier chargement peut prendre quelques secondes).
 
 Test (doit renvoyer du JSON, pas une page login) :
 
@@ -89,4 +102,5 @@ https://26.lotopotofoot.fr/cron/test-match-step?token=VOTRE_SECRET&match_id=42&s
 | 403 Token invalide | `CRON_SECRET` différent entre URL et `.env.local` |
 | 503 CRON_SECRET non configuré | Variable absente de `.env.local` ou cache non vidé |
 | 302 / page login | Route `/cron/` non déployée ou cache prod ancien |
+| 404 sur nouvelles pages admin | Cache prod obsolète → appeler `cron-cache-flush.php` (voir ci-dessus) |
 | 500 | Voir `var/log/prod.log` |
