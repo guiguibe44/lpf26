@@ -1166,39 +1166,6 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     padding: 1rem 1.15rem;
 }
 
-.match-card--has-team-points {
-    padding-bottom: 2.35rem;
-}
-
-.match-card-team-points-badge {
-    position: absolute;
-    right: 0.65rem;
-    bottom: 0.6rem;
-    z-index: 5;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.22rem 0.5rem;
-    border-radius: 0.4rem;
-    background: #ecfdf5;
-    border: 1px solid #6ee7b7;
-    color: #047857;
-    font-size: 0.72rem;
-    font-weight: 700;
-    line-height: 1.2;
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgb(4 120 87 / 12%);
-    pointer-events: none;
-}
-
-.match-card-team-points-badge__value {
-    font-variant-numeric: tabular-nums;
-}
-
-.match-card--has-joker.match-card--has-team-points .match-card-team-points-badge {
-    right: 0.65rem;
-    bottom: 0.6rem;
-}
-
 .match-card--live {
     background: #f1f5f9;
     border-color: #cbd5e1;
@@ -3095,6 +3062,80 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 
 .match-partner--pronos .match-partner-row + .match-partner-row {
     margin-top: 0;
+}
+
+.match-team-points-ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 9999px;
+    border: 3px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    box-shadow: 0 2px 8px rgb(15 23 42 / 8%);
+    box-sizing: border-box;
+}
+
+.match-team-points-ring__value {
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.match-team-points-ring__label {
+    margin-top: 0.1rem;
+    font-size: 0.5rem;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+}
+
+.match-team-points-ring--tier-negative {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+    box-shadow: 0 0 0 1px rgb(239 68 68 / 15%), 0 3px 10px rgb(239 68 68 / 18%);
+}
+
+.match-team-points-ring--tier-zero {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.match-team-points-ring--tier-low {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    color: #b45309;
+    box-shadow: 0 0 0 1px rgb(245 158 11 / 12%), 0 3px 10px rgb(245 158 11 / 14%);
+}
+
+.match-team-points-ring--tier-good {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    color: #15803d;
+    box-shadow: 0 0 0 1px rgb(34 197 94 / 12%), 0 3px 10px rgb(34 197 94 / 14%);
+}
+
+.match-team-points-ring--tier-strong {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+    color: #0369a1;
+    box-shadow: 0 0 0 1px rgb(14 165 233 / 14%), 0 3px 10px rgb(14 165 233 / 16%);
+}
+
+.match-team-points-ring--tier-high {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+    box-shadow: 0 0 0 1px rgb(37 99 235 / 18%), 0 4px 12px rgb(37 99 235 / 22%);
 }
 
 .match-partner-row--self .match-partner-score {

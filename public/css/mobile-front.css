@@ -460,12 +460,17 @@
 
     .ta-main .match-partner-avatar-slot,
     .ta-main .match-partner-avatar-slot img.match-partner-avatar,
-    .ta-main .match-partner-avatar-slot .match-partner-avatar--placeholder {
+    .ta-main .match-partner-avatar-slot .match-partner-avatar--placeholder,
+    .ta-main .match-team-points-ring {
         width: 2.75rem !important;
         height: 2.75rem !important;
         max-width: 2.75rem !important;
         max-height: 2.75rem !important;
         font-size: 1rem;
+    }
+
+    .ta-main .match-team-points-ring__value {
+        font-size: 0.82rem;
     }
 
     .ta-main .match-partner-score {

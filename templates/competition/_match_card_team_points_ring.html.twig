@@ -1,0 +1,9 @@
+{# @var team_match_points int #}
+<div
+    class="match-team-points-ring match-team-points-ring--tier-{{ match_team_points_tier(team_match_points) }}"
+    title="{{ match_team_points_tier_label(team_match_points) }} — {{ team_match_points|number_format(0, ',', ' ') }} points sur ce match"
+    aria-label="Total équipe : {{ team_match_points }} points"
+>
+    <span class="match-team-points-ring__value">{{ team_match_points|number_format(0, ',', ' ') }}</span>
+    <span class="match-team-points-ring__label" aria-hidden="true">pts</span>
+</div>

@@ -10,6 +10,7 @@ use App\Service\CountryShortLabelResolver;
 use App\Service\MatchLiveClockLabelResolver;
 use App\Service\MatchStatusResolver;
 use App\Service\TeamFavoriteCountryService;
+use App\Service\TeamMatchPointsTierResolver;
 use App\Service\UserNotificationContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -24,6 +25,7 @@ final class AppExtension extends AbstractExtension
         private readonly CountryShortLabelResolver $countryShortLabelResolver,
         private readonly ConnectedPlayerContext $connectedPlayerContext,
         private readonly UserNotificationContext $userNotificationContext,
+        private readonly TeamMatchPointsTierResolver $teamMatchPointsTierResolver,
     ) {
     }
 
@@ -49,7 +51,19 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('connected_player_buteur', [$this, 'getConnectedPlayerButeur']),
             new TwigFunction('connected_team_favorite_country', [$this, 'getConnectedTeamFavoriteCountry']),
             new TwigFunction('unread_notifications_count', [$this, 'getUnreadNotificationsCount']),
+            new TwigFunction('match_team_points_tier', [$this, 'getMatchTeamPointsTier']),
+            new TwigFunction('match_team_points_tier_label', [$this, 'getMatchTeamPointsTierLabel']),
         ];
+    }
+
+    public function getMatchTeamPointsTier(int $points): string
+    {
+        return $this->teamMatchPointsTierResolver->resolveTier($points);
+    }
+
+    public function getMatchTeamPointsTierLabel(int $points): string
+    {
+        return $this->teamMatchPointsTierResolver->resolveTierLabel($points);
     }
 
     /**

@@ -20,7 +20,7 @@
 {% set team_match_points_by_match_id = team_match_points_by_match_id|default({}) %}
 {% set team_match_points = team_match_points_by_match_id[match.id] ?? null %}
 
-<article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}{{ match_joker ? ' match-card--has-joker' : '' }}{{ is_live ? ' match-card--live' : '' }}{{ is_finished and team_match_points is not null ? ' match-card--has-team-points' : '' }}" data-match-id="{{ match.id }}">
+<article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}{{ match_joker ? ' match-card--has-joker' : '' }}{{ is_live ? ' match-card--live' : '' }}" data-match-id="{{ match.id }}">
     {% if is_favorite_country_match or match.isKdoMatch %}
         <div class="match-card-marks{{ is_favorite_country_match and match.isKdoMatch ? ' match-card-marks--dual' : '' }}">
             {% if match.isKdoMatch %}
@@ -196,15 +196,13 @@
     {% endif %}
 
     {% set show_self_prono_row = app.user and not can_pronostic %}
-    <div class="match-partner{{ show_self_prono_row or partner_pronostics is not empty ? ' match-partner--pronos' : '' }}">
+    {% set show_team_points_ring = is_finished and team_match_points is not null %}
+    {% set show_prono_line = show_self_prono_row or partner_pronostics is not empty or show_team_points_ring %}
+    <div class="match-partner{{ show_prono_line ? ' match-partner--pronos' : '' }}">
         {% if show_self_prono_row %}
             {% include 'competition/_match_card_self_pronostic_row.html.twig' with { pronostic: pronostic } only %}
         {% endif %}
-        {% if partner_pronostics is empty %}
-            {% if not show_self_prono_row %}
-                <span class="match-partner-empty">—</span>
-            {% endif %}
-        {% else %}
+        {% if partner_pronostics is not empty %}
             {% for partner_pronostic in partner_pronostics %}
                 {% set partner_user = partner_pronostic.joueur %}
                 <div class="match-partner-row" aria-label="Pronostic partenaire {{ partner_pronostic.scoreDomicile }} à {{ partner_pronostic.scoreExterieur }}">
@@ -218,13 +216,11 @@
                     <span class="match-partner-score">{{ partner_pronostic.scoreDomicile }} - {{ partner_pronostic.scoreExterieur }}</span>
                 </div>
             {% endfor %}
+        {% elseif not show_self_prono_row and not show_team_points_ring %}
+            <span class="match-partner-empty">—</span>
+        {% endif %}
+        {% if show_team_points_ring %}
+            {% include 'competition/_match_card_team_points_ring.html.twig' with { team_match_points: team_match_points } only %}
         {% endif %}
     </div>
-
-    {% if is_finished and team_match_points is not null %}
-        <div class="match-card-team-points-badge" title="Total des points équipe sur ce match">
-            <span class="match-card-team-points-badge__value">{{ team_match_points|number_format(0, ',', ' ') }} pts</span>
-            <span class="sr-only">Points équipe sur ce match : {{ team_match_points }}</span>
-        </div>
-    {% endif %}
 </article>
