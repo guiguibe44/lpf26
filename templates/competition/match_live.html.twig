@@ -112,6 +112,10 @@
             teams: live_view.teams,
             cotes_visible: match_cotes_visible(match),
         } only %}
+        {% include 'competition/_match_live_match_buteurs.html.twig' with {
+            match_buteurs: live_view.matchButeurs,
+            match: match,
+        } only %}
     </section>
 
     {% if match.isKdoMatch and live_view.kdoOutlook %}

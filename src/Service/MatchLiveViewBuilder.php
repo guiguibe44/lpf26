@@ -56,7 +56,16 @@ final class MatchLiveViewBuilder
      *         moyenne: ?float,
      *         max: ?float,
      *         pronostics_count: int
-     *     }
+     *     },
+     *     matchButeurs: list<array{
+     *         id: int,
+     *         name: string,
+     *         photo: ?string,
+     *         country: ?string,
+     *         coefficient: float,
+     *         selections_count: int,
+     *         teams: list<string>
+     *     }>
      * }
      */
     public function build(GameMatch $match, int $scoreDomicile, int $scoreExterieur): array
@@ -153,6 +162,7 @@ final class MatchLiveViewBuilder
             'teams' => $teamRows,
             'kdoOutlook' => $this->kdoMatchWinnerService->buildOutlook($match, $scoreDomicile, $scoreExterieur),
             'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
+            'matchButeurs' => $this->buildMatchButeurSelections($teams, $matchCountryIds),
         ];
     }
 
@@ -169,6 +179,7 @@ final class MatchLiveViewBuilder
             'teams' => array_map(static fn (MatchLiveTeamRow $row): array => $row->toArray(), $data['teams']),
             'kdoOutlook' => $data['kdoOutlook'] instanceof KdoMatchOutlook ? $data['kdoOutlook']->toArray() : null,
             'cotes' => $data['cotes'],
+            'matchButeurs' => $data['matchButeurs'],
         ];
     }
 
@@ -342,6 +353,80 @@ final class MatchLiveViewBuilder
                 'invert_joker' => $invertButeurJoker,
             ];
         }
+
+        return $rows;
+    }
+
+    /**
+     * Buteurs choisis par au moins un joueur, dont le pays est en lice sur ce match (dédoublonnés).
+     *
+     * @param list<Team> $teams
+     * @param list<int> $matchCountryIds
+     *
+     * @return list<array{
+     *     id: int,
+     *     name: string,
+     *     photo: ?string,
+     *     country: ?string,
+     *     coefficient: float,
+     *     selections_count: int,
+     *     teams: list<string>
+     * }>
+     */
+    private function buildMatchButeurSelections(array $teams, array $matchCountryIds): array
+    {
+        if ([] === $matchCountryIds) {
+            return [];
+        }
+
+        $byButeurId = [];
+        foreach ($teams as $team) {
+            $teamName = trim((string) $team->getName());
+            foreach ($team->getMembers() as $member) {
+                $player = $member->getPlayer();
+                if (!$player instanceof User) {
+                    continue;
+                }
+
+                $buteur = $player->getButeurChoisi();
+                if (!$buteur instanceof Buteur) {
+                    continue;
+                }
+
+                $buteurId = $buteur->getId();
+                $countryId = $buteur->getPays()?->getId();
+                if (null === $buteurId || null === $countryId || !\in_array((int) $countryId, $matchCountryIds, true)) {
+                    continue;
+                }
+
+                $key = (int) $buteurId;
+                if (!isset($byButeurId[$key])) {
+                    $byButeurId[$key] = [
+                        'id' => $key,
+                        'name' => trim((string) $buteur->getNom()),
+                        'photo' => $buteur->getPhotoPublicPath(),
+                        'country' => $buteur->getPays()?->getNom(),
+                        'coefficient' => $this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur),
+                        'selections_count' => 0,
+                        'teams' => [],
+                    ];
+                }
+
+                ++$byButeurId[$key]['selections_count'];
+                if ('' !== $teamName && !\in_array($teamName, $byButeurId[$key]['teams'], true)) {
+                    $byButeurId[$key]['teams'][] = $teamName;
+                }
+            }
+        }
+
+        $rows = array_values($byButeurId);
+        usort(
+            $rows,
+            static function (array $a, array $b): int {
+                return $b['coefficient'] <=> $a['coefficient']
+                    ?: strcmp($a['name'], $b['name']);
+            },
+        );
 
         return $rows;
     }
