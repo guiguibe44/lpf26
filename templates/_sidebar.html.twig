@@ -91,14 +91,17 @@
                         <i class="ti ti-settings" aria-hidden="true"></i>
                     </a>
                 {% endif %}
-                <a
-                    href="{{ path('app_logout') }}"
-                    class="ta-sidebar-notify ta-sidebar-logout"
-                    title="Déconnexion"
-                    aria-label="Déconnexion"
-                >
-                    <i class="ti ti-logout" aria-hidden="true"></i>
-                </a>
+                <form method="post" action="{{ path('app_logout') }}" class="ta-sidebar-logout-form" data-turbo="false">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button
+                        type="submit"
+                        class="ta-sidebar-notify ta-sidebar-logout"
+                        title="Déconnexion"
+                        aria-label="Déconnexion"
+                    >
+                        <i class="ti ti-logout" aria-hidden="true"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
