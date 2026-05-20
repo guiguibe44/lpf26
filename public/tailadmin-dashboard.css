@@ -1548,15 +1548,44 @@ html body .match-card-live-btn.btn.btn-warning .ti {
 
 .match-live-score-team {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    font-weight: 600;
+    gap: 0.3rem;
+    min-width: 0;
     color: #0f172a;
 }
 
+.match-live-score-team--home {
+    justify-self: end;
+}
+
 .match-live-score-team--away {
-    flex-direction: row-reverse;
+    justify-self: start;
+}
+
+.match-live-score-flag,
+.match-live-score-team .match-flag-placeholder {
+    display: block;
+    width: 1.35rem;
+    height: 0.9rem;
+    border-radius: 0.15rem;
+    object-fit: cover;
+}
+
+.match-live-score-team .match-flag-placeholder {
+    font-size: 0.55rem;
+}
+
+.match-live-score-team__name {
+    display: block;
+    max-width: 4.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    word-break: break-word;
+    color: #475569;
 }
 
 .match-live-score-display {
