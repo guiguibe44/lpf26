@@ -1527,6 +1527,25 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     gap: 1rem;
 }
 
+.match-live-score-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.match-live-goals-wrap {
+    margin-top: 0.85rem;
+    text-align: left;
+}
+
+.match-live-goals-wrap .match-goals-sides {
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .match-live-score-team {
     display: flex;
     align-items: center;
@@ -1553,17 +1572,12 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     color: #64748b;
 }
 
-.match-live-score-hint {
-    margin-top: 0.75rem;
-    margin-bottom: 0;
-}
-
 .match-live-simulator-form {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 0.75rem 1rem;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
 }
 
 .match-live-simulator-field {

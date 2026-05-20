@@ -23,19 +23,24 @@
                 {% include 'components/_country_flag_img.html.twig' with { country: match.paysDomicile } only %}
                 <span>{{ match.paysDomicile.nom }}</span>
             </div>
-            <p class="match-live-score-display" id="match-live-current-score" aria-live="polite">
-                <span id="match-live-score-home">{{ live_view.scoreDomicile }}</span>
-                <span class="match-live-score-sep">-</span>
-                <span id="match-live-score-away">{{ live_view.scoreExterieur }}</span>
-            </p>
+            <div class="match-live-score-center">
+                <p class="match-live-score-display" id="match-live-current-score" aria-live="polite">
+                    <span id="match-live-score-home">{{ live_view.scoreDomicile }}</span>
+                    <span class="match-live-score-sep">-</span>
+                    <span id="match-live-score-away">{{ live_view.scoreExterieur }}</span>
+                </p>
+                {% if match.statut == 'LIVE' %}
+                    <span class="match-live-clock">{{ match_live_clock_label(match) }}</span>
+                {% endif %}
+            </div>
             <div class="match-live-score-team match-live-score-team--away">
                 {% include 'components/_country_flag_img.html.twig' with { country: match.paysExterieur } only %}
                 <span>{{ match.paysExterieur.nom }}</span>
             </div>
         </div>
-        <p class="ta-card-text match-live-score-hint">
-            Score en cours{% if match.statut == 'LIVE' %} · <span class="ta-badge ta-badge-warning">Live</span>{% endif %}
-        </p>
+        <div class="match-goals-wrap match-live-goals-wrap">
+            {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
+        </div>
     </section>
 
     {% if match_active_jokers is not empty %}
@@ -80,7 +85,6 @@
 
     <section class="ta-card mt-5 match-live-simulator-card">
         <h2 class="ta-card-title">Simulateur de score</h2>
-        <p class="ta-card-text">Ajustez le score pour estimer les points de chaque pronostic (cotes incluses).</p>
         <form class="match-live-simulator-form" id="match-live-simulator" action="#" method="get">
             <label class="match-live-simulator-field">
                 <span>{{ match.paysDomicile.nom }}</span>
@@ -102,12 +106,6 @@
         {% if match_cotes_visible(match) %}
             {% include 'competition/_match_live_cotes.html.twig' with { cotes: live_view.cotes } only %}
         {% endif %}
-        <p class="ta-card-text mb-3">
-            <span class="match-live-legend">Place</span> = classement simulé (<span class="match-live-legend">n</span> = rang avant le match).
-            <span class="match-live-legend">Total</span> = classement général (identique à /classement au score en cours) ; autre score = avant-match + simulation.
-            <span class="match-live-legend">Match</span> = pronos + buteurs sur ce match.
-            Prono 1 / 2 : score simulé · points.
-        </p>
         {% include 'competition/_match_live_teams.html.twig' with {
             teams: live_view.teams,
             cotes_visible: match_cotes_visible(match),
@@ -117,9 +115,6 @@
     {% if live_view.matchButeurs is not empty %}
         <section class="ta-card mt-5 match-live-buteurs-section">
             <h2 class="ta-card-title">Buteurs des pays en lice</h2>
-            <p class="ta-card-text mb-3">
-                Joueurs choisis pour {{ match.paysDomicile.nom }} ou {{ match.paysExterieur.nom }} · cote = 1 pt de base × coefficient (max ×5).
-            </p>
             {% include 'competition/_match_live_match_buteurs.html.twig' with { match_buteurs: live_view.matchButeurs } only %}
         </section>
     {% endif %}

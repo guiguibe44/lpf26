@@ -161,6 +161,7 @@ class CompetitionController extends AbstractController
         GameMatch $match,
         MatchStatusResolver $matchStatusResolver,
         MatchLiveViewBuilder $matchLiveViewBuilder,
+        ButRepository $butRepository,
     ): Response {
         if (!$matchStatusResolver->isMatchLive($match)) {
             if ($matchStatusResolver->isMatchFinished($match)) {
@@ -176,6 +177,12 @@ class CompetitionController extends AbstractController
         $scoreExterieur = $match->getScoreExterieur() ?? 0;
         $liveView = $matchLiveViewBuilder->build($match, $scoreDomicile, $scoreExterieur);
 
+        $matchGoals = [];
+        $matchId = $match->getId();
+        if (null !== $matchId) {
+            $matchGoals = $butRepository->findGoalRowsIndexedByMatchIds([$matchId])[$matchId] ?? [];
+        }
+
         $activeJokers = [];
         foreach ($liveView['teams'] as $teamRow) {
             if (null !== $teamRow->activeJoker) {
@@ -190,6 +197,7 @@ class CompetitionController extends AbstractController
         return $this->render('competition/match_live.html.twig', [
             'match' => $match,
             'live_view' => $liveView,
+            'match_goals' => $matchGoals,
             'simulate_url' => $this->generateUrl('app_match_pronostics_simulate', ['id' => $match->getId()]),
             'match_active_jokers' => $activeJokers,
         ]);
