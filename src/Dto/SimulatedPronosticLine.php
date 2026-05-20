@@ -18,6 +18,10 @@ final class SimulatedPronosticLine
         public readonly bool $priseRisque,
         public readonly float $teamPoints,
         public readonly bool $scoreInverted = false,
+        /** @var list<array{factor: string, label: ?string}> */
+        public readonly array $calcMultipliers = [],
+        /** @var list<string> */
+        public readonly array $calcNotes = [],
     ) {
     }
 
@@ -38,6 +42,8 @@ final class SimulatedPronosticLine
             'teamPoints' => $this->teamPoints,
             'priseRisque' => $this->priseRisque,
             'scoreInverted' => $this->scoreInverted,
+            'calcMultipliers' => $this->calcMultipliers,
+            'calcNotes' => $this->calcNotes,
         ];
     }
 }

@@ -1,0 +1,33 @@
+{# @var badges list<array{code, name, image, icon, kind, label, description, technical_lines}> #}
+{# @var variant string row|detail #}
+{% set variant = variant|default('detail') %}
+{% if badges is not empty %}
+    <ul class="match-live-team-jokers match-live-team-jokers--{{ variant }}" aria-label="Jokers actifs sur ce match">
+        {% for badge in badges %}
+            <li class="match-live-joker-badge match-live-joker-badge--{{ badge.kind }}">
+                <button
+                    type="button"
+                    class="match-live-joker-badge__trigger"
+                    data-match-joker-info-open
+                    data-joker-info="{{ {
+                        name: badge.name,
+                        label: badge.label,
+                        kind: badge.kind,
+                        image: badge.image ? asset(badge.image) : '',
+                        description: badge.description|default(''),
+                        technical_lines: badge.technical_lines|default([])
+                    }|json_encode|e('html_attr') }}"
+                    aria-label="Détails du joker {{ badge.name }}"
+                    title="{{ badge.name }}"
+                >
+                    <span class="match-live-joker-chip match-live-joker-chip--{{ badge.kind }}" aria-hidden="true">
+                        <i class="ti {{ badge.icon|default('ti-wand') }}"></i>
+                    </span>
+                    {% if variant == 'detail' %}
+                        <span class="match-live-joker-badge__name">{{ badge.name }}</span>
+                    {% endif %}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

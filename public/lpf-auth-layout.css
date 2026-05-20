@@ -223,7 +223,10 @@ html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"] {
     cursor: pointer;
     box-sizing: border-box;
     text-decoration: none;
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
 }
 
 html.dark body.front-body--auth .auth-wrap .ta-auth-submit,
@@ -234,7 +237,10 @@ html.dark body.front-body--auth .auth-wrap button[type="submit"] {
 }
 
 html.dark body.front-body--auth .auth-wrap .ta-auth-submit:hover:not(:disabled),
-html.dark body.front-body--auth .auth-wrap button[type="submit"]:hover:not(:disabled) {
+html.dark
+    body.front-body--auth
+    .auth-wrap
+    button[type="submit"]:hover:not(:disabled) {
     background-color: var(--auth-primary-hover, #16a34a);
     border-color: var(--auth-primary-hover, #16a34a);
 }
@@ -246,23 +252,47 @@ html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"] {
     border-color: var(--lpf-primary, #16a34a);
 }
 
-html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:hover:not(:disabled),
-html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:hover:not(:disabled) {
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    .ta-auth-submit:hover:not(:disabled),
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    button[type="submit"]:hover:not(:disabled) {
     background-color: var(--lpf-primary-hover, #15803d);
     border-color: var(--lpf-primary-hover, #15803d);
 }
 
-html.dark body.front-body--auth .auth-wrap .ta-auth-submit:active:not(:disabled),
-html.dark body.front-body--auth .auth-wrap button[type="submit"]:active:not(:disabled),
-html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:active:not(:disabled),
-html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:active:not(:disabled) {
+html.dark
+    body.front-body--auth
+    .auth-wrap
+    .ta-auth-submit:active:not(:disabled),
+html.dark
+    body.front-body--auth
+    .auth-wrap
+    button[type="submit"]:active:not(:disabled),
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    .ta-auth-submit:active:not(:disabled),
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    button[type="submit"]:active:not(:disabled) {
     transform: scale(0.97);
 }
 
 html.dark body.front-body--auth .auth-wrap .ta-auth-submit:disabled,
 html.dark body.front-body--auth .auth-wrap button[type="submit"]:disabled,
-html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-submit:disabled,
-html.lpf-classic-light body.front-body--auth .auth-wrap button[type="submit"]:disabled {
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    .ta-auth-submit:disabled,
+html.lpf-classic-light
+    body.front-body--auth
+    .auth-wrap
+    button[type="submit"]:disabled {
     opacity: 0.55;
     cursor: not-allowed;
     transform: none;

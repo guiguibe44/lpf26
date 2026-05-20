@@ -183,23 +183,11 @@ class CompetitionController extends AbstractController
             $matchGoals = $butRepository->findGoalRowsIndexedByMatchIds([$matchId])[$matchId] ?? [];
         }
 
-        $activeJokers = [];
-        foreach ($liveView['teams'] as $teamRow) {
-            if (null !== $teamRow->activeJoker) {
-                $activeJokers[] = [
-                    'team_name' => $teamRow->teamName,
-                    'team_logo' => $teamRow->teamLogo,
-                    'joker' => $teamRow->activeJoker,
-                ];
-            }
-        }
-
         return $this->render('competition/match_live.html.twig', [
             'match' => $match,
             'live_view' => $liveView,
             'match_goals' => $matchGoals,
             'simulate_url' => $this->generateUrl('app_match_pronostics_simulate', ['id' => $match->getId()]),
-            'match_active_jokers' => $activeJokers,
         ]);
     }
 
@@ -247,22 +235,10 @@ class CompetitionController extends AbstractController
             $matchGoals = $butRepository->findGoalRowsIndexedByMatchIds([$matchId])[$matchId] ?? [];
         }
 
-        $matchActiveJokers = [];
-        foreach ($liveView['teams'] as $teamRow) {
-            if (null !== $teamRow->activeJoker) {
-                $matchActiveJokers[] = [
-                    'team_name' => $teamRow->teamName,
-                    'team_logo' => $teamRow->teamLogo,
-                    'joker' => $teamRow->activeJoker,
-                ];
-            }
-        }
-
         return $this->render('competition/match_pronostics.html.twig', [
             'match' => $match,
             'live_view' => $liveView,
             'match_goals' => $matchGoals,
-            'match_active_jokers' => $matchActiveJokers,
         ]);
     }
 

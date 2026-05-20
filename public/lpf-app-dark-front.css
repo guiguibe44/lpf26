@@ -72,6 +72,28 @@ html.dark body.front-body .ta-main .match-final-score--live {
     color: var(--lpf-warning) !important;
 }
 
+html.dark body.front-body .ta-main .match-partner-row--self .match-partner-score,
+html.dark body.front-body .ta-main .match-viewer-prono__score {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-viewer-prono__label {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-viewer-prono {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-viewer-prono__pts {
+    color: var(--lpf-success) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-row--viewer {
+    background: rgba(245, 158, 11, 0.08) !important;
+}
+
 html.dark body.front-body .ta-main .match-final-score,
 html.dark body.front-body .ta-main .match-locked-pronostic,
 html.dark body.front-body .ta-main .match-time,
@@ -177,6 +199,15 @@ html.dark body.front-body .ta-main .match-goals-name {
 html.dark body.front-body .ta-main .match-live-compact-player,
 html.dark body.front-body .ta-main .match-live-compact-calc,
 html.dark body.front-body .ta-main .match-live-compact-buteurs-label,
+html.dark body.front-body .ta-main .match-live-prono-joker-factor {
+    color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-calc-note {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: var(--lpf-warning) !important;
+}
+
 html.dark body.front-body .ta-main .match-live-prono-meta,
 html.dark body.front-body .ta-main .match-live-prono-empty,
 html.dark body.front-body .ta-main .match-live-buteurs-title,

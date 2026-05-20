@@ -22,7 +22,6 @@
         match: match,
         live_view: live_view,
         match_goals: match_goals,
-        match_active_jokers: match_active_jokers,
     } %}
 {% endblock %}
 
@@ -38,4 +37,5 @@
         };
     </script>
     <script src="{{ asset('js/match-live.js') }}" defer></script>
+    <script src="{{ asset('js/match-live-joker-info.js') }}?v=4" defer></script>
 {% endblock %}

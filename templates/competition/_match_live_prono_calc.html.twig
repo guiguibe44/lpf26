@@ -1,0 +1,22 @@
+{# prono: SimulatedPronosticLine, cotes_visible: bool #}
+<span class="match-live-prono-detail__calc ta-num" data-prono-meta>
+    <span data-prono-base>{{ prono.basePoints }}</span>
+    {% if cotes_visible %}
+        <span class="match-live-prono-cote-sep" data-prono-cote-sep>×</span>
+        <span data-prono-cote>{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
+    {% else %}
+        <span data-prono-cote-sep hidden>×</span>
+        <span data-prono-cote hidden></span>
+    {% endif %}
+    {% for mult in prono.calcMultipliers|default([]) %}
+        <span class="match-live-prono-cote-sep" data-prono-joker-sep>×</span>
+        <span
+            class="match-live-prono-joker-factor"
+            data-prono-joker-factor
+            {% if mult.label %}title="{{ mult.label }}"{% endif %}
+        >{{ mult.factor }}</span>
+    {% endfor %}
+    {% for note in prono.calcNotes|default([]) %}
+        <span class="match-live-prono-calc-note" data-prono-calc-note title="{{ note }}">{{ note }}</span>
+    {% endfor %}
+</span>

@@ -32,6 +32,27 @@ class Joker
 
     public const ESPION_PLACE_CONFIRMATION = 'Le joker Espion est définitif : une fois posé sur ce match, il ne peut plus être retiré. Souhaitez-vous le jouer ?';
 
+    public static function tablerIconClassForCode(?string $code): string
+    {
+        return match ($code) {
+            self::CODE_DOUBLE_EQUIPE => 'ti-users-group',
+            self::CODE_PIQUE_POINTS => 'ti-hand-grab',
+            self::CODE_ESPION => 'ti-eye',
+            self::CODE_DOUBLE_BUTEUR => 'ti-ball-football',
+            self::CODE_INVERSE_BUTEUR => 'ti-arrow-back-up',
+            self::CODE_INVERSE_SCORE => 'ti-arrows-left-right',
+            self::CODE_BOUCLIER => 'ti-shield',
+            self::CODE_COLLECTE_POINTS => 'ti-coins',
+            self::CODE_EQUIPE_FAVORITE => 'ti-shield-star',
+            default => 'ti-wand',
+        };
+    }
+
+    public function getTablerIconClass(): string
+    {
+        return self::tablerIconClassForCode($this->code);
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

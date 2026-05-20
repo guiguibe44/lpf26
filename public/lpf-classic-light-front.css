@@ -104,6 +104,11 @@ html.lpf-classic-light body.front-body .ta-main .match-card-live-btn.btn.btn-war
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-final-score,
+html.lpf-classic-light body.front-body .ta-main .match-partner-row--self .match-partner-score,
+html.lpf-classic-light body.front-body .ta-main .match-viewer-prono__score {
+    color: #1d4ed8 !important;
+}
+
 html.lpf-classic-light body.front-body .ta-main .match-locked-pronostic,
 html.lpf-classic-light body.front-body .ta-main .match-time,
 html.lpf-classic-light body.front-body .ta-main .match-partner-score {

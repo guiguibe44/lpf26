@@ -11,6 +11,7 @@ use App\Entity\Buteur;
 use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Team;
+use App\Entity\Pronostic;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\ButRepository;
@@ -20,10 +21,12 @@ use App\Repository\TeamMemberRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamRankingSnapshotRepository;
 use App\Repository\TeamRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 
 final class MatchLiveViewBuilder
 {
     public function __construct(
+        private readonly Security $security,
         private readonly TeamRepository $teamRepository,
         private readonly PronosticRepository $pronosticRepository,
         private readonly TeamMemberRepository $teamMemberRepository,
@@ -42,6 +45,8 @@ final class MatchLiveViewBuilder
         private readonly JokerCollectePointsService $jokerCollectePointsService,
         private readonly ButRepository $butRepository,
         private readonly MatchCotePreviewService $matchCotePreviewService,
+        private readonly MatchTeamJokerDisplayBuilder $matchTeamJokerDisplayBuilder,
+        private readonly PronosticCalcDisplayService $pronosticCalcDisplayService,
     ) {
     }
 
@@ -67,6 +72,26 @@ final class MatchLiveViewBuilder
      *         coefficient: float,
      *         selections_count: int,
      *         teams: list<string>
+     *     }>,
+     *     viewerPronostic: ?array{
+     *         pronostic_id: int,
+     *         team_id: int,
+     *         pred_home: int,
+     *         pred_away: int,
+     *         points: int,
+     *         coefficient: float,
+     *         base_points: int,
+     *         score_inverted: bool,
+     *         prise_risque: bool
+     *     },
+     *     espionBadges: list<array{
+     *         code: string,
+     *         name: string,
+     *         image: ?string,
+     *         kind: string,
+     *         label: string,
+     *         description: ?string,
+     *         technical_lines: list<string>
      *     }>
      * }
      */
@@ -88,8 +113,18 @@ final class MatchLiveViewBuilder
             $this->jokerScoringApplicator,
             $this->pronosticScoreInversionService->getTargetTeamIdsForMatch($match),
         );
+        $linesAfterSimulate = $simulatedLines;
         $simulatedLines = $this->jokerStealPointsService->adjustSimulatedLines($match, $simulatedLines);
+        $linesAfterSteal = $simulatedLines;
         $simulatedLines = $this->jokerCollectePointsService->adjustSimulatedLines($match, $simulatedLines);
+        $simulatedLines = $this->pronosticCalcDisplayService->enrich(
+            $match,
+            $scoreDomicile,
+            $scoreExterieur,
+            $linesAfterSimulate,
+            $linesAfterSteal,
+            $simulatedLines,
+        );
 
         $linesByTeamId = [];
         foreach ($simulatedLines as $line) {
@@ -109,6 +144,11 @@ final class MatchLiveViewBuilder
         $jokersByTeamId = $this->teamJokerService->buildActiveJokersByTeamIdForMatch($match);
         $teams = $this->teamRepository->findAllWithMembersAndPlayers();
         $buteurMatchPointsByTeamId = $this->buildButeurMatchPointsByTeamId($match, $teams);
+        $teamIds = array_values(array_filter(array_map(
+            static fn (Team $team): ?int => $team->getId(),
+            $teams,
+        )));
+        $jokerBadgesByTeamId = $this->matchTeamJokerDisplayBuilder->buildByTeamIdForMatch($match, $teamIds);
 
         $teamRows = [];
         foreach ($teams as $team) {
@@ -136,6 +176,7 @@ final class MatchLiveViewBuilder
                 $teamPronostics,
                 $this->buildButeursForTeam($team, $match, $matchCountryIds),
                 $jokersByTeamId[$teamId] ?? null,
+                $jokerBadgesByTeamId[$teamId] ?? [],
             );
         }
 
@@ -154,6 +195,7 @@ final class MatchLiveViewBuilder
                     $row->pronostics,
                     $row->buteurs,
                     $row->activeJoker,
+                    $row->jokerBadges,
                 );
             },
             $teamRows,
@@ -176,6 +218,8 @@ final class MatchLiveViewBuilder
             'kdoOutlook' => $this->kdoMatchWinnerService->buildOutlook($match, $scoreDomicile, $scoreExterieur),
             'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
             'matchButeurs' => $this->buildMatchButeurSelections($teams, $matchCountryIds),
+            'viewerPronostic' => $this->buildViewerPronostic($pronostics, $simulatedLines),
+            'espionBadges' => $this->matchTeamJokerDisplayBuilder->buildEspionBadgesForMatch($match),
         ];
     }
 
@@ -193,6 +237,91 @@ final class MatchLiveViewBuilder
             'kdoOutlook' => $data['kdoOutlook'] instanceof KdoMatchOutlook ? $data['kdoOutlook']->toArray() : null,
             'cotes' => $data['cotes'],
             'matchButeurs' => $data['matchButeurs'],
+            'viewerPronostic' => $data['viewerPronostic'],
+            'espionBadges' => $data['espionBadges'],
+        ];
+    }
+
+    /**
+     * Pronostic du joueur connecté pour ce match (scores effectifs + points simulés).
+     *
+     * @param iterable<Pronostic>           $pronostics
+     * @param list<SimulatedPronosticLine> $simulatedLines
+     *
+     * @return array{
+     *     pronostic_id: int,
+     *     team_id: int,
+     *     pred_home: int,
+     *     pred_away: int,
+     *     points: int,
+     *     coefficient: float,
+     *     base_points: int,
+     *     score_inverted: bool,
+     *     prise_risque: bool
+     * }|null
+     */
+    private function buildViewerPronostic(iterable $pronostics, array $simulatedLines): ?array
+    {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            return null;
+        }
+
+        $userId = $user->getId();
+        if (null === $userId) {
+            return null;
+        }
+
+        $viewerPronostic = null;
+        foreach ($pronostics as $pronostic) {
+            if ($pronostic instanceof Pronostic && $pronostic->getJoueur()?->getId() === $userId) {
+                $viewerPronostic = $pronostic;
+                break;
+            }
+        }
+
+        if (!$viewerPronostic instanceof Pronostic) {
+            return null;
+        }
+
+        $pronosticId = $viewerPronostic->getId();
+        if (null === $pronosticId) {
+            return null;
+        }
+
+        foreach ($simulatedLines as $line) {
+            if ($line->pronosticId !== $pronosticId) {
+                continue;
+            }
+
+            return [
+                'pronostic_id' => $pronosticId,
+                'team_id' => $line->teamId,
+                'pred_home' => $line->predHome,
+                'pred_away' => $line->predAway,
+                'points' => (int) round($line->teamPoints),
+                'coefficient' => $line->coefficient,
+                'base_points' => $line->basePoints,
+                'score_inverted' => $line->scoreInverted,
+                'prise_risque' => $line->priseRisque,
+            ];
+        }
+
+        $teamId = $this->teamMemberRepository->findOneBy(['player' => $user])?->getTeam()?->getId();
+        if (null === $teamId) {
+            return null;
+        }
+
+        return [
+            'pronostic_id' => $pronosticId,
+            'team_id' => (int) $teamId,
+            'pred_home' => $viewerPronostic->getScoreDomicile() ?? Pronostic::DEFAULT_SCORE_DOMICILE,
+            'pred_away' => $viewerPronostic->getScoreExterieur() ?? Pronostic::DEFAULT_SCORE_EXTERIEUR,
+            'points' => (int) round((float) ($viewerPronostic->getPointsEquipe() ?? $viewerPronostic->getPoints() ?? 0)),
+            'coefficient' => (float) ($viewerPronostic->getCoteCoefficient() ?? 1.0),
+            'base_points' => (int) ($viewerPronostic->getPointsBase() ?? 0),
+            'score_inverted' => false,
+            'prise_risque' => $viewerPronostic->isPriseRisque(),
         ];
     }
 

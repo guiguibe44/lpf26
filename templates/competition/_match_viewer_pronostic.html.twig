@@ -1,0 +1,20 @@
+{# viewer_pronostic: array|null — pred_home, pred_away, points, score_inverted, prise_risque, coefficient #}
+{% if viewer_pronostic %}
+    <div class="match-viewer-prono" data-match-viewer-prono>
+        <span class="match-viewer-prono__label">Mon prono</span>
+        <span class="match-viewer-prono__score" data-viewer-prono-score>
+            {{ viewer_pronostic.pred_home }} - {{ viewer_pronostic.pred_away }}
+        </span>
+        {% if viewer_pronostic.score_inverted|default(false) %}
+            <span class="match-live-prono-invert ta-badge" title="Score inversé par joker" data-viewer-prono-invert>↔</span>
+        {% else %}
+            <span class="match-live-prono-invert ta-badge" title="Score inversé par joker" data-viewer-prono-invert hidden>↔</span>
+        {% endif %}
+        <span class="match-viewer-prono__pts" data-viewer-prono-points>
+            {{ viewer_pronostic.points|number_format(0, ',', ' ') }} pts
+        </span>
+        {% if viewer_pronostic.prise_risque|default(false) %}
+            <span class="match-viewer-prono__risk ta-badge ta-badge-warning" title="Même score que votre partenaire">Risque</span>
+        {% endif %}
+    </div>
+{% endif %}

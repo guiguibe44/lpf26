@@ -1,0 +1,18 @@
+{# pronostic: Pronostic|null #}
+{% set score_home = pronostic ? pronostic.scoreDomicile : prono_default_score_domicile %}
+{% set score_away = pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur %}
+{% set player = connected_player_sidebar() %}
+<div class="match-partner-row match-partner-row--self" aria-label="Mon pronostic {{ score_home }} à {{ score_away }}">
+    <div class="match-partner-avatar-slot">
+        {% if player and player.avatar %}
+            <img class="match-partner-avatar" src="{{ player.avatar }}" alt="" width="50" height="50" loading="lazy" decoding="async">
+        {% elseif app.user and app.user.avatar %}
+            <img class="match-partner-avatar" src="{{ app.user.avatar }}" alt="" width="50" height="50" loading="lazy" decoding="async">
+        {% else %}
+            <span class="match-partner-avatar--placeholder" aria-hidden="true">
+                {{ player ? player.initials : (app.user ? app.user.email|first|upper : '?') }}
+            </span>
+        {% endif %}
+    </div>
+    <span class="match-partner-score">{{ score_home }} - {{ score_away }}</span>
+</div>

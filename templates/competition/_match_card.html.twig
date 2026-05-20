@@ -156,10 +156,6 @@
                     <i class="ti ti-list-details" aria-hidden="true"></i>
                 </a>
             </div>
-        {% elseif pronostic %}
-            <span class="match-locked-pronostic">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
-        {% else %}
-            <span class="match-locked-pronostic">{{ prono_default_score_domicile }} - {{ prono_default_score_exterieur }}</span>
         {% endif %}
     </div>
 
@@ -188,9 +184,15 @@
         </div>
     {% endif %}
 
-    <div class="match-partner">
+    {% set show_self_prono_row = app.user and not can_pronostic %}
+    <div class="match-partner{{ show_self_prono_row or partner_pronostics is not empty ? ' match-partner--pronos' : '' }}">
+        {% if show_self_prono_row %}
+            {% include 'competition/_match_card_self_pronostic_row.html.twig' with { pronostic: pronostic } only %}
+        {% endif %}
         {% if partner_pronostics is empty %}
-            <span class="match-partner-empty">—</span>
+            {% if not show_self_prono_row %}
+                <span class="match-partner-empty">—</span>
+            {% endif %}
         {% else %}
             {% for partner_pronostic in partner_pronostics %}
                 {% set partner_user = partner_pronostic.joueur %}

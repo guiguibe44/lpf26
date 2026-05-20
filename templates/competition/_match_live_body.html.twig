@@ -1,5 +1,13 @@
 {# Corps partagé page live / pronostics terminé — show_simulator: bool #}
 <section class="ta-card match-live-score-card">
+    {% if live_view.espionBadges|default([]) is not empty %}
+        <div class="match-live-score-card__jokers" data-match-live-score-jokers>
+            {% include 'competition/_match_live_team_jokers.html.twig' with {
+                badges: live_view.espionBadges,
+                variant: 'row',
+            } only %}
+        </div>
+    {% endif %}
     <div class="match-live-score-banner">
         <div class="match-live-score-team match-live-score-team--home">
             <div class="match-live-score-team__crest">
@@ -22,6 +30,10 @@
             {% elseif not show_simulator %}
                 <span class="ta-badge ta-badge-success">Terminé</span>
             {% endif %}
+            {% set viewer_pronostic = live_view.viewerPronostic|default(null) %}
+            {% if viewer_pronostic %}
+                {% include 'competition/_match_viewer_pronostic.html.twig' with { viewer_pronostic: viewer_pronostic } only %}
+            {% endif %}
         </div>
         <div class="match-live-score-team match-live-score-team--away">
             <div class="match-live-score-team__crest">
@@ -38,46 +50,6 @@
         {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
     </div>
 </section>
-
-{% if match_active_jokers is not empty %}
-    <section class="ta-card mt-5 match-live-jokers-card">
-        <h2 class="ta-card-title">Jokers en jeu</h2>
-        <div class="overflow-x-auto">
-            <table class="table ta-table table-sm match-live-compact-table">
-                <thead>
-                    <tr>
-                        <th>Équipe</th>
-                        <th>Joker</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in match_active_jokers %}
-                        <tr>
-                            <td>
-                                <div class="match-live-compact-team-cell">
-                                    {% if row.team_logo %}
-                                        <img src="{{ asset(row.team_logo) }}" alt="" class="match-live-jokers-team-logo" width="24" height="24" loading="lazy">
-                                    {% else %}
-                                        <span class="match-live-jokers-team-placeholder" aria-hidden="true">{{ row.team_name|first|upper }}</span>
-                                    {% endif %}
-                                    <span>{{ row.team_name }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="match-live-jokers-joker-cell">
-                                    {% if row.joker.image %}
-                                        <img src="{{ asset(row.joker.image) }}" alt="" class="match-live-jokers-icon" width="22" height="22" loading="lazy">
-                                    {% endif %}
-                                    <span class="ta-badge match-live-jokers-badge">{{ row.joker.name }}</span>
-                                </span>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </section>
-{% endif %}
 
 {% if show_simulator %}
     <section class="ta-card mt-5 match-live-simulator-card">
@@ -107,6 +79,7 @@
     {% include 'competition/_match_live_teams.html.twig' with {
         teams: live_view.teams,
         cotes_visible: match_cotes_visible(match),
+        viewer_pronostic: live_view.viewerPronostic|default(null),
     } only %}
 </section>
 
@@ -123,3 +96,5 @@
         kdo_final: not show_simulator,
     } only %}
 {% endif %}
+
+{% include 'competition/_match_live_joker_info_dialog.html.twig' %}

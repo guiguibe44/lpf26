@@ -1539,7 +1539,22 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
 }
 
 .match-live-score-card {
+    position: relative;
+    overflow: visible;
     text-align: center;
+}
+
+.match-live-score-card__jokers {
+    position: absolute;
+    top: 0.65rem;
+    left: 0.65rem;
+    z-index: 6;
+    max-width: min(45%, 12rem);
+    pointer-events: auto;
+}
+
+.match-live-score-card__jokers .match-live-team-jokers--row {
+    justify-content: flex-start;
 }
 
 .match-live-score-banner {
@@ -1547,6 +1562,57 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 1rem;
+}
+
+.match-live-score-center .match-viewer-prono {
+    margin-top: 0.65rem;
+}
+
+.match-viewer-prono {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+}
+
+.match-viewer-prono__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.match-viewer-prono__score {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.match-viewer-prono__pts {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #15803d;
+}
+
+.match-live-row--viewer {
+    background: #fffbeb;
+}
+
+.match-live-row--viewer .match-live-team-name {
+    font-weight: 700;
+}
+
+.match-live-prono-cell--viewer,
+.match-live-prono-detail--viewer {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
 }
 
 .match-live-score-center {
@@ -1718,7 +1784,7 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
 }
 
 .match-live-compact-th-prono {
-    min-width: 4.5rem;
+    min-width: 4.15rem;
 }
 
 .match-live-compact-th-toggle {
@@ -1733,7 +1799,7 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
 
 .match-live-compact-team {
     vertical-align: top;
-    min-width: 9.5rem;
+    min-width: 8.5rem;
 }
 
 .match-live-compact-team-cell {
@@ -1750,6 +1816,552 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
 
 .match-live-compact-team .match-live-team-name {
     min-width: 0;
+}
+
+/* Section tableau live / terminé : marges pour contenir les cartes joker sans scroll horizontal */
+.match-live-teams-section.ta-card {
+    overflow-x: clip;
+    overflow-y: visible;
+}
+
+.match-live-teams-wrap--jokers {
+    margin: 1.5rem 1.5rem 1.75rem;
+    padding: 0 0.5rem 0 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.match-live-teams-wrap--jokers .match-live-compact-table {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+}
+
+.match-live-compact-th-jokers {
+    width: 1%;
+    white-space: nowrap;
+    padding: 0.35rem 0.4rem !important;
+    vertical-align: middle;
+}
+
+.match-live-row-jokers-cell {
+    width: 1%;
+    white-space: nowrap;
+    padding: 0.3rem 0.4rem !important;
+    vertical-align: middle;
+}
+
+.match-live-row-jokers-cell .match-live-team-jokers-wrap {
+    position: static;
+    transform: none;
+    width: auto;
+    pointer-events: auto;
+}
+
+.match-live-compact-table tbody.match-live-row-group {
+    position: relative;
+}
+
+.match-live-compact-table tr.match-live-row {
+    position: relative;
+}
+
+.match-live-row--has-joker > td {
+    vertical-align: middle;
+}
+
+.match-live-team-jokers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.match-live-team-jokers--row {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.match-live-team-jokers--row .match-live-joker-badge__trigger {
+    flex-direction: row;
+}
+
+.match-live-joker-badge__trigger {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.match-live-joker-badge__trigger:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 3px;
+    border-radius: 0.35rem;
+}
+
+.match-live-team-jokers--row .match-live-joker-badge {
+    flex-direction: row;
+    flex-shrink: 0;
+    margin: 0;
+    max-width: none;
+    gap: 0;
+}
+
+.match-live-joker-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.45rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.match-live-joker-chip .ti {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.match-live-joker-badge__trigger:hover .match-live-joker-chip,
+.match-live-joker-badge__trigger:focus-visible .match-live-joker-chip {
+    background: #e2e8f0;
+}
+
+.match-live-joker-chip--own {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.match-live-joker-chip--incoming {
+    background: #fffbeb;
+    border-color: #fcd34d;
+    color: #b45309;
+}
+
+.match-live-joker-chip--shield {
+    background: #ecfdf5;
+    border-color: #6ee7b7;
+    color: #047857;
+}
+
+.match-live-team-jokers--detail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.match-live-team-jokers--detail .match-live-joker-badge__trigger {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.45rem 0.2rem 0.2rem;
+    border-radius: 0.4rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.match-live-team-jokers--detail .match-live-joker-badge__trigger:hover,
+.match-live-team-jokers--detail .match-live-joker-badge__trigger:focus-visible {
+    background: #f1f5f9;
+}
+
+.match-live-team-jokers--detail .match-live-joker-chip {
+    width: 1.65rem;
+    height: 1.65rem;
+    flex-shrink: 0;
+}
+
+.match-live-team-jokers--detail .match-live-joker-chip .ti {
+    font-size: 0.95rem;
+}
+
+.match-live-joker-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    max-width: 4.5rem;
+    text-align: center;
+    font-size: 0.62rem;
+    line-height: 1.2;
+    color: #475569;
+}
+
+
+.match-live-joker-badge__name {
+    font-weight: 600;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.match-live-joker-badge__hint {
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-weight: 700;
+}
+
+.match-live-joker-badge--own .match-live-joker-badge__hint {
+    color: #2563eb;
+}
+
+.match-live-joker-badge--incoming .match-live-joker-badge__hint {
+    color: #d97706;
+}
+
+.match-live-joker-badge--shield .match-live-joker-badge__hint {
+    color: #059669;
+}
+
+.match-live-detail-panel__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 0.5rem 0.75rem;
+    overflow-x: visible;
+}
+
+.match-live-detail-panel__row--has-jokers .match-live-detail-jokers {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+}
+
+.match-live-detail-jokers {
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.match-live-detail-jokers .match-live-team-jokers--detail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.match-live-detail-jokers .match-live-joker-badge {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: none;
+    white-space: nowrap;
+}
+
+.match-live-detail-jokers .match-live-joker-badge__name {
+    font-size: 0.72rem;
+}
+
+.match-live-detail-jokers .match-live-joker-badge__hint {
+    font-size: 0.62rem;
+}
+
+.match-live-detail-panel__row > .match-live-detail-meta {
+    flex: 0 0 auto;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.match-live-detail-panel__row .match-live-pronos-detail-list {
+    flex: 1 1 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.match-live-detail-panel__row .match-live-prono-detail {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.3rem 0.4rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.35rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.match-live-detail-panel__row .match-live-prono-detail__player {
+    min-width: 0;
+}
+
+.match-live-detail-panel__row .match-live-buteurs-picks {
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    white-space: nowrap;
+}
+
+.match-live-detail-panel__row .match-live-buteurs-picks__label {
+    display: inline;
+    margin: 0;
+    font-size: 0.68rem;
+}
+
+.match-live-detail-panel__row .match-live-buteurs-picks__list {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+html.dark body.front-body .match-live-joker-badge__name {
+    color: #e2e8f0;
+}
+
+html.dark body.front-body .match-live-joker-badge {
+    color: #94a3b8;
+}
+
+html.dark body.front-body .match-live-joker-chip {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .match-live-joker-chip--own {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(147, 197, 253, 0.45) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .match-live-joker-chip--incoming {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(252, 211, 77, 0.45) !important;
+    color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .match-live-joker-chip--shield {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(110, 231, 183, 0.4) !important;
+    color: #6ee7b7 !important;
+}
+
+html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badge__trigger {
+    background: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+/* Popup info joker (live / match terminé) */
+.match-live-joker-info-dialog {
+    width: min(94vw, 26rem);
+    max-width: none;
+    max-height: min(92vh, 44rem);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0.85rem;
+    background: transparent;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+    overflow: visible;
+}
+
+.match-live-joker-info-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.match-live-joker-info-dialog__panel {
+    position: relative;
+    max-height: min(92vh, 44rem);
+    overflow-y: auto;
+    padding: 2.75rem 1.25rem 1.35rem;
+    border-radius: 0.85rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+}
+
+.match-live-joker-info-dialog__close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0.45rem;
+    background: #f1f5f9;
+    color: #475569;
+    cursor: pointer;
+}
+
+.match-live-joker-info-dialog__close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.match-live-joker-info-dialog__close .ti {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.match-live-joker-info-dialog__body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+}
+
+.match-live-joker-info-dialog__visual {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.match-live-joker-info-dialog__image {
+    display: block;
+    width: auto;
+    max-width: 8.5rem;
+    height: auto;
+    max-height: 11.5rem;
+    object-fit: contain;
+    border-radius: 0.35rem;
+    box-shadow:
+        0 2px 8px rgba(15, 23, 42, 0.12),
+        0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.match-live-joker-info-dialog__placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.5rem;
+    height: 7.25rem;
+    border-radius: 0.35rem;
+    background: #f1f5f9;
+    color: #94a3b8;
+    font-size: 2rem;
+}
+
+.match-live-joker-info-dialog__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.match-live-joker-info-dialog__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    color: #0f172a;
+    text-align: center;
+}
+
+.match-live-joker-info-dialog__context {
+    margin: 0 0 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+}
+
+.match-live-joker-info-dialog__desc {
+    margin: 0 0 0.75rem;
+    text-align: left;
+}
+
+.match-live-joker-info-dialog__technical {
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .match-live-joker-info-dialog {
+        width: min(92vw, 40rem);
+    }
+
+    .match-live-joker-info-dialog__panel {
+        padding: 2.85rem 1.5rem 1.5rem;
+    }
+
+    .match-live-joker-info-dialog__body {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 1.35rem;
+    }
+
+    .match-live-joker-info-dialog__visual {
+        justify-content: flex-start;
+        width: 9.5rem;
+    }
+
+    .match-live-joker-info-dialog__image {
+        max-width: 9.5rem;
+        max-height: 12.5rem;
+    }
+
+    .match-live-joker-info-dialog__title,
+    .match-live-joker-info-dialog__context {
+        text-align: left;
+    }
+}
+
+.match-live-joker-info-dialog__technical-label {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+.match-live-joker-info-dialog__technical-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.82rem;
+    color: #334155;
+}
+
+.match-live-joker-info-dialog__technical-list li + li {
+    margin-top: 0.25rem;
+}
+
+html.dark body.front-body .match-live-joker-info-dialog__placeholder {
+    background: #334155;
+    color: #64748b;
+}
+
+html.dark body.front-body .match-live-joker-info-dialog__panel {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+html.dark body.front-body .match-live-joker-info-dialog__title {
+    color: #f1f5f9;
+}
+
+html.dark body.front-body .match-live-joker-info-dialog__technical-list {
+    color: #cbd5e1;
 }
 
 .match-live-compact-pts {
@@ -1872,6 +2484,28 @@ html body .match-live-expand-btn.btn.btn-sm {
     opacity: 0.7;
 }
 
+.match-live-prono-joker-factor {
+    font-weight: 800;
+    color: #b45309;
+}
+
+.match-live-prono-calc-note {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 0.25rem;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.match-live-detail-panel__row .match-live-prono-calc-note {
+    font-size: 0.65rem;
+}
+
 .match-live-buteurs-picks {
     margin-top: 0.5rem;
     padding-top: 0.45rem;
@@ -1924,12 +2558,6 @@ html body .match-live-expand-btn.btn.btn-sm {
     font-weight: 600;
     color: #334155;
     font-size: 0.82rem;
-}
-
-@media (max-width: 640px) {
-    .match-live-prono-detail {
-        grid-template-columns: 1fr 1fr;
-    }
 }
 
 .match-live-jokers-joker-cell {
@@ -2365,6 +2993,27 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 .match-partner {
     margin-top: 0.75rem;
     text-align: left;
+}
+
+.match-partner--pronos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0.5rem 1rem;
+}
+
+.match-partner--pronos .match-partner-row {
+    margin-top: 0;
+}
+
+.match-partner--pronos .match-partner-row + .match-partner-row {
+    margin-top: 0;
+}
+
+.match-partner-row--self .match-partner-score {
+    color: #1d4ed8;
 }
 
 .match-partner-empty {

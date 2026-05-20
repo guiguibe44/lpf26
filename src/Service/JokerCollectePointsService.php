@@ -100,10 +100,12 @@ final class JokerCollectePointsService
                 $line->predAway,
                 $line->basePoints,
                 $line->coefficient,
-                $line->playerPoints,
+                $line->points,
                 $line->priseRisque,
                 $newLineTeamPoints,
                 $line->scoreInverted,
+                $line->calcMultipliers,
+                $line->calcNotes,
             );
         }
 

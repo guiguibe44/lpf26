@@ -90,6 +90,12 @@ rsync "${RSYNC_FLAGS[@]}" \
   --exclude 'vendor/' \
   --exclude 'composer.phar' \
   --exclude 'public/assets/' \
+  --exclude 'src/Command/JokerTestScenario*.php' \
+  --exclude 'src/Controller/Admin/AdminJokerTestScenarioController.php' \
+  --exclude 'src/Data/JokerTestScenarioDefinition.php' \
+  --exclude 'src/Service/JokerTestScenario*.php' \
+  --exclude 'templates/admin/joker_test_scenario.html.twig' \
+  --exclude 'public/css/admin-joker-test-scenario.css' \
   ./ "${REMOTE}:${RPATH}/"
 
 if [[ "$DRY_RUN" -eq 0 ]]; then
