@@ -188,17 +188,17 @@ final class AdminCompetChecklistProvider
             'items' => [
                 [
                     'id' => 'compet-scenario-verify-reminder-count',
-                    'label' => 'Relances : 3 joueurs ciblés (équipes B-J2, C-J1, C-J2).',
+                    'label' => 'Relances : 3 joueurs (B-J1, B-J2, C-J2) sans ligne au moment du step reminder.',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'compet-scenario-verify-prono-matrix',
-                    'label' => 'Matrice pronos : A-J1 exact, A-J2 bon 1N2, B-J1 bon 1N2, B-J2/C mauvais.',
+                    'label' => 'Matrice pronos : A-J1 et C-J1 score exact ; A-J2, B-J1 (1-2), B-J2 et C-J2 mauvais.',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'compet-scenario-verify-buteur-points',
-                    'label' => 'Points buteur : crédités pour buts FR choisis, pas pour but DE non sélectionné.',
+                    'label' => 'Points buteur : Dembélé / Doué sur buts FR ; Havertz sur but DE si ID = BUTEUR_DE_1 ; pas pour B sur le but DE.',
                     'kind' => 'attention',
                 ],
                 [

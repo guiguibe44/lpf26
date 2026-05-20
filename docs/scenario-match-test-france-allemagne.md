@@ -25,9 +25,9 @@ Noter l’**ID du match** : `MATCH_ID=___`
 
 | Équipe | Joueur 1 | Joueur 2 | Prono match | Buteur |
 |--------|----------|----------|-------------|--------|
-| **A** | prono saisi (ex. 2-1) | prono saisi (ex. 1-1) | les deux | France + Allemagne |
-| **B** | prono saisi (ex. 1-0) | **aucune ligne Pronostic** | oubli | au moins un FR |
-| **C** | **aucune ligne** | **aucune ligne** | double oubli | mix FR/DE |
+| **A** | **2-1** France | **1-1** | les deux avant 14h | **Dembélé** (FR) + **Havertz** (DE) |
+| **B** | sans ligne jusqu’à la relance **14h**, puis **1-2** avant 15h | **aucune ligne** jusqu’au CO | relance J1+J2 ; seul J1 corrige | **Doué** (FR) + un buteur **hors** France/Allemagne |
+| **C** | **2-1** France | **aucune ligne** | J2 relancé ; 0-0 auto au CO | au choix |
 
 **Important — relance prono :** seuls les joueurs **sans aucune entrée** dans la table `Pronostic` pour ce match sont relancés. Un joueur qui n’a pas touché le formulaire mais a déjà une ligne (même vide) **ne sera pas** relancé.
 
@@ -37,9 +37,9 @@ Choisir dans l’admin et noter les **ID** :
 
 | Rôle | Exemple | ID |
 |------|---------|-----|
-| Buteur sélectionné (FR), 1er but | ex. Mbappé | `BUTEUR_FR_1=` |
-| Buteur **non** sélectionné par personne (DE) | ex. Musiala | `BUTEUR_DE_1=` |
-| Autre buteur sélectionné (FR), 2e but | ex. Griezmann | `BUTEUR_FR_2=` |
+| 1er but France (sélectionné) | ex. **Dembélé** | `BUTEUR_FR_1=` |
+| But Allemagne (ex. Havertz sur grille A) | ex. **Havertz** | `BUTEUR_DE_1=` |
+| 2e but France (ex. Doué sur grille B) | ex. **Doué** | `BUTEUR_FR_2=` |
 
 Vérifier que le pays du buteur correspond au pays qui marque (France → domicile, Allemagne → extérieur).
 
@@ -53,10 +53,10 @@ Heures en **Europe/Paris**. Remplacer `MATCH_ID`, `BUTEUR_*`, `VOTRE_SECRET`, `B
 
 | Heure | Étape | Effet attendu |
 |-------|--------|----------------|
-| **14:00** | `reminder` | E-mail/push aux **3 joueurs** sans prono (B2, C1, C2) |
-| **15:00** | `kickoff` | Statut LIVE 0-0 ; pronos **0-0 par défaut** pour les oublis |
+| **14:00** | `reminder` | E-mail/push aux **3 joueurs** sans ligne : **B-J1, B-J2, C-J2** |
+| **15:00** | `kickoff` | Statut LIVE 0-0 ; **0-0 auto** pour **B-J2** et **C-J2** seulement |
 | **15:23** | `goal` FR #1 | Score **1-0** ; points buteur si buteur choisi ; notif push |
-| **15:45** | `goal` DE | Score **1-1** ; pas de points buteur si personne ne l’a choisi |
+| **15:45** | `goal` DE | Score **1-1** ; points buteur si `BUTEUR_DE_1` est coché (ex. Havertz sur A) |
 | **16:07** (~67') | `goal` FR #2 | Score **2-1** |
 | **17:05** | `finish` | FINISHED ; finalisation ; **classement** recalculé |
 
@@ -127,15 +127,16 @@ Checklist interactive : `/admin/checklist-compet`.
 
 ---
 
-## 4. Matrice de pronos suggérée (score final 2-1)
+## 4. Matrice de pronos (score final 2-1 France)
 
 | Équipe | Prono | Résultat attendu (sans joker) |
 |--------|-------|------------------------------|
 | A – J1 | 2-1 | Score exact |
-| A – J2 | 1-1 | Bon 1N2 (nul) |
-| B – J1 | 1-0 | Bon 1N2 (victoire FR) |
+| A – J2 | 1-1 | Mauvais (nul prédit, victoire France réelle) |
+| B – J1 | 1-2 | Mauvais (victoire extérieure prédite) |
 | B – J2 | 0-0 (auto) | Mauvais |
-| C – J1/J2 | 0-0 (auto) | Mauvais |
+| C – J1 | 2-1 | Score exact |
+| C – J2 | 0-0 (auto) | Mauvais |
 
 Ajuster selon vos jokers placés avant 15h.
 
