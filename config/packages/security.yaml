@@ -51,9 +51,11 @@ security:
         - { path: ^/invitation, roles: PUBLIC_ACCESS }
         - { path: ^/cron/, roles: PUBLIC_ACCESS }
         - { path: ^/api/push/vapid-public-key, roles: PUBLIC_ACCESS }
-        # API JSON : cookie « se souvenir de moi » (évite une réponse HTML sur fetch / JSON).
+        # API JSON : remember_me + entry point JSON sur /api/ (SecurityControllerAuthenticator::start).
         - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
         - { path: ^/api/matchs/live-feed, roles: IS_AUTHENTICATED }
+        - { path: ^/api/notifications, roles: IS_AUTHENTICATED }
+        - { path: ^/api/forum, roles: IS_AUTHENTICATED }
         - { path: ^/admin/sync/wc2026/goals, roles: ROLE_ADMIN }
         - { path: ^/admin/sync, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
