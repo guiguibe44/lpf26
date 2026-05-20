@@ -398,38 +398,12 @@
         margin-top: 0.65rem;
     }
 
-    .ta-main .match-goals-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .ta-main .match-goals-item {
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.85rem;
-        color: var(--ta-muted, #64748b);
-    }
-
-    .ta-main .match-goals-scorer {
-        font-weight: 600;
-        color: inherit;
-    }
-
-    .ta-main .match-goals-minute {
-        font-variant-numeric: tabular-nums;
-        opacity: 0.85;
+    .ta-main .match-goals-name {
+        font-size: 0.78rem;
     }
 
     .ta-main .match-live-minute {
-        margin-left: 0.35rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        opacity: 0.9;
+        font-size: 0.65rem;
     }
 
     .ta-main .match-live-score-sep {

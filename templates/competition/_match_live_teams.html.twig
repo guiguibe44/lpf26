@@ -1,85 +1,146 @@
 {# @var teams \App\Dto\MatchLiveTeamRow[] #}
 {# cotes_visible: bool — défaut true (page live = match démarré) #}
 {% set cotes_visible = cotes_visible|default(true) %}
-<div class="match-live-teams" id="match-live-teams" data-cotes-visible="{{ cotes_visible ? '1' : '0' }}">
-    {% for team in teams %}
-        <article class="match-live-team-card" data-team-id="{{ team.teamId }}">
-            <header class="match-live-team-head">
-                <div class="match-live-team-rank">
-                    <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position title="Classement général simulé">#{{ team.simulatedRankingPosition }}</span>
-                    {% if team.rankingPosition < 9999 %}
-                        <span class="match-live-team-position match-live-team-position--before" title="Classement avant ce match">({{ team.rankingPosition }})</span>
-                    {% endif %}
-                    {% if team.teamLogo %}
-                        <img src="{{ asset(team.teamLogo) }}" alt="" class="match-live-team-logo" width="36" height="36" loading="lazy">
-                    {% else %}
-                        <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
-                    {% endif %}
-                    <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
-                    {% if team.activeJoker %}
-                        <span class="match-live-team-joker ta-badge" data-team-joker title="Joker actif">{{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}</span>
-                    {% else %}
-                        <span class="match-live-team-joker ta-badge" data-team-joker hidden></span>
-                    {% endif %}
-                </div>
-                <span class="match-live-team-total" data-team-total title="Points sur ce match">{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
-                <span class="match-live-team-total-general" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} pts gen.</span>
-            </header>
-
-            <div class="match-live-pronos">
-                {% for prono in team.pronostics %}
-                    <div class="match-live-prono-row" data-pronostic-id="{{ prono.pronosticId }}">
-                        <span class="match-live-prono-label">{{ prono.playerLabel }}</span>
-                        <span class="match-live-prono-score" data-prono-score>{{ prono.predHome }} - {{ prono.predAway }}{% if prono.scoreInverted|default(false) %} <span class="match-live-prono-invert ta-badge" title="Score inversé par joker">↔</span>{% endif %}</span>
-                        <span class="match-live-prono-meta" data-prono-meta>
-                            <span data-prono-base title="Points de base">{{ prono.basePoints }}</span>
-                            {% if cotes_visible %}
-                                <span class="match-live-prono-cote-sep" data-prono-cote-sep>×</span>
-                                <span data-prono-cote title="Cote">{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
-                            {% else %}
-                                <span data-prono-cote-sep hidden>×</span>
-                                <span data-prono-cote hidden title="Cote"></span>
-                            {% endif %}
-                        </span>
-                        <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>
-                            {{ prono.points|number_format(0, ',', ' ') }} pts
-                        </span>
-                        {% if prono.priseRisque %}
-                            <span class="match-live-prono-risk ta-badge" data-prono-risk>Risque</span>
-                        {% else %}
-                            <span class="match-live-prono-risk" data-prono-risk hidden></span>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <p class="match-live-prono-empty">Aucun pronostic enregistré.</p>
-                {% endfor %}
-            </div>
-
-            {% if team.buteurs is not empty %}
-                <div class="match-live-buteurs">
-                    <p class="match-live-buteurs-title">Buteurs (pays du match)</p>
-                    <ul class="match-live-buteurs-list">
-                        {% for buteur in team.buteurs %}
-                            <li class="match-live-buteur-item">
-                                <span class="match-live-buteur-name">{{ buteur.name }}</span>
-                                {% if buteur.country %}
-                                    <span class="match-live-buteur-country">{{ buteur.country }}</span>
-                                {% endif %}
-                                <span class="match-live-buteur-points">
-                                    {% if buteur.pointsPerGoal < 0 %}−{% else %}+{% endif %}{{ buteur.pointsPerGoal|abs|number_format(0, ',', ' ') }} pts / but{% if buteur.double_joker|default(false) %} <span class="match-live-buteur-double ta-badge">×2 joker</span>{% endif %}{% if buteur.invert_joker|default(false) %} <span class="match-live-buteur-invert ta-badge">inversion</span>{% endif %}
-                                    {% if cotes_visible %}
-                                        <span class="match-live-buteur-cote" data-buteur-cote>(cote {{ buteur.coefficient|number_format(2, ',', ' ') }})</span>
-                                    {% else %}
-                                        <span class="match-live-buteur-cote" data-buteur-cote hidden></span>
-                                    {% endif %}
-                                </span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+<div class="match-live-teams-wrap overflow-x-auto" id="match-live-teams" data-cotes-visible="{{ cotes_visible ? '1' : '0' }}">
+    <table class="table ta-table table-sm match-live-compact-table">
+        <thead>
+            <tr>
+                <th class="ta-num match-live-compact-th-rank">#</th>
+                <th class="match-live-compact-th-team">Équipe</th>
+                <th>Joueur</th>
+                <th class="ta-num">Prono</th>
+                <th class="ta-num">Base×cote</th>
+                <th class="ta-num">Pts</th>
+                <th class="match-live-compact-th-extra" aria-label="Indicateurs"></th>
+            </tr>
+        </thead>
+        {% for team in teams %}
+            {% set prono_count = team.pronostics|length %}
+            {% set has_buteurs = team.buteurs is not empty %}
+            {% set row_span = prono_count > 0 ? prono_count : 1 %}
+            {% if has_buteurs %}
+                {% set row_span = row_span + 1 %}
             {% endif %}
-        </article>
-    {% else %}
-        <p class="ta-card-text">Aucune équipe enregistrée.</p>
-    {% endfor %}
+            <tbody data-team-id="{{ team.teamId }}">
+                {% if prono_count > 0 %}
+                    {% for prono in team.pronostics %}
+                        <tr data-pronostic-id="{{ prono.pronosticId }}">
+                            {% if loop.first %}
+                                <td rowspan="{{ row_span }}" class="match-live-compact-rank ta-num">
+                                    <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position title="Classement général simulé">#{{ team.simulatedRankingPosition }}</span>
+                                    {% if team.rankingPosition < 9999 %}
+                                        <span class="match-live-team-position match-live-team-position--before" title="Classement avant ce match">({{ team.rankingPosition }})</span>
+                                    {% endif %}
+                                </td>
+                                <td rowspan="{{ row_span }}" class="match-live-compact-team">
+                                    <div class="match-live-compact-team-cell">
+                                        {% if team.teamLogo %}
+                                            <img src="{{ asset(team.teamLogo) }}" alt="" class="match-live-team-logo" width="28" height="28" loading="lazy">
+                                        {% else %}
+                                            <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
+                                        {% endif %}
+                                        <div class="match-live-compact-team-meta">
+                                            <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
+                                            <span class="match-live-team-joker ta-badge" data-team-joker{% if not team.activeJoker %} hidden{% endif %} title="Joker actif">
+                                                {%- if team.activeJoker -%}
+                                                    {{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}
+                                                {%- endif -%}
+                                            </span>
+                                            <div class="match-live-compact-team-pts">
+                                                <span class="match-live-team-total" data-team-total title="Points sur ce match">{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
+                                                <span class="match-live-team-total-general" data-team-total-general title="Total général simulé">{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} gen.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            {% endif %}
+                            <td class="match-live-compact-player">{{ prono.playerLabel }}</td>
+                            <td class="ta-num match-live-compact-score" data-prono-score>
+                                {{ prono.predHome }}-{{ prono.predAway }}
+                                {%- if prono.scoreInverted|default(false) -%}
+                                    <span class="match-live-prono-invert ta-badge" title="Score inversé par joker">↔</span>
+                                {%- endif -%}
+                            </td>
+                            <td class="ta-num match-live-compact-calc" data-prono-meta>
+                                <span data-prono-base title="Points de base">{{ prono.basePoints }}</span>
+                                {% if cotes_visible %}
+                                    <span class="match-live-prono-cote-sep" data-prono-cote-sep>×</span>
+                                    <span data-prono-cote title="Cote">{{ prono.coefficient|number_format(2, ',', ' ') }}</span>
+                                {% else %}
+                                    <span data-prono-cote-sep hidden>×</span>
+                                    <span data-prono-cote hidden title="Cote"></span>
+                                {% endif %}
+                            </td>
+                            <td class="ta-num">
+                                <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>{{ prono.points|number_format(0, ',', ' ') }}</span>
+                            </td>
+                            <td class="match-live-compact-extra">
+                                {% if prono.priseRisque %}
+                                    <span class="match-live-prono-risk ta-badge" data-prono-risk>Risque</span>
+                                {% else %}
+                                    <span class="match-live-prono-risk" data-prono-risk hidden></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td rowspan="{{ row_span }}" class="match-live-compact-rank ta-num">
+                            <span class="match-live-team-position match-live-team-position--simulated" data-simulated-position>#{{ team.simulatedRankingPosition }}</span>
+                            {% if team.rankingPosition < 9999 %}
+                                <span class="match-live-team-position match-live-team-position--before">({{ team.rankingPosition }})</span>
+                            {% endif %}
+                        </td>
+                        <td rowspan="{{ row_span }}" class="match-live-compact-team">
+                            <div class="match-live-compact-team-cell">
+                                {% if team.teamLogo %}
+                                    <img src="{{ asset(team.teamLogo) }}" alt="" class="match-live-team-logo" width="28" height="28" loading="lazy">
+                                {% else %}
+                                    <span class="match-live-team-logo-placeholder" aria-hidden="true">{{ team.teamName|first|upper }}</span>
+                                {% endif %}
+                                <div class="match-live-compact-team-meta">
+                                    <a href="{{ path('app_team_show', { id: team.teamId }) }}" class="match-live-team-name">{{ team.teamName }}</a>
+                                    <span class="match-live-team-joker ta-badge" data-team-joker{% if not team.activeJoker %} hidden{% endif %}>
+                                        {%- if team.activeJoker -%}
+                                            {{ team.activeJoker.name }}{% if team.activeJoker.target_team_name|default('') %} → {{ team.activeJoker.target_team_name }}{% endif %}
+                                        {%- endif -%}
+                                    </span>
+                                    <div class="match-live-compact-team-pts">
+                                        <span class="match-live-team-total" data-team-total>{{ team.matchPoints|number_format(0, ',', ' ') }} pts</span>
+                                        <span class="match-live-team-total-general" data-team-total-general>{{ team.simulatedTotalPoints|number_format(0, ',', ' ') }} gen.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td colspan="5" class="match-live-prono-empty">Aucun pronostic enregistré.</td>
+                    </tr>
+                {% endif %}
+                {% if has_buteurs %}
+                    <tr class="match-live-compact-buteurs-row">
+                        <td colspan="5" class="match-live-compact-buteurs-cell">
+                            <span class="match-live-compact-buteurs-label">Buteurs</span>
+                            {% for buteur in team.buteurs %}
+                                <span class="match-live-compact-buteur-chip">
+                                    <strong>{{ buteur.name }}</strong>
+                                    {%- if buteur.country %} <span class="match-live-buteur-country">({{ buteur.country }})</span>{% endif %}
+                                    <span class="match-live-buteur-points">
+                                        {% if buteur.pointsPerGoal < 0 %}−{% else %}+{% endif %}{{ buteur.pointsPerGoal|abs|number_format(0, ',', ' ') }}/but
+                                        {%- if buteur.double_joker|default(false) %} <span class="match-live-buteur-double ta-badge">×2</span>{% endif -%}
+                                        {%- if buteur.invert_joker|default(false) %} <span class="match-live-buteur-invert ta-badge">↔</span>{% endif -%}
+                                        {%- if cotes_visible %} <span class="match-live-buteur-cote" data-buteur-cote>(×{{ buteur.coefficient|number_format(2, ',', ' ') }})</span>{% else %}<span class="match-live-buteur-cote" data-buteur-cote hidden></span>{% endif -%}
+                                    </span>
+                                </span>{% if not loop.last %}<span class="match-live-compact-buteur-sep" aria-hidden="true">·</span>{% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        {% else %}
+            <tbody>
+                <tr>
+                    <td colspan="7" class="match-live-prono-empty">Aucune équipe enregistrée.</td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
 </div>

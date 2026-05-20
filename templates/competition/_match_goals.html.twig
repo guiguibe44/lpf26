@@ -1,15 +1,47 @@
-{# goals: list<{name: string, minute: ?int, points: int}> #}
-{% if goals is not empty %}
-    <ul class="match-goals-list" data-match-goals>
+{# goals: list<{name: string, minute: ?int, photo: ?string, side: string}> #}
+<div class="match-goals-sides" data-match-goals{% if goals is empty %} hidden{% endif %}>
+    <ul class="match-goals-side match-goals-side--home" aria-label="Buteurs domicile">
         {% for goal in goals %}
-            <li class="match-goals-item">
-                <span class="match-goals-scorer">{{ goal.name }}</span>
-                {% if goal.minute %}
-                    <span class="match-goals-minute">{{ goal.minute }}'</span>
-                {% endif %}
-            </li>
+            {% if goal.side|default('home') == 'home' %}
+                <li class="match-goals-item">
+                    {% if goal.photo %}
+                        <img
+                            class="match-goals-photo"
+                            src="{{ goal.photo starts with 'http' ? goal.photo : asset(goal.photo) }}"
+                            alt=""
+                            width="28"
+                            height="28"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                    {% else %}
+                        <span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">{{ goal.name|first|upper }}</span>
+                    {% endif %}
+                    <span class="match-goals-name">{{ goal.name }}</span>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
-{% else %}
-    <ul class="match-goals-list" data-match-goals hidden></ul>
-{% endif %}
+    <ul class="match-goals-side match-goals-side--away" aria-label="Buteurs extérieur">
+        {% for goal in goals %}
+            {% if goal.side|default('home') == 'away' %}
+                <li class="match-goals-item">
+                    {% if goal.photo %}
+                        <img
+                            class="match-goals-photo"
+                            src="{{ goal.photo starts with 'http' ? goal.photo : asset(goal.photo) }}"
+                            alt=""
+                            width="28"
+                            height="28"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                    {% else %}
+                        <span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">{{ goal.name|first|upper }}</span>
+                    {% endif %}
+                    <span class="match-goals-name">{{ goal.name }}</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

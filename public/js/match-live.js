@@ -143,27 +143,27 @@
         }
 
         data.teams.forEach((team) => {
-            const card = teamsRoot.querySelector('[data-team-id="' + team.teamId + '"]');
-            if (!card) {
+            const teamSection = teamsRoot.querySelector('tbody[data-team-id="' + team.teamId + '"]');
+            if (!teamSection) {
                 return;
             }
 
-            const simulatedPosEl = card.querySelector('[data-simulated-position]');
+            const simulatedPosEl = teamSection.querySelector('[data-simulated-position]');
             if (simulatedPosEl) {
                 simulatedPosEl.textContent = '#' + team.simulatedRankingPosition;
             }
 
-            const matchTotalEl = card.querySelector('[data-team-total]');
+            const matchTotalEl = teamSection.querySelector('[data-team-total]');
             if (matchTotalEl) {
                 matchTotalEl.textContent = formatPoints(team.matchPoints);
             }
 
-            const generalTotalEl = card.querySelector('[data-team-total-general]');
+            const generalTotalEl = teamSection.querySelector('[data-team-total-general]');
             if (generalTotalEl) {
                 generalTotalEl.textContent = formatGeneralPoints(team.simulatedTotalPoints);
             }
 
-            const jokerEl = card.querySelector('[data-team-joker]');
+            const jokerEl = teamSection.querySelector('[data-team-joker]');
             if (jokerEl) {
                 if (team.activeJoker && team.activeJoker.name) {
                     jokerEl.hidden = false;
@@ -178,7 +178,7 @@
             }
 
             (team.pronostics || []).forEach((prono) => {
-                const row = card.querySelector('[data-pronostic-id="' + prono.pronosticId + '"]');
+                const row = teamSection.querySelector('[data-pronostic-id="' + prono.pronosticId + '"]');
                 if (!row) {
                     return;
                 }
@@ -216,8 +216,6 @@
                     }
                 }
             });
-
-            teamsRoot.appendChild(card);
         });
 
         if (data.kdoOutlook) {

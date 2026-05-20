@@ -1166,6 +1166,12 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     padding: 1rem 1.15rem;
 }
 
+.match-card--live {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    box-shadow: inset 0 0 0 1px rgb(148 163 184 / 18%);
+}
+
 .match-card--kdo {
     overflow: visible;
     border-color: #fbbf24;
@@ -1369,12 +1375,122 @@ button.match-card-joker-badge {
     font-weight: 700;
 }
 
+.match-live-score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.match-live-minute {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #b45309;
+    letter-spacing: 0.02em;
+}
+
+.match-live-minute--pulse {
+    animation: match-live-minute-blink 1.15s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .match-live-minute--pulse {
+        animation: none;
+        opacity: 0.85;
+    }
+}
+
+@keyframes match-live-minute-blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
 .match-live-actions {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
     width: 100%;
+}
+
+.match-goals-wrap {
+    margin-top: 0.65rem;
+}
+
+.match-goals-sides {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem 0.75rem;
+    align-items: start;
+}
+
+.match-goals-side {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.match-goals-side--home {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.match-goals-side--home .match-goals-item {
+    flex-direction: row-reverse;
+}
+
+.match-goals-side--away {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.match-goals-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    font-size: 0.78rem;
+    line-height: 1.2;
+}
+
+.match-goals-photo {
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 auto;
+    border: 1px solid rgb(15 23 42 / 8%);
+}
+
+.match-goals-photo--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.match-goals-name {
+    font-weight: 600;
+    color: #334155;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 html body .match-card-live-btn.btn.btn-warning {
@@ -1476,6 +1592,122 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     font-weight: 700;
     padding-bottom: 0.45rem;
     color: #64748b;
+}
+
+.match-live-compact-table {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+}
+
+.match-live-compact-table thead th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.match-live-compact-table tbody + tbody tr:first-child td {
+    border-top: 2px solid #e2e8f0;
+}
+
+.match-live-compact-th-rank {
+    width: 3.25rem;
+}
+
+.match-live-compact-th-extra {
+    width: 4.5rem;
+}
+
+.match-live-compact-rank {
+    vertical-align: top;
+    white-space: nowrap;
+    line-height: 1.35;
+}
+
+.match-live-compact-team {
+    vertical-align: top;
+    min-width: 9.5rem;
+}
+
+.match-live-compact-team-cell {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+}
+
+.match-live-compact-team .match-live-team-logo,
+.match-live-compact-team .match-live-team-logo-placeholder {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.match-live-compact-team-meta {
+    min-width: 0;
+    flex: 1;
+}
+
+.match-live-compact-team-pts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.45rem;
+    margin-top: 0.2rem;
+    font-size: 0.78rem;
+}
+
+.match-live-compact-player {
+    color: #64748b;
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.match-live-compact-score {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.match-live-compact-calc {
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.match-live-prono-cote-sep {
+    margin: 0 0.12rem;
+    opacity: 0.7;
+}
+
+.match-live-compact-buteurs-row td {
+    background: #f8fafc;
+    font-size: 0.82rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
+
+.match-live-compact-buteurs-label {
+    font-weight: 600;
+    color: #64748b;
+    margin-right: 0.35rem;
+}
+
+.match-live-compact-buteur-chip {
+    display: inline;
+}
+
+.match-live-compact-buteur-sep {
+    margin: 0 0.25rem;
+    color: #cbd5e1;
+}
+
+.match-live-compact-buteurs-cell .match-live-buteur-points {
+    margin-left: 0;
+}
+
+.match-live-jokers-joker-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
 }
 
 .match-live-teams {

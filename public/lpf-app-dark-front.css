@@ -108,9 +108,17 @@ html.dark body.front-body .ta-main .match-prono-cotisation-msg {
 }
 
 /* ========== Matchs — live ========== */
-html.dark body.front-body .ta-main .match-live-team-card {
+html.dark body.front-body .ta-main .match-card--live {
+    background: var(--lpf-bg) !important;
     border-color: var(--lpf-border) !important;
-    background: var(--lpf-surface-raised) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-compact-table tbody + tbody tr:first-child td {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-compact-buteurs-row td {
+    background: var(--lpf-bg) !important;
 }
 
 html.dark body.front-body .ta-main .match-live-team-position--simulated {
@@ -126,15 +134,18 @@ html.dark body.front-body .ta-main .match-live-score-hint {
 }
 
 html.dark body.front-body .ta-main .match-live-team-total,
-html.dark body.front-body .ta-main .match-live-buteur-points {
-    color: var(--lpf-link) !important;
+html.dark body.front-body .ta-main .match-live-buteur-points,
+html.dark body.front-body .ta-main .match-live-minute {
+    color: var(--lpf-warning) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-prono-row {
-    background: var(--lpf-bg) !important;
+html.dark body.front-body .ta-main .match-goals-name {
+    color: var(--lpf-text) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-prono-label,
+html.dark body.front-body .ta-main .match-live-compact-player,
+html.dark body.front-body .ta-main .match-live-compact-calc,
+html.dark body.front-body .ta-main .match-live-compact-buteurs-label,
 html.dark body.front-body .ta-main .match-live-prono-meta,
 html.dark body.front-body .ta-main .match-live-prono-empty,
 html.dark body.front-body .ta-main .match-live-buteurs-title,
@@ -143,13 +154,9 @@ html.dark body.front-body .ta-main .match-live-buteur-cote {
     color: var(--lpf-muted) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-prono-score,
+html.dark body.front-body .ta-main .match-live-compact-score,
 html.dark body.front-body .ta-main .match-live-buteur-name {
     color: var(--lpf-text) !important;
-}
-
-html.dark body.front-body .ta-main .match-live-buteurs {
-    border-top-color: var(--lpf-border) !important;
 }
 
 html.dark body.front-body .ta-main .match-live-kdo-row--winner {

@@ -139,9 +139,17 @@ html.lpf-classic-light body.front-body .ta-main .match-prono-cotisation-msg {
 }
 
 /* ========== Matchs — live ========== */
-html.lpf-classic-light body.front-body .ta-main .match-live-team-card {
+html.lpf-classic-light body.front-body .ta-main .match-card--live {
+    background: var(--lpf-bg) !important;
     border-color: var(--lpf-border) !important;
-    background: var(--lpf-surface-raised) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-table tbody + tbody tr:first-child td {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-buteurs-row td {
+    background: var(--lpf-bg) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-team-position--simulated {
@@ -157,15 +165,18 @@ html.lpf-classic-light body.front-body .ta-main .match-live-score-hint {
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-team-total,
-html.lpf-classic-light body.front-body .ta-main .match-live-buteur-points {
-    color: var(--lpf-link) !important;
+html.lpf-classic-light body.front-body .ta-main .match-live-buteur-points,
+html.lpf-classic-light body.front-body .ta-main .match-live-minute {
+    color: var(--lpf-warning) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-prono-row {
-    background: var(--lpf-bg) !important;
+html.lpf-classic-light body.front-body .ta-main .match-goals-name {
+    color: var(--lpf-text) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-prono-label,
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-player,
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-calc,
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-buteurs-label,
 html.lpf-classic-light body.front-body .ta-main .match-live-prono-meta,
 html.lpf-classic-light body.front-body .ta-main .match-live-prono-empty,
 html.lpf-classic-light body.front-body .ta-main .match-live-buteurs-title,
@@ -174,13 +185,9 @@ html.lpf-classic-light body.front-body .ta-main .match-live-buteur-cote {
     color: var(--lpf-muted) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-prono-score,
+html.lpf-classic-light body.front-body .ta-main .match-live-compact-score,
 html.lpf-classic-light body.front-body .ta-main .match-live-buteur-name {
     color: var(--lpf-text) !important;
-}
-
-html.lpf-classic-light body.front-body .ta-main .match-live-buteurs {
-    border-top-color: var(--lpf-border) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-kdo-row--winner {

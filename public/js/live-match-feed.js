@@ -4,42 +4,77 @@
 (function () {
     const POLL_MS = 60000;
 
-    function updateGoalsList(card, goals) {
-        let list = card.querySelector('[data-match-goals]');
-        const wrap = card.querySelector('.match-goals-wrap');
-
-        if (!goals || goals.length === 0) {
-            if (list) {
-                list.innerHTML = '';
-                list.hidden = true;
-            }
-            return;
-        }
-
-        if (!list && wrap) {
-            list = document.createElement('ul');
-            list.className = 'match-goals-list';
-            list.setAttribute('data-match-goals', '');
-            wrap.appendChild(list);
-        }
-
-        if (!list) {
-            return;
-        }
-
-        list.hidden = false;
-        list.innerHTML = goals
-            .map((goal) => {
-                const minute = goal.minute ? `<span class="match-goals-minute">${goal.minute}'</span>` : '';
-                return `<li class="match-goals-item"><span class="match-goals-scorer">${escapeHtml(goal.name)}</span>${minute}</li>`;
-            })
-            .join('');
-    }
-
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = String(text);
         return div.innerHTML;
+    }
+
+    function escapeAttr(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;');
+    }
+
+    function goalPhotoUrl(photo) {
+        if (!photo) {
+            return null;
+        }
+        if (photo.startsWith('http://') || photo.startsWith('https://')) {
+            return photo;
+        }
+
+        return '/' + String(photo).replace(/^\//, '');
+    }
+
+    function renderGoalItem(goal) {
+        const photoUrl = goalPhotoUrl(goal.photo);
+        const initial = escapeHtml((goal.name || '?').charAt(0).toUpperCase());
+        const photoMarkup = photoUrl
+            ? `<img class="match-goals-photo" src="${escapeAttr(photoUrl)}" alt="" width="28" height="28" loading="lazy" decoding="async">`
+            : `<span class="match-goals-photo match-goals-photo--placeholder" aria-hidden="true">${initial}</span>`;
+
+        return `<li class="match-goals-item">${photoMarkup}<span class="match-goals-name">${escapeHtml(goal.name)}</span></li>`;
+    }
+
+    function renderGoalsSide(goals, side) {
+        const filtered = (goals || []).filter((goal) => (goal.side || 'home') === side);
+        if (filtered.length === 0) {
+            return '';
+        }
+
+        const sideClass = side === 'away' ? 'match-goals-side--away' : 'match-goals-side--home';
+        const label = side === 'away' ? 'Buteurs extérieur' : 'Buteurs domicile';
+
+        return `<ul class="match-goals-side ${sideClass}" aria-label="${label}">${filtered.map(renderGoalItem).join('')}</ul>`;
+    }
+
+    function updateGoalsList(card, goals) {
+        const wrap = card.querySelector('.match-goals-wrap');
+        if (!wrap) {
+            return;
+        }
+
+        let sides = wrap.querySelector('[data-match-goals]');
+
+        if (!goals || goals.length === 0) {
+            if (sides) {
+                sides.hidden = true;
+                sides.innerHTML = '';
+            }
+            return;
+        }
+
+        if (!sides) {
+            sides = document.createElement('div');
+            sides.className = 'match-goals-sides';
+            sides.setAttribute('data-match-goals', '');
+            wrap.appendChild(sides);
+        }
+
+        sides.hidden = false;
+        sides.innerHTML = renderGoalsSide(goals, 'home') + renderGoalsSide(goals, 'away');
     }
 
     function applyFeed(data) {

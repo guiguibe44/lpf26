@@ -58,7 +58,7 @@ class ButRepository extends ServiceEntityRepository
      *
      * @param list<int> $matchIds
      *
-     * @return array<int, list<array{buteur_id: int, name: string, minute: ?int, points: int}>>
+     * @return array<int, list<array{buteur_id: int, name: string, minute: ?int, points: int, photo: ?string, side: string}>>
      */
     public function findGoalRowsIndexedByMatchIds(array $matchIds): array
     {
@@ -68,9 +68,12 @@ class ButRepository extends ServiceEntityRepository
 
         /** @var list<But> $buts */
         $buts = $this->createQueryBuilder('b')
-            ->addSelect('bu', 'm')
+            ->addSelect('bu', 'buPays', 'm', 'mHome', 'mAway')
             ->join('b.buteur', 'bu')
+            ->leftJoin('bu.pays', 'buPays')
             ->join('b.matchRef', 'm')
+            ->leftJoin('m.paysDomicile', 'mHome')
+            ->leftJoin('m.paysExterieur', 'mAway')
             ->andWhere('m.id IN (:matchIds)')
             ->setParameter('matchIds', $matchIds)
             ->orderBy('b.minute', 'ASC')
@@ -87,12 +90,24 @@ class ButRepository extends ServiceEntityRepository
             }
 
             $matchId = (int) $match->getId();
+            $buteurCountryId = $buteur->getPays()?->getId();
+            $homeCountryId = $match->getPaysDomicile()?->getId();
+            $awayCountryId = $match->getPaysExterieur()?->getId();
+            $side = 'home';
+            if (null !== $buteurCountryId && null !== $awayCountryId && $buteurCountryId === $awayCountryId) {
+                $side = 'away';
+            } elseif (null !== $buteurCountryId && null !== $homeCountryId && $buteurCountryId === $homeCountryId) {
+                $side = 'home';
+            }
+
             $indexed[$matchId] ??= [];
             $indexed[$matchId][] = [
                 'buteur_id' => (int) $buteur->getId(),
-                'name' => trim(sprintf('%s %s', (string) $buteur->getPrenom(), (string) $buteur->getNom())),
+                'name' => trim((string) $buteur->getNom()),
                 'minute' => $but->getMinute(),
                 'points' => $but->getPointsAttribues(),
+                'photo' => $buteur->getPhotoPublicPath(),
+                'side' => $side,
             ];
         }
 

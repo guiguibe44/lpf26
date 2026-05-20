@@ -146,11 +146,10 @@ html.dark body.front-body .ta-main .admin-email-preview__frame {
 
 /* Sous-blocs / lignes : fond légèrement relevé */
 html.dark body.front-body .ta-main :where(
-    .match-live-prono-row,
+    .match-live-compact-buteurs-row td,
     .match-day-nav-link,
     .match-day-nav-select,
     .team-show-member-card,
-    .match-live-team-card,
     .dashboard-buteur-form-card,
     .dashboard-buteur-taken-card,
     .dashboard-buteur-result-list,
