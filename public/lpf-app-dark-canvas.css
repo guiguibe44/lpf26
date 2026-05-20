@@ -183,6 +183,19 @@ html.dark body.front-body .ta-main .match-card--kdo {
     background: var(--lpf-surface) !important;
 }
 
+html.dark body.front-body .ta-main .match-card--favorite-country.match-card--kdo {
+    border-color: #f59e0b !important;
+    background: linear-gradient(
+        145deg,
+        rgb(30 58 138 / 0.5) 0%,
+        rgb(120 53 15 / 0.22) 40%,
+        var(--lpf-surface, #1e293b) 68%
+    ) !important;
+    box-shadow:
+        0 0 0 2px #3b82f6,
+        0 0 0 4px var(--lpf-surface, #1e293b) !important;
+}
+
 html.dark body.front-body .ta-main .match-live-kdo-row--winner {
     background: rgb(245 158 11 / 10%) !important;
 }

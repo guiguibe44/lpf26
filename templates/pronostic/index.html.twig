@@ -35,31 +35,38 @@
                                 {% if match_prono_blocked_cotisation %}
                                     <span class="match-prono-cotisation-msg">Cotisation requise (10&nbsp;€).</span>
                                 {% elseif can_pronostic %}
-                                    <form method="post" class="flex items-center gap-2">
-                                        <input type="hidden" name="match_id" value="{{ match.id }}">
+                                    <form
+                                        method="post"
+                                        action="{{ path('app_match_pronostic_save', { id: match.id }) }}"
+                                        class="match-pronostic-form match-pronostic-form--table flex items-center gap-2 flex-wrap"
+                                        data-match-pronostic-autosave
+                                        data-match-id="{{ match.id }}"
+                                    >
                                         <input
                                             type="number"
                                             name="score_domicile"
                                             min="0"
+                                            step="1"
+                                            inputmode="numeric"
                                             value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
-                                            class="ta-form-input"
+                                            class="ta-form-input match-score-input"
                                             style="max-width: 80px;"
                                             required
+                                            aria-label="Score domicile"
                                         >
-                                        <span>-</span>
+                                        <span aria-hidden="true">-</span>
                                         <input
                                             type="number"
                                             name="score_exterieur"
                                             min="0"
+                                            step="1"
+                                            inputmode="numeric"
                                             value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
-                                            class="ta-form-input"
+                                            class="ta-form-input match-score-input"
                                             style="max-width: 80px;"
                                             required
+                                            aria-label="Score extérieur"
                                         >
-                                        <button type="submit" class="btn btn-primary">
-                                            Enregistrer
-                                            <i class="ti ti-check" aria-hidden="true"></i>
-                                        </button>
                                     </form>
                                 {% elseif pronostic %}
                                     <span class="font-semibold">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
@@ -67,9 +74,9 @@
                                     <span class="ta-badge">Verrouille</span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td data-match-pronostic-points data-match-id="{{ match.id }}">
                                 {% if pronostic and pronostic.points is not null %}
-                                    <span class="ta-badge ta-badge-success">
+                                    <span class="ta-badge ta-badge-success" data-match-pronostic-points-value>
                                         {{ pronostic.points|number_format(0, ',', ' ') }} pts
                                     </span>
                                     {% if cotes_visible and pronostic.coteCoefficient is not null and pronostic.pointsBase is not null %}
@@ -91,4 +98,9 @@
             </table>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/match-pronostic-autosave.js') }}?v=2" defer></script>
 {% endblock %}

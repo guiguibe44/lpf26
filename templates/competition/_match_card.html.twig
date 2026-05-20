@@ -19,23 +19,27 @@
 {% set cotes_visible = match_cotes_visible(match, now) or espion_intel %}
 
 <article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}{{ match_joker ? ' match-card--has-joker' : '' }}{{ is_live ? ' match-card--live' : '' }}" data-match-id="{{ match.id }}">
-    {% if is_favorite_country_match %}
-        <div
-            class="match-card-favorite-mark"
-            title="{{ team_favorite_highlight.joker_name }} — votre sélection joue ce match (poule)"
-        >
-            <span class="match-card-favorite-mark__shield" aria-hidden="true">
-                <i class="ti ti-shield-star"></i>
-            </span>
-            <span class="sr-only">Équipe favorite — {{ team_favorite_highlight.joker_name }}</span>
-        </div>
-    {% endif %}
-    {% if match.isKdoMatch %}
-        <div class="match-card-kdo-mark" title="Match KDO — pronostic à cœur pour gagner la cagnotte">
-            <span class="match-card-kdo-mark__icon" aria-hidden="true">
-                <i class="ti ti-gift"></i>
-            </span>
-            <span class="sr-only">Match KDO</span>
+    {% if is_favorite_country_match or match.isKdoMatch %}
+        <div class="match-card-marks">
+            {% if match.isKdoMatch %}
+                <div class="match-card-kdo-mark" title="Match KDO — pronostic à cœur pour gagner la cagnotte">
+                    <span class="match-card-kdo-mark__icon" aria-hidden="true">
+                        <i class="ti ti-gift"></i>
+                    </span>
+                    <span class="sr-only">Match KDO</span>
+                </div>
+            {% endif %}
+            {% if is_favorite_country_match %}
+                <div
+                    class="match-card-favorite-mark"
+                    title="{{ team_favorite_highlight.joker_name }} — votre sélection joue ce match (poule)"
+                >
+                    <span class="match-card-favorite-mark__shield" aria-hidden="true">
+                        <i class="ti ti-shield-star"></i>
+                    </span>
+                    <span class="sr-only">Équipe favorite — {{ team_favorite_highlight.joker_name }}</span>
+                </div>
+            {% endif %}
         </div>
     {% endif %}
     <div class="match-card-head">
@@ -86,34 +90,39 @@
             <p class="match-prono-cotisation-msg">Pronostics disponibles après réglage de la cotisation (10&nbsp;€ par joueur).</p>
         {% elseif can_pronostic %}
             <div class="match-pronostic-editor">
-                <form method="post" action="{{ path('app_match_pronostic_save', { id: match.id }) }}" class="match-pronostic-form">
+                <form
+                    method="post"
+                    action="{{ path('app_match_pronostic_save', { id: match.id }) }}"
+                    class="match-pronostic-form"
+                    data-match-pronostic-autosave
+                    data-match-id="{{ match.id }}"
+                >
                     <div class="match-pronostic-form__scores">
                         <input
                             type="number"
                             name="score_domicile"
                             min="0"
+                            step="1"
+                            inputmode="numeric"
                             value="{{ pronostic ? pronostic.scoreDomicile : prono_default_score_domicile }}"
                             class="ta-form-input match-score-input"
                             required
+                            aria-label="Score {{ country_short_label(match.paysDomicile) }}"
                         >
                         <span class="match-pronostic-form__sep" aria-hidden="true">-</span>
                         <input
                             type="number"
                             name="score_exterieur"
                             min="0"
+                            step="1"
+                            inputmode="numeric"
                             value="{{ pronostic ? pronostic.scoreExterieur : prono_default_score_exterieur }}"
                             class="ta-form-input match-score-input"
                             required
+                            aria-label="Score {{ country_short_label(match.paysExterieur) }}"
                         >
                     </div>
                     <div class="match-pronostic-editor__toolbar">
-                        <button
-                            type="submit"
-                            class="btn btn-primary match-pronostic-submit"
-                            aria-label="{{ pronostic ? 'Modifier le pronostic' : 'Valider le pronostic' }}"
-                        >
-                            <i class="ti {{ pronostic ? 'ti-edit' : 'ti-check' }}" aria-hidden="true"></i>
-                        </button>
                         {% if show_joker_actions %}
                             {% include 'competition/_match_card_joker_actions.html.twig' with {
                                 match: match,

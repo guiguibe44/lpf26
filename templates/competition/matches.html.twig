@@ -151,5 +151,6 @@
     {{ parent() }}
     {% if app.user %}
         <script src="{{ asset('js/joker-match.js') }}?v=20" defer></script>
+        <script src="{{ asset('js/match-pronostic-autosave.js') }}?v=2" defer></script>
     {% endif %}
 {% endblock %}

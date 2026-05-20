@@ -1178,14 +1178,21 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     background: #fff;
 }
 
-.match-card-kdo-mark {
+.match-card-marks {
     position: absolute;
     top: -1.15rem;
     left: 0.7rem;
-    right: auto;
     z-index: 3;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     pointer-events: none;
+}
+
+.match-card-kdo-mark {
+    position: static;
+    display: block;
+    flex-shrink: 0;
 }
 
 .match-card-kdo-mark__icon {
@@ -1207,8 +1214,10 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     line-height: 1;
 }
 
-.match-card--favorite-country.match-card--kdo .match-card-favorite-mark {
-    left: 3.5rem;
+.match-card-favorite-mark {
+    position: static;
+    display: block;
+    flex-shrink: 0;
 }
 
 .match-card--favorite-country {
@@ -1218,16 +1227,6 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     box-shadow:
         0 0 0 1px rgb(59 130 246 / 22%),
         0 10px 28px rgb(37 99 235 / 10%);
-}
-
-.match-card-favorite-mark {
-    position: absolute;
-    top: -1.15rem;
-    left: 0.7rem;
-    right: auto;
-    z-index: 3;
-    display: block;
-    pointer-events: none;
 }
 
 .match-card-favorite-mark__shield {
@@ -1335,8 +1334,12 @@ button.match-card-joker-badge {
 }
 
 .match-card--favorite-country.match-card--kdo {
-    border-color: #fbbf24;
-    background: #fff;
+    border: 2px solid #fbbf24;
+    background: linear-gradient(145deg, #eff6ff 0%, #fffbeb 38%, #ffffff 68%);
+    box-shadow:
+        0 0 0 2px #3b82f6,
+        0 0 0 4px #fff,
+        0 10px 28px rgb(37 99 235 / 12%);
 }
 
 .match-card-kdo-badge {
@@ -2889,6 +2892,49 @@ html body .match-live-expand-btn.btn.btn-sm {
     justify-content: center;
     gap: 0.45rem;
     flex-wrap: wrap;
+}
+
+.match-pronostic-toast {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 9990;
+    max-width: min(18rem, calc(100vw - 2rem));
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #64748b;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.match-pronostic-toast--saving {
+    color: #2563eb;
+    border-color: #93c5fd;
+    background: #eff6ff;
+}
+
+.match-pronostic-toast--saved {
+    color: #047857;
+    border-color: #6ee7b7;
+    background: #ecfdf5;
+}
+
+.match-pronostic-toast--error {
+    color: #b91c1c;
+    border-color: #fca5a5;
+    background: #fef2f2;
+}
+
+@media (min-width: 1024px) {
+    body.front-body .match-pronostic-toast {
+        left: calc(280px + 1rem);
+    }
 }
 
 .match-pronostic-form__scores {

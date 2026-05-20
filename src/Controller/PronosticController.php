@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\GameMatch;
@@ -12,6 +14,7 @@ use App\Service\MatchStatusResolver;
 use App\Service\PronosticScoringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,7 +37,21 @@ class PronosticController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            $this->handleSubmit($request, $user, $gameMatchRepository, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
+            $result = $this->handleSubmit(
+                $request,
+                $user,
+                $gameMatchRepository,
+                $pronosticRepository,
+                $entityManager,
+                $pronosticScoringService,
+                $matchStatusResolver,
+            );
+
+            if ($this->wantsJson($request)) {
+                return $this->jsonSaveResult($result);
+            }
+
+            $this->applyFlashFromResult($result);
 
             return $this->redirectToRoute('app_pronostics');
         }
@@ -70,14 +87,35 @@ class PronosticController extends AbstractController
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
+            if ($this->wantsJson($request)) {
+                return new JsonResponse(['ok' => false, 'message' => 'Non authentifié.'], Response::HTTP_UNAUTHORIZED);
+            }
+
             return $this->redirectToRoute('app_login');
         }
 
-        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
+        $result = $this->savePronostic(
+            $request,
+            $user,
+            $match,
+            $pronosticRepository,
+            $entityManager,
+            $pronosticScoringService,
+            $matchStatusResolver,
+        );
+
+        if ($this->wantsJson($request)) {
+            return $this->jsonSaveResult($result);
+        }
+
+        $this->applyFlashFromResult($result);
 
         return $this->redirectToRoute('app_matches');
     }
 
+    /**
+     * @return array{ok: bool, message: string, score_domicile?: int, score_exterieur?: int, points?: int|null}
+     */
     private function handleSubmit(
         Request $request,
         User $user,
@@ -86,19 +124,28 @@ class PronosticController extends AbstractController
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
         MatchStatusResolver $matchStatusResolver,
-    ): void {
+    ): array {
         $matchId = (int) $request->request->get('match_id');
 
         $match = $gameMatchRepository->find($matchId);
         if (!$match instanceof GameMatch) {
-            $this->addFlash('danger', 'Match introuvable.');
-
-            return;
+            return ['ok' => false, 'message' => 'Match introuvable.'];
         }
 
-        $this->savePronostic($request, $user, $match, $pronosticRepository, $entityManager, $pronosticScoringService, $matchStatusResolver);
+        return $this->savePronostic(
+            $request,
+            $user,
+            $match,
+            $pronosticRepository,
+            $entityManager,
+            $pronosticScoringService,
+            $matchStatusResolver,
+        );
     }
 
+    /**
+     * @return array{ok: bool, message: string, score_domicile?: int, score_exterieur?: int, points?: int|null}
+     */
     private function savePronostic(
         Request $request,
         User $user,
@@ -107,34 +154,26 @@ class PronosticController extends AbstractController
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
         MatchStatusResolver $matchStatusResolver,
-    ): void {
+    ): array {
         if (!$user->isCotisationPayee()) {
-            $this->addFlash('danger', 'Réglez votre cotisation (10 € par joueur) pour pouvoir pronostiquer.');
-
-            return;
+            return ['ok' => false, 'message' => 'Réglez votre cotisation (10 € par joueur) pour pouvoir pronostiquer.'];
         }
 
         if (!$matchStatusResolver->canEditBeforeKickoff($match)) {
-            $this->addFlash('danger', 'Ce match a déjà commencé, le pronostic ne peut plus être modifié.');
-
-            return;
+            return ['ok' => false, 'message' => 'Ce match a déjà commencé, le pronostic ne peut plus être modifié.'];
         }
 
         $scoreDomicile = $request->request->get('score_domicile');
         $scoreExterieur = $request->request->get('score_exterieur');
 
         if (!is_numeric($scoreDomicile) || !is_numeric($scoreExterieur)) {
-            $this->addFlash('danger', 'Merci de saisir deux scores valides.');
-
-            return;
+            return ['ok' => false, 'message' => 'Merci de saisir deux scores valides.'];
         }
 
         $domicile = (int) $scoreDomicile;
         $exterieur = (int) $scoreExterieur;
         if ($domicile < 0 || $exterieur < 0) {
-            $this->addFlash('danger', 'Les scores doivent être positifs.');
-
-            return;
+            return ['ok' => false, 'message' => 'Les scores doivent être positifs.'];
         }
 
         $pronostic = $pronosticRepository->findOneBy([
@@ -156,6 +195,48 @@ class PronosticController extends AbstractController
         $pronosticScoringService->scorePronostic($pronostic);
 
         $entityManager->flush();
-        $this->addFlash('success', 'Pronostic enregistré.');
+
+        return [
+            'ok' => true,
+            'message' => 'Pronostic enregistré.',
+            'score_domicile' => $domicile,
+            'score_exterieur' => $exterieur,
+            'points' => $pronostic->getPoints(),
+        ];
+    }
+
+    private function wantsJson(Request $request): bool
+    {
+        if ($request->isXmlHttpRequest()) {
+            return true;
+        }
+
+        $accept = $request->headers->get('Accept', '');
+
+        return str_contains($accept, 'application/json');
+    }
+
+    /**
+     * @param array{ok: bool, message: string, score_domicile?: int, score_exterieur?: int, points?: int|null} $result
+     */
+    private function jsonSaveResult(array $result): JsonResponse
+    {
+        $status = ($result['ok'] ?? false) ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST;
+
+        return new JsonResponse($result, $status);
+    }
+
+    /**
+     * @param array{ok: bool, message: string} $result
+     */
+    private function applyFlashFromResult(array $result): void
+    {
+        if ($result['ok'] ?? false) {
+            $this->addFlash('success', $result['message']);
+
+            return;
+        }
+
+        $this->addFlash('danger', $result['message']);
     }
 }
