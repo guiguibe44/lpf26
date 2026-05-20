@@ -27,7 +27,12 @@ class TeamManageType extends AbstractType
                 'attr' => $nameAttrs,
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'equipe est obligatoire.'),
-                    new Length(min: 2, max: 255),
+                    new Length(
+                        min: 1,
+                        max: 255,
+                        minMessage: 'Le nom de l\'équipe doit contenir au moins {{ limit }} caractère.',
+                        maxMessage: 'Le nom de l\'équipe ne peut pas dépasser {{ limit }} caractères.',
+                    ),
                 ],
             ])
             ->add('logoFile', FileType::class, [

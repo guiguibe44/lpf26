@@ -20,9 +20,9 @@ final class CreateTeamInvitationType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Le nom de l\'équipe est obligatoire.'),
                     new Length(
-                        min: 2,
+                        min: 1,
                         max: 255,
-                        minMessage: 'Le nom de l\'équipe doit faire au moins {{ limit }} caractères.',
+                        minMessage: 'Le nom de l\'équipe doit contenir au moins {{ limit }} caractère.',
                         maxMessage: 'Le nom de l\'équipe ne peut pas dépasser {{ limit }} caractères.',
                     ),
                 ],
