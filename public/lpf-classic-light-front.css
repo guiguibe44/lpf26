@@ -148,8 +148,13 @@ html.lpf-classic-light body.front-body .ta-main .match-live-compact-table tbody 
     border-top-color: var(--lpf-border) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-compact-buteurs-row td {
+html.lpf-classic-light body.front-body .ta-main .match-live-team-details__panel,
+html.lpf-classic-light body.front-body .ta-main .match-live-prono-chip {
     background: var(--lpf-bg) !important;
+}
+
+html.lpf-classic-light body.front-body .ta-main .match-live-buteur-pick__name {
+    color: var(--lpf-text) !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-team-position--simulated {

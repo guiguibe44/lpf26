@@ -178,43 +178,49 @@
             }
 
             (team.pronostics || []).forEach((prono) => {
-                const row = teamSection.querySelector('[data-pronostic-id="' + prono.pronosticId + '"]');
-                if (!row) {
+                const blocks = teamSection.querySelectorAll('[data-pronostic-id="' + prono.pronosticId + '"]');
+                if (blocks.length === 0) {
                     return;
                 }
 
-                const baseEl = row.querySelector('[data-prono-base]');
-                const coteEl = row.querySelector('[data-prono-cote]');
-                const coteSepEl = row.querySelector('[data-prono-cote-sep]');
-                const pointsEl = row.querySelector('[data-prono-points]');
-                const riskEl = row.querySelector('[data-prono-risk]');
+                const scoreText = String(prono.predHome) + '-' + String(prono.predAway);
 
-                if (baseEl) {
-                    baseEl.textContent = String(prono.basePoints);
-                }
-                if (coteSepEl) {
-                    coteSepEl.hidden = !cotesVisible;
-                }
-                if (coteEl) {
-                    if (cotesVisible) {
-                        coteEl.hidden = false;
-                        coteEl.textContent = formatCote(prono.coefficient);
-                    } else {
-                        coteEl.hidden = true;
-                        coteEl.textContent = '';
+                blocks.forEach((block) => {
+                    block.querySelectorAll('[data-prono-score-value]').forEach((scoreEl) => {
+                        scoreEl.textContent = scoreText;
+                    });
+                    const invert = block.querySelector('.match-live-prono-invert');
+                    if (invert) {
+                        invert.hidden = !prono.scoreInverted;
                     }
-                }
-                if (pointsEl) {
-                    pointsEl.textContent = formatPoints(prono.points);
-                }
-                if (riskEl) {
-                    if (prono.priseRisque) {
-                        riskEl.hidden = false;
-                        riskEl.textContent = 'Risque';
-                    } else {
-                        riskEl.hidden = true;
+
+                    const baseEl = block.querySelector('[data-prono-base]');
+                    const coteEl = block.querySelector('[data-prono-cote]');
+                    const coteSepEl = block.querySelector('[data-prono-cote-sep]');
+                    const pointsEl = block.querySelector('[data-prono-points]');
+
+                    if (baseEl) {
+                        baseEl.textContent = String(prono.basePoints);
                     }
-                }
+                    if (coteSepEl) {
+                        coteSepEl.hidden = !cotesVisible;
+                    }
+                    if (coteEl) {
+                        if (cotesVisible) {
+                            coteEl.hidden = false;
+                            coteEl.textContent = formatCote(prono.coefficient);
+                        } else {
+                            coteEl.hidden = true;
+                            coteEl.textContent = '';
+                        }
+                    }
+                    if (pointsEl) {
+                        const inChip = pointsEl.classList.contains('match-live-prono-chip__pts');
+                        pointsEl.textContent = inChip
+                            ? Math.round(Number(prono.points) || 0).toLocaleString('fr-FR')
+                            : formatPoints(prono.points);
+                    }
+                });
             });
         });
 

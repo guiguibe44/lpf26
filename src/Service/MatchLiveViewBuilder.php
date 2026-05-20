@@ -232,7 +232,7 @@ final class MatchLiveViewBuilder
     /**
      * @param list<int> $matchCountryIds
      *
-     * @return list<array{name: string, country: string|null, pointsPerGoal: float}>
+     * @return list<array{name: string, photo: ?string, country: string|null, pointsPerGoal: float, coefficient: float, double_joker: bool, invert_joker: bool}>
      */
     private function buildButeursForTeam(Team $team, GameMatch $match, array $matchCountryIds): array
     {
@@ -271,7 +271,8 @@ final class MatchLiveViewBuilder
             }
 
             $rows[] = [
-                'name' => (string) $buteur,
+                'name' => trim((string) $buteur->getNom()),
+                'photo' => $buteur->getPhotoPublicPath(),
                 'country' => $buteur->getPays()?->getNom(),
                 'pointsPerGoal' => $pointsPerGoal,
                 'coefficient' => $coefficient,

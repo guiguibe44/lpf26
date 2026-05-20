@@ -1614,8 +1614,8 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     width: 3.25rem;
 }
 
-.match-live-compact-th-extra {
-    width: 4.5rem;
+.match-live-compact-th-pronos {
+    min-width: 10rem;
 }
 
 .match-live-compact-rank {
@@ -1654,22 +1654,107 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     font-size: 0.78rem;
 }
 
-.match-live-compact-player {
-    color: #64748b;
-    max-width: 9rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.match-live-compact-pronos-cell {
+    vertical-align: top;
+    min-width: 0;
 }
 
-.match-live-compact-score {
+.match-live-pronos-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    align-items: center;
+}
+
+.match-live-prono-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.4rem;
+    background: #f1f5f9;
+    font-size: 0.78rem;
+    line-height: 1.25;
+}
+
+.match-live-prono-chip__label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.match-live-prono-chip__score {
     font-weight: 700;
-    white-space: nowrap;
+    color: #0f172a;
 }
 
-.match-live-compact-calc {
+.match-live-prono-chip__pts {
+    font-size: 0.68rem;
+    padding: 0.1rem 0.35rem;
+}
+
+.match-live-team-details {
+    margin-top: 0.35rem;
+}
+
+.match-live-team-details__toggle {
+    display: inline-block;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #2563eb;
+    list-style: none;
+    user-select: none;
+}
+
+.match-live-team-details__toggle::-webkit-details-marker {
+    display: none;
+}
+
+.match-live-team-details__toggle::before {
+    content: '▸ ';
+}
+
+.match-live-team-details[open] .match-live-team-details__toggle::before {
+    content: '▾ ';
+}
+
+.match-live-team-details__panel {
+    margin-top: 0.45rem;
+    padding: 0.5rem 0.55rem;
+    border-radius: 0.45rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.match-live-pronos-detail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.match-live-prono-detail {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    align-items: center;
+    gap: 0.35rem 0.55rem;
+    font-size: 0.8rem;
+}
+
+.match-live-prono-detail__player {
     color: #64748b;
-    white-space: nowrap;
+    font-weight: 500;
+    min-width: 4.5rem;
+}
+
+.match-live-prono-detail__score {
+    font-weight: 700;
+}
+
+.match-live-prono-detail__calc {
+    color: #64748b;
 }
 
 .match-live-prono-cote-sep {
@@ -1677,30 +1762,64 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     opacity: 0.7;
 }
 
-.match-live-compact-buteurs-row td {
-    background: #f8fafc;
-    font-size: 0.82rem;
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
+.match-live-buteurs-picks {
+    margin-top: 0.5rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed #e2e8f0;
 }
 
-.match-live-compact-buteurs-label {
+.match-live-buteurs-picks__label {
+    display: block;
+    font-size: 0.68rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: #64748b;
-    margin-right: 0.35rem;
+    margin-bottom: 0.35rem;
 }
 
-.match-live-compact-buteur-chip {
-    display: inline;
+.match-live-buteurs-picks__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.65rem;
 }
 
-.match-live-compact-buteur-sep {
-    margin: 0 0.25rem;
-    color: #cbd5e1;
+.match-live-buteur-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
 }
 
-.match-live-compact-buteurs-cell .match-live-buteur-points {
-    margin-left: 0;
+.match-live-buteur-pick__photo {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 auto;
+    border: 1px solid rgb(15 23 42 / 8%);
+}
+
+.match-live-buteur-pick__photo--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.match-live-buteur-pick__name {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.82rem;
+}
+
+@media (max-width: 640px) {
+    .match-live-prono-detail {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .match-live-jokers-joker-cell {
