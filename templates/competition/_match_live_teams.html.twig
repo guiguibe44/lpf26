@@ -42,7 +42,7 @@
                     <td class="ta-num match-live-compact-prono-cell">
                         {% if prono1 %}
                             <span class="match-live-prono-cell" data-pronostic-id="{{ prono1.pronosticId }}">
-                                <span data-prono-score-value>{{ prono1.predHome }}-{{ prono1.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono1.points|number_format(0, ',', ' ') }}</strong>
+                                <span data-prono-score-value>{{ prono1.predHome }}-{{ prono1.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono1.teamPoints|number_format(0, ',', ' ') }}</strong>
                             </span>
                         {% else %}
                             <span class="match-live-prono-empty">—</span>
@@ -51,7 +51,7 @@
                     <td class="ta-num match-live-compact-prono-cell">
                         {% if prono2 %}
                             <span class="match-live-prono-cell" data-pronostic-id="{{ prono2.pronosticId }}">
-                                <span data-prono-score-value>{{ prono2.predHome }}-{{ prono2.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono2.points|number_format(0, ',', ' ') }}</strong>
+                                <span data-prono-score-value>{{ prono2.predHome }}-{{ prono2.predAway }}</span><span class="match-live-prono-cell__sep">·</span><strong data-prono-points>{{ prono2.teamPoints|number_format(0, ',', ' ') }}</strong>
                             </span>
                         {% else %}
                             <span class="match-live-prono-empty">—</span>
@@ -106,7 +106,7 @@
                                                 {% endif %}
                                             </span>
                                             <span class="match-live-prono-detail__pts ta-num">
-                                                <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>{{ prono.points|number_format(0, ',', ' ') }}</span>
+                                                <span class="match-live-prono-points ta-badge ta-badge-success" data-prono-points>{{ prono.teamPoints|number_format(0, ',', ' ') }}</span>
                                             </span>
                                         </li>
                                     {% endfor %}

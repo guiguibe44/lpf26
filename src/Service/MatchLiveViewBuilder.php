@@ -14,6 +14,7 @@ use App\Entity\Team;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\ButRepository;
+use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\TeamJokerUsageRepository;
@@ -27,6 +28,7 @@ final class MatchLiveViewBuilder
         private readonly PronosticRepository $pronosticRepository,
         private readonly TeamMemberRepository $teamMemberRepository,
         private readonly TeamRankingSnapshotRepository $teamRankingSnapshotRepository,
+        private readonly GameMatchRepository $gameMatchRepository,
         private readonly PronosticSimulationService $pronosticSimulationService,
         private readonly ButeurGoalScoringService $buteurGoalScoringService,
         private readonly DefaultPronosticService $defaultPronosticService,
@@ -94,7 +96,7 @@ final class MatchLiveViewBuilder
             $linesByTeamId[$line->teamId][] = $line;
         }
 
-        $rankingByTeamId = $this->buildCurrentRankingByTeamId();
+        $rankingByTeamId = $this->buildRankingBeforeMatchByTeamId($match);
         $matchCountryIds = $this->resolveMatchCountryIds($match);
         $jokersByTeamId = $this->teamJokerService->buildActiveJokersByTeamIdForMatch($match);
         $teams = $this->teamRepository->findAllWithMembersAndPlayers();
@@ -184,12 +186,19 @@ final class MatchLiveViewBuilder
     }
 
     /**
+     * Classement cumulé après le dernier match terminé avant celui en cours (évite le double comptage live).
+     *
      * @return array<int, array{position: int, totalPoints: float}>
      */
-    private function buildCurrentRankingByTeamId(): array
+    private function buildRankingBeforeMatchByTeamId(GameMatch $match): array
     {
+        $previousMatch = $this->gameMatchRepository->findLastScoredMatchBefore($match);
+        if (!$previousMatch instanceof GameMatch) {
+            return [];
+        }
+
         $map = [];
-        foreach ($this->teamRankingSnapshotRepository->findLatestRanking() as $snapshot) {
+        foreach ($this->teamRankingSnapshotRepository->findRankingForMatch($previousMatch) as $snapshot) {
             $teamId = $snapshot->getTeam()?->getId();
             if (null !== $teamId) {
                 $map[(int) $teamId] = [

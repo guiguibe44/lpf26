@@ -267,7 +267,11 @@
                         }
                     }
                     if (pointsEl) {
-                        pointsEl.textContent = formatCellNumber(prono.points);
+                        const displayPts =
+                            prono.teamPoints !== undefined && prono.teamPoints !== null
+                                ? prono.teamPoints
+                                : prono.points;
+                        pointsEl.textContent = formatCellNumber(displayPts);
                     }
                 });
             });
