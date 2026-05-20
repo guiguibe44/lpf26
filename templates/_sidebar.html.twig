@@ -66,25 +66,35 @@
             <div class="ta-sidebar-actions">
                 {% include '_notification_bell.html.twig' %}
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a
-                        href="{{ path('admin_compet_checklist') }}"
-                        class="ta-sidebar-notify ta-sidebar-compet{{ currentRoute == 'admin_compet_checklist' ? ' ta-sidebar-notify--current' : '' }}"
-                        title="Checklist compétition"
-                        aria-label="Checklist compétition"
-                    >
-                        <i class="ti ti-trophy" aria-hidden="true"></i>
-                    </a>
-                    <a
-                        href="{{ path('admin_qa_checklist') }}"
-                        class="ta-sidebar-notify ta-sidebar-qa{{ currentRoute == 'admin_qa_checklist' ? ' ta-sidebar-notify--current' : '' }}"
-                        title="Checklist de recette"
-                        aria-label="Checklist de recette"
-                    >
-                        <i class="ti ti-list-check" aria-hidden="true"></i>
-                    </a>
+                    {% if app.environment != 'prod' %}
+                        <a
+                            href="{{ path('admin_compet_checklist') }}"
+                            class="ta-sidebar-notify ta-sidebar-compet{{ currentRoute == 'admin_compet_checklist' ? ' ta-sidebar-notify--current' : '' }}"
+                            title="Checklist compétition"
+                            aria-label="Checklist compétition"
+                        >
+                            <i class="ti ti-trophy" aria-hidden="true"></i>
+                        </a>
+                        <a
+                            href="{{ path('admin_joker_test_scenario') }}"
+                            class="ta-sidebar-notify ta-sidebar-jokers{{ currentRoute == 'admin_joker_test_scenario' ? ' ta-sidebar-notify--current' : '' }}"
+                            title="Scénario jokers"
+                            aria-label="Scénario jokers"
+                        >
+                            <i class="ti ti-mask" aria-hidden="true"></i>
+                        </a>
+                        <a
+                            href="{{ path('admin_qa_checklist') }}"
+                            class="ta-sidebar-notify ta-sidebar-qa{{ currentRoute == 'admin_qa_checklist' ? ' ta-sidebar-notify--current' : '' }}"
+                            title="Checklist de recette"
+                            aria-label="Checklist de recette"
+                        >
+                            <i class="ti ti-list-check" aria-hidden="true"></i>
+                        </a>
+                    {% endif %}
                     <a
                         href="{{ path('admin') }}"
-                        class="ta-sidebar-notify ta-sidebar-admin{{ currentRoute starts with 'admin' and currentRoute != 'admin_qa_checklist' and currentRoute != 'admin_compet_checklist' ? ' ta-sidebar-notify--current' : '' }}"
+                        class="ta-sidebar-notify ta-sidebar-admin{% if app.environment == 'prod' %}{{ currentRoute starts with 'admin' ? ' ta-sidebar-notify--current' : '' }}{% else %}{{ currentRoute starts with 'admin' and currentRoute != 'admin_qa_checklist' and currentRoute != 'admin_compet_checklist' and currentRoute != 'admin_joker_test_scenario' ? ' ta-sidebar-notify--current' : '' }}{% endif %}"
                         title="Administration"
                         aria-label="Administration"
                     >
