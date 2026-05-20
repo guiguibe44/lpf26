@@ -1586,6 +1586,52 @@ html body .match-card-live-btn.btn.btn-warning .ti {
     color: #64748b;
 }
 
+.match-live-cotes-banner {
+    margin-bottom: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.match-live-cotes-banner__title {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+.match-live-cotes-banner__main {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+.match-live-cotes-banner__value {
+    color: #2563eb;
+    font-size: 1.05rem;
+}
+
+.match-live-cotes-banner__sep {
+    margin: 0 0.25rem;
+    color: #94a3b8;
+}
+
+.match-live-cotes-banner__range {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+}
+
+.match-live-cotes-banner__meta {
+    color: #94a3b8;
+}
+
+.match-live-cotes-banner__empty {
+    margin: 0;
+}
+
 .match-live-compact-table {
     margin-bottom: 0;
     font-size: 0.875rem;

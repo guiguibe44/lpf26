@@ -33,6 +33,46 @@
         return Number(value).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
+    const formatCoteCoef = (value) => {
+        if (value === null || value === undefined) {
+            return '—';
+        }
+
+        return '×' + formatCote(value);
+    };
+
+    const updateCotesBanner = (cotes) => {
+        const banner = document.getElementById('match-live-cotes-banner');
+        if (!banner || !cotes) {
+            return;
+        }
+
+        const count = Number(cotes.pronostics_count) || 0;
+        banner.hidden = count === 0;
+
+        const scoreEl = document.getElementById('match-live-cotes-score');
+        const forScoreEl = document.getElementById('match-live-cotes-for-score');
+        const minEl = document.getElementById('match-live-cotes-min');
+        const avgEl = document.getElementById('match-live-cotes-avg');
+        const maxEl = document.getElementById('match-live-cotes-max');
+
+        if (scoreEl) {
+            scoreEl.textContent = String(cotes.score_label ?? '');
+        }
+        if (forScoreEl) {
+            forScoreEl.textContent = formatCoteCoef(cotes.for_score);
+        }
+        if (minEl) {
+            minEl.textContent = formatCoteCoef(cotes.min);
+        }
+        if (avgEl) {
+            avgEl.textContent = formatCoteCoef(cotes.moyenne);
+        }
+        if (maxEl) {
+            maxEl.textContent = formatCoteCoef(cotes.max);
+        }
+    };
+
     const teamLogoUrl = (logo) => {
         if (!logo) {
             return null;
@@ -232,6 +272,10 @@
                 });
             });
         });
+
+        if (data.cotes) {
+            updateCotesBanner(data.cotes);
+        }
 
         if (data.kdoOutlook) {
             updateKdoOutlook(data.kdoOutlook);

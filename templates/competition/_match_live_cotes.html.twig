@@ -1,0 +1,22 @@
+{# cotes: array{score_label, for_score, min, moyenne, max, pronostics_count} #}
+<div class="match-live-cotes-banner" id="match-live-cotes-banner"{% if cotes.pronostics_count == 0 %} hidden{% endif %}>
+    <p class="match-live-cotes-banner__title">Cotes pronostics</p>
+    {% if cotes.pronostics_count > 0 and cotes.for_score is not null %}
+        <p class="match-live-cotes-banner__main">
+            Score <strong id="match-live-cotes-score">{{ cotes.score_label }}</strong>
+            <span class="match-live-cotes-banner__sep">→</span>
+            cote <strong class="match-live-cotes-banner__value" id="match-live-cotes-for-score">×{{ cotes.for_score|number_format(2, ',', ' ') }}</strong>
+        </p>
+        {% if cotes.min is not null and cotes.max is not null %}
+            <p class="match-live-cotes-banner__range ta-card-text">
+                Toutes les grilles :
+                min <span id="match-live-cotes-min">×{{ cotes.min|number_format(2, ',', ' ') }}</span>
+                · moy. <span id="match-live-cotes-avg">×{{ cotes.moyenne|number_format(2, ',', ' ') }}</span>
+                · max <span id="match-live-cotes-max">×{{ cotes.max|number_format(2, ',', ' ') }}</span>
+                <span class="match-live-cotes-banner__meta">({{ cotes.pronostics_count }} pronostic{{ cotes.pronostics_count > 1 ? 's' : '' }})</span>
+            </p>
+        {% endif %}
+    {% else %}
+        <p class="match-live-cotes-banner__empty ta-card-text">Pas encore assez de pronostics pour estimer les cotes.</p>
+    {% endif %}
+</div>

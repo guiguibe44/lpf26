@@ -39,6 +39,7 @@ final class MatchLiveViewBuilder
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
         private readonly JokerCollectePointsService $jokerCollectePointsService,
         private readonly ButRepository $butRepository,
+        private readonly MatchCotePreviewService $matchCotePreviewService,
     ) {
     }
 
@@ -47,7 +48,15 @@ final class MatchLiveViewBuilder
      *     scoreDomicile: int,
      *     scoreExterieur: int,
      *     teams: list<MatchLiveTeamRow>,
-     *     kdoOutlook: ?KdoMatchOutlook
+     *     kdoOutlook: ?KdoMatchOutlook,
+     *     cotes: array{
+     *         score_label: string,
+     *         for_score: ?float,
+     *         min: ?float,
+     *         moyenne: ?float,
+     *         max: ?float,
+     *         pronostics_count: int
+     *     }
      * }
      */
     public function build(GameMatch $match, int $scoreDomicile, int $scoreExterieur): array
@@ -143,6 +152,7 @@ final class MatchLiveViewBuilder
             'scoreExterieur' => $scoreExterieur,
             'teams' => $teamRows,
             'kdoOutlook' => $this->kdoMatchWinnerService->buildOutlook($match, $scoreDomicile, $scoreExterieur),
+            'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
         ];
     }
 
@@ -158,6 +168,7 @@ final class MatchLiveViewBuilder
             'scoreExterieur' => $data['scoreExterieur'],
             'teams' => array_map(static fn (MatchLiveTeamRow $row): array => $row->toArray(), $data['teams']),
             'kdoOutlook' => $data['kdoOutlook'] instanceof KdoMatchOutlook ? $data['kdoOutlook']->toArray() : null,
+            'cotes' => $data['cotes'],
         ];
     }
 

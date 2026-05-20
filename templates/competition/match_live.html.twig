@@ -99,6 +99,9 @@
 
     <section class="ta-card mt-5 match-live-teams-section">
         <h2 class="ta-card-title">Pronostics par équipe</h2>
+        {% if match_cotes_visible(match) %}
+            {% include 'competition/_match_live_cotes.html.twig' with { cotes: live_view.cotes } only %}
+        {% endif %}
         <p class="ta-card-text mb-3">
             <span class="match-live-legend">Place</span> = classement simulé (<span class="match-live-legend">n</span> = rang avant le match).
             <span class="match-live-legend">Total</span> = points généraux simulés.
