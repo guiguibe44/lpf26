@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Buteur;
+use App\Entity\Team;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -85,6 +86,24 @@ class TeamMemberRepository extends ServiceEntityRepository
         }
 
         return $results;
+    }
+
+    /**
+     * Autre membre (hors exclusion) avec ce surnom dans l’équipe.
+     */
+    public function findOtherMemberWithNicknameInTeam(Team $team, string $nickname, ?int $excludeMemberId): ?TeamMember
+    {
+        $qb = $this->createQueryBuilder('tm')
+            ->andWhere('tm.team = :team')
+            ->andWhere('tm.nickname = :nickname')
+            ->setParameter('team', $team)
+            ->setParameter('nickname', $nickname)
+            ->setMaxResults(1);
+        if (null !== $excludeMemberId) {
+            $qb->andWhere('tm.id != :eid')->setParameter('eid', $excludeMemberId);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     public function findPartnerPlayerIds(User $player): array

@@ -2,8 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Team;
+use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\TeamMemberRepository;
+use App\Repository\TeamRepository;
 use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,12 +16,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class UserCrudController extends AbstractAppCrudController
 {
@@ -48,7 +53,7 @@ class UserCrudController extends AbstractAppCrudController
 
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
-        $this->hydrateNicknameFromTeamMember($entityDto->getInstance());
+        $this->hydrateFromTeamMember($entityDto->getInstance());
 
         return parent::createEditFormBuilder($entityDto, $formOptions, $context);
     }
@@ -58,6 +63,21 @@ class UserCrudController extends AbstractAppCrudController
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('email'),
+            TextField::new('adminListedTeamName', 'Équipe')
+                ->hideOnForm()
+                ->formatValue(function (mixed $value, ?User $user): string {
+                    if (!$user instanceof User || null === $user->getId()) {
+                        return '—';
+                    }
+                    $member = $this->teamMemberRepository->findOneBy(['player' => $user]);
+                    $team = $member?->getTeam();
+                    if (null === $team) {
+                        return '—';
+                    }
+                    $name = $team->getName();
+
+                    return (null !== $name && '' !== $name) ? $name : ('#'.($team->getId() ?? '?'));
+                }),
             TextField::new('nickname', 'Surnom')
                 ->setHelp('Surnom affiché dans le jeu et le forum (enregistré sur la fiche membre d’équipe).')
                 ->formatValue(function (?string $value, ?User $user): string {
@@ -71,6 +91,19 @@ class UserCrudController extends AbstractAppCrudController
 
                     return null !== $nickname && '' !== $nickname ? $nickname : '—';
                 }),
+            Field::new('equipeRattachementAdmin', 'Équipe')
+                ->onlyOnForms()
+                ->setFormType(EntityType::class)
+                ->setFormTypeOptions([
+                    'class' => Team::class,
+                    'choice_label' => 'name',
+                    'required' => false,
+                    'placeholder' => '— Aucune équipe —',
+                    'query_builder' => static fn (TeamRepository $repository) => $repository->createQueryBuilder('t')
+                        ->orderBy('t.name', 'ASC')
+                        ->addOrderBy('t.id', 'ASC'),
+                ])
+                ->setHelp('Crée ou déplace la fiche « membre d’équipe ». Laisser vide pour retirer le joueur de son équipe (supprime la fiche membre). Si le surnom est déjà pris dans l’équipe cible, un suffixe est ajouté automatiquement.'),
             TextField::new('plainPassword', 'Mot de passe')
                 ->setFormType(PasswordType::class)
                 ->onlyOnForms()
@@ -106,10 +139,15 @@ class UserCrudController extends AbstractAppCrudController
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, true);
             $this->applyOptimizedAvatar($entityInstance);
-            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
         parent::persistEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof User) {
+            $this->syncTeamMemberFromAdminSelection($entityManager, $entityInstance);
+            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
+            $entityManager->flush();
+        }
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -117,20 +155,119 @@ class UserCrudController extends AbstractAppCrudController
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, false);
             $this->applyOptimizedAvatar($entityInstance);
-            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof User) {
+            $this->syncTeamMemberFromAdminSelection($entityManager, $entityInstance);
+            $this->syncNicknameToTeamMember($entityManager, $entityInstance);
+            $entityManager->flush();
+        }
     }
 
-    private function hydrateNicknameFromTeamMember(object $entityInstance): void
+    private function hydrateFromTeamMember(object $entityInstance): void
     {
         if (!$entityInstance instanceof User || null === $entityInstance->getId()) {
             return;
         }
 
-        $nickname = $this->teamMemberRepository->findOneBy(['player' => $entityInstance])?->getNickname();
-        $entityInstance->setNickname($nickname);
+        $member = $this->teamMemberRepository->findOneBy(['player' => $entityInstance]);
+        $entityInstance->setNickname($member?->getNickname());
+        $entityInstance->setEquipeRattachementAdmin($member?->getTeam());
+    }
+
+    private function syncTeamMemberFromAdminSelection(EntityManagerInterface $entityManager, User $user): void
+    {
+        $selectedTeam = $user->getEquipeRattachementAdmin();
+        $member = $this->teamMemberRepository->findOneBy(['player' => $user]);
+
+        if (null === $selectedTeam) {
+            if (null !== $member) {
+                $entityManager->remove($member);
+            }
+
+            return;
+        }
+
+        if (null === $member) {
+            $nickname = $this->pickNicknameForNewTeamMember($user, $selectedTeam);
+            $entityManager->persist(
+                (new TeamMember())
+                    ->setPlayer($user)
+                    ->setTeam($selectedTeam)
+                    ->setNickname($nickname),
+            );
+
+            return;
+        }
+
+        if ($member->getTeam()?->getId() === $selectedTeam->getId()) {
+            return;
+        }
+
+        $member->setTeam($selectedTeam);
+        $this->ensureNicknameUniqueOnTeamAfterMove($member, $selectedTeam);
+        $entityManager->persist($member);
+    }
+
+    private function pickNicknameForNewTeamMember(User $user, Team $team): string
+    {
+        $raw = $user->getNickname();
+        $base = (null !== $raw && '' !== trim($raw))
+            ? mb_substr(trim($raw), 0, 50)
+            : $this->deriveNicknameFromEmail($user);
+        if (mb_strlen($base) < 3) {
+            $base = $this->deriveNicknameFromEmail($user);
+        }
+
+        return $this->uniquifyNicknameInTeam($team, $base, null);
+    }
+
+    private function deriveNicknameFromEmail(User $user): string
+    {
+        $email = (string) $user->getEmail();
+        $localPart = explode('@', $email, 2)[0] ?? 'joueur';
+        $slug = preg_replace('/[^a-zA-Z0-9]/', '', $localPart) ?? '';
+        if ('' === $slug || mb_strlen($slug) < 3) {
+            $id = $user->getId();
+
+            return mb_substr('joueur'.(null !== $id ? (string) $id : uniqid('', true)), 0, 50);
+        }
+
+        return mb_substr($slug, 0, 50);
+    }
+
+    private function uniquifyNicknameInTeam(Team $team, string $base, ?int $excludeMemberId): string
+    {
+        $candidate = mb_substr($base, 0, 50);
+        for ($i = 0; $i < 100; ++$i) {
+            if (null === $this->teamMemberRepository->findOtherMemberWithNicknameInTeam($team, $candidate, $excludeMemberId)) {
+                return $candidate;
+            }
+            $suffix = '-'.($i + 1);
+            $candidate = mb_substr($base, 0, max(3, 50 - mb_strlen($suffix))).$suffix;
+        }
+
+        throw new \RuntimeException('Impossible de générer un surnom unique dans cette équipe.');
+    }
+
+    private function ensureNicknameUniqueOnTeamAfterMove(TeamMember $member, Team $newTeam): void
+    {
+        $nick = $member->getNickname();
+        if (null === $nick || '' === $nick) {
+            $player = $member->getPlayer();
+            if (!$player instanceof User) {
+                throw new \RuntimeException('Joueur invalide.');
+            }
+            $member->setNickname($this->pickNicknameForNewTeamMember($player, $newTeam));
+
+            return;
+        }
+
+        if (null !== $this->teamMemberRepository->findOtherMemberWithNicknameInTeam($newTeam, $nick, $member->getId())) {
+            $member->setNickname($this->uniquifyNicknameInTeam($newTeam, $nick, $member->getId()));
+        }
     }
 
     private function syncNicknameToTeamMember(EntityManagerInterface $entityManager, User $user): void
@@ -145,7 +282,17 @@ class UserCrudController extends AbstractAppCrudController
             return;
         }
 
-        $member->setNickname($nickname);
+        $team = $member->getTeam();
+        if (null === $team) {
+            return;
+        }
+
+        $trimmed = mb_substr(trim($nickname), 0, 50);
+        if (null !== $this->teamMemberRepository->findOtherMemberWithNicknameInTeam($team, $trimmed, $member->getId())) {
+            $trimmed = $this->uniquifyNicknameInTeam($team, $trimmed, $member->getId());
+        }
+
+        $member->setNickname($trimmed);
         $entityManager->persist($member);
     }
 

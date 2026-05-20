@@ -63,6 +63,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /** Non mappé : surnom du joueur (stocké sur {@see TeamMember}), éditable dans l’admin utilisateurs. */
     private ?string $nickname = null;
 
+    /**
+     * Non mappé : rattachement équipe (EasyAdmin uniquement ; persistance via {@see TeamMember}).
+     */
+    private ?Team $equipeRattachementAdmin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -254,6 +259,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getEquipeRattachementAdmin(): ?Team
+    {
+        return $this->equipeRattachementAdmin;
+    }
+
+    public function setEquipeRattachementAdmin(?Team $equipeRattachementAdmin): static
+    {
+        $this->equipeRattachementAdmin = $equipeRattachementAdmin;
+
+        return $this;
+    }
+
+    /**
+     * Non mappé : valeur ignorée ; le libellé est calculé dans {@see \App\Controller\Admin\UserCrudController}
+     * (liste / détail EasyAdmin « Équipe »).
+     */
+    public function getAdminListedTeamName(): ?string
+    {
+        return null;
+    }
+
     #[ORM\PostLoad]
     public function syncGrantAdminFromStoredRoles(): void
     {
@@ -266,6 +292,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __serialize(): array
     {
         $this->plainPassword = null;
+        $this->equipeRattachementAdmin = null;
 
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);

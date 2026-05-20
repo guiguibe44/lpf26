@@ -198,6 +198,10 @@ html.dark .ta-auth-form-wrap .ta-form-textarea:focus {
     box-shadow: 0 0 0 2px rgb(34 197 94 / 25%);
 }
 
+html.dark .ta-auth-password-toggle:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
 html.dark .ta-auth-check {
     margin: 0.75rem 0 0.25rem;
     font-size: 0.875rem;

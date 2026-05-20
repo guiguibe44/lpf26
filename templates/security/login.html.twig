@@ -18,7 +18,19 @@
             <label for="inputEmail">Email*</label>
             <input type="email" value="{{ last_username }}" name="email" id="inputEmail" autocomplete="email" required autofocus>
             <label for="inputPassword">Mot de passe*</label>
-            <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+            <div class="ta-auth-password-wrap">
+                <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+                <button
+                    type="button"
+                    class="ta-auth-password-toggle"
+                    id="toggleLoginPassword"
+                    aria-controls="inputPassword"
+                    aria-pressed="false"
+                    aria-label="Afficher le mot de passe en clair"
+                >
+                    <i class="ti ti-eye" aria-hidden="true"></i>
+                </button>
+            </div>
             <p class="ta-auth-check"><label><input type="checkbox" name="_remember_me"> Rester connecté</label></p>
 
             <button type="submit" class="ta-auth-submit">
@@ -30,4 +42,23 @@
         </form>
     </div>
 </div>
+<script>
+(function () {
+    var input = document.getElementById('inputPassword');
+    var btn = document.getElementById('toggleLoginPassword');
+    if (!input || !btn) {
+        return;
+    }
+    var icon = btn.querySelector('i');
+    btn.addEventListener('click', function () {
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        btn.setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe en clair');
+        if (icon) {
+            icon.className = show ? 'ti ti-eye-off' : 'ti ti-eye';
+        }
+    });
+})();
+</script>
 {% endblock %}

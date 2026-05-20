@@ -44,9 +44,9 @@
         {% endblock %}
 
         {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=2">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=3">
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=4">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=5">
         {% else %}
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">

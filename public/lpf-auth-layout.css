@@ -141,6 +141,60 @@ html.lpf-classic-light .ta-auth-form-wrap .ta-form-textarea {
     border-radius: 0.5rem;
 }
 
+/* Mot de passe connexion : afficher / masquer */
+html.dark .ta-auth-password-wrap,
+html.lpf-classic-light .ta-auth-password-wrap {
+    position: relative;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+html.dark .ta-auth-password-wrap > input,
+html.lpf-classic-light .ta-auth-password-wrap > input {
+    margin-top: 0;
+    padding-right: 2.75rem;
+}
+
+html.dark .ta-auth-password-toggle,
+html.lpf-classic-light .ta-auth-password-toggle {
+    position: absolute;
+    right: 0.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.65;
+}
+
+html.dark .ta-auth-password-toggle:hover,
+html.lpf-classic-light .ta-auth-password-toggle:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+html.dark .ta-auth-password-toggle:focus-visible,
+html.lpf-classic-light .ta-auth-password-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+html.dark .ta-auth-password-toggle .ti,
+html.lpf-classic-light .ta-auth-password-toggle .ti {
+    font-size: 1.15rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
 html.dark .ta-auth-check,
 html.lpf-classic-light .ta-auth-check {
     margin: 0.75rem 0 0.25rem;
