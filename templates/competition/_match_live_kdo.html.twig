@@ -1,11 +1,20 @@
 {# @var kdo_outlook \App\Dto\KdoMatchOutlook #}
+{# kdo_final: bool — page pronostics terminé (score définitif) #}
 <section class="ta-card mt-5 match-live-kdo-card" id="match-live-kdo-section">
     <h2 class="ta-card-title">
         <span class="ta-badge match-card-kdo-badge">KDO</span>
-        Cadeau — vainqueurs potentiels
+        {% if kdo_final|default(false) %}
+            Cadeau — résultat
+        {% else %}
+            Cadeau — vainqueurs potentiels
+        {% endif %}
     </h2>
     <p class="ta-card-text">
-        Selon le score simulé <strong id="match-live-kdo-score-label">{{ kdo_outlook.scoreDomicile }} - {{ kdo_outlook.scoreExterieur }}</strong>.
+        {% if kdo_final|default(false) %}
+            Score final <strong>{{ kdo_outlook.scoreDomicile }} - {{ kdo_outlook.scoreExterieur }}</strong>.
+        {% else %}
+            Selon le score simulé <strong id="match-live-kdo-score-label">{{ kdo_outlook.scoreDomicile }} - {{ kdo_outlook.scoreExterieur }}</strong>.
+        {% endif %}
         En cas d’égalité au meilleur nombre de scores exacts, l’équipe la moins bien classée avant le match l’emporte.
     </p>
 

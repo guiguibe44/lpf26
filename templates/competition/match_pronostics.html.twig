@@ -7,8 +7,8 @@
         <div>
             <h1 class="ta-page-title">Pronostics du match</h1>
             <p class="ta-page-subtitle">
-                {{ match.paysDomicile.nom }} - {{ match.paysExterieur.nom }}
-                du {{ match.dateHeure|date('d/m/Y H:i') }}.
+                {{ match.paysDomicile.nom }} — {{ match.paysExterieur.nom }},
+                {{ match.dateHeure|date('d/m/Y H:i') }}
             </p>
         </div>
         <a href="{{ path('app_matches') }}" class="btn btn-primary btn-sm">
@@ -17,89 +17,5 @@
         </a>
     </section>
 
-    <section class="ta-card">
-        <div class="flex items-start justify-between gap-4">
-            <div>
-                <h2 class="ta-card-title">Score final</h2>
-                <p class="ta-card-text">
-                    {{ match.paysDomicile.nom }} {{ match.scoreDomicile }} -
-                    {{ match.scoreExterieur }} {{ match.paysExterieur.nom }}
-                </p>
-            </div>
-            {% if match.coteMoyenne is not null %}
-                <span class="ta-badge ta-badge-success">
-                    Cote moyenne {{ match.coteMoyenne|number_format(2, ',', ' ') }}
-                </span>
-            {% endif %}
-        </div>
-    </section>
-
-    {% if match.isKdoMatch %}
-        <section class="ta-card mt-5 match-kdo-section">
-            <h2 class="ta-card-title">Match KDO — cadeau</h2>
-            {% if kdo_winner %}
-                <p class="ta-card-text match-kdo-winner">
-                    {% if kdo_winner.team.logo %}
-                        <img src="{{ asset(kdo_winner.team.logo) }}" alt="" class="match-kdo-winner-logo" width="40" height="40">
-                    {% endif %}
-                    <a href="{{ path('app_team_show', { id: kdo_winner.team.id }) }}" class="ranking-team-link">
-                        <strong>{{ kdo_winner.team.name }}</strong>
-                    </a>
-                    remporte le cadeau
-                    {% if kdo_winner.exactScoresCount == 2 %}
-                        (2 scores exacts sur ce match).
-                    {% else %}
-                        (1 score exact sur ce match).
-                    {% endif %}
-                </p>
-            {% else %}
-                <p class="ta-card-text">Aucune équipe n’a obtenu le score exact sur ce match : pas de gagnant KDO.</p>
-            {% endif %}
-        </section>
-    {% endif %}
-
-    <section class="ta-card mt-5">
-        <h2 class="ta-card-title">Tous les pronostics</h2>
-
-        {% if pronostics is empty %}
-            <p class="ta-card-text">Aucun pronostic enregistre sur ce match.</p>
-        {% else %}
-            <div class="overflow-x-auto mt-4">
-                <table class="table w-full">
-                    <thead>
-                    <tr>
-                        <th>Joueur</th>
-                        <th>Pronostic</th>
-                        <th>Base</th>
-                        <th>Cote</th>
-                        <th>Points</th>
-                        <th>Prise de risque</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for pronostic in pronostics %}
-                        <tr>
-                            <td>{{ pronostic.joueur.email }}</td>
-                            <td>{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</td>
-                            <td>{{ pronostic.pointsBase is not null ? pronostic.pointsBase : '-' }}</td>
-                            <td>
-                                {{ pronostic.coteCoefficient is not null ? pronostic.coteCoefficient|number_format(2, ',', ' ') : '-' }}
-                            </td>
-                            <td>
-                                {% if pronostic.points is not null %}
-                                    <span class="ta-badge ta-badge-success">
-                                        {{ pronostic.points|number_format(0, ',', ' ') }} pts
-                                    </span>
-                                {% else %}
-                                    <span class="ta-badge">-</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ pronostic.priseRisque ? 'Oui' : 'Non' }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    </section>
+    {% include 'competition/_match_live_body.html.twig' with { show_simulator: false } only %}
 {% endblock %}

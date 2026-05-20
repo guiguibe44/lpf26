@@ -1,0 +1,125 @@
+{# Corps partagé page live / pronostics terminé — show_simulator: bool #}
+<section class="ta-card match-live-score-card">
+    <div class="match-live-score-banner">
+        <div class="match-live-score-team match-live-score-team--home">
+            <div class="match-live-score-team__crest">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: match.paysDomicile,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+            </div>
+            <span class="match-live-score-team__name">{{ country_short_label(match.paysDomicile) }}</span>
+        </div>
+        <div class="match-live-score-center">
+            <p class="match-live-score-display"{% if show_simulator %} id="match-live-current-score" aria-live="polite"{% endif %}>
+                <span{% if show_simulator %} id="match-live-score-home"{% endif %}>{{ live_view.scoreDomicile }}</span>
+                <span class="match-live-score-sep">-</span>
+                <span{% if show_simulator %} id="match-live-score-away"{% endif %}>{{ live_view.scoreExterieur }}</span>
+            </p>
+            {% if show_simulator and match.statut == 'LIVE' %}
+                <span class="match-live-clock">{{ match_live_clock_label(match) }}</span>
+            {% elseif not show_simulator %}
+                <span class="ta-badge ta-badge-success">Terminé</span>
+            {% endif %}
+        </div>
+        <div class="match-live-score-team match-live-score-team--away">
+            <div class="match-live-score-team__crest">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: match.paysExterieur,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+            </div>
+            <span class="match-live-score-team__name">{{ country_short_label(match.paysExterieur) }}</span>
+        </div>
+    </div>
+    <div class="match-goals-wrap match-live-goals-wrap">
+        {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
+    </div>
+</section>
+
+{% if match_active_jokers is not empty %}
+    <section class="ta-card mt-5 match-live-jokers-card">
+        <h2 class="ta-card-title">Jokers en jeu</h2>
+        <div class="overflow-x-auto">
+            <table class="table ta-table table-sm match-live-compact-table">
+                <thead>
+                    <tr>
+                        <th>Équipe</th>
+                        <th>Joker</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in match_active_jokers %}
+                        <tr>
+                            <td>
+                                <div class="match-live-compact-team-cell">
+                                    {% if row.team_logo %}
+                                        <img src="{{ asset(row.team_logo) }}" alt="" class="match-live-jokers-team-logo" width="24" height="24" loading="lazy">
+                                    {% else %}
+                                        <span class="match-live-jokers-team-placeholder" aria-hidden="true">{{ row.team_name|first|upper }}</span>
+                                    {% endif %}
+                                    <span>{{ row.team_name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="match-live-jokers-joker-cell">
+                                    {% if row.joker.image %}
+                                        <img src="{{ asset(row.joker.image) }}" alt="" class="match-live-jokers-icon" width="22" height="22" loading="lazy">
+                                    {% endif %}
+                                    <span class="ta-badge match-live-jokers-badge">{{ row.joker.name }}</span>
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endif %}
+
+{% if show_simulator %}
+    <section class="ta-card mt-5 match-live-simulator-card">
+        <h2 class="ta-card-title">Simulateur de score</h2>
+        <form class="match-live-simulator-form" id="match-live-simulator" action="#" method="get">
+            <label class="match-live-simulator-field">
+                <span>{{ match.paysDomicile.nom }}</span>
+                <input type="number" name="domicile" min="0" max="30" value="{{ live_view.scoreDomicile }}" class="ta-form-input match-live-score-input" id="sim-score-home" required>
+            </label>
+            <span class="match-live-simulator-sep">-</span>
+            <label class="match-live-simulator-field">
+                <span>{{ match.paysExterieur.nom }}</span>
+                <input type="number" name="exterieur" min="0" max="30" value="{{ live_view.scoreExterieur }}" class="ta-form-input match-live-score-input" id="sim-score-away" required>
+            </label>
+            <button type="button" class="btn btn-primary btn-sm" id="match-live-reset-score" title="Revenir au score en cours">
+                Score actuel
+            </button>
+        </form>
+    </section>
+{% endif %}
+
+<section class="ta-card mt-5 match-live-teams-section">
+    <h2 class="ta-card-title">Pronostics par équipe</h2>
+    {% if match_cotes_visible(match) %}
+        {% include 'competition/_match_live_cotes.html.twig' with { cotes: live_view.cotes } only %}
+    {% endif %}
+    {% include 'competition/_match_live_teams.html.twig' with {
+        teams: live_view.teams,
+        cotes_visible: match_cotes_visible(match),
+    } only %}
+</section>
+
+{% if live_view.matchButeurs is not empty %}
+    <section class="ta-card mt-5 match-live-buteurs-section">
+        <h2 class="ta-card-title">Buteurs des pays en lice</h2>
+        {% include 'competition/_match_live_match_buteurs.html.twig' with { match_buteurs: live_view.matchButeurs } only %}
+    </section>
+{% endif %}
+
+{% if match.isKdoMatch and live_view.kdoOutlook %}
+    {% include 'competition/_match_live_kdo.html.twig' with {
+        kdo_outlook: live_view.kdoOutlook,
+        kdo_final: not show_simulator,
+    } only %}
+{% endif %}

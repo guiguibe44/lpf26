@@ -223,9 +223,9 @@ class CompetitionController extends AbstractController
     #[Route('/matchs/{id}/pronostics', name: 'app_match_pronostics', methods: ['GET'])]
     public function matchPronostics(
         GameMatch $match,
-        PronosticRepository $pronosticRepository,
-        KdoMatchWinnerService $kdoMatchWinnerService,
         MatchStatusResolver $matchStatusResolver,
+        MatchLiveViewBuilder $matchLiveViewBuilder,
+        ButRepository $butRepository,
     ): Response {
         if ($matchStatusResolver->isMatchLive($match)) {
             return $this->redirectToRoute('app_match_live', ['id' => $match->getId()]);
@@ -237,10 +237,32 @@ class CompetitionController extends AbstractController
             return $this->redirectToRoute('app_matches');
         }
 
+        $scoreDomicile = $match->getScoreDomicile() ?? 0;
+        $scoreExterieur = $match->getScoreExterieur() ?? 0;
+        $liveView = $matchLiveViewBuilder->build($match, $scoreDomicile, $scoreExterieur);
+
+        $matchGoals = [];
+        $matchId = $match->getId();
+        if (null !== $matchId) {
+            $matchGoals = $butRepository->findGoalRowsIndexedByMatchIds([$matchId])[$matchId] ?? [];
+        }
+
+        $matchActiveJokers = [];
+        foreach ($liveView['teams'] as $teamRow) {
+            if (null !== $teamRow->activeJoker) {
+                $matchActiveJokers[] = [
+                    'team_name' => $teamRow->teamName,
+                    'team_logo' => $teamRow->teamLogo,
+                    'joker' => $teamRow->activeJoker,
+                ];
+            }
+        }
+
         return $this->render('competition/match_pronostics.html.twig', [
             'match' => $match,
-            'pronostics' => $pronosticRepository->findByMatchWithTeamMembers($match),
-            'kdo_winner' => $kdoMatchWinnerService->resolveWinner($match),
+            'live_view' => $liveView,
+            'match_goals' => $matchGoals,
+            'match_active_jokers' => $matchActiveJokers,
         ]);
     }
 
