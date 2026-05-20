@@ -294,36 +294,42 @@
         padding-top: 1rem;
     }
 
-    .ta-main .match-card-favorite-mark {
+    .ta-main .match-card-marks {
         top: -1.3rem;
         left: 0.75rem;
-        right: auto;
+        z-index: 8;
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.4rem;
     }
 
-    .ta-main .match-card-favorite-mark__shield {
-        width: 2.65rem;
-        height: 2.65rem;
-        font-size: 1.35rem;
-    }
-
-    .ta-main .match-card--kdo {
-        overflow: visible;
-    }
-
+    .ta-main .match-card-favorite-mark,
     .ta-main .match-card-kdo-mark {
-        top: -1.3rem;
-        left: 0.75rem;
+        position: static;
+        top: auto;
+        left: auto;
         right: auto;
     }
 
-    .ta-main .match-card--favorite-country.match-card--kdo .match-card-favorite-mark {
-        left: 3.75rem;
-    }
-
+    .ta-main .match-card-favorite-mark__shield,
     .ta-main .match-card-kdo-mark__icon {
         width: 2.65rem;
         height: 2.65rem;
         font-size: 1.35rem;
+    }
+
+    .ta-main .match-card--kdo,
+    .ta-main .match-card--favorite-country {
+        overflow: visible;
+    }
+
+    .ta-main .match-card--favorite-country.match-card--kdo {
+        box-shadow:
+            0 0 0 2px #3b82f6,
+            0 0 0 4px #fff,
+            0 8px 20px rgb(37 99 235 / 14%);
     }
 
     .ta-main .match-pronostic {

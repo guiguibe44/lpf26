@@ -20,7 +20,7 @@
 
 <article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}{{ match_joker ? ' match-card--has-joker' : '' }}{{ is_live ? ' match-card--live' : '' }}" data-match-id="{{ match.id }}">
     {% if is_favorite_country_match or match.isKdoMatch %}
-        <div class="match-card-marks">
+        <div class="match-card-marks{{ is_favorite_country_match and match.isKdoMatch ? ' match-card-marks--dual' : '' }}">
             {% if match.isKdoMatch %}
                 <div class="match-card-kdo-mark" title="Match KDO — pronostic à cœur pour gagner la cagnotte">
                     <span class="match-card-kdo-mark__icon" aria-hidden="true">
@@ -35,7 +35,7 @@
                     title="{{ team_favorite_highlight.joker_name }} — votre sélection joue ce match (poule)"
                 >
                     <span class="match-card-favorite-mark__shield" aria-hidden="true">
-                        <i class="ti ti-shield-star"></i>
+                        <i class="ti ti-shield"></i>
                     </span>
                     <span class="sr-only">Équipe favorite — {{ team_favorite_highlight.joker_name }}</span>
                 </div>

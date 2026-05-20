@@ -131,7 +131,11 @@ final class TeamFavoriteCountryService
 
     public function isMatchHighlightedForFavoriteCountry(GameMatch $match, int $favoriteCountryId): bool
     {
-        if ($favoriteCountryId <= 0 || !$match->isGroupStageMatch()) {
+        if ($favoriteCountryId <= 0) {
+            return false;
+        }
+
+        if (!$match->isGroupStageMatch() && !$match->isKdoMatch()) {
             return false;
         }
 

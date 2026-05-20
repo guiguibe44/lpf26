@@ -1182,11 +1182,17 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     position: absolute;
     top: -1.15rem;
     left: 0.7rem;
-    z-index: 3;
-    display: flex;
+    z-index: 8;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.35rem;
     pointer-events: none;
+}
+
+.match-card-marks--dual {
+    gap: 0.4rem;
 }
 
 .match-card-kdo-mark {
