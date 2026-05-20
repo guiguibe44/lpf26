@@ -96,7 +96,15 @@ final class MatchLiveViewBuilder
             $linesByTeamId[$line->teamId][] = $line;
         }
 
-        $rankingByTeamId = $this->buildRankingBeforeMatchByTeamId($match);
+        $rankingBeforeByTeamId = $this->buildRankingBeforeMatchByTeamId($match);
+        $rankingAfterMatchByTeamId = $this->buildRankingForMatchByTeamId($match);
+        $realHome = $match->getScoreDomicile();
+        $realAway = $match->getScoreExterieur();
+        $useOfficialRankingTotals = null !== $realHome
+            && null !== $realAway
+            && $scoreDomicile === $realHome
+            && $scoreExterieur === $realAway
+            && [] !== $rankingAfterMatchByTeamId;
         $matchCountryIds = $this->resolveMatchCountryIds($match);
         $jokersByTeamId = $this->teamJokerService->buildActiveJokersByTeamIdForMatch($match);
         $teams = $this->teamRepository->findAllWithMembersAndPlayers();
@@ -111,16 +119,19 @@ final class MatchLiveViewBuilder
                 $teamPronostics,
             )));
             $buteurMatchPoints = (int) ($buteurMatchPointsByTeamId[$teamId] ?? 0);
-            $previousTotal = (float) ($rankingByTeamId[$teamId]['totalPoints'] ?? 0.0);
+            $previousTotal = (float) ($rankingBeforeByTeamId[$teamId]['totalPoints'] ?? 0.0);
+            $simulatedTotalPoints = $useOfficialRankingTotals && isset($rankingAfterMatchByTeamId[$teamId])
+                ? (float) $rankingAfterMatchByTeamId[$teamId]['totalPoints']
+                : $previousTotal + $pronosticMatchPoints + $buteurMatchPoints;
 
             $teamRows[] = new MatchLiveTeamRow(
                 $teamId,
                 (string) $team->getName(),
                 $team->getLogo(),
-                (int) ($rankingByTeamId[$teamId]['position'] ?? 9999),
+                (int) ($rankingBeforeByTeamId[$teamId]['position'] ?? 9999),
                 $pronosticMatchPoints,
                 $buteurMatchPoints,
-                $previousTotal + $pronosticMatchPoints + $buteurMatchPoints,
+                $simulatedTotalPoints,
                 0,
                 $teamPronostics,
                 $this->buildButeursForTeam($team, $match, $matchCountryIds),
@@ -212,6 +223,27 @@ final class MatchLiveViewBuilder
     }
 
     /**
+     * Snapshot officiel après ce match (recalculé à chaque but en live).
+     *
+     * @return array<int, array{position: int, totalPoints: float}>
+     */
+    private function buildRankingForMatchByTeamId(GameMatch $match): array
+    {
+        $map = [];
+        foreach ($this->teamRankingSnapshotRepository->findRankingForMatch($match) as $snapshot) {
+            $teamId = $snapshot->getTeam()?->getId();
+            if (null !== $teamId) {
+                $map[(int) $teamId] = [
+                    'position' => $snapshot->getPosition(),
+                    'totalPoints' => $snapshot->getTotalPoints(),
+                ];
+            }
+        }
+
+        return $map;
+    }
+
+    /**
      * @param list<MatchLiveTeamRow> $teamRows
      *
      * @return array<int, int>
@@ -283,7 +315,8 @@ final class MatchLiveViewBuilder
             return [];
         }
 
-        $buteurToTeamId = [];
+        /** @var array<int, list<int>> $teamIdsByButeurId */
+        $teamIdsByButeurId = [];
         foreach ($teams as $team) {
             $teamId = $team->getId();
             if (null === $teamId) {
@@ -292,20 +325,24 @@ final class MatchLiveViewBuilder
 
             foreach ($team->getMembers() as $member) {
                 $buteur = $member->getPlayer()?->getButeurChoisi();
-                if (null !== $buteur?->getId()) {
-                    $buteurToTeamId[(int) $buteur->getId()] = (int) $teamId;
+                if (null === $buteur?->getId()) {
+                    continue;
+                }
+
+                $buteurId = (int) $buteur->getId();
+                $teamIdsByButeurId[$buteurId] ??= [];
+                $tid = (int) $teamId;
+                if (!\in_array($tid, $teamIdsByButeurId[$buteurId], true)) {
+                    $teamIdsByButeurId[$buteurId][] = $tid;
                 }
             }
         }
 
         $pointsByTeamId = [];
         foreach ($goals as $goal) {
-            $teamId = $buteurToTeamId[$goal['buteur_id']] ?? null;
-            if (null === $teamId) {
-                continue;
+            foreach ($teamIdsByButeurId[$goal['buteur_id']] ?? [] as $teamId) {
+                $pointsByTeamId[$teamId] = ($pointsByTeamId[$teamId] ?? 0) + (int) $goal['points'];
             }
-
-            $pointsByTeamId[$teamId] = ($pointsByTeamId[$teamId] ?? 0) + (int) $goal['points'];
         }
 
         return $pointsByTeamId;
