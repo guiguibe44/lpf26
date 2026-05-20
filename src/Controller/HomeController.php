@@ -19,6 +19,7 @@ use App\Service\CompetitionStatus;
 use App\Service\MatchStatusResolver;
 use App\Service\MatchEspionService;
 use App\Service\TeamFavoriteCountryService;
+use App\Service\TeamMatchPointsService;
 use App\Service\TeamJokerService;
 use App\Service\TeamRankingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,6 +45,7 @@ class HomeController extends AbstractController
         TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
         PreCompetitionDashboardService $preCompetitionDashboard,
+        TeamMatchPointsService $teamMatchPointsService,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -120,6 +122,9 @@ class HomeController extends AbstractController
         $team_favorite_highlight = $team instanceof Team
             ? $teamFavoriteCountryService->buildMatchCardHighlight($team, $dashboardMatchList)
             : null;
+        $team_match_points_by_match_id = $team instanceof Team
+            ? $teamMatchPointsService->buildPointsByMatchIdForTeam($team, $dashboardMatchList, $goalsByMatchId)
+            : [];
 
         return $this->render('home/index.html.twig', [
             'live_matches' => $liveMatches,
@@ -142,6 +147,7 @@ class HomeController extends AbstractController
             'precomp_checklist' => $preCompetitionDashboard->buildChecklist($user),
             'goals_by_match_id' => $goalsByMatchId,
             'has_live_matches' => [] !== $liveMatches,
+            'team_match_points_by_match_id' => $team_match_points_by_match_id,
         ]);
     }
 

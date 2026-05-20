@@ -132,6 +132,7 @@
                     show_joker_ui: show_joker_ui|default(false),
                     team_favorite_highlight: team_favorite_highlight|default(null),
                     match_goals: goals_by_match_id[match.id] ?? [],
+                    team_match_points_by_match_id: team_match_points_by_match_id|default({}),
                 } only %}
 
                 {% if loop.last %}

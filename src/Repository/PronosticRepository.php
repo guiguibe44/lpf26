@@ -61,6 +61,40 @@ class PronosticRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int>       $playerIds
+     * @param list<GameMatch> $matches
+     *
+     * @return array<int, float> matchId => somme des points équipe
+     */
+    public function sumContributionPointsByMatchForPlayers(array $playerIds, array $matches): array
+    {
+        if ([] === $playerIds || [] === $matches) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('p')
+            ->select('IDENTITY(p.match) AS matchId')
+            ->addSelect('COALESCE(SUM(COALESCE(p.pointsEquipe, p.points, 0)), 0) AS teamPoints')
+            ->andWhere('IDENTITY(p.joueur) IN (:playerIds)')
+            ->andWhere('p.match IN (:matches)')
+            ->setParameter('playerIds', $playerIds)
+            ->setParameter('matches', $matches)
+            ->groupBy('p.match')
+            ->getQuery()
+            ->getArrayResult();
+
+        $indexed = [];
+        foreach ($rows as $row) {
+            $matchId = (int) ($row['matchId'] ?? 0);
+            if ($matchId > 0) {
+                $indexed[$matchId] = (float) ($row['teamPoints'] ?? 0);
+            }
+        }
+
+        return $indexed;
+    }
+
+    /**
      * @param list<GameMatch> $matches
      *
      * @return array<int,Pronostic>

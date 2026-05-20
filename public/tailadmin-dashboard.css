@@ -1166,6 +1166,39 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     padding: 1rem 1.15rem;
 }
 
+.match-card--has-team-points {
+    padding-bottom: 2.35rem;
+}
+
+.match-card-team-points-badge {
+    position: absolute;
+    right: 0.65rem;
+    bottom: 0.6rem;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.22rem 0.5rem;
+    border-radius: 0.4rem;
+    background: #ecfdf5;
+    border: 1px solid #6ee7b7;
+    color: #047857;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgb(4 120 87 / 12%);
+    pointer-events: none;
+}
+
+.match-card-team-points-badge__value {
+    font-variant-numeric: tabular-nums;
+}
+
+.match-card--has-joker.match-card--has-team-points .match-card-team-points-badge {
+    right: 0.65rem;
+    bottom: 0.6rem;
+}
+
 .match-card--live {
     background: #f1f5f9;
     border-color: #cbd5e1;

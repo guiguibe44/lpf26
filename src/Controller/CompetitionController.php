@@ -16,6 +16,7 @@ use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
 use App\Service\MatchEspionService;
 use App\Service\TeamFavoriteCountryService;
+use App\Service\TeamMatchPointsService;
 use App\Service\TeamJokerService;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
@@ -38,6 +39,7 @@ class CompetitionController extends AbstractController
         TeamFavoriteCountryService $teamFavoriteCountryService,
         MatchEspionService $matchEspionService,
         ButRepository $butRepository,
+        TeamMatchPointsService $teamMatchPointsService,
     ): Response
     {
         $user = $this->getUser();
@@ -67,6 +69,9 @@ class CompetitionController extends AbstractController
         $team_favorite_highlight = $team instanceof Team
             ? $teamFavoriteCountryService->buildMatchCardHighlight($team, $matches)
             : null;
+        $team_match_points_by_match_id = $team instanceof Team
+            ? $teamMatchPointsService->buildPointsByMatchIdForTeam($team, $matches, $goalsByMatchId)
+            : [];
 
         return $this->render('competition/matches.html.twig', [
             'matches' => $matches,
@@ -81,6 +86,7 @@ class CompetitionController extends AbstractController
             'show_joker_ui' => true,
             'team_favorite_highlight' => $team_favorite_highlight,
             'goals_by_match_id' => $goalsByMatchId,
+            'team_match_points_by_match_id' => $team_match_points_by_match_id,
         ]);
     }
 
