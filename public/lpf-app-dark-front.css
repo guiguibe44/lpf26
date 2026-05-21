@@ -418,6 +418,24 @@ html.dark body.front-body .ta-main .joker-overview-badge--inactive {
     color: var(--lpf-muted) !important;
 }
 
+html.dark body.front-body .ta-main .team-jokers-table__status--available {
+    background: #22c55e !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 2px rgb(34 197 94 / 35%) !important;
+}
+
+html.dark body.front-body .ta-main .team-jokers-table__status--used {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 2px rgb(239 68 68 / 40%) !important;
+}
+
+html.dark body.front-body .ta-main .team-jokers-table__status--inactive {
+    background: #64748b !important;
+    color: #f8fafc !important;
+    box-shadow: 0 0 0 2px rgb(100 116 139 / 30%) !important;
+}
+
 html.dark body.front-body .ta-main .match-joker-popover {
     background: var(--lpf-bg) !important;
     border-color: var(--lpf-border) !important;

@@ -935,20 +935,29 @@ html body .lpf-burger--light .lpf-burger__ball {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    font-size: 1.125rem;
     line-height: 1;
 }
 
 .team-jokers-table__status--available {
-    color: #16a34a;
+    background: #22c55e;
+    color: #ffffff;
+    box-shadow: 0 0 0 2px rgb(34 197 94 / 0.25);
 }
 
 .team-jokers-table__status--used {
-    color: #94a3b8;
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 0 2px rgb(239 68 68 / 0.25);
 }
 
 .team-jokers-table__status--inactive {
-    color: #9ca3af;
+    background: #94a3b8;
+    color: #ffffff;
+    box-shadow: 0 0 0 2px rgb(148 163 184 / 0.2);
 }
 
 /* Vignette joker (icône en haut à gauche) : voir tailadmin-dashboard.css (.match-card-joker-mark) */
