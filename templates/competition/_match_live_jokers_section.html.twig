@@ -2,10 +2,6 @@
 {% if match_jokers is not empty %}
     <section class="ta-card mt-5 match-live-jokers-section">
         <h2 class="ta-card-title">Jokers sur ce match</h2>
-        <p class="ta-card-text match-live-jokers-section__intro">
-            Effets calculés selon le score affiché{% if show_simulator|default(false) %} (actuel ou simulé){% endif %}
-            et les pronostics enregistrés.
-        </p>
         <ul class="match-live-jokers-list">
             {% for joker in match_jokers %}
                 <li class="match-live-jokers-list__item">
@@ -14,74 +10,16 @@
                             <span class="match-live-jokers-card__icon" aria-hidden="true">
                                 <i class="ti {{ joker.icon }}"></i>
                             </span>
-                            <div class="match-live-jokers-card__titles">
-                                <h3 class="match-live-jokers-card__title">{{ joker.name }}</h3>
-                                <p class="match-live-jokers-card__meta">
-                                    Score retenu : <strong>{{ joker.score_label }}</strong>
-                                </p>
-                            </div>
+                            <h3 class="match-live-jokers-card__title">{{ joker.name }}</h3>
                         </div>
-
-                        <dl class="match-live-jokers-card__teams">
-                            <div>
-                                <dt>Équipe bénéficiaire</dt>
-                                <dd><strong>{{ joker.beneficiary_team }}</strong></dd>
-                            </div>
-                            <div>
-                                <dt>Posé par</dt>
-                                <dd>{{ joker.placer_team }}</dd>
-                            </div>
-                            {% if joker.target_team %}
-                                <div>
-                                    <dt>Cible</dt>
-                                    <dd>{{ joker.target_team }}</dd>
-                                </div>
-                            {% endif %}
-                        </dl>
-
-                        <p class="match-live-jokers-card__summary">{{ joker.summary }}</p>
-
-                        {% if joker.impact_rows is not empty %}
-                            <table class="match-live-jokers-card__points" aria-label="Impact points {{ joker.name }}">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Équipe</th>
-                                        <th scope="col">Poste</th>
-                                        <th scope="col" class="match-live-jokers-card__num">Total</th>
-                                        <th scope="col" class="match-live-jokers-card__num">Écart joker</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for row in joker.impact_rows %}
-                                        <tr>
-                                            <td>{{ row.team }}</td>
-                                            <td>{{ row.label }}</td>
-                                            <td class="match-live-jokers-card__num">{{ row.points }}</td>
-                                            <td class="match-live-jokers-card__num">
-                                                {% if row.delta is not null %}
-                                                    <span class="match-live-jokers-card__delta{% if row.delta > 0 %} match-live-jokers-card__delta--pos{% elseif row.delta < 0 %} match-live-jokers-card__delta--neg{% endif %}">
-                                                        {{ row.delta > 0 ? '+' : '' }}{{ row.delta }}
-                                                    </span>
-                                                    {% if row.baseline is not null %}
-                                                        <span class="match-live-jokers-card__baseline">(sinon {{ row.baseline }})</span>
-                                                    {% endif %}
-                                                {% else %}
-                                                    —
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        {% endif %}
-
-                        {% if joker.description %}
-                            <p class="match-live-jokers-card__desc ta-card-text">{{ joker.description }}</p>
-                        {% endif %}
-                        {% if joker.technical_lines is not empty %}
-                            <ul class="match-live-jokers-card__technical">
-                                {% for line in joker.technical_lines %}
-                                    <li>{{ line }}</li>
+                        <p class="match-live-jokers-card__rule">{{ joker.rule }}</p>
+                        {% if joker.consequences is not empty %}
+                            <ul class="match-live-jokers-card__consequences">
+                                {% for row in joker.consequences %}
+                                    <li>
+                                        <strong>{{ row.team }}</strong>
+                                        <span class="match-live-jokers-card__consequence-text">{{ row.text }}</span>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         {% endif %}

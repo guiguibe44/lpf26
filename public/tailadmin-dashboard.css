@@ -1530,10 +1530,35 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     text-align: center;
 }
 
-.match-live-jokers-section__intro {
-    margin: 0 0 1rem;
-    font-size: 0.875rem;
-    color: #64748b;
+.match-live-jokers-card__rule {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #475569;
+}
+
+.match-live-jokers-card__consequences {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.88rem;
+}
+
+.match-live-jokers-card__consequences li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    padding: 0.35rem 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.match-live-jokers-card__consequences li:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.match-live-jokers-card__consequence-text {
+    color: #0f172a;
 }
 
 .match-live-jokers-list {

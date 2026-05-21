@@ -90,15 +90,9 @@ final class MatchLiveViewBuilder
      *         name: string,
      *         icon: string,
      *         image: ?string,
-     *         placer_team: string,
-     *         beneficiary_team: string,
-     *         target_team: ?string,
+     *         rule: string,
      *         neutralized: bool,
-     *         score_label: string,
-     *         summary: string,
-     *         description: ?string,
-     *         technical_lines: list<string>,
-     *         impact_rows: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>
+     *         consequences: list<array{team: string, text: string}>
      *     }>
      * }
      */

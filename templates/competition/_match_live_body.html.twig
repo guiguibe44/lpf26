@@ -77,7 +77,6 @@
 
 {% include 'competition/_match_live_jokers_section.html.twig' with {
     match_jokers: live_view.matchJokers|default([]),
-    show_simulator: show_simulator,
 } only %}
 
 {% if live_view.matchButeurs is not empty %}

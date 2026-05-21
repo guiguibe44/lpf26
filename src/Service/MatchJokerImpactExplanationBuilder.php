@@ -41,15 +41,9 @@ final class MatchJokerImpactExplanationBuilder
      *     name: string,
      *     icon: string,
      *     image: ?string,
-     *     placer_team: string,
-     *     beneficiary_team: string,
-     *     target_team: ?string,
+     *     rule: string,
      *     neutralized: bool,
-     *     score_label: string,
-     *     summary: string,
-     *     description: ?string,
-     *     technical_lines: list<string>,
-     *     impact_rows: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>
+     *     consequences: list<array{team: string, text: string}>
      * }>
      */
     public function buildForMatch(
@@ -76,7 +70,7 @@ final class MatchJokerImpactExplanationBuilder
             }
 
             if (Joker::CODE_ESPION === $code) {
-                $items[] = $this->buildEspionItem($usage, $scoreLabel);
+                $items[] = $this->buildEspionItem($usage);
 
                 continue;
             }
@@ -99,7 +93,6 @@ final class MatchJokerImpactExplanationBuilder
             $items[] = $this->buildCollecteItem(
                 $match,
                 (int) $collectorId,
-                $scoreLabel,
                 $stealTotals,
                 $finalTotals,
                 $teams,
@@ -136,31 +129,19 @@ final class MatchJokerImpactExplanationBuilder
         $placerId = (int) ($usage->getTeam()?->getId() ?? 0);
         $targetId = (int) ($usage->getTargetTeam()?->getId() ?? 0);
         $neutralized = $this->jokerDefenseService->isUsageNeutralized($usage);
-        $impactRows = [];
-
-        $beneficiaryName = $placerName;
-        $beneficiaryId = $placerId;
 
         if (Joker::CODE_BOUCLIER === $code) {
-            $beneficiaryName = $placerName;
-            $summary = sprintf(
-                'Équipe bénéficiaire : %s. Score retenu : %s. Protégée pour la journée : les jokers offensifs qui la ciblent sont neutralisés.',
-                $beneficiaryName,
-                $scoreLabel,
-            );
+            $consequences = [[
+                'team' => $placerName,
+                'text' => 'Protection active : jokers offensifs ciblant cette équipe neutralisés.',
+            ]];
         } elseif ($neutralized && JokerDefenseService::isOffensiveAgainstTeam($code)) {
-            $beneficiaryName = $targetName;
-            $beneficiaryId = $targetId;
-            $summary = sprintf(
-                'Équipe bénéficiaire : %s (protection). %s a joué %s sur %s, mais la cible était protégée : joker consommé sans effet. Score retenu : %s.',
-                $beneficiaryName,
-                $placerName,
-                $joker instanceof Joker ? $joker->getDisplayTitle() : $code,
-                $targetName,
-                $scoreLabel,
-            );
+            $consequences = [[
+                'team' => $targetName,
+                'text' => 'Aucun effet (équipe protégée).',
+            ]];
         } else {
-            [$beneficiaryName, $beneficiaryId, $impactRows, $effectSummary] = $this->buildPointsImpact(
+            $consequences = $this->buildConsequences(
                 $code,
                 $placerId,
                 $placerName,
@@ -172,15 +153,7 @@ final class MatchJokerImpactExplanationBuilder
                 $linesAfterSimulate,
                 $rawTotals,
                 $stealTotals,
-                $finalTotals,
                 $buteurTotals,
-            );
-
-            $summary = sprintf(
-                'Équipe bénéficiaire : %s. Score retenu : %s. %s',
-                $beneficiaryName,
-                $scoreLabel,
-                $effectSummary,
             );
         }
 
@@ -189,15 +162,9 @@ final class MatchJokerImpactExplanationBuilder
             'name' => $joker instanceof Joker ? $joker->getDisplayTitle() : $code,
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $joker?->getImage(),
-            'placer_team' => $placerName,
-            'beneficiary_team' => $beneficiaryName,
-            'target_team' => $targetId > 0 ? $targetName : null,
+            'rule' => $this->basicRuleForCode($code),
             'neutralized' => $neutralized,
-            'score_label' => $scoreLabel,
-            'summary' => $summary,
-            'description' => $joker?->getDescription(),
-            'technical_lines' => $joker instanceof Joker ? $joker->getTechnicalExplanationLines() : [],
-            'impact_rows' => $impactRows,
+            'consequences' => $consequences,
         ];
     }
 
@@ -207,9 +174,9 @@ final class MatchJokerImpactExplanationBuilder
      * @param array<int, float> $finalTotals
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function buildPointsImpact(
+    private function buildConsequences(
         string $code,
         int $placerId,
         string $placerName,
@@ -221,13 +188,10 @@ final class MatchJokerImpactExplanationBuilder
         array $linesAfterSimulate,
         array $rawTotals,
         array $stealTotals,
-        array $finalTotals,
         array $buteurTotals,
     ): array {
-        $impactRows = [];
-
         return match ($code) {
-            Joker::CODE_DOUBLE_EQUIPE => $this->impactDoubleEquipe(
+            Joker::CODE_DOUBLE_EQUIPE => $this->consequencesDoubleEquipe(
                 $placerId,
                 $placerName,
                 $match,
@@ -236,9 +200,7 @@ final class MatchJokerImpactExplanationBuilder
                 $linesAfterSimulate,
                 $rawTotals,
             ),
-            Joker::CODE_INVERSE_SCORE => $this->impactInverseScore(
-                $placerId,
-                $placerName,
+            Joker::CODE_INVERSE_SCORE => $this->consequencesInverseScore(
                 $targetId,
                 $targetName,
                 $match,
@@ -247,7 +209,7 @@ final class MatchJokerImpactExplanationBuilder
                 $linesAfterSimulate,
                 $rawTotals,
             ),
-            Joker::CODE_PIQUE_POINTS => $this->impactPiquePoints(
+            Joker::CODE_PIQUE_POINTS => $this->consequencesPiquePoints(
                 $match,
                 $placerId,
                 $placerName,
@@ -256,25 +218,43 @@ final class MatchJokerImpactExplanationBuilder
                 $rawTotals,
                 $stealTotals,
             ),
-            Joker::CODE_DOUBLE_BUTEUR => $this->impactDoubleButeur($placerId, $placerName, $buteurTotals),
-            Joker::CODE_INVERSE_BUTEUR => $this->impactInverseButeur(
-                $placerId,
-                $placerName,
-                $targetId,
-                $targetName,
-                $buteurTotals,
-            ),
-            default => [$placerName, $placerId, $impactRows, 'Effet actif sur ce match (points non détaillés ici).'],
+            Joker::CODE_DOUBLE_BUTEUR => $this->consequencesDoubleButeur($placerId, $placerName, $buteurTotals),
+            Joker::CODE_INVERSE_BUTEUR => $this->consequencesInverseButeur($targetId, $targetName, $buteurTotals),
+            default => [],
         };
+    }
+
+    private function basicRuleForCode(string $code): string
+    {
+        return match ($code) {
+            Joker::CODE_DOUBLE_EQUIPE => 'Double les points pronos de l’équipe (×2 si bon, −3× cote si mauvais).',
+            Joker::CODE_PIQUE_POINTS => 'Vole tous les points pronos de l’équipe ciblée.',
+            Joker::CODE_INVERSE_SCORE => 'Note les pronos de la cible comme si le score était inversé.',
+            Joker::CODE_DOUBLE_BUTEUR => 'Double les points buteur de l’équipe sur ce match.',
+            Joker::CODE_INVERSE_BUTEUR => 'Les points buteur de la cible deviennent négatifs.',
+            Joker::CODE_COLLECTE_POINTS => 'Prélève 10 % des points pronos des autres équipes.',
+            Joker::CODE_BOUCLIER => 'Protège l’équipe : les jokers offensifs qui la ciblent sont annulés.',
+            Joker::CODE_ESPION => 'Renseignements avant coup d’envoi, sans effet sur les points.',
+            default => 'Joker actif sur ce match.',
+        };
+    }
+
+    private function formatPointsDelta(?int $delta, string $unit): string
+    {
+        if (null === $delta || 0 === $delta) {
+            return sprintf('0 pt %s sur ce score', $unit);
+        }
+
+        return sprintf('%s%d pt %s', $delta > 0 ? '+' : '', $delta, $unit);
     }
 
     /**
      * @param list<SimulatedPronosticLine> $linesAfterSimulate
      * @param array<int, float>          $rawTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function impactDoubleEquipe(
+    private function consequencesDoubleEquipe(
         int $placerId,
         string $placerName,
         GameMatch $match,
@@ -292,36 +272,20 @@ final class MatchJokerImpactExplanationBuilder
             $scoreAway,
             Joker::CODE_DOUBLE_EQUIPE,
         ));
-        $delta = $with - $without;
-        $rows = [[
+
+        return [[
             'team' => $placerName,
-            'label' => 'Points pronos (équipe)',
-            'points' => $with,
-            'delta' => 0 !== $delta ? $delta : null,
-            'baseline' => 0 !== $delta ? $without : null,
+            'text' => $this->formatPointsDelta($with - $without, 'pronos'),
         ]];
-
-        $effect = 0 !== $delta
-            ? sprintf(
-                '+%d pts pronos grâce au double (total %d, sinon %d sans ce joker).',
-                $delta,
-                $with,
-                $without,
-            )
-            : sprintf('Total pronos : %d pt (barème standard sans bonus double sur ce score).', $with);
-
-        return [$placerName, $placerId, $rows, $effect];
     }
 
     /**
      * @param list<SimulatedPronosticLine> $linesAfterSimulate
      * @param array<int, float>          $rawTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function impactInverseScore(
-        int $placerId,
-        string $placerName,
+    private function consequencesInverseScore(
         int $targetId,
         string $targetName,
         GameMatch $match,
@@ -340,36 +304,20 @@ final class MatchJokerImpactExplanationBuilder
             null,
             invertScores: false,
         ));
-        $deltaTarget = $with - $without;
-        $rows = [[
+
+        return [[
             'team' => $targetName,
-            'label' => 'Points pronos (cible)',
-            'points' => $with,
-            'delta' => 0 !== $deltaTarget ? $deltaTarget : null,
-            'baseline' => 0 !== $deltaTarget ? $without : null,
+            'text' => $this->formatPointsDelta($with - $without, 'pronos'),
         ]];
-
-        $effect = sprintf(
-            '%s cible %s : %s%d pt sur les pronos de la cible (total %d%s). %s gagne l’avantage relatif.',
-            $placerName,
-            $targetName,
-            $deltaTarget >= 0 ? '+' : '',
-            $deltaTarget,
-            $with,
-            0 !== $deltaTarget ? sprintf(', sinon %d avec pronos normaux', $without) : '',
-            $placerName,
-        );
-
-        return [$placerName, $placerId, $rows, $effect];
     }
 
     /**
      * @param array<int, float> $rawTotals
      * @param array<int, float> $stealTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function impactPiquePoints(
+    private function consequencesPiquePoints(
         GameMatch $match,
         int $placerId,
         string $placerName,
@@ -378,118 +326,47 @@ final class MatchJokerImpactExplanationBuilder
         array $rawTotals,
         array $stealTotals,
     ): array {
-        $thiefBefore = (int) round((float) ($rawTotals[$placerId] ?? 0.0));
-        $thiefAfter = (int) round((float) ($stealTotals[$placerId] ?? 0.0));
-        $victimBefore = (int) round((float) ($rawTotals[$targetId] ?? 0.0));
-        $victimAfter = (int) round((float) ($stealTotals[$targetId] ?? 0.0));
-        $deltaThief = $thiefAfter - $thiefBefore;
-        $deltaVictim = $victimAfter - $victimBefore;
+        $deltaThief = (int) round((float) ($stealTotals[$placerId] ?? 0.0))
+            - (int) round((float) ($rawTotals[$placerId] ?? 0.0));
+        $deltaVictim = (int) round((float) ($stealTotals[$targetId] ?? 0.0))
+            - (int) round((float) ($rawTotals[$targetId] ?? 0.0));
 
-        $stealMap = $this->teamJokerUsageRepository->findPiquePointsTargetsByTeamForMatch($match);
-        $mutual = $this->isMutualPique($stealMap, $placerId);
-
-        $rows = [
-            [
-                'team' => $placerName,
-                'label' => 'Points pronos (bénéficiaire)',
-                'points' => $thiefAfter,
-                'delta' => 0 !== $deltaThief ? $deltaThief : null,
-                'baseline' => 0 !== $deltaThief ? $thiefBefore : null,
-            ],
-            [
-                'team' => $targetName,
-                'label' => 'Points pronos (cible)',
-                'points' => $victimAfter,
-                'delta' => 0 !== $deltaVictim ? $deltaVictim : null,
-                'baseline' => 0 !== $deltaVictim ? $victimBefore : null,
-            ],
+        return [
+            ['team' => $placerName, 'text' => $this->formatPointsDelta($deltaThief, 'pronos')],
+            ['team' => $targetName, 'text' => $this->formatPointsDelta($deltaVictim, 'pronos')],
         ];
-
-        $effect = $mutual
-            ? sprintf(
-                'Échange mutuel avec %s : %s%d pt pour le bénéficiaire (%d), %s%d pt pour la cible (%d).',
-                $targetName,
-                $deltaThief >= 0 ? '+' : '',
-                $deltaThief,
-                $thiefAfter,
-                $deltaVictim >= 0 ? '+' : '',
-                $deltaVictim,
-                $victimAfter,
-            )
-            : sprintf(
-                '%s récupère les pronos de %s : +%d pt (total %d, était %d) ; la cible passe à %d pt (était %d).',
-                $placerName,
-                $targetName,
-                $deltaThief,
-                $thiefAfter,
-                $thiefBefore,
-                $victimAfter,
-                $victimBefore,
-            );
-
-        return [$placerName, $placerId, $rows, $effect];
     }
 
     /**
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function impactDoubleButeur(int $placerId, string $placerName, array $buteurTotals): array
+    private function consequencesDoubleButeur(int $placerId, string $placerName, array $buteurTotals): array
     {
         $base = (int) ($buteurTotals[$placerId]['base'] ?? 0);
         $with = (int) ($buteurTotals[$placerId]['with_joker'] ?? 0);
-        $delta = $with - $base;
-        $rows = [[
+
+        return [[
             'team' => $placerName,
-            'label' => 'Points buteurs',
-            'points' => $with,
-            'delta' => 0 !== $delta ? $delta : null,
-            'baseline' => 0 !== $delta ? $base : null,
+            'text' => $this->formatPointsDelta($with - $base, 'buteurs'),
         ]];
-
-        $effect = 0 !== $delta
-            ? sprintf('+%d pts buteurs (×2 sur les buts marqués, total %d au lieu de %d).', $delta, $with, $base)
-            : 'Aucun but pour l’instant : le double buteur s’appliquera à chaque but marqué.';
-
-        return [$placerName, $placerId, $rows, $effect];
     }
 
     /**
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return array{0: string, 1: int, 2: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>, 3: string}
+     * @return list<array{team: string, text: string}>
      */
-    private function impactInverseButeur(
-        int $placerId,
-        string $placerName,
-        int $targetId,
-        string $targetName,
-        array $buteurTotals,
-    ): array {
+    private function consequencesInverseButeur(int $targetId, string $targetName, array $buteurTotals): array
+    {
         $base = (int) ($buteurTotals[$targetId]['base'] ?? 0);
         $with = (int) ($buteurTotals[$targetId]['with_joker'] ?? 0);
-        $delta = $with - $base;
-        $rows = [[
+
+        return [[
             'team' => $targetName,
-            'label' => 'Points buteurs (cible)',
-            'points' => $with,
-            'delta' => 0 !== $delta ? $delta : null,
-            'baseline' => 0 !== $delta ? $base : null,
+            'text' => $this->formatPointsDelta($with - $base, 'buteurs'),
         ]];
-
-        $effect = sprintf(
-            '%s cible %s : %s%d pt buteurs (total %d%s). %s en profite si la cible marque.',
-            $placerName,
-            $targetName,
-            $delta >= 0 ? '+' : '',
-            $delta,
-            $with,
-            0 !== $delta ? sprintf(', sinon %d sans inversion', $base) : '',
-            $placerName,
-        );
-
-        return [$placerName, $placerId, $rows, $effect];
     }
 
     /**
@@ -502,7 +379,6 @@ final class MatchJokerImpactExplanationBuilder
     private function buildCollecteItem(
         GameMatch $match,
         int $collectorId,
-        string $scoreLabel,
         array $stealTotals,
         array $finalTotals,
         array $teams,
@@ -512,15 +388,10 @@ final class MatchJokerImpactExplanationBuilder
         $code = Joker::CODE_COLLECTE_POINTS;
         $deltaCollector = (int) round((float) ($finalTotals[$collectorId] ?? 0.0))
             - (int) round((float) ($stealTotals[$collectorId] ?? 0.0));
-        $afterCollector = (int) round((float) ($finalTotals[$collectorId] ?? 0.0));
-        $beforeCollector = (int) round((float) ($stealTotals[$collectorId] ?? 0.0));
 
-        $impactRows = [[
+        $consequences = [[
             'team' => $collectorName,
-            'label' => 'Points pronos (collecte)',
-            'points' => $afterCollector,
-            'delta' => 0 !== $deltaCollector ? $deltaCollector : null,
-            'baseline' => 0 !== $deltaCollector ? $beforeCollector : null,
+            'text' => $this->formatPointsDelta($deltaCollector, 'pronos'),
         ]];
 
         foreach ($teams as $team) {
@@ -529,19 +400,15 @@ final class MatchJokerImpactExplanationBuilder
                 continue;
             }
 
-            $before = (int) round((float) ($stealTotals[$teamId] ?? 0.0));
-            $after = (int) round((float) ($finalTotals[$teamId] ?? 0.0));
-            $delta = $after - $before;
+            $delta = (int) round((float) ($finalTotals[$teamId] ?? 0.0))
+                - (int) round((float) ($stealTotals[$teamId] ?? 0.0));
             if (0 === $delta) {
                 continue;
             }
 
-            $impactRows[] = [
+            $consequences[] = [
                 'team' => (string) $team->getName(),
-                'label' => 'Prélèvement 10 %',
-                'points' => $after,
-                'delta' => $delta,
-                'baseline' => $before,
+                'text' => $this->formatPointsDelta($delta, 'pronos'),
             ];
         }
 
@@ -550,28 +417,16 @@ final class MatchJokerImpactExplanationBuilder
             'name' => $collecteJoker instanceof Joker ? $collecteJoker->getDisplayTitle() : 'Collecte de points',
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $collecteJoker?->getImage(),
-            'placer_team' => $collectorName,
-            'beneficiary_team' => $collectorName,
-            'target_team' => null,
+            'rule' => $this->basicRuleForCode($code),
             'neutralized' => false,
-            'score_label' => $scoreLabel,
-            'summary' => sprintf(
-                'Équipe bénéficiaire : %s. Score retenu : %s. Prélève 10 %% des points pronos des autres équipes après les autres jokers (+%d pt ici, total %d).',
-                $collectorName,
-                $scoreLabel,
-                $deltaCollector,
-                $afterCollector,
-            ),
-            'description' => $collecteJoker?->getDescription(),
-            'technical_lines' => $collecteJoker instanceof Joker ? $collecteJoker->getTechnicalExplanationLines() : [],
-            'impact_rows' => $impactRows,
+            'consequences' => $consequences,
         ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function buildEspionItem(TeamJokerUsage $usage, string $scoreLabel): array
+    private function buildEspionItem(TeamJokerUsage $usage): array
     {
         $joker = $usage->getJoker();
         $code = Joker::CODE_ESPION;
@@ -582,19 +437,12 @@ final class MatchJokerImpactExplanationBuilder
             'name' => $joker instanceof Joker ? $joker->getDisplayTitle() : 'Espion',
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $joker?->getImage(),
-            'placer_team' => $placerName,
-            'beneficiary_team' => $placerName,
-            'target_team' => null,
+            'rule' => $this->basicRuleForCode($code),
             'neutralized' => false,
-            'score_label' => $scoreLabel,
-            'summary' => sprintf(
-                'Équipe bénéficiaire : %s. Score retenu : %s. Renseignements (cotes, jokers posés) — aucun impact sur les points.',
-                $placerName,
-                $scoreLabel,
-            ),
-            'description' => $joker?->getDescription(),
-            'technical_lines' => $joker instanceof Joker ? $joker->getTechnicalExplanationLines() : [],
-            'impact_rows' => [],
+            'consequences' => [[
+                'team' => $placerName,
+                'text' => 'Aucun impact points.',
+            ]],
         ];
     }
 
@@ -735,16 +583,6 @@ final class MatchJokerImpactExplanationBuilder
         }
 
         return $totals;
-    }
-
-    /**
-     * @param array<int, int> $stealMap
-     */
-    private function isMutualPique(array $stealMap, int $teamId): bool
-    {
-        $victimId = $stealMap[$teamId] ?? null;
-
-        return null !== $victimId && ($stealMap[$victimId] ?? null) === $teamId;
     }
 
     private function teamName(?Team $team): string
