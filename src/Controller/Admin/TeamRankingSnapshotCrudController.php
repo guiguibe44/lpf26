@@ -25,6 +25,7 @@ class TeamRankingSnapshotCrudController extends AbstractAppCrudController
             'scoresExacts',
             'bonsResultats',
             'prisesRisque',
+            'prisesRisqueReussies',
             'resultatsFaux',
             'team.name',
             'matchRef.id',
@@ -47,7 +48,8 @@ class TeamRankingSnapshotCrudController extends AbstractAppCrudController
             IntegerField::new('scoresExacts')->setLabel('Total scores exacts'),
             IntegerField::new('bonsResultats')->setLabel('Total bons resultats'),
             IntegerField::new('resultatsFaux')->setLabel('Total resultats faux'),
-            IntegerField::new('prisesRisque')->setLabel('Total prises de risques'),
+            IntegerField::new('prisesRisque')->setLabel('Prises de risque tentees (matchs)'),
+            IntegerField::new('prisesRisqueReussies')->setLabel('Prises de risque reussies (matchs)'),
             DateTimeField::new('createdAt')->hideOnForm(),
         ];
     }

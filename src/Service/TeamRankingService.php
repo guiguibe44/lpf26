@@ -74,6 +74,7 @@ final class TeamRankingService
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
         $scoredPronostics = $this->pronosticRepository->findScoredPronosticsWithTeamMembers();
         $riskMatchesByTeam = [];
+        $riskSuccessMatchesByTeam = [];
 
         $statsByTeamId = [];
         foreach ($teams as $team) {
@@ -88,6 +89,7 @@ final class TeamRankingService
                 'scoresExacts' => 0,
                 'bonsResultats' => 0,
                 'prisesRisque' => 0,
+                'prisesRisqueReussies' => 0,
                 'resultatsFaux' => 0,
             ];
         }
@@ -117,6 +119,9 @@ final class TeamRankingService
                 $matchId = $pronostic->getMatch()?->getId();
                 if (null !== $matchId) {
                     $riskMatchesByTeam[$teamId][$matchId] = true;
+                    if ($this->isExactScore($pronostic) || $this->isGoodResult($pronostic)) {
+                        $riskSuccessMatchesByTeam[$teamId][$matchId] = true;
+                    }
                 }
             }
         }
@@ -124,6 +129,12 @@ final class TeamRankingService
         foreach ($riskMatchesByTeam as $teamId => $riskMatches) {
             if (isset($statsByTeamId[$teamId])) {
                 $statsByTeamId[$teamId]['prisesRisque'] = count($riskMatches);
+            }
+        }
+
+        foreach ($riskSuccessMatchesByTeam as $teamId => $riskSuccessMatches) {
+            if (isset($statsByTeamId[$teamId])) {
+                $statsByTeamId[$teamId]['prisesRisqueReussies'] = count($riskSuccessMatches);
             }
         }
 
@@ -172,6 +183,7 @@ final class TeamRankingService
                 ->setScoresExacts((int) $row['scoresExacts'])
                 ->setBonsResultats((int) $row['bonsResultats'])
                 ->setPrisesRisque((int) $row['prisesRisque'])
+                ->setPrisesRisqueReussies((int) $row['prisesRisqueReussies'])
                 ->setResultatsFaux((int) $row['resultatsFaux']);
 
             $this->entityManager->persist($snapshot);
