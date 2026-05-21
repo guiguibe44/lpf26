@@ -46,6 +46,7 @@ final class MatchLiveViewBuilder
         private readonly ButRepository $butRepository,
         private readonly MatchCotePreviewService $matchCotePreviewService,
         private readonly MatchTeamJokerDisplayBuilder $matchTeamJokerDisplayBuilder,
+        private readonly MatchJokerAnonymousExplanationBuilder $matchJokerAnonymousExplanationBuilder,
         private readonly PronosticCalcDisplayService $pronosticCalcDisplayService,
     ) {
     }
@@ -84,12 +85,12 @@ final class MatchLiveViewBuilder
      *         score_inverted: bool,
      *         prise_risque: bool
      *     },
-     *     espionBadges: list<array{
+     *     matchJokers: list<array{
      *         code: string,
      *         name: string,
+     *         icon: string,
      *         image: ?string,
-     *         kind: string,
-     *         label: string,
+     *         summary: string,
      *         description: ?string,
      *         technical_lines: list<string>
      *     }>
@@ -219,7 +220,7 @@ final class MatchLiveViewBuilder
             'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
             'matchButeurs' => $this->buildMatchButeurSelections($teams, $matchCountryIds),
             'viewerPronostic' => $this->buildViewerPronostic($pronostics, $simulatedLines),
-            'espionBadges' => $this->matchTeamJokerDisplayBuilder->buildEspionBadgesForMatch($match),
+            'matchJokers' => $this->matchJokerAnonymousExplanationBuilder->buildForMatch($match),
         ];
     }
 
@@ -238,7 +239,7 @@ final class MatchLiveViewBuilder
             'cotes' => $data['cotes'],
             'matchButeurs' => $data['matchButeurs'],
             'viewerPronostic' => $data['viewerPronostic'],
-            'espionBadges' => $data['espionBadges'],
+            'matchJokers' => $data['matchJokers'],
         ];
     }
 

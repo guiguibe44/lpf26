@@ -1,13 +1,5 @@
 {# Corps partagé page live / pronostics terminé — show_simulator: bool #}
 <section class="ta-card match-live-score-card">
-    {% if live_view.espionBadges|default([]) is not empty %}
-        <div class="match-live-score-card__jokers" data-match-live-score-jokers>
-            {% include 'competition/_match_live_team_jokers.html.twig' with {
-                badges: live_view.espionBadges,
-                variant: 'row',
-            } only %}
-        </div>
-    {% endif %}
     <div class="match-live-score-banner">
         <div class="match-live-score-team match-live-score-team--home">
             <div class="match-live-score-team__crest">
@@ -73,6 +65,10 @@
         </form>
     </section>
 {% endif %}
+
+{% include 'competition/_match_live_jokers_section.html.twig' with {
+    match_jokers: live_view.matchJokers|default([]),
+} only %}
 
 <section class="ta-card mt-5 match-live-teams-section">
     <h2 class="ta-card-title">Pronostics par équipe</h2>

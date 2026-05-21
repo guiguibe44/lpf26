@@ -1530,17 +1530,79 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     text-align: center;
 }
 
-.match-live-score-card__jokers {
-    position: absolute;
-    top: 0.65rem;
-    left: 0.65rem;
-    z-index: 6;
-    max-width: min(45%, 12rem);
-    pointer-events: auto;
+.match-live-jokers-section__intro {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: #64748b;
 }
 
-.match-live-score-card__jokers .match-live-team-jokers--row {
-    justify-content: flex-start;
+.match-live-jokers-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.match-live-jokers-card {
+    padding: 0.85rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    background: #f8fafc;
+}
+
+.match-live-jokers-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.5rem;
+}
+
+.match-live-jokers-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(145deg, #6d28d9, #7c3aed);
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.match-live-jokers-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.match-live-jokers-card__summary {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #334155;
+}
+
+.match-live-jokers-card__desc {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.match-live-jokers-card__technical {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.45;
+}
+
+.match-live-jokers-card__technical li + li {
+    margin-top: 0.25rem;
 }
 
 .match-live-score-banner {

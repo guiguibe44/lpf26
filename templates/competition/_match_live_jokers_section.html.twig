@@ -1,0 +1,34 @@
+{# match_jokers: list from MatchJokerAnonymousExplanationBuilder — sans auteur ni cible nommée #}
+{% if match_jokers is not empty %}
+    <section class="ta-card mt-5 match-live-jokers-section">
+        <h2 class="ta-card-title">Jokers sur ce match</h2>
+        <p class="ta-card-text match-live-jokers-section__intro">
+            Effets actifs sur cette rencontre. Les équipes concernées ne sont pas indiquées.
+        </p>
+        <ul class="match-live-jokers-list">
+            {% for joker in match_jokers %}
+                <li class="match-live-jokers-list__item">
+                    <div class="match-live-jokers-card">
+                        <div class="match-live-jokers-card__head">
+                            <span class="match-live-jokers-card__icon" aria-hidden="true">
+                                <i class="ti {{ joker.icon }}"></i>
+                            </span>
+                            <h3 class="match-live-jokers-card__title">{{ joker.name }}</h3>
+                        </div>
+                        <p class="match-live-jokers-card__summary">{{ joker.summary }}</p>
+                        {% if joker.description %}
+                            <p class="match-live-jokers-card__desc ta-card-text">{{ joker.description }}</p>
+                        {% endif %}
+                        {% if joker.technical_lines is not empty %}
+                            <ul class="match-live-jokers-card__technical">
+                                {% for line in joker.technical_lines %}
+                                    <li>{{ line }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}
