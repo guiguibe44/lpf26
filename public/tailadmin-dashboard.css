@@ -1191,7 +1191,8 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     pointer-events: none;
 }
 
-.match-card-marks--dual {
+.match-card-marks--dual,
+.match-card-marks--multi {
     gap: 0.4rem;
 }
 
@@ -1259,79 +1260,55 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
 }
 
 .match-card-joker-mark {
-    position: absolute;
-    right: 0.5rem;
-    bottom: -1.65rem;
-    z-index: 4;
+    position: static;
     display: block;
-    pointer-events: none;
-}
-
-.match-card-joker-mark .match-card-joker-badge,
-.match-card-joker-mark .match-card-joker-badge--static {
+    flex-shrink: 0;
     pointer-events: auto;
 }
 
-.match-card-joker-badge {
-    display: block;
+.match-card-joker-mark__btn {
+    display: inline-flex;
     padding: 0;
     margin: 0;
     border: 0;
     background: transparent;
     cursor: pointer;
-    transform: rotate(11deg);
-    transform-origin: center center;
+    appearance: none;
+    font-family: inherit;
     line-height: 0;
     transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-button.match-card-joker-badge {
-    appearance: none;
-    font-family: inherit;
-}
-
-.match-card-joker-badge__icon {
-    display: block;
-    width: 4.75rem;
-    border-radius: 0.45rem;
-    overflow: hidden;
-    background: #fff;
-    box-shadow:
-        0 0 0 2px #fff,
-        0 6px 18px rgb(88 28 135 / 38%),
-        0 2px 6px rgb(15 23 42 / 12%);
-}
-
-.match-card-joker-badge__icon img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 7 / 9;
-    object-fit: cover;
-}
-
-.match-card-joker-badge__icon .ti {
-    display: flex;
+.match-card-joker-mark__icon {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 4.75rem;
-    height: 6rem;
-    font-size: 1.85rem;
-    color: #6d28d9;
-    background: linear-gradient(145deg, #ede9fe, #fff);
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(145deg, #6d28d9, #7c3aed);
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 4px 14px rgb(88 28 135 / 38%);
 }
 
-.match-card-joker-badge:hover,
-.match-card-joker-badge:focus-visible {
-    transform: rotate(8deg) translateY(-2px);
-    filter: brightness(1.04);
+.match-card-joker-mark__icon .ti {
+    line-height: 1;
 }
 
-.match-card-joker-badge:focus-visible .match-card-joker-badge__icon {
+.match-card-joker-mark__btn:hover,
+.match-card-joker-mark__btn:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.match-card-joker-mark__btn:focus-visible .match-card-joker-mark__icon {
     box-shadow:
         0 0 0 2px #fff,
         0 0 0 4px #7c3aed,
-        0 6px 18px rgb(88 28 135 / 42%);
+        0 4px 14px rgb(88 28 135 / 42%);
 }
 
 .match-team--favorite-country > span {
@@ -4883,7 +4860,7 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .match-dashboard-wrap--locked .match-card .match-joker-actions,
-.match-dashboard-wrap--locked .match-card .match-card-joker-badge[data-joker-badge-detail] {
+.match-dashboard-wrap--locked .match-card .match-card-joker-mark__btn[data-joker-badge-detail] {
     opacity: 1;
     pointer-events: auto;
     filter: none;

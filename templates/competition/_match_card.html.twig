@@ -21,8 +21,11 @@
 {% set team_match_points = team_match_points_by_match_id[match.id] ?? null %}
 
 <article class="match-card{{ match.isKdoMatch ? ' match-card--kdo' : '' }}{{ is_favorite_country_match ? ' match-card--favorite-country' : '' }}{{ match_joker ? ' match-card--has-joker' : '' }}{{ is_live ? ' match-card--live' : '' }}" data-match-id="{{ match.id }}">
-    {% if is_favorite_country_match or match.isKdoMatch %}
-        <div class="match-card-marks{{ is_favorite_country_match and match.isKdoMatch ? ' match-card-marks--dual' : '' }}">
+    {% set show_joker_mark = match_joker and match_joker.code|default('') != 'espion' %}
+    {% set show_card_marks = is_favorite_country_match or match.isKdoMatch or show_joker_mark %}
+    {% if show_card_marks %}
+        {% set marks_count = (match.isKdoMatch ? 1 : 0) + (is_favorite_country_match ? 1 : 0) + (show_joker_mark ? 1 : 0) %}
+        <div class="match-card-marks{{ marks_count > 1 ? ' match-card-marks--multi' : '' }}">
             {% if match.isKdoMatch %}
                 <div class="match-card-kdo-mark" title="Match KDO — pronostic à cœur pour gagner la cagnotte">
                     <span class="match-card-kdo-mark__icon" aria-hidden="true">
@@ -41,6 +44,12 @@
                     </span>
                     <span class="sr-only">Équipe favorite — {{ team_favorite_highlight.joker_name }}</span>
                 </div>
+            {% endif %}
+            {% if show_joker_mark %}
+                {% include 'competition/_match_card_joker_badge.html.twig' with {
+                    match: match,
+                    joker: match_joker,
+                } only %}
             {% endif %}
         </div>
     {% endif %}
@@ -177,13 +186,6 @@
             match_joker: match_joker,
             espion_intel: espion_intel,
             prono_access_blocked: prono_access_blocked,
-        } only %}
-    {% endif %}
-
-    {% if match_joker and match_joker.code|default('') != 'espion' %}
-        {% include 'competition/_match_card_joker_badge.html.twig' with {
-            match: match,
-            joker: match_joker,
         } only %}
     {% endif %}
 

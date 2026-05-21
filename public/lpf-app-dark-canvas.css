@@ -132,7 +132,7 @@ html.dark body.front-body .account-tabs-nav .tab {
 }
 
 /* --- Filet large : blocs « carte / panneau / item » dans le contenu --- */
-html.dark body.front-body .ta-main [class*="card"]:not([class*="badge"]):not(.match-card-joker-badge),
+html.dark body.front-body .ta-main [class*="card"]:not([class*="badge"]):not(.match-card-joker-mark__btn),
 html.dark body.front-body .ta-main [class*="-panel"]:not(.joker-dialog):not([class*="dialog"]),
 html.dark body.front-body .ta-main [class*="__item"],
 html.dark body.front-body .ta-main .alert:not(.app-cotisation-banner),

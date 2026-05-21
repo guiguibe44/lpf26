@@ -1,4 +1,4 @@
-{# match, joker — vignette coin bas-droit ; clic = détail dans la popup jokers #}
+{# match, joker — icône joker en haut à gauche (avec KDO / bouclier) ; clic = détail #}
 {% set joker_badge_title = 'Joker : ' ~ joker.name %}
 {% if joker.target_team_name|default('') %}
     {% set joker_badge_title = joker_badge_title ~ ' → ' ~ joker.target_team_name %}
@@ -19,26 +19,15 @@
 >
     <button
         type="button"
-        class="match-card-joker-badge"
+        class="match-card-joker-mark__btn"
         data-joker-badge
         data-joker-badge-detail
         title="{{ joker_badge_hint }}"
         aria-label="{{ joker_badge_hint }}"
         aria-haspopup="dialog"
     >
-        <span class="match-card-joker-badge__icon" aria-hidden="true">
-            {% if joker.image %}
-                <img
-                    src="{{ asset(joker.image) }}"
-                    alt=""
-                    width="72"
-                    height="96"
-                    loading="lazy"
-                    decoding="async"
-                >
-            {% else %}
-                <i class="ti ti-wand"></i>
-            {% endif %}
+        <span class="match-card-joker-mark__icon" aria-hidden="true">
+            <i class="ti {{ joker_tabler_icon(joker.code|default('')) }}"></i>
         </span>
         <span class="sr-only">{{ joker_badge_title }}</span>
     </button>

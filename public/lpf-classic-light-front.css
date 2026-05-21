@@ -405,9 +405,8 @@ html.lpf-classic-light body.front-body .ta-main .joker-overview-badge--inactive 
     color: var(--lpf-muted) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-card-joker-badge__icon .ti {
-    color: #5b21b6;
-    background: linear-gradient(145deg, #f5f3ff, #fff);
+html.lpf-classic-light body.front-body .ta-main .match-card-joker-mark__icon .ti {
+    color: #fff;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-joker-actions {

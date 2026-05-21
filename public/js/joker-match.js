@@ -1,4 +1,18 @@
 (function () {
+    const JOKER_TABLER_ICON_BY_CODE = {
+        double_equipe: 'ti-users-group',
+        pique_points: 'ti-hand-grab',
+        espion: 'ti-eye',
+        double_buteur: 'ti-ball-football',
+        inverse_buteur: 'ti-arrow-back-up',
+        inverse_score: 'ti-arrows-left-right',
+        bouclier: 'ti-shield',
+        collecte_points: 'ti-coins',
+        equipe_favorite: 'ti-shield-star',
+    };
+
+    const tablerIconForJokerCode = (code) => JOKER_TABLER_ICON_BY_CODE[code] || 'ti-wand';
+
     let dialog = null;
     let titleEl = null;
     let matchLabelEl = null;
@@ -250,21 +264,12 @@
         badge.replaceChildren();
 
         const iconWrap = document.createElement('span');
-        iconWrap.className = 'match-card-joker-badge__icon';
+        iconWrap.className = 'match-card-joker-mark__icon';
         iconWrap.setAttribute('aria-hidden', 'true');
-
-        if (active.image) {
-            const img = document.createElement('img');
-            img.src = assetUrl(active.image);
-            img.alt = '';
-            img.width = 72;
-            img.height = 96;
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            iconWrap.appendChild(img);
-        } else {
-            iconWrap.innerHTML = '<i class="ti ti-wand" aria-hidden="true"></i>';
-        }
+        iconWrap.innerHTML =
+            '<i class="ti ' +
+            tablerIconForJokerCode(active.code) +
+            '" aria-hidden="true"></i>';
 
         badge.appendChild(iconWrap);
 
@@ -277,7 +282,7 @@
     const createJokerBadgeElement = () => {
         const badge = document.createElement('button');
         badge.type = 'button';
-        badge.className = 'match-card-joker-badge';
+        badge.className = 'match-card-joker-mark__btn';
         badge.dataset.jokerBadge = '';
 
         return badge;
@@ -390,6 +395,28 @@
         targetPickerEl.hidden = false;
     };
 
+    const ensureCardMarks = (card) => {
+        let marks = card.querySelector('.match-card-marks');
+        if (!marks) {
+            marks = document.createElement('div');
+            marks.className = 'match-card-marks';
+            card.prepend(marks);
+        }
+
+        return marks;
+    };
+
+    const syncMarksMultiClass = (card) => {
+        const marks = card.querySelector('.match-card-marks');
+        if (!marks) {
+            return;
+        }
+
+        const count = marks.children.length;
+        marks.classList.toggle('match-card-marks--multi', count > 1);
+        marks.classList.toggle('match-card-marks--dual', count > 1);
+    };
+
     const ensureJokerMark = (card) => {
         let mark = card.querySelector('.match-card-joker-mark');
         if (!mark) {
@@ -399,7 +426,7 @@
             mark = document.createElement('div');
             mark.className = 'match-card-joker-mark';
             copyJokerActionUrls(urlSource, mark);
-            card.appendChild(mark);
+            ensureCardMarks(card).appendChild(mark);
         }
 
         return mark;
@@ -424,6 +451,7 @@
                 mark.appendChild(badge);
             }
             fillJokerBadge(badge, active);
+            syncMarksMultiClass(card);
         } else {
             card.classList.remove('match-card--has-joker');
             const mark = card.querySelector('.match-card-joker-mark');
@@ -431,6 +459,12 @@
                 mark.remove();
             } else if (badge) {
                 badge.remove();
+            }
+            const marks = card.querySelector('.match-card-marks');
+            if (marks && marks.children.length === 0) {
+                marks.remove();
+            } else {
+                syncMarksMultiClass(card);
             }
         }
     };
