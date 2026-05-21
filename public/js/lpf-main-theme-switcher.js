@@ -1,8 +1,13 @@
 /**
  * Thème de zone principale (main.ta-main) — codes et défaut fournis par le serveur (BDD / admin).
+ * Écouteurs enregistrés une seule fois (compatible Turbo Drive).
  */
 (function () {
     const STORAGE_KEY = 'lpfMainTheme';
+    const BOUND_FLAG = 'lpfMainThemeSwitcherBound';
+
+    /** @type {((event: MouseEvent) => void)|null} */
+    let outsideClickListener = null;
 
     function readConfig() {
         const html = document.documentElement;
@@ -54,10 +59,17 @@
         }
     }
 
-    function applyTheme(theme, config) {
-        const resolved = config.codes.includes(theme) ? theme : config.defaultCode;
-        document.documentElement.setAttribute('data-lpf-main-theme', resolved);
-        syncSwitcherUi(resolved);
+    function getPanel() {
+        return document.querySelector('[data-lpf-main-theme-panel]');
+    }
+
+    function getTrigger() {
+        return document.querySelector('[data-lpf-main-theme-toggle]');
+    }
+
+    function isPanelOpen() {
+        const panel = getPanel();
+        return !!panel && !panel.hidden;
     }
 
     function syncSwitcherUi(theme) {
@@ -69,22 +81,47 @@
         });
     }
 
-    function getPanel() {
-        return document.querySelector('[data-lpf-main-theme-panel]');
+    function applyTheme(theme) {
+        const config = readConfig();
+        const resolved = config.codes.includes(theme) ? theme : config.defaultCode;
+        document.documentElement.setAttribute('data-lpf-main-theme', resolved);
+        syncSwitcherUi(resolved);
     }
 
-    function getTrigger() {
-        return document.querySelector('[data-lpf-main-theme-toggle]');
+    function detachOutsideClickListener() {
+        if (!outsideClickListener) {
+            return;
+        }
+        document.removeEventListener('click', outsideClickListener, true);
+        outsideClickListener = null;
+    }
+
+    function attachOutsideClickListener() {
+        detachOutsideClickListener();
+        outsideClickListener = (event) => {
+            if (event.target.closest('[data-lpf-main-theme-switcher]')) {
+                return;
+            }
+            closePanel();
+        };
+        // Après le clic d’ouverture : évite la fermeture immédiate sur le même événement.
+        window.setTimeout(() => {
+            if (isPanelOpen() && outsideClickListener) {
+                document.addEventListener('click', outsideClickListener, true);
+            }
+        }, 0);
     }
 
     function closePanel() {
         const panel = getPanel();
         const trigger = getTrigger();
         if (!panel || !trigger) {
+            detachOutsideClickListener();
             return;
         }
         panel.hidden = true;
         trigger.setAttribute('aria-expanded', 'false');
+        detachOutsideClickListener();
     }
 
     function openPanel() {
@@ -95,41 +132,33 @@
         }
         panel.hidden = false;
         trigger.setAttribute('aria-expanded', 'true');
+        attachOutsideClickListener();
     }
 
     function togglePanel() {
-        const panel = getPanel();
-        if (!panel) {
-            return;
-        }
-        if (panel.hidden) {
-            openPanel();
-        } else {
+        if (isPanelOpen()) {
             closePanel();
+        } else {
+            openPanel();
         }
     }
 
-    function setTheme(theme, config) {
+    function setTheme(theme) {
+        const config = readConfig();
         if (!config.codes.includes(theme)) {
             return;
         }
         persistTheme(theme);
-        applyTheme(theme, config);
+        applyTheme(theme);
         closePanel();
     }
 
     function onDocumentClick(event) {
-        const root = event.target.closest('[data-lpf-main-theme-switcher]');
-        if (!root) {
-            closePanel();
-        }
-    }
-
-    function onClick(event, config) {
         const toggle = event.target.closest('[data-lpf-main-theme-toggle]');
         if (toggle) {
             event.preventDefault();
             event.stopPropagation();
+            event.stopImmediatePropagation();
             togglePanel();
             return;
         }
@@ -138,37 +167,49 @@
         if (option) {
             event.preventDefault();
             event.stopPropagation();
-            setTheme(option.getAttribute('data-lpf-main-theme-option'), config);
+            event.stopImmediatePropagation();
+            setTheme(option.getAttribute('data-lpf-main-theme-option') || '');
         }
     }
 
     function onKeydown(event) {
-        if (event.key === 'Escape') {
+        if (event.key === 'Escape' && isPanelOpen()) {
+            event.stopPropagation();
             closePanel();
         }
     }
 
-    function init() {
+    function syncFromStorage() {
         const config = readConfig();
-        applyTheme(readStoredTheme(config), config);
+        applyTheme(readStoredTheme(config));
+        closePanel();
     }
 
-    const config = readConfig();
+    function bindEventsOnce() {
+        if (document.documentElement.getAttribute(BOUND_FLAG) === '1') {
+            return;
+        }
+        document.documentElement.setAttribute(BOUND_FLAG, '1');
+        document.addEventListener('click', onDocumentClick, true);
+        document.addEventListener('keydown', onKeydown, true);
+    }
 
-    document.addEventListener('click', (e) => onClick(e, config), true);
-    document.addEventListener('click', onDocumentClick);
-    document.addEventListener('keydown', onKeydown);
-    document.addEventListener('DOMContentLoaded', init);
-    document.addEventListener('turbo:load', init);
-    document.addEventListener('turbo:render', init);
+    function boot() {
+        bindEventsOnce();
+        syncFromStorage();
+    }
+
+    document.addEventListener('turbo:load', boot);
+    document.addEventListener('DOMContentLoaded', boot);
 
     if (document.readyState !== 'loading') {
-        init();
+        boot();
     }
 
     window.lpfMainTheme = {
         getTheme: () => readStoredTheme(readConfig()),
-        setTheme: (theme) => setTheme(theme, readConfig()),
+        setTheme: (theme) => setTheme(theme),
         getConfig: readConfig,
+        closePanel,
     };
 })();
