@@ -7,7 +7,7 @@
         </p>
     </header>
 
-    <article class="joker-guide-interactions__block" id="guide-pipeline">
+    <article class="joker-guide-interactions__block joker-guide-interactions__block--general" id="guide-pipeline">
         <h3 class="joker-guide-interactions__subtitle">{{ interactions_guide.pipeline.title }}</h3>
         <p class="joker-guide-interactions__text">{{ interactions_guide.pipeline.intro }}</p>
         {% include 'competition/_joker_guide_table.html.twig' with {
@@ -16,7 +16,7 @@
         } only %}
     </article>
 
-    <article class="joker-guide-interactions__block" id="guide-cross-matrix">
+    <article class="joker-guide-interactions__block joker-guide-interactions__block--general" id="guide-cross-matrix">
         <h3 class="joker-guide-interactions__subtitle">{{ interactions_guide.cross_matrix.title }}</h3>
         <p class="joker-guide-interactions__text">{{ interactions_guide.cross_matrix.intro }}</p>
         {% include 'competition/_joker_guide_table.html.twig' with {
@@ -27,12 +27,34 @@
 
     {% for section in interactions_guide.jokers %}
         <article class="joker-guide-interactions__block joker-guide-interactions__block--joker" id="{{ section.anchor }}">
-            <h3 class="joker-guide-interactions__subtitle">
-                <a href="#joker-{{ section.code|replace({'_': '-'}) }}" class="joker-guide-interactions__card-link">
-                    {{ section.title }}
-                </a>
-            </h3>
-            <p class="joker-guide-interactions__text">{{ section.intro }}</p>
+            <header class="joker-guide-interactions__joker-head">
+                <div class="joker-guide-interactions__thumb" aria-hidden="true">
+                    {% if section.image %}
+                        <img
+                            src="{{ asset(section.image) }}"
+                            alt=""
+                            class="joker-guide-interactions__thumb-image"
+                            width="52"
+                            height="68"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                    {% else %}
+                        <span class="joker-guide-interactions__thumb-placeholder">
+                            <i class="ti {{ section.icon_class|default('ti-wand') }}"></i>
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="joker-guide-interactions__joker-head-copy">
+                    <h3 class="joker-guide-interactions__subtitle">
+                        <a href="#joker-{{ section.code|replace({'_': '-'}) }}" class="joker-guide-interactions__card-link">
+                            {{ section.title }}
+                        </a>
+                    </h3>
+                    <p class="joker-guide-interactions__text joker-guide-interactions__text--intro">{{ section.intro }}</p>
+                </div>
+            </header>
+            <div class="joker-guide-interactions__joker-body">
             {% for table in section.tables %}
                 {% include 'competition/_joker_guide_table.html.twig' with {
                     table: table,
@@ -46,6 +68,7 @@
                     {% endfor %}
                 </ul>
             {% endif %}
+            </div>
         </article>
     {% endfor %}
 </section>

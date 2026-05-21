@@ -99,7 +99,7 @@ final class MatchEspionService
                 'team_id' => (int) $teamId,
                 'team_name' => (string) $usageTeam->getName(),
                 'team_logo' => $usageTeam->getLogo(),
-                'joker_name' => (string) $joker->getName(),
+                'joker_name' => $joker->getDisplayTitle(),
                 'joker_code' => (string) $joker->getCode(),
                 'joker_image' => $joker->getImage(),
                 'target_team_name' => $target instanceof Team ? (string) $target->getName() : null,

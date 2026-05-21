@@ -1,0 +1,43 @@
+{# espion_intel: { cotes, jokers } — contenu injecté dans la popup #}
+<p class="match-espion-irreversible">Joker définitif — non annulable.</p>
+
+<div class="match-espion-section">
+    <h4 class="match-espion-section-title">Cotes du match</h4>
+    {% set c = espion_intel.cotes %}
+    {% if c.pronostics_count > 0 and c.moyenne is not null %}
+        <p class="match-espion-cotes">
+            Moy. <strong>{{ c.moyenne|number_format(2, ',', ' ') }}</strong>
+            {% if c.min is not null and c.max is not null %}
+                · min {{ c.min|number_format(2, ',', ' ') }} · max {{ c.max|number_format(2, ',', ' ') }}
+            {% endif %}
+            <span class="match-espion-meta">({{ c.pronostics_count }} pronostic{{ c.pronostics_count > 1 ? 's' : '' }})</span>
+        </p>
+    {% else %}
+        <p class="match-espion-empty">Pas encore assez de pronostics pour estimer les cotes.</p>
+    {% endif %}
+</div>
+
+<div class="match-espion-section">
+    <h4 class="match-espion-section-title">Jokers posés</h4>
+    {% if espion_intel.jokers is not empty %}
+        <ul class="match-espion-jokers-list">
+            {% for row in espion_intel.jokers %}
+                <li class="match-espion-joker-item">
+                    {% if row.team_logo %}
+                        <img src="{{ asset(row.team_logo) }}" alt="" class="match-espion-team-logo" width="24" height="24" loading="lazy">
+                    {% endif %}
+                    <span class="match-espion-team-name">{{ row.team_name }}</span>
+                    <span class="ta-badge match-espion-joker-badge">{{ row.joker_name }}</span>
+                    {% if row.target_team_name %}
+                        <span class="match-espion-target">→ {{ row.target_team_name }}</span>
+                    {% endif %}
+                    {% if row.effect_blocked|default(false) %}
+                        <span class="match-espion-blocked">(sans effet — cible protégée)</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="match-espion-empty">Aucun joker posé sur ce match pour le moment.</p>
+    {% endif %}
+</div>

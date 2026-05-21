@@ -59,9 +59,18 @@
             {% include 'components/_country_flag_img.html.twig' with { country: match.paysDomicile } only %}
         </div>
 
-        <time class="match-time" datetime="{{ match.dateHeure ? match.dateHeure|date('c') : '' }}">
-            {{ match.dateHeure ? match.dateHeure|date('H:i') : '-' }}
-        </time>
+        <div class="match-fixture__center">
+            {% if espion_intel %}
+                {% include 'competition/_match_card_espion_trigger.html.twig' with {
+                    match: match,
+                    espion_intel: espion_intel,
+                    match_joker: match_joker,
+                } only %}
+            {% endif %}
+            <time class="match-time" datetime="{{ match.dateHeure ? match.dateHeure|date('c') : '' }}">
+                {{ match.dateHeure ? match.dateHeure|date('H:i') : '-' }}
+            </time>
+        </div>
 
         <div class="match-team match-team-away{% if favorite_country_id and match.paysExterieur and match.paysExterieur.id == favorite_country_id %} match-team--favorite-country{% endif %}">
             {% include 'components/_country_flag_img.html.twig' with { country: match.paysExterieur } only %}
@@ -80,9 +89,7 @@
         {% if match.venueName %}
             <span class="match-venue"> · {{ match.venueName }}</span>
         {% endif %}
-        {% if espion_intel and espion_intel.cotes.moyenne is not null %}
-            · Cote espion {{ espion_intel.cotes.moyenne|number_format(2, ',', ' ') }}
-        {% elseif cotes_visible and match.coteMoyenne is not null %}
+        {% if cotes_visible and match.coteMoyenne is not null %}
             · Cote {{ match.coteMoyenne|number_format(2, ',', ' ') }}
         {% endif %}
     </p>
@@ -178,11 +185,7 @@
         } only %}
     {% endif %}
 
-    {% if espion_intel %}
-        {% include 'competition/_match_espion_intel.html.twig' with { espion_intel: espion_intel } only %}
-    {% endif %}
-
-    {% if match_joker %}
+    {% if match_joker and match_joker.code|default('') != 'espion' %}
         {% include 'competition/_match_card_joker_badge.html.twig' with {
             match: match,
             joker: match_joker,

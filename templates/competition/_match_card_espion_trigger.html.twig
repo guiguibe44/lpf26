@@ -1,0 +1,19 @@
+{# match, espion_intel, match_joker (optionnel, pour libellé) #}
+<div class="match-card-espion" data-match-espion>
+    <button
+        type="button"
+        class="match-card-espion-btn"
+        data-espion-open
+        aria-haspopup="dialog"
+        aria-controls="match-espion-intel-dialog"
+        title="Renseignements espion — voir le détail"
+    >
+        <span class="match-card-espion-btn__icon" aria-hidden="true">
+            <i class="ti ti-eye"></i>
+        </span>
+        <span class="sr-only">Renseignements espion</span>
+    </button>
+    <template data-espion-intel-template>
+        {% include 'competition/_match_espion_intel_content.html.twig' with { espion_intel: espion_intel } only %}
+    </template>
+</div>

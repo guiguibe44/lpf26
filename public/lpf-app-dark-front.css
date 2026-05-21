@@ -479,6 +479,26 @@ html.dark body.front-body .ta-main .match-espion-team-name {
     color: var(--lpf-text) !important;
 }
 
+html.dark body.front-body .ta-main .match-card-espion-btn {
+    border-color: #3b82f6;
+    background: linear-gradient(180deg, #1e3a8a 0%, #1d4ed8 100%);
+    color: #dbeafe;
+}
+
+html.dark body.front-body .ta-main .match-espion-intel-dialog__panel {
+    background: var(--lpf-surface, #1e293b);
+    border-color: rgb(148 163 184 / 25%);
+}
+
+html.dark body.front-body .ta-main .match-espion-intel-dialog__title {
+    color: #93c5fd;
+}
+
+html.dark body.front-body .ta-main .match-espion-intel-dialog__close {
+    background: rgb(30 41 59);
+    color: #e2e8f0;
+}
+
 html.dark body.front-body .ta-main .match-espion-irreversible {
     color: var(--lpf-warning) !important;
 }

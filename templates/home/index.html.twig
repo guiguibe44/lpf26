@@ -87,6 +87,7 @@
 
     {% if app.user %}
         {% include 'competition/_joker_modal.html.twig' %}
+        {% include 'competition/_match_espion_intel_dialog.html.twig' %}
     {% endif %}
 {% endblock %}
 
@@ -94,6 +95,7 @@
     {{ parent() }}
     {% if app.user %}
         <script src="{{ asset('js/joker-match.js') }}?v=20" defer></script>
+        <script src="{{ asset('js/match-espion-intel.js') }}?v=1" defer></script>
         <script src="{{ asset('js/match-pronostic-autosave.js') }}?v=2" defer></script>
     {% endif %}
     {% if has_live_matches|default(false) %}

@@ -12,8 +12,10 @@ use App\Repository\JokerRepository;
  */
 final class JokerInteractionsGuideBuilder
 {
-    /** @var array<string, string> */
-    private array $titlesByCode = [];
+    /**
+     * @var array<string, array{title: string, image: ?string, icon: string}>
+     */
+    private array $jokerMetaByCode = [];
 
     public function __construct(
         private readonly JokerRepository $jokerRepository,
@@ -28,6 +30,8 @@ final class JokerInteractionsGuideBuilder
      *         code: string,
      *         anchor: string,
      *         title: string,
+     *         image: ?string,
+     *         icon_class: string,
      *         intro: string,
      *         tables: list<array{caption: ?string, headers: list<string>, rows: list<list<string>>}>,
      *         notes: list<string>
@@ -37,7 +41,7 @@ final class JokerInteractionsGuideBuilder
      */
     public function build(): array
     {
-        $this->titlesByCode = $this->loadTitlesByCode();
+        $this->jokerMetaByCode = $this->loadJokerMetaByCode();
 
         return [
             'toc' => $this->buildToc(),
@@ -69,31 +73,46 @@ final class JokerInteractionsGuideBuilder
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{title: string, image: ?string, icon: string}>
      */
-    private function loadTitlesByCode(): array
+    private function loadJokerMetaByCode(): array
     {
-        $titles = [];
+        $meta = [];
         foreach ($this->jokerRepository->findAllOrdered() as $joker) {
             $code = $joker->getCode();
             if (null === $code || '' === $code) {
                 continue;
             }
 
-            $titles[$code] = $joker->getDisplayTitle();
+            $image = $joker->getImage();
+            $meta[$code] = [
+                'title' => $joker->getDisplayTitle(),
+                'image' => (null !== $image && '' !== trim($image)) ? $image : null,
+                'icon' => Joker::tablerIconClassForCode($code),
+            ];
         }
 
-        return $titles;
+        return $meta;
     }
 
     private function t(string $code): string
     {
-        $title = $this->titlesByCode[$code] ?? null;
+        $title = $this->jokerMetaByCode[$code]['title'] ?? null;
         if (null !== $title && '' !== trim($title)) {
             return $title;
         }
 
         return $this->fallbackTitle($code);
+    }
+
+    private function imageForCode(string $code): ?string
+    {
+        return $this->jokerMetaByCode[$code]['image'] ?? null;
+    }
+
+    private function iconClassForCode(string $code): string
+    {
+        return $this->jokerMetaByCode[$code]['icon'] ?? Joker::tablerIconClassForCode($code);
     }
 
     private function protectionPairLabel(): string
@@ -210,7 +229,7 @@ final class JokerInteractionsGuideBuilder
         $sections = [];
 
         foreach ($this->jokerSectionOrder() as $code) {
-            $sections[] = match ($code) {
+            $section = match ($code) {
                 Joker::CODE_DOUBLE_EQUIPE => $this->sectionDoubleEquipe(),
                 Joker::CODE_PIQUE_POINTS => $this->sectionPiquePoints(),
                 Joker::CODE_COLLECTE_POINTS => $this->sectionCollectePoints(),
@@ -229,6 +248,10 @@ final class JokerInteractionsGuideBuilder
                     'notes' => [],
                 ],
             };
+
+            $section['image'] = $this->imageForCode($code);
+            $section['icon_class'] = $this->iconClassForCode($code);
+            $sections[] = $section;
         }
 
         return $sections;

@@ -33,6 +33,8 @@ final class JokerInteractionsGuideBuilderTest extends TestCase
 
         self::assertNotNull($section);
         self::assertSame('Dôme d\'or', $section['title']);
+        self::assertArrayHasKey('image', $section);
+        self::assertArrayHasKey('icon_class', $section);
 
         $tocLabel = null;
         foreach ($guide['toc'] as $item) {
