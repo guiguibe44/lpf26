@@ -303,7 +303,7 @@ final class AdminCompetChecklistProvider
                 ],
                 [
                     'id' => 'compet-rank-order',
-                    'label' => 'Ordre classement : pts → exacts → bons 1N2 → risque → nom.',
+                    'label' => 'Ordre classement : pts → exacts → bons 1N2 → BigBalls → nom.',
                     'kind' => 'attention',
                 ],
             ],

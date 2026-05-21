@@ -83,15 +83,15 @@
 
         <details class="ta-card reglement-item">
             <summary class="reglement-item__summary">
-                <span><i class="ti ti-flame" aria-hidden="true"></i> Prise de risque</span>
+                <span><i class="ti ti-flame" aria-hidden="true"></i> {{ bigballs_term('name') }}</span>
                 <i class="ti ti-chevron-down reglement-item__chevron" aria-hidden="true"></i>
             </summary>
             <div class="reglement-item__body ta-card-text">
                 <ul>
-                    <li>Si les <strong>deux joueurs</strong> de la même équipe pronostiquent le <strong>même score</strong> sur un match, chacun est marqué « prise de risque » sur ce match.</li>
-                    <li>Le classement compte une prise <strong>tentée</strong> par match où les <strong>deux coéquipiers</strong> ont le même score (scores effectifs, joker inversion inclus).</li>
-                    <li>Elle est <strong>réussie</strong> si ce score commun est exact ou correspond au bon 1/N/2.</li>
-                    <li>En cas d’égalité au classement : critère de départage après les scores exacts et bons résultats (plus de prises tentées = mieux classé).</li>
+                    <li><strong>{{ bigballs_term('name') }}</strong> : si les <strong>deux joueurs</strong> de la même équipe pronostiquent le <strong>même score</strong> sur un match, chacun est marqué «&nbsp;{{ bigballs_term('name')|lower }}&nbsp;» sur ce match.</li>
+                    <li>Le classement compte un <strong>{{ bigballs_term('name')|lower }} tenté</strong> par match où les <strong>deux coéquipiers</strong> ont le même score (scores effectifs, joker inversion inclus).</li>
+                    <li>Il est <strong>réussi</strong> si ce score commun est exact ou correspond au bon 1/N/2.</li>
+                    <li>En cas d’égalité au classement : critère de départage après les scores exacts et bons résultats (plus de {{ bigballs_term('name_plural')|lower }} tentés = mieux classé).</li>
                 </ul>
             </div>
         </details>
@@ -142,7 +142,7 @@
             <div class="reglement-item__body ta-card-text">
                 <ul>
                     <li>Classement par <strong>équipe</strong> : points totaux (pronos + buteur + effets jokers).</li>
-                    <li>Ordre de départage : points → scores exacts → bons résultats → prises de risque → nom d’équipe.</li>
+                    <li>Ordre de départage : points → scores exacts → bons résultats → {{ bigballs_term('name_plural')|lower }} → nom d’équipe.</li>
                     <li>Consultez le <a href="{{ path('app_ranking') }}">classement général</a> et les <a href="{{ path('app_groups') }}">groupes des pays</a>.</li>
                 </ul>
             </div>

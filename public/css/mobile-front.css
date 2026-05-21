@@ -209,9 +209,9 @@
 
     .ta-main .match-team img,
     .ta-main .match-team .match-flag-placeholder {
-        width: 5rem;
-        height: 3.35rem;
-        border-radius: 0.4rem;
+        width: 10rem;
+        height: 6.7rem;
+        border-radius: 0.5rem;
         object-fit: cover;
     }
 
@@ -219,7 +219,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 2.4rem;
         font-weight: 700;
     }
 
@@ -407,7 +407,7 @@
         margin: 0 0.15rem;
     }
 
-    .ta-main .match-final-score,
+    .ta-main .match-final-score .match-score-input:disabled,
     .ta-main .match-locked-pronostic,
     .ta-main .match-partner-score {
         font-size: 1.35rem;

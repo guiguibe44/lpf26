@@ -91,12 +91,12 @@
         </details>
 
         <details class="lpf-admin-guide__item">
-            <summary>Prise de risque</summary>
+            <summary>{{ bigballs_term('name') }}</summary>
 <div class="lpf-admin-guide__body">
                 <ul>
-                    <li>Si les <strong>deux joueurs d’une même équipe</strong> pronostiquent le <strong>même score</strong> sur un match, chacun est marqué «&nbsp;prise de risque&nbsp;» sur ce match.</li>
-                    <li>Classement : <strong>tentée</strong> = les 2 joueurs de l’équipe ont le même prono sur le match ; <strong>réussie</strong> = ce score commun est exact ou bon 1/N/2.</li>
-                    <li>En cas d’égalité au classement : critère de départage après les scores exacts et bons résultats (plus de prises de risque = mieux classé).</li>
+                    <li>Si les <strong>deux joueurs d’une même équipe</strong> pronostiquent le <strong>même score</strong> sur un match, chacun est marqué «&nbsp;{{ bigballs_term('name')|lower }}&nbsp;» sur ce match.</li>
+                    <li>Classement : <strong>tenté</strong> = les 2 joueurs de l’équipe ont le même prono sur le match ; <strong>réussi</strong> = ce score commun est exact ou bon 1/N/2.</li>
+                    <li>En cas d’égalité au classement : critère de départage après les scores exacts et bons résultats (plus de {{ bigballs_term('name_plural')|lower }} = mieux classé).</li>
                 </ul>
 </div>
         </details>
@@ -105,7 +105,7 @@
             <summary>Classement</summary>
 <div class="lpf-admin-guide__body">
                 <ul>
-                    <li><strong>Classement</strong> (<code>/classement</code>) : snapshots par match terminé, ordre : points totaux → scores exacts → bons résultats → prises de risque → nom d’équipe.</li>
+                    <li><strong>Classement</strong> (<code>/classement</code>) : snapshots par match terminé, ordre : points totaux → scores exacts → bons résultats → {{ bigballs_term('name_plural')|lower }} → nom d’équipe.</li>
                     <li>Fiche équipe : historique, membres, stats agrégées.</li>
                     <li><strong>Groupes des pays</strong> (<code>/groupes</code>) : classements de poules calculés à partir des matchs de groupe.</li>
                     <li>Les snapshots sont reconstruits à chaque rescoring d’un match.</li>

@@ -64,7 +64,7 @@ final class AdminQaChecklistDescriptions
             'prono-lock-kickoff' => 'Après heure de coup d’envoi ou statut match ≠ SCHEDULED : formulaire verrouillé.',
             'prono-default-scores' => 'Nouveau joueur cotisé : commande ou service crée des pronos par défaut sur les matchs à venir.',
             'prono-finished-detail' => 'Match FINISHED : lien vers la page publique listant tous les pronos du match.',
-            'prono-risk-taking' => 'Les deux joueurs d’une équipe pronostiquent le même score : badge ou mention « prise de risque ».',
+            'prono-risk-taking' => 'Les deux joueurs d’une équipe pronostiquent le même score : badge ou mention « BigBalls ».',
 
             'joker-catalog' => 'Page /jokers : tous les types listés avec image, titre et description réglementaire.',
             'joker-drawer-open' => 'Sur une carte match : ouvrir le tiroir joker, chargement JSON sans erreur console.',
@@ -81,7 +81,7 @@ final class AdminQaChecklistDescriptions
             'points-rescore-match' => 'Admin : saisir ou sync le score réel → recalcul automatique des pronos et snapshots classement.',
             'points-rescore-buteur-cmd' => 'Après import massif de buts : php bin/console app:rescore:buteur-goals si les coefficients semblent faux.',
 
-            'ranking-order' => 'Vérifier l’ordre de tri : points totaux, puis exacts, bons résultats, prises de risque, nom d’équipe.',
+            'ranking-order' => 'Vérifier l’ordre de tri : points totaux, puis exacts, bons résultats, BigBalls, nom d’équipe.',
             'ranking-evolution' => 'Après plusieurs matchs terminés : courbe ou tableau d’évolution par journée cohérent.',
             'ranking-team-page' => 'Cliquer une équipe : membres, historique des positions, totaux affichés.',
             'groups-page' => 'Page Groupes : classements des poules calculés à partir des matchs de phase de groupes.',

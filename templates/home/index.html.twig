@@ -7,7 +7,7 @@
         {% include 'buteur/_stats_summary.html.twig' with { buteur_stats: buteur_stats } only %}
     {% endif %}
 
-    {% if not competition_started %}
+    {% if not competition_started and not precomp_checklist.all_done %}
         {% include 'home/_precompetition_checklist.html.twig' with { precomp_checklist: precomp_checklist } only %}
     {% endif %}
 

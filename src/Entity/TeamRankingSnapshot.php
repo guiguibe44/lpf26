@@ -37,7 +37,7 @@ class TeamRankingSnapshot
     #[ORM\Column]
     private int $prisesRisque = 0;
 
-    /** Matchs où une prise de risque a abouti (score exact ou bon 1/N/2). */
+    /** Matchs où un BigBalls a abouti (score exact ou bon 1/N/2). */
     #[ORM\Column]
     private int $prisesRisqueReussies = 0;
 

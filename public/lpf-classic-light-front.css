@@ -91,6 +91,14 @@ html.lpf-classic-light body.front-body .ta-main .match-final-score--live {
     color: var(--lpf-warning) !important;
 }
 
+html.lpf-classic-light body.front-body .ta-main .match-final-score .match-score-input:disabled,
+html.lpf-classic-light body.front-body .ta-main .match-final-score--live .match-score-input:disabled {
+    color: #94a3b8 !important;
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+}
+
 html.lpf-classic-light body.front-body .ta-main .match-card-live-btn.btn.btn-warning {
     background: var(--lpf-warning) !important;
     border-color: #d97706 !important;
@@ -107,6 +115,7 @@ html.lpf-classic-light body.front-body .ta-main .match-final-score,
 html.lpf-classic-light body.front-body .ta-main .match-partner-row--self .match-partner-score,
 html.lpf-classic-light body.front-body .ta-main .match-viewer-prono__score {
     color: #1d4ed8 !important;
+    -webkit-text-fill-color: #1d4ed8 !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-locked-pronostic,

@@ -452,7 +452,7 @@ final class AdminQaChecklistProvider
                 ],
                 [
                     'id' => 'prono-risk-taking',
-                    'label' => 'Deux joueurs même équipe, même score : indicateur « prise de risque ».',
+                    'label' => 'Deux joueurs même équipe, même score : indicateur « BigBalls ».',
                     'kind' => 'attention',
                 ],
             ],
@@ -573,7 +573,7 @@ final class AdminQaChecklistProvider
             'items' => [
                 [
                     'id' => 'ranking-order',
-                    'label' => 'Ordre : points totaux → scores exacts → bons résultats → prises de risque → nom.',
+                    'label' => 'Ordre : points totaux → scores exacts → bons résultats → BigBalls → nom.',
                     'kind' => 'attention',
                     'route' => 'app_ranking',
                     'route_label' => 'Classement',

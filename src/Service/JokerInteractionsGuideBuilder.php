@@ -450,7 +450,7 @@ final class JokerInteractionsGuideBuilder
             ],
             'notes' => [
                 'Ne modifie pas les buteurs.',
-                'La « prise de risque » (deux coéquipiers, même score) reste un indicateur à part ; l’inversion change seulement le calcul des points.',
+                'Le « BigBalls » (deux coéquipiers, même score) reste un indicateur à part ; l’inversion change seulement le calcul des points.',
             ],
         ];
     }

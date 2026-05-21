@@ -148,11 +148,7 @@
         {% elseif is_live %}
             <div class="match-live-actions">
                 <div class="match-live-score-wrap">
-                    <div class="match-final-score match-final-score--live" data-match-score>
-                        <span data-match-score-home>{{ match.scoreDomicile is not null ? match.scoreDomicile : 0 }}</span>
-                        <span class="match-live-score-sep">-</span>
-                        <span data-match-score-away>{{ match.scoreExterieur is not null ? match.scoreExterieur : 0 }}</span>
-                    </div>
+                    {% include 'competition/_match_card_score_inputs.html.twig' with { match: match, live: true } only %}
                     <span class="match-live-clock" data-match-live-clock>{{ match_live_clock_label(match) }}</span>
                 </div>
                 <a
@@ -165,9 +161,7 @@
             </div>
         {% elseif is_finished %}
             <div class="match-finished-actions">
-                <div class="match-final-score">
-                    {{ match.scoreDomicile }} - {{ match.scoreExterieur }}
-                </div>
+                {% include 'competition/_match_card_score_inputs.html.twig' with { match: match, live: false } only %}
                 <a
                     href="{{ path('app_match_pronostics', { id: match.id }) }}"
                     class="btn btn-primary match-card-pronos-btn"

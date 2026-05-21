@@ -72,6 +72,14 @@ html.dark body.front-body .ta-main .match-final-score--live {
     color: var(--lpf-warning) !important;
 }
 
+html.dark body.front-body .ta-main .match-final-score .match-score-input:disabled,
+html.dark body.front-body .ta-main .match-final-score--live .match-score-input:disabled {
+    color: var(--lpf-muted) !important;
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    -webkit-text-fill-color: var(--lpf-muted) !important;
+}
+
 html.dark body.front-body .ta-main .match-partner-row--self .match-partner-score,
 html.dark body.front-body .ta-main .match-viewer-prono__score {
     color: var(--lpf-link) !important;
@@ -99,6 +107,7 @@ html.dark body.front-body .ta-main .match-locked-pronostic,
 html.dark body.front-body .ta-main .match-time,
 html.dark body.front-body .ta-main .match-partner-score {
     color: var(--lpf-text) !important;
+    -webkit-text-fill-color: var(--lpf-text) !important;
 }
 
 html.dark body.front-body .ta-main .match-link,

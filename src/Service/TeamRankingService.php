@@ -170,7 +170,7 @@ final class TeamRankingService
     }
 
     /**
-     * Prise de risque = au moins 2 pronos de la même équipe avec le même score effectif sur un match.
+     * BigBalls = au moins 2 pronos de la même équipe avec le même score effectif sur un match.
      *
      * @param iterable<Pronostic> $pronostics
      * @param array<int, int>     $playerTeamMap

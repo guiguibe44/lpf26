@@ -50,7 +50,7 @@ class PronosticCrudController extends AbstractAppCrudController
             NumberField::new('coteCoefficient')->setLabel('Cote')->setNumDecimals(2)->hideOnForm(),
             NumberField::new('points')->setLabel('Pts joueur')->setNumDecimals(0)->hideOnForm(),
             NumberField::new('pointsEquipe')->setLabel('Pts équipe')->setNumDecimals(0)->hideOnForm(),
-            BooleanField::new('priseRisque')->setLabel('Risque')->renderAsSwitch(false)->hideOnForm(),
+            BooleanField::new('priseRisque')->setLabel('BigBalls')->renderAsSwitch(false)->hideOnForm(),
             DateTimeField::new('createdAt')->hideOnForm(),
             DateTimeField::new('updatedAt')->hideOnForm(),
         ];

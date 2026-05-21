@@ -381,6 +381,18 @@ html.lpf-gta-theme .match-final-score--live {
     color: var(--lpf-gta-gold) !important;
 }
 
+html.lpf-gta-theme .match-final-score .match-score-input:disabled,
+html.lpf-gta-theme .match-final-score--live .match-score-input:disabled {
+    font-family: inherit !important;
+    letter-spacing: normal !important;
+    color: var(--lpf-gta-text-secondary) !important;
+    background: rgb(255 255 255 / 6%) !important;
+    border-color: rgb(255 255 255 / 14%) !important;
+    -webkit-text-fill-color: var(--lpf-gta-text-secondary) !important;
+    text-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
 /* Espion / jokers */
 html.lpf-gta-theme .match-espion-title,
 html.lpf-gta-theme .joker-dialog-buteur-note {

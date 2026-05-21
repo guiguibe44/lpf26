@@ -96,10 +96,20 @@
             const homeEl = card.querySelector('[data-match-score-home]');
             const awayEl = card.querySelector('[data-match-score-away]');
             if (homeEl) {
-                homeEl.textContent = String(match.score_home ?? 0);
+                const homeScore = String(match.score_home ?? 0);
+                if (homeEl instanceof HTMLInputElement) {
+                    homeEl.value = homeScore;
+                } else {
+                    homeEl.textContent = homeScore;
+                }
             }
             if (awayEl) {
-                awayEl.textContent = String(match.score_away ?? 0);
+                const awayScore = String(match.score_away ?? 0);
+                if (awayEl instanceof HTMLInputElement) {
+                    awayEl.value = awayScore;
+                } else {
+                    awayEl.textContent = awayScore;
+                }
             }
 
             const clockEl = card.querySelector('[data-match-live-clock]');

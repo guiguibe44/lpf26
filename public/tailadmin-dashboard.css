@@ -1356,6 +1356,34 @@ table.ta-table-mobile-accordion tbody td.ta-col-mobile-only {
     object-fit: cover;
 }
 
+.match-live-score-wrap .match-pronostic-form__scores,
+.match-finished-actions .match-pronostic-form__scores {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.match-final-score .match-score-input:disabled {
+    opacity: 1;
+    color: #64748b;
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    cursor: not-allowed;
+    -webkit-text-fill-color: #64748b;
+}
+
+.match-final-score--live .match-score-input:disabled {
+    color: #64748b;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    -webkit-text-fill-color: #64748b;
+}
+
 .match-final-score--live {
     color: #b45309;
     font-weight: 700;
@@ -3265,10 +3293,10 @@ html body .match-pronostic-editor__toolbar .match-joker-btn--espion:hover:not(:d
 
 .match-team img,
 .match-flag-placeholder {
-    width: 1.7rem;
-    height: 1.15rem;
+    width: 3.4rem;
+    height: 2.3rem;
     flex: 0 0 auto;
-    border-radius: 0.2rem;
+    border-radius: 0.4rem;
     object-fit: cover;
 }
 
@@ -3278,7 +3306,7 @@ html body .match-pronostic-editor__toolbar .match-joker-btn--espion:hover:not(:d
     justify-content: center;
     background: #e2e8f0;
     color: #475569;
-    font-size: 0.7rem;
+    font-size: 1.4rem;
 }
 
 .match-team-home {
@@ -3419,7 +3447,8 @@ html body .match-pronostic-editor__toolbar .match-joker-btn--discrete .ti {
     text-align: center;
 }
 
-.match-pronostic-form .match-score-input {
+.match-pronostic-form .match-score-input,
+.match-final-score .match-score-input {
     height: 2.5rem;
     padding: 0 0.5rem;
     line-height: 2.5rem;
@@ -3450,7 +3479,6 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 
 .match-final-score {
     color: #0f172a;
-    font-size: 1.3rem;
     font-weight: 700;
 }
 

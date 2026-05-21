@@ -14,7 +14,7 @@
             {{ viewer_pronostic.points|number_format(0, ',', ' ') }} pts
         </span>
         {% if viewer_pronostic.prise_risque|default(false) %}
-            <span class="match-viewer-prono__risk ta-badge ta-badge-warning" title="Même score que votre partenaire">Risque</span>
+            <span class="match-viewer-prono__risk ta-badge ta-badge-warning" title="Même score que votre partenaire — {{ bigballs_term('name') }}">{{ bigballs_term('badge') }}</span>
         {% endif %}
     </div>
 {% endif %}

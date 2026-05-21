@@ -30,7 +30,8 @@ final class PreCompetitionDashboardService
      *     account: array{done: bool, checks: list<array{label: string, done: bool}>, hash: string},
      *     buteur: array{done: bool, hash: string, blocked_by_cotisation: bool},
      *     favorite: array{done: bool, hash: string, available: bool},
-     *     notifications: array{done: bool, hash: string, configured: bool}
+     *     notifications: array{done: bool, hash: string, configured: bool},
+     *     all_done: bool
      * }
      */
     public function buildChecklist(User $user): array
@@ -47,15 +48,24 @@ final class PreCompetitionDashboardService
 
         $teamIsFull = null !== $team && $this->teamMemberRepository->count(['team' => $team]) >= 2;
 
+        $account = $this->buildAccountBlock($user, $teamMember, $team, $pendingInvitation, $teamIsFull);
+        $buteur = [
+            'done' => $user->getButeurChoisi() instanceof Buteur,
+            'hash' => 'buteur',
+            'blocked_by_cotisation' => !$user->isCotisationPayee(),
+        ];
+        $favorite = $this->buildFavoriteBlock($team);
+        $notifications = $this->buildNotificationsBlock($user);
+
         return [
-            'account' => $this->buildAccountBlock($user, $teamMember, $team, $pendingInvitation, $teamIsFull),
-            'buteur' => [
-                'done' => $user->getButeurChoisi() instanceof Buteur,
-                'hash' => 'buteur',
-                'blocked_by_cotisation' => !$user->isCotisationPayee(),
-            ],
-            'favorite' => $this->buildFavoriteBlock($team),
-            'notifications' => $this->buildNotificationsBlock($user),
+            'account' => $account,
+            'buteur' => $buteur,
+            'favorite' => $favorite,
+            'notifications' => $notifications,
+            'all_done' => $account['done']
+                && $buteur['done']
+                && $favorite['done']
+                && $notifications['done'],
         ];
     }
 

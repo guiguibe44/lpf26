@@ -1,0 +1,22 @@
+{# match: GameMatch, live: bool|false #}
+{% set score_home = match.scoreDomicile is not null ? match.scoreDomicile : 0 %}
+{% set score_away = match.scoreExterieur is not null ? match.scoreExterieur : 0 %}
+<div class="match-pronostic-form__scores match-final-score{{ live ? ' match-final-score--live' : '' }}"{% if live %} data-match-score{% endif %}>
+    <input
+        type="number"
+        class="ta-form-input match-score-input"
+        value="{{ score_home }}"
+        disabled
+        aria-label="Score {{ country_short_label(match.paysDomicile) }}"
+        {% if live %}data-match-score-home{% endif %}
+    >
+    <span class="match-pronostic-form__sep" aria-hidden="true">-</span>
+    <input
+        type="number"
+        class="ta-form-input match-score-input"
+        value="{{ score_away }}"
+        disabled
+        aria-label="Score {{ country_short_label(match.paysExterieur) }}"
+        {% if live %}data-match-score-away{% endif %}
+    >
+</div>

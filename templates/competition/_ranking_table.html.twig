@@ -10,8 +10,7 @@
             <th class="ta-num" title="Scores exacts">Exact</th>
             <th class="ta-num" title="Bons résultats">Bons</th>
             <th class="ta-num" title="Résultats faux">Faux</th>
-            <th class="ta-num" title="Matchs où les 2 coéquipiers ont pronostiqué le même score">Risque tent.</th>
-            <th class="ta-num" title="Parmi ceux-ci : score commun exact ou bon 1/N/2">Risque réuss.</th>
+            <th class="ta-num" title="{{ bigballs_term('column_ratio_title') }}">{{ bigballs_term('column_ratio') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -35,8 +34,7 @@
                     <td class="ta-num">{{ row.scoresExacts }}</td>
                     <td class="ta-num">{{ row.bonsResultats }}</td>
                     <td class="ta-num">{{ row.resultatsFaux }}</td>
-                    <td class="ta-num">{{ row.prisesRisque }}</td>
-                    <td class="ta-num">{{ row.prisesRisqueReussies }}</td>
+                    <td class="ta-num">{{ row.prisesRisqueReussies }}/{{ row.prisesRisque }}</td>
                 </tr>
             {% endfor %}
         {% else %}
@@ -59,8 +57,7 @@
                     <td class="ta-num">0</td>
                     <td class="ta-num">0</td>
                     <td class="ta-num">0</td>
-                    <td class="ta-num">0</td>
-                    <td class="ta-num">0</td>
+                    <td class="ta-num">0/0</td>
                 </tr>
             {% endfor %}
         {% endif %}
