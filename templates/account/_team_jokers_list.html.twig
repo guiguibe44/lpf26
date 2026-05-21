@@ -1,4 +1,4 @@
-{# @var team_joker_overview list<array{joker: Joker, status: string}> #}
+{# @var team_joker_overview list<array{joker: Joker, status: string, status_label: string}> #}
 <section class="account-card-jokers rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
     <div class="account-jokers-head">
         <h2 class="mb-1 text-lg font-semibold">Jokers de l’équipe</h2>
@@ -16,26 +16,50 @@
     {% if joker_rows is empty %}
         <p class="ta-card-text">Aucun joker configuré pour le moment.</p>
     {% else %}
-        <ul class="team-jokers-status-list" aria-label="État des jokers de l’équipe">
-            {% for row in joker_rows %}
-                {% set joker = row.joker %}
-                {% set is_used = row.status == 'used' %}
-                <li class="team-jokers-status-item{{ is_used ? ' team-jokers-status-item--used' : '' }}">
-                    <span class="team-jokers-status-media" aria-hidden="true">
-                        {% if joker.image %}
-                            <img src="{{ asset(joker.image) }}" alt="" class="team-jokers-status-thumb" width="40" height="40" loading="lazy">
-                        {% else %}
-                            <span class="team-jokers-status-thumb team-jokers-status-thumb--placeholder">
-                                <i class="ti {{ joker.getTablerIconClass() }}"></i>
-                            </span>
-                        {% endif %}
-                    </span>
-                    <span class="team-jokers-status-name">{{ joker.displayTitle }}</span>
-                    {% if is_used %}
-                        <span class="sr-only"> — déjà utilisé</span>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="overflow-x-auto">
+            <table class="table table-sm team-jokers-table">
+                <thead>
+                    <tr>
+                        <th class="team-jokers-table__col-image" scope="col"><span class="sr-only">Image</span></th>
+                        <th scope="col">Joker</th>
+                        <th class="team-jokers-table__col-status text-center" scope="col">État</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in joker_rows %}
+                        {% set joker = row.joker %}
+                        {% set is_used = row.status == 'used' %}
+                        {% set is_available = row.status == 'available' %}
+                        <tr class="team-jokers-table__row team-jokers-table__row--{{ row.status }}">
+                            <td class="team-jokers-table__col-image">
+                                {% if joker.image %}
+                                    <img src="{{ asset(joker.image) }}" alt="" class="team-jokers-table__thumb" width="36" height="36" loading="lazy">
+                                {% else %}
+                                    <span class="team-jokers-table__thumb team-jokers-table__thumb--placeholder" aria-hidden="true">
+                                        <i class="ti {{ joker.getTablerIconClass() }}"></i>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="team-jokers-table__name">{{ joker.displayTitle }}</td>
+                            <td class="team-jokers-table__col-status text-center">
+                                {% if is_available %}
+                                    <span class="team-jokers-table__status team-jokers-table__status--available" title="Disponible" aria-label="Disponible">
+                                        <i class="ti ti-circle-check" aria-hidden="true"></i>
+                                    </span>
+                                {% elseif is_used %}
+                                    <span class="team-jokers-table__status team-jokers-table__status--used" title="Utilisé" aria-label="Utilisé">
+                                        <i class="ti ti-circle-x" aria-hidden="true"></i>
+                                    </span>
+                                {% else %}
+                                    <span class="team-jokers-table__status team-jokers-table__status--inactive" title="{{ row.status_label }}" aria-label="{{ row.status_label }}">
+                                        <i class="ti ti-lock" aria-hidden="true"></i>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 </section>
