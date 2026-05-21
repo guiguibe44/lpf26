@@ -87,6 +87,22 @@
             .replace(/"/g, '&quot;');
     };
 
+    const jokerTablerIcon = (code) => {
+        const icons = {
+            double_equipe: 'ti-users-group',
+            pique_points: 'ti-hand-grab',
+            espion: 'ti-eye',
+            double_buteur: 'ti-ball-football',
+            inverse_buteur: 'ti-arrow-back-up',
+            inverse_score: 'ti-arrows-left-right',
+            bouclier: 'ti-shield',
+            collecte_points: 'ti-coins',
+            equipe_favorite: 'ti-shield-star',
+        };
+
+        return icons[code] || 'ti-wand';
+    };
+
     const readUrlsFromElement = (el) => {
         const card = el.closest('.match-card');
         const actions = el.closest('[data-joker-actions]') || (card ? card.querySelector('[data-joker-actions]') : null);
@@ -501,21 +517,84 @@
             empty.textContent = 'Aucun joker posé sur ce match pour le moment.';
             jokersSection.appendChild(empty);
         } else {
-            const ul = document.createElement('ul');
-            ul.className = 'match-espion-jokers-list';
+            const wrap = document.createElement('div');
+            wrap.className = 'match-espion-table-wrap';
+            const table = document.createElement('table');
+            table.className = 'match-espion-jokers-table';
+            table.innerHTML =
+                '<thead><tr><th scope="col">Équipe</th><th scope="col">Joker</th><th scope="col">Cible / effet</th></tr></thead>';
+            const tbody = document.createElement('tbody');
             jokers.forEach((row) => {
-                const li = document.createElement('li');
-                li.className = 'match-espion-joker-item';
-                li.textContent = row.team_name + ' — ' + row.joker_name;
+                const tr = document.createElement('tr');
+
+                const teamTd = document.createElement('td');
+                teamTd.className = 'match-espion-jokers-table__team';
+                if (row.team_logo) {
+                    const logo = document.createElement('img');
+                    logo.src = assetUrl(row.team_logo);
+                    logo.alt = '';
+                    logo.width = 24;
+                    logo.height = 24;
+                    logo.loading = 'lazy';
+                    logo.className = 'match-espion-team-logo';
+                    teamTd.appendChild(logo);
+                }
+                const teamName = document.createElement('span');
+                teamName.className = 'match-espion-team-name';
+                teamName.textContent = row.team_name || '';
+                teamTd.appendChild(teamName);
+                tr.appendChild(teamTd);
+
+                const jokerTd = document.createElement('td');
+                jokerTd.className = 'match-espion-jokers-table__joker';
+                const iconWrap = document.createElement('span');
+                iconWrap.className = 'match-espion-joker-icon';
+                iconWrap.setAttribute('aria-hidden', 'true');
+                if (row.joker_image) {
+                    const img = document.createElement('img');
+                    img.src = assetUrl(row.joker_image);
+                    img.alt = '';
+                    img.width = 28;
+                    img.height = 36;
+                    img.loading = 'lazy';
+                    iconWrap.appendChild(img);
+                } else {
+                    iconWrap.innerHTML =
+                        '<i class="' + escapeHtml(jokerTablerIcon(row.joker_code)) + '" aria-hidden="true"></i>';
+                }
+                jokerTd.appendChild(iconWrap);
+                const jokerLabel = document.createElement('span');
+                jokerLabel.className = 'match-espion-joker-label';
+                jokerLabel.textContent = row.joker_name || '';
+                jokerTd.appendChild(jokerLabel);
+                tr.appendChild(jokerTd);
+
+                const targetTd = document.createElement('td');
+                targetTd.className = 'match-espion-jokers-table__target';
                 if (row.target_team_name) {
-                    li.textContent += ' → ' + row.target_team_name;
+                    const target = document.createElement('span');
+                    target.className = 'match-espion-target';
+                    target.textContent = '→ ' + row.target_team_name;
+                    targetTd.appendChild(target);
+                } else {
+                    const dash = document.createElement('span');
+                    dash.className = 'match-espion-meta';
+                    dash.textContent = '—';
+                    targetTd.appendChild(dash);
                 }
                 if (row.effect_blocked) {
-                    li.textContent += ' (sans effet — cible protégée)';
+                    const blocked = document.createElement('span');
+                    blocked.className = 'match-espion-blocked';
+                    blocked.textContent = ' (sans effet — cible protégée)';
+                    targetTd.appendChild(blocked);
                 }
-                ul.appendChild(li);
+                tr.appendChild(targetTd);
+
+                tbody.appendChild(tr);
             });
-            jokersSection.appendChild(ul);
+            table.appendChild(tbody);
+            wrap.appendChild(table);
+            jokersSection.appendChild(wrap);
         }
         espionEl.appendChild(jokersSection);
     };

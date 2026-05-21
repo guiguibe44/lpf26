@@ -543,23 +543,26 @@ html.dark .joker-catalog-lightbox__caption {
 }
 
 .joker-guide-interactions__block {
-    margin-bottom: 1.35rem;
+    margin-bottom: 1.5rem;
     scroll-margin-top: 5.5rem;
 }
 
 .joker-guide-interactions__block--general,
 .joker-guide-interactions__block--joker {
-    padding: 1.15rem 1.2rem 1.25rem;
+    padding: 1.25rem 1.35rem 1.35rem;
     border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    background: #f8fafc;
+    border-radius: 0.85rem;
+    background: #ffffff;
+    box-shadow:
+        0 1px 2px rgb(15 23 42 / 6%),
+        0 4px 14px rgb(15 23 42 / 6%);
 }
 
 .joker-guide-interactions__block--joker + .joker-guide-interactions__block--joker,
 .joker-guide-interactions__block--general + .joker-guide-interactions__block--joker,
 .joker-guide-interactions__block--joker + .joker-guide-interactions__block--general,
 .joker-guide-interactions__block--general + .joker-guide-interactions__block--general {
-    margin-top: 0.25rem;
+    margin-top: 0;
 }
 
 .joker-guide-interactions__joker-head {
@@ -692,7 +695,7 @@ html.dark .joker-catalog-lightbox__caption {
     padding: 0.75rem 0.85rem 0.75rem 1.35rem;
     font-size: 0.875rem;
     color: #475569;
-    background: #fff;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
 }
@@ -724,12 +727,26 @@ html.dark .joker-guide-interactions {
 
 html.dark .joker-guide-interactions__block--general,
 html.dark .joker-guide-interactions__block--joker {
-    background: rgb(15 23 42 / 45%);
-    border-color: rgb(148 163 184 / 25%);
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow:
+        0 1px 2px rgb(0 0 0 / 12%),
+        0 6px 18px rgb(0 0 0 / 18%);
 }
 
-html.dark .joker-guide-interactions__joker-head {
-    border-bottom-color: rgb(148 163 184 / 20%);
+html.dark .joker-guide-interactions__block--joker .joker-guide-interactions__subtitle,
+html.dark .joker-guide-interactions__block--joker .joker-guide-interactions__card-link,
+html.dark .joker-guide-interactions__block--general .joker-guide-interactions__subtitle {
+    color: #0f172a;
+}
+
+html.dark .joker-guide-interactions__block--joker .joker-guide-interactions__text,
+html.dark .joker-guide-interactions__block--general .joker-guide-interactions__text {
+    color: #334155;
+}
+
+html.dark .joker-guide-interactions__block--joker .joker-guide-interactions__joker-head {
+    border-bottom-color: #e2e8f0;
 }
 
 html.dark .joker-guide-interactions__thumb {
@@ -741,15 +758,39 @@ html.dark .joker-guide-interactions__thumb-placeholder {
     color: #94a3b8;
 }
 
-html.dark .joker-guide-interactions__lead,
-html.dark .joker-guide-interactions__text,
-html.dark .joker-guide-interactions__notes {
+html.dark .joker-guide-interactions__lead {
     color: #cbd5e1;
 }
 
-html.dark .joker-guide-interactions__notes {
-    background: rgb(30 41 59);
-    border-color: rgb(148 163 184 / 20%);
+html.dark .joker-guide-interactions__block--joker .joker-guide-interactions__notes {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+html.dark .joker-guide-interactions__block--general .joker-guide-table-wrap,
+html.dark .joker-guide-interactions__block--joker .joker-guide-table-wrap {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+html.dark .joker-guide-interactions__block--general .joker-guide-table thead th,
+html.dark .joker-guide-interactions__block--joker .joker-guide-table thead th {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+html.dark .joker-guide-interactions__block--general .joker-guide-table th,
+html.dark .joker-guide-interactions__block--general .joker-guide-table td,
+html.dark .joker-guide-interactions__block--joker .joker-guide-table th,
+html.dark .joker-guide-interactions__block--joker .joker-guide-table td {
+    color: #334155;
+    border-bottom-color: #e2e8f0;
+}
+
+html.dark .joker-guide-interactions__block--general .joker-guide-table__caption,
+html.dark .joker-guide-interactions__block--joker .joker-guide-table__caption {
+    color: #0f172a;
 }
 
 html.dark .joker-guide-table-wrap {

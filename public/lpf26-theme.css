@@ -1159,34 +1159,14 @@ html body .lpf-burger--light .lpf-burger__ball {
     color: #64748b;
 }
 
-.match-espion-jokers-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
-
-.match-espion-joker-item {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-}
-
 .match-espion-team-logo {
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .match-espion-team-name {
     font-weight: 600;
-}
-
-.match-espion-joker-badge {
-    font-size: 0.7rem;
 }
 
 .match-espion-target {

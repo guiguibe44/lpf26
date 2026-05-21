@@ -1,4 +1,4 @@
-{# match, match_joker, can_place_joker, prono_access_blocked #}
+{# match, match_joker, espion_intel, prono_access_blocked #}
 <div
     class="match-joker-actions"
     data-joker-actions
@@ -8,46 +8,52 @@
     data-joker-place-url="{{ path('app_match_joker_place', { id: match.id }) }}"
     data-joker-remove-url="{{ path('app_match_joker_remove', { id: match.id }) }}"
 >
-    <button
-        type="button"
-        class="btn match-joker-btn match-joker-btn--discrete"
-        data-joker-open
-        data-joker-open-initial
-        {% if match_joker %}hidden{% endif %}
-        {% if prono_access_blocked %}
-            disabled
-            title="Réglez la cotisation pour jouer un joker"
-            aria-label="Réglez la cotisation pour jouer un joker"
-        {% else %}
-            title="Jouer un joker"
-            aria-label="Jouer un joker"
-        {% endif %}
-    >
-        <i class="ti ti-wand" aria-hidden="true"></i>
-        <span class="sr-only">Joker</span>
-    </button>
-    <div class="match-joker-popover" data-joker-popover hidden>
+    {% if espion_intel %}
+        {% include 'competition/_match_card_espion_trigger.html.twig' with {
+            espion_intel: espion_intel,
+        } only %}
+    {% else %}
         <button
             type="button"
             class="btn match-joker-btn match-joker-btn--discrete"
             data-joker-open
-            title="Gérer le joker"
-            aria-label="Gérer le joker"
+            data-joker-open-initial
+            {% if match_joker %}hidden{% endif %}
+            {% if prono_access_blocked %}
+                disabled
+                title="Réglez la cotisation pour jouer un joker"
+                aria-label="Réglez la cotisation pour jouer un joker"
+            {% else %}
+                title="Jouer un joker"
+                aria-label="Jouer un joker"
+            {% endif %}
         >
             <i class="ti ti-wand" aria-hidden="true"></i>
-            <span class="sr-only">Gérer</span>
+            <span class="sr-only">Joker</span>
         </button>
-        {% if match_joker.code|default('') != 'espion' %}
+        <div class="match-joker-popover" data-joker-popover hidden>
             <button
                 type="button"
-                class="btn match-joker-btn match-joker-btn--discrete match-joker-btn--remove"
-                data-joker-remove
-                title="Retirer le joker"
-                aria-label="Retirer le joker"
+                class="btn match-joker-btn match-joker-btn--discrete"
+                data-joker-open
+                title="Gérer le joker"
+                aria-label="Gérer le joker"
             >
-                <i class="ti ti-x" aria-hidden="true"></i>
-                <span class="sr-only">Retirer</span>
+                <i class="ti ti-wand" aria-hidden="true"></i>
+                <span class="sr-only">Gérer</span>
             </button>
-        {% endif %}
-    </div>
+            {% if match_joker.code|default('') != 'espion' %}
+                <button
+                    type="button"
+                    class="btn match-joker-btn match-joker-btn--discrete match-joker-btn--remove"
+                    data-joker-remove
+                    title="Retirer le joker"
+                    aria-label="Retirer le joker"
+                >
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                    <span class="sr-only">Retirer</span>
+                </button>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>

@@ -94,8 +94,8 @@
 {% block javascripts %}
     {{ parent() }}
     {% if app.user %}
-        <script src="{{ asset('js/joker-match.js') }}?v=20" defer></script>
-        <script src="{{ asset('js/match-espion-intel.js') }}?v=1" defer></script>
+        <script src="{{ asset('js/joker-match.js') }}?v=21" defer></script>
+        <script src="{{ asset('js/match-espion-intel.js') }}?v=2" defer></script>
         <script src="{{ asset('js/match-pronostic-autosave.js') }}?v=2" defer></script>
     {% endif %}
     {% if has_live_matches|default(false) %}

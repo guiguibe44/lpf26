@@ -20,23 +20,56 @@
 <div class="match-espion-section">
     <h4 class="match-espion-section-title">Jokers posés</h4>
     {% if espion_intel.jokers is not empty %}
-        <ul class="match-espion-jokers-list">
-            {% for row in espion_intel.jokers %}
-                <li class="match-espion-joker-item">
-                    {% if row.team_logo %}
-                        <img src="{{ asset(row.team_logo) }}" alt="" class="match-espion-team-logo" width="24" height="24" loading="lazy">
-                    {% endif %}
-                    <span class="match-espion-team-name">{{ row.team_name }}</span>
-                    <span class="ta-badge match-espion-joker-badge">{{ row.joker_name }}</span>
-                    {% if row.target_team_name %}
-                        <span class="match-espion-target">→ {{ row.target_team_name }}</span>
-                    {% endif %}
-                    {% if row.effect_blocked|default(false) %}
-                        <span class="match-espion-blocked">(sans effet — cible protégée)</span>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="match-espion-table-wrap">
+            <table class="match-espion-jokers-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Équipe</th>
+                        <th scope="col">Joker</th>
+                        <th scope="col">Cible / effet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in espion_intel.jokers %}
+                        <tr>
+                            <td class="match-espion-jokers-table__team">
+                                {% if row.team_logo %}
+                                    <img src="{{ asset(row.team_logo) }}" alt="" class="match-espion-team-logo" width="24" height="24" loading="lazy">
+                                {% endif %}
+                                <span class="match-espion-team-name">{{ row.team_name }}</span>
+                            </td>
+                            <td class="match-espion-jokers-table__joker">
+                                <span class="match-espion-joker-icon" aria-hidden="true">
+                                    {% if row.joker_image %}
+                                        <img
+                                            src="{{ asset(row.joker_image) }}"
+                                            alt=""
+                                            width="28"
+                                            height="36"
+                                            loading="lazy"
+                                            decoding="async"
+                                        >
+                                    {% else %}
+                                        <i class="ti {{ joker_tabler_icon(row.joker_code) }}"></i>
+                                    {% endif %}
+                                </span>
+                                <span class="match-espion-joker-label">{{ row.joker_name }}</span>
+                            </td>
+                            <td class="match-espion-jokers-table__target">
+                                {% if row.target_team_name %}
+                                    <span class="match-espion-target">→ {{ row.target_team_name }}</span>
+                                {% else %}
+                                    <span class="match-espion-meta">—</span>
+                                {% endif %}
+                                {% if row.effect_blocked|default(false) %}
+                                    <span class="match-espion-blocked">(sans effet — cible protégée)</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <p class="match-espion-empty">Aucun joker posé sur ce match pour le moment.</p>
     {% endif %}

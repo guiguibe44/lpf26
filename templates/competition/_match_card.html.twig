@@ -60,13 +60,6 @@
         </div>
 
         <div class="match-fixture__center">
-            {% if espion_intel %}
-                {% include 'competition/_match_card_espion_trigger.html.twig' with {
-                    match: match,
-                    espion_intel: espion_intel,
-                    match_joker: match_joker,
-                } only %}
-            {% endif %}
             <time class="match-time" datetime="{{ match.dateHeure ? match.dateHeure|date('c') : '' }}">
                 {{ match.dateHeure ? match.dateHeure|date('H:i') : '-' }}
             </time>
@@ -136,6 +129,7 @@
                             {% include 'competition/_match_card_joker_actions.html.twig' with {
                                 match: match,
                                 match_joker: match_joker,
+                                espion_intel: espion_intel,
                                 prono_access_blocked: prono_access_blocked,
                             } only %}
                         {% endif %}
@@ -181,6 +175,7 @@
         {% include 'competition/_match_card_joker_actions.html.twig' with {
             match: match,
             match_joker: match_joker,
+            espion_intel: espion_intel,
             prono_access_blocked: prono_access_blocked,
         } only %}
     {% endif %}

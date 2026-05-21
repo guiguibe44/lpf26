@@ -1,16 +1,15 @@
-{# match, espion_intel, match_joker (optionnel, pour libellé) #}
-<div class="match-card-espion" data-match-espion>
+{# espion_intel — bouton œil à la place du joker, contenu dans <template> pour la popup #}
+<div class="match-joker-espion-slot" data-match-espion>
     <button
         type="button"
-        class="match-card-espion-btn"
+        class="btn match-joker-btn match-joker-btn--discrete match-joker-btn--espion"
         data-espion-open
         aria-haspopup="dialog"
         aria-controls="match-espion-intel-dialog"
         title="Renseignements espion — voir le détail"
+        aria-label="Renseignements espion"
     >
-        <span class="match-card-espion-btn__icon" aria-hidden="true">
-            <i class="ti ti-eye"></i>
-        </span>
+        <i class="ti ti-eye" aria-hidden="true"></i>
         <span class="sr-only">Renseignements espion</span>
     </button>
     <template data-espion-intel-template>

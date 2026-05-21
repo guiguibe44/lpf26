@@ -2337,9 +2337,9 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
 
 /* Popup renseignements espion (cartes match) */
 .match-espion-intel-dialog {
-    width: min(94vw, 28rem);
+    width: min(96vw, 44rem);
     max-width: none;
-    max-height: min(92vh, 40rem);
+    max-height: min(92vh, 44rem);
     margin: auto;
     padding: 0;
     border: none;
@@ -2355,12 +2355,13 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
 
 .match-espion-intel-dialog__panel {
     position: relative;
-    max-height: min(92vh, 40rem);
+    max-height: min(92vh, 44rem);
     overflow-y: auto;
-    padding: 2.75rem 1.25rem 1.35rem;
+    padding: 2.75rem 1.35rem 1.5rem;
     border-radius: 0.85rem;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
+    color: #0f172a;
 }
 
 .match-espion-intel-dialog__close {
@@ -2408,6 +2409,121 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
     border: none;
     background: transparent;
     width: 100%;
+}
+
+.match-espion-intel-dialog .match-espion-section-title {
+    color: #334155;
+}
+
+.match-espion-intel-dialog .match-espion-cotes,
+.match-espion-intel-dialog .match-espion-empty,
+.match-espion-intel-dialog .match-espion-team-name,
+.match-espion-intel-dialog .match-espion-joker-label {
+    color: #334155;
+}
+
+.match-espion-intel-dialog .match-espion-meta {
+    color: #64748b;
+}
+
+.match-espion-intel-dialog .match-espion-irreversible {
+    color: #b45309;
+}
+
+.match-espion-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #ffffff;
+}
+
+.match-espion-jokers-table {
+    width: 100%;
+    min-width: 20rem;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.match-espion-jokers-table th,
+.match-espion-jokers-table td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.match-espion-jokers-table thead th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.8rem;
+}
+
+.match-espion-jokers-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.match-espion-jokers-table__team {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 8rem;
+}
+
+.match-espion-jokers-table__joker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 10rem;
+}
+
+.match-espion-joker-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 2.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.match-espion-joker-icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.match-espion-joker-icon .ti {
+    font-size: 1rem;
+    color: #475569;
+}
+
+.match-espion-joker-label {
+    font-weight: 600;
+}
+
+.match-espion-jokers-table__target {
+    color: #334155;
+}
+
+.match-joker-btn--espion {
+    border-color: rgb(29 78 216 / 28%);
+    background: rgb(29 78 216 / 10%);
+    color: #1d4ed8;
+}
+
+.match-joker-btn--espion:hover:not(:disabled) {
+    background: rgb(29 78 216 / 16%);
+    border-color: rgb(29 78 216 / 42%);
+    color: #1e40af;
+}
+
+.match-joker-espion-slot {
+    display: contents;
 }
 
 .match-espion-blocked {
@@ -2910,43 +3026,16 @@ html body .match-live-expand-btn.btn.btn-sm {
     min-width: 3.25rem;
 }
 
-.match-card-espion {
-    display: flex;
-    justify-content: center;
-}
-
-.match-card-espion-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.35rem;
-    height: 2.35rem;
-    margin: 0;
-    padding: 0;
-    border: 2px solid #93c5fd;
-    border-radius: 9999px;
-    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+html body .match-pronostic-editor__toolbar .match-joker-btn--espion {
+    border-color: rgb(29 78 216 / 28%);
+    background: rgb(29 78 216 / 10%);
     color: #1d4ed8;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgb(29 78 216 / 18%);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
-.match-card-espion-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgb(29 78 216 / 24%);
-    background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
-}
-
-.match-card-espion-btn:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-}
-
-.match-card-espion-btn__icon {
-    display: inline-flex;
-    font-size: 1.2rem;
-    line-height: 1;
+html body .match-pronostic-editor__toolbar .match-joker-btn--espion:hover:not(:disabled) {
+    background: rgb(29 78 216 / 16%);
+    border-color: rgb(29 78 216 / 42%);
+    color: #1e40af;
 }
 
 .match-team__label--short {

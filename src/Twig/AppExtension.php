@@ -5,6 +5,7 @@ namespace App\Twig;
 use App\Entity\Buteur;
 use App\Entity\Country;
 use App\Entity\GameMatch;
+use App\Entity\Joker;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
 use App\Service\MatchLiveClockLabelResolver;
@@ -53,7 +54,13 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('unread_notifications_count', [$this, 'getUnreadNotificationsCount']),
             new TwigFunction('match_team_points_tier', [$this, 'getMatchTeamPointsTier']),
             new TwigFunction('match_team_points_tier_label', [$this, 'getMatchTeamPointsTierLabel']),
+            new TwigFunction('joker_tabler_icon', [$this, 'getJokerTablerIcon']),
         ];
+    }
+
+    public function getJokerTablerIcon(?string $code): string
+    {
+        return Joker::tablerIconClassForCode($code);
     }
 
     public function getMatchTeamPointsTier(int $points): string

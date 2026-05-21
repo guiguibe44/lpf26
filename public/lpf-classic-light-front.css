@@ -619,7 +619,7 @@ html.lpf-classic-light body.front-body .ta-main .match-espion-team-name {
     color: var(--lpf-text) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-card-espion-btn {
+html.lpf-classic-light body.front-body .ta-main .match-joker-btn--espion {
     border-color: #93c5fd;
     background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
     color: #1d4ed8;

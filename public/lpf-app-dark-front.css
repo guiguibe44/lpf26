@@ -479,24 +479,85 @@ html.dark body.front-body .ta-main .match-espion-team-name {
     color: var(--lpf-text) !important;
 }
 
-html.dark body.front-body .ta-main .match-card-espion-btn {
-    border-color: #3b82f6;
-    background: linear-gradient(180deg, #1e3a8a 0%, #1d4ed8 100%);
-    color: #dbeafe;
-}
-
-html.dark body.front-body .ta-main .match-espion-intel-dialog__panel {
-    background: var(--lpf-surface, #1e293b);
-    border-color: rgb(148 163 184 / 25%);
-}
-
-html.dark body.front-body .ta-main .match-espion-intel-dialog__title {
+html.dark body.front-body .ta-main .match-joker-btn--espion {
+    border-color: rgb(59 130 246 / 35%);
+    background: rgb(59 130 246 / 18%);
     color: #93c5fd;
 }
 
-html.dark body.front-body .ta-main .match-espion-intel-dialog__close {
-    background: rgb(30 41 59);
-    color: #e2e8f0;
+html.dark body.front-body .ta-main .match-joker-btn--espion:hover:not(:disabled) {
+    background: rgb(59 130 246 / 28%);
+    border-color: rgb(59 130 246 / 50%);
+    color: #dbeafe;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__panel {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__title {
+    color: #1d4ed8 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__close {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__close:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-section-title {
+    color: #334155 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-cotes,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-empty,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-team-name,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-joker-label,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table__target {
+    color: #334155 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-meta {
+    color: #64748b !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-target {
+    color: #6d28d9 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-irreversible,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-blocked {
+    color: #b45309 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-table-wrap {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table thead th {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table th,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table td {
+    border-bottom-color: #e2e8f0 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-joker-icon {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-joker-icon .ti {
+    color: #475569 !important;
 }
 
 html.dark body.front-body .ta-main .match-espion-irreversible {
