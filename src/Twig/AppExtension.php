@@ -6,6 +6,8 @@ use App\Entity\Buteur;
 use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Joker;
+use App\Enum\MatchCoteMode;
+use App\Service\MatchCoteService;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
 use App\Service\MatchLiveClockLabelResolver;
@@ -27,6 +29,7 @@ final class AppExtension extends AbstractExtension
         private readonly ConnectedPlayerContext $connectedPlayerContext,
         private readonly UserNotificationContext $userNotificationContext,
         private readonly TeamMatchPointsTierResolver $teamMatchPointsTierResolver,
+        private readonly MatchCoteService $matchCoteService,
     ) {
     }
 
@@ -55,7 +58,19 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_team_points_tier', [$this, 'getMatchTeamPointsTier']),
             new TwigFunction('match_team_points_tier_label', [$this, 'getMatchTeamPointsTierLabel']),
             new TwigFunction('joker_tabler_icon', [$this, 'getJokerTablerIcon']),
+            new TwigFunction('match_cote_mode', [$this, 'getMatchCoteMode']),
+            new TwigFunction('match_cote_is_one_n_two', [$this, 'isMatchCoteOneNTwo']),
         ];
+    }
+
+    public function getMatchCoteMode(): string
+    {
+        return $this->matchCoteService->getActiveMode()->value;
+    }
+
+    public function isMatchCoteOneNTwo(): bool
+    {
+        return MatchCoteMode::ONE_N_TWO === $this->matchCoteService->getActiveMode();
     }
 
     public function getJokerTablerIcon(?string $code): string

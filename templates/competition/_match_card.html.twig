@@ -82,8 +82,14 @@
         {% if match.venueName %}
             <span class="match-venue"> · {{ match.venueName }}</span>
         {% endif %}
-        {% if cotes_visible and match.coteMoyenne is not null %}
-            · Cote {{ match.coteMoyenne|number_format(2, ',', ' ') }}
+        {% if cotes_visible %}
+            {% if match_cote_is_one_n_two() and match.coteDomicile is not null %}
+                · Cotes 1 <span class="match-meta-cote">{{ match.coteDomicile|number_format(1, ',', ' ') }}</span>
+                N <span class="match-meta-cote">{{ match.coteNul|number_format(1, ',', ' ') }}</span>
+                2 <span class="match-meta-cote">{{ match.coteExterieur|number_format(1, ',', ' ') }}</span>
+            {% elseif match.coteMoyenne is not null %}
+                · Cote moy. {{ match.coteMoyenne|number_format(2, ',', ' ') }}
+            {% endif %}
         {% endif %}
     </p>
 

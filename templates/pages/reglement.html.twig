@@ -72,9 +72,11 @@
                     <li><strong>Score exact</strong> : en général <strong>3 points de base</strong> (valeur affichée sur le match).</li>
                     <li><strong>Bon résultat</strong> (1 / N / 2 correct sans le bon score) : en général <strong>1 point de base</strong>.</li>
                     <li><strong>Mauvais résultat</strong> : <strong>0 point</strong>.</li>
-                    <li><strong>Cote</strong> : plus votre score est original, plus le coefficient est élevé (plafonné à ×5). Points finaux = points de base × cote (arrondi à l’entier).</li>
-                    <li>La cote d’un score = nombre total de pronos ÷ nombre de pronos sur ce même score.</li>
+                    <li><strong>Cote</strong> : trois cotes par match sur le résultat <strong>1 / N / 2</strong>, calculées sur l’ensemble des pronos (issue déduite de votre score saisi). Plafond ×5, arrondi au 0,5 le plus proche.</li>
+                    <li>Points finaux = points de base × cote (arrondi à l’entier). <strong>Bon prono ou score exact</strong> : cote du résultat réel du match. <strong>Mauvais prono</strong> : cote de votre issue (1, N ou 2).</li>
+                    <li>Ex. : 2-2 et 1-1 sont tous deux des pronos «&nbsp;N&nbsp;» : ils partagent la même cote nul.</li>
                     <li>Les cotes deviennent visibles à partir du coup d’envoi du match.</li>
+                    <li>Mode alternatif (admin) : cotes par score exact (LPF26) via la variable <code>MATCH_COTE_MODE=exact_score</code>.</li>
                 </ul>
             </div>
         </details>

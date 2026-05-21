@@ -71,7 +71,8 @@
                     <li>Calculées à chaque enregistrement de prono pour un match (tous joueurs ayant pronostiqué).</li>
                     <li><strong>Coefficient</strong> = nombre total de pronos ÷ nombre de pronos sur le même score (plafonné à <strong>5,0</strong>).</li>
                     <li>Plus un score est original, plus la cote est haute ; score très populaire → cote proche de 1.</li>
-                    <li>Affichage sur la carte match : <strong>cote moyenne</strong> du match (<code>coteMin</code>, <code>coteMoyenne</code>, <code>coteMax</code> en base).</li>
+                    <li>Cotes pronos : mode <code>MATCH_COTE_MODE</code> (<code>one_n_two</code> défaut, LPF24 — <code>exact_score</code> LPF26). Carte match : cotes 1 / N / 2 (<code>coteDomicile</code>, <code>coteNul</code>, <code>coteExterieur</code>) ou min/moy/max en mode score exact.</li>
+                    <li>Recalcul global après changement de mode : <code>php bin/console app:match:rescore-all</code>.</li>
                     <li>Points finaux = <strong>points de base × coefficient</strong> (arrondi à l’entier).</li>
                 </ul>
 </div>

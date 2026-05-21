@@ -186,7 +186,8 @@ final class JokerInteractionsGuideBuilder
                     ],
                     [
                         '2. Barème × cote',
-                        'Points joueur = base du barème × coefficient de cote (plafond ×5).',
+                        'Points joueur = base du barème × cote 1 / N / 2 (plafond ×5, arrondi 0,5). '
+                        .'Bon prono ou score exact : cote du résultat réel ; mauvais prono : cote de votre issue.',
                         '10 + 10 = 20 pts équipe (contribution prono).',
                     ],
                     [

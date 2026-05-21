@@ -47,6 +47,9 @@ class GameMatchCrudController extends AbstractAppCrudController
             'coteMin',
             'coteMoyenne',
             'coteMax',
+            'coteDomicile',
+            'coteNul',
+            'coteExterieur',
         ];
     }
 
@@ -78,6 +81,9 @@ class GameMatchCrudController extends AbstractAppCrudController
             NumberField::new('coteMin')->setLabel('Cote min')->setNumDecimals(2)->hideOnForm(),
             NumberField::new('coteMoyenne')->setLabel('Cote moy.')->setNumDecimals(2)->hideOnForm(),
             NumberField::new('coteMax')->setLabel('Cote max')->setNumDecimals(2)->hideOnForm(),
+            NumberField::new('coteDomicile')->setLabel('Cote 1')->setNumDecimals(1)->hideOnForm(),
+            NumberField::new('coteNul')->setLabel('Cote N')->setNumDecimals(1)->hideOnForm(),
+            NumberField::new('coteExterieur')->setLabel('Cote 2')->setNumDecimals(1)->hideOnForm(),
             IntegerField::new('pointsScoreExact')->setLabel('Pts exact')->setRequired(false)->onlyOnDetail(),
             IntegerField::new('pointsBonResultat')->setLabel('Pts bon 1N2')->setRequired(false)->onlyOnDetail(),
             IntegerField::new('pointsMauvaisResultat')->setLabel('Pts faux')->setRequired(false)->onlyOnDetail(),

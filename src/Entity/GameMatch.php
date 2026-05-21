@@ -55,6 +55,15 @@ class GameMatch
     #[ORM\Column(nullable: true)]
     private ?float $coteMax = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $coteDomicile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $coteNul = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $coteExterieur = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -293,6 +302,42 @@ class GameMatch
     public function setCoteMax(?float $coteMax): static
     {
         $this->coteMax = $coteMax;
+
+        return $this;
+    }
+
+    public function getCoteDomicile(): ?float
+    {
+        return $this->coteDomicile;
+    }
+
+    public function setCoteDomicile(?float $coteDomicile): static
+    {
+        $this->coteDomicile = $coteDomicile;
+
+        return $this;
+    }
+
+    public function getCoteNul(): ?float
+    {
+        return $this->coteNul;
+    }
+
+    public function setCoteNul(?float $coteNul): static
+    {
+        $this->coteNul = $coteNul;
+
+        return $this;
+    }
+
+    public function getCoteExterieur(): ?float
+    {
+        return $this->coteExterieur;
+    }
+
+    public function setCoteExterieur(?float $coteExterieur): static
+    {
+        $this->coteExterieur = $coteExterieur;
 
         return $this;
     }

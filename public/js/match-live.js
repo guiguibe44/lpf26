@@ -84,16 +84,32 @@
         banner.hidden = count === 0;
 
         const scoreEl = document.getElementById('match-live-cotes-score');
+        const outcomeEl = document.getElementById('match-live-cotes-outcome');
         const forScoreEl = document.getElementById('match-live-cotes-for-score');
         const minEl = document.getElementById('match-live-cotes-min');
         const avgEl = document.getElementById('match-live-cotes-avg');
         const maxEl = document.getElementById('match-live-cotes-max');
+        const homeEl = document.getElementById('match-live-cotes-home');
+        const drawEl = document.getElementById('match-live-cotes-draw');
+        const awayEl = document.getElementById('match-live-cotes-away');
 
+        if (outcomeEl) {
+            outcomeEl.textContent = String(cotes.for_outcome_label ?? '');
+        }
         if (scoreEl) {
             scoreEl.textContent = String(cotes.score_label ?? '');
         }
         if (forScoreEl) {
             forScoreEl.textContent = formatCoteCoef(cotes.for_score);
+        }
+        if (homeEl) {
+            homeEl.textContent = formatCoteCoef(cotes.home);
+        }
+        if (drawEl) {
+            drawEl.textContent = formatCoteCoef(cotes.draw);
+        }
+        if (awayEl) {
+            awayEl.textContent = formatCoteCoef(cotes.away);
         }
         if (minEl) {
             minEl.textContent = formatCoteCoef(cotes.min);

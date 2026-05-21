@@ -2430,6 +2430,51 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
     color: #b45309;
 }
 
+.match-cotes-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.match-cotes-overview__explain,
+.match-cotes-overview__hint {
+    display: block;
+    color: #475569;
+    line-height: 1.45;
+}
+
+.match-cotes-overview__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+    align-items: center;
+}
+
+.match-cotes-overview__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.45rem;
+    background: #f8fafc;
+}
+
+.match-cotes-overview__issue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.match-live-cotes-1n2-item strong {
+    color: #0f172a;
+}
+
 .match-espion-table-wrap {
     overflow-x: auto;
     border: 1px solid #e2e8f0;

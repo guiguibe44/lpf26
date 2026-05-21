@@ -87,6 +87,17 @@
             .replace(/"/g, '&quot;');
     };
 
+    const formatCoteDisplay = (value) => {
+        if (value === null || value === undefined) {
+            return '—';
+        }
+
+        const num = Number(value);
+        const digits = Number.isInteger(num) || num % 0.5 === 0 ? 1 : 2;
+
+        return num.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    };
+
     const jokerTablerIcon = (code) => {
         const icons = {
             double_equipe: 'ti-users-group',
@@ -487,20 +498,44 @@
         cotesSection.appendChild(cotesTitle);
 
         const c = intel.cotes || {};
-        const cotesP = document.createElement('p');
-        cotesP.className = intel.cotes && intel.cotes.moyenne != null ? 'match-espion-cotes' : 'match-espion-empty';
-        if (c.moyenne != null) {
-            let text = 'Moy. ' + Number(c.moyenne).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const cotesWrap = document.createElement('div');
+        cotesWrap.className = 'match-cotes-overview';
+        const count = Number(c.pronostics_count) || 0;
+        if (count > 0 && c.mode === 'one_n_two' && c.home != null) {
+            cotesWrap.innerHTML =
+                '<span class="match-cotes-overview__explain">Cotes 1 / N / 2 sur l’ensemble des pronos.</span>' +
+                '<span class="match-cotes-overview__grid">' +
+                '<span class="match-cotes-overview__item"><span class="match-cotes-overview__issue">1</span> <strong>×' +
+                formatCoteDisplay(c.home) +
+                '</strong></span>' +
+                '<span class="match-cotes-overview__item"><span class="match-cotes-overview__issue">N</span> <strong>×' +
+                formatCoteDisplay(c.draw) +
+                '</strong></span>' +
+                '<span class="match-cotes-overview__item"><span class="match-cotes-overview__issue">2</span> <strong>×' +
+                formatCoteDisplay(c.away) +
+                '</strong></span></span>' +
+                '<span class="match-espion-meta">(' +
+                count +
+                ' pronostic' +
+                (count > 1 ? 's' : '') +
+                ')</span>';
+        } else if (c.moyenne != null) {
+            const cotesP = document.createElement('p');
+            cotesP.className = 'match-espion-cotes';
+            let text = 'Moy. ' + formatCoteDisplay(c.moyenne);
             if (c.min != null && c.max != null) {
-                text += ' · min ' + Number(c.min).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                text += ' · max ' + Number(c.max).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                text += ' · min ' + formatCoteDisplay(c.min) + ' · max ' + formatCoteDisplay(c.max);
             }
-            text += ' (' + (c.pronostics_count || 0) + ' pronostic' + ((c.pronostics_count || 0) > 1 ? 's' : '') + ')';
+            text += ' (' + count + ' pronostic' + (count > 1 ? 's' : '') + ')';
             cotesP.textContent = text;
+            cotesWrap.appendChild(cotesP);
         } else {
-            cotesP.textContent = 'Pas encore assez de pronostics pour estimer les cotes.';
+            const empty = document.createElement('p');
+            empty.className = 'match-espion-empty';
+            empty.textContent = 'Pas encore assez de pronostics pour estimer les cotes.';
+            cotesWrap.appendChild(empty);
         }
-        cotesSection.appendChild(cotesP);
+        cotesSection.appendChild(cotesWrap);
         espionEl.appendChild(cotesSection);
 
         const jokersSection = document.createElement('div');

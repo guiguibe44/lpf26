@@ -16,8 +16,6 @@ final class PronosticScoringService
     private const DEFAULT_POINTS_SCORE_EXACT = 3;
     private const DEFAULT_POINTS_BON_RESULTAT = 1;
     private const DEFAULT_POINTS_MAUVAIS_RESULTAT = 0;
-    private const MAX_COTE_COEFFICIENT = 5.0;
-
     public function __construct(
         private readonly PronosticRepository $pronosticRepository,
         private readonly TeamMemberRepository $teamMemberRepository,
@@ -30,6 +28,7 @@ final class PronosticScoringService
         private readonly JokerStealPointsService $jokerStealPointsService,
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
         private readonly JokerCollectePointsService $jokerCollectePointsService,
+        private readonly MatchCoteService $matchCoteService,
     ) {
     }
 
@@ -46,10 +45,8 @@ final class PronosticScoringService
         $this->defaultPronosticService->ensureDefaultsForMatch($match);
 
         $pronostics = $this->pronosticRepository->findBy(['match' => $match]);
-        $totalPronostics = count($pronostics);
         $occurrencesByScore = [];
         $riskByPronosticId = [];
-        $coefficients = [];
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
         $teamScorePronostics = [];
         $invertedTargetTeamIds = $this->pronosticScoreInversionService->getTargetTeamIdsForMatch($match);
@@ -109,14 +106,24 @@ final class PronosticScoringService
             $effective = $effectiveByPronosticId[$pronosticId];
             $home = $effective['home'];
             $away = $effective['away'];
-            $scoreKey = sprintf('%d-%d', $home, $away);
-            $sameScoreCount = max(1, (int) ($occurrencesByScore[$scoreKey] ?? 1));
-            $coefficientBrut = $totalPronostics > 0 ? ($totalPronostics / $sameScoreCount) : 1.0;
-            $coefficient = round(min($coefficientBrut, self::MAX_COTE_COEFFICIENT), 2);
             $basePoints = $hasFinalScore
                 ? $this->pronosticSimulationService->computeBasePoints($match, $realHome, $realAway, $home, $away)
                 : null;
-            $pointsFinaux = null !== $basePoints ? (float) round($basePoints * $coefficient) : null;
+            $coefficient = null;
+            if ($hasFinalScore && null !== $basePoints) {
+                $coefficient = $this->matchCoteService->coefficientForPronosticLine(
+                    $match,
+                    $home,
+                    $away,
+                    $realHome,
+                    $realAway,
+                    $basePoints,
+                    $pronostics,
+                ) ?? 1.0;
+            }
+            $pointsFinaux = null !== $basePoints && null !== $coefficient
+                ? (float) round($basePoints * $coefficient)
+                : null;
 
             $playerId = $pronostic->getJoueur()?->getId();
             $teamId = null !== $playerId ? ($playerTeamMap[$playerId] ?? null) : null;
@@ -148,8 +155,6 @@ final class PronosticScoringService
                 ->setPointsBase($basePoints)
                 ->setCoteCoefficient($coefficient)
                 ->setPriseRisque(null !== $pronosticId ? ($riskByPronosticId[$pronosticId] ?? false) : false);
-
-            $coefficients[] = $coefficient;
         }
 
         if ($hasFinalScore) {
@@ -157,17 +162,7 @@ final class PronosticScoringService
             $this->jokerCollectePointsService->applyToPronostics($match, $pronostics, $playerTeamMap);
         }
 
-        if ([] === $coefficients) {
-            $match
-                ->setCoteMin(null)
-                ->setCoteMoyenne(null)
-                ->setCoteMax(null);
-        } else {
-            $match
-                ->setCoteMin(round(min($coefficients), 2))
-                ->setCoteMoyenne(round(array_sum($coefficients) / count($coefficients), 2))
-                ->setCoteMax(round(max($coefficients), 2));
-        }
+        $this->matchCoteService->persistMatchOdds($match, $pronostics);
 
         $this->entityManager->flush();
         $this->teamRankingService->rebuildSnapshotsFromMatch($match);

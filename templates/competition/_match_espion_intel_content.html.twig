@@ -3,18 +3,7 @@
 
 <div class="match-espion-section">
     <h4 class="match-espion-section-title">Cotes du match</h4>
-    {% set c = espion_intel.cotes %}
-    {% if c.pronostics_count > 0 and c.moyenne is not null %}
-        <p class="match-espion-cotes">
-            Moy. <strong>{{ c.moyenne|number_format(2, ',', ' ') }}</strong>
-            {% if c.min is not null and c.max is not null %}
-                · min {{ c.min|number_format(2, ',', ' ') }} · max {{ c.max|number_format(2, ',', ' ') }}
-            {% endif %}
-            <span class="match-espion-meta">({{ c.pronostics_count }} pronostic{{ c.pronostics_count > 1 ? 's' : '' }})</span>
-        </p>
-    {% else %}
-        <p class="match-espion-empty">Pas encore assez de pronostics pour estimer les cotes.</p>
-    {% endif %}
+    {% include 'competition/_match_cotes_overview.html.twig' with { cotes: espion_intel.cotes } only %}
 </div>
 
 <div class="match-espion-section">

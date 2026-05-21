@@ -12,6 +12,7 @@ final class PronosticSimulationService
 {
     public function __construct(
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
+        private readonly MatchCoteService $matchCoteService,
     ) {
     }
 
@@ -97,10 +98,6 @@ final class PronosticSimulationService
 
             $playerId = (int) ($pronostic->getJoueur()?->getId() ?? 0);
             $teamId = $playerTeamMap[$playerId] ?? 0;
-            $scoreKey = sprintf('%d-%d', $home, $away);
-            $sameScoreCount = max(1, (int) ($occurrencesByScore[$scoreKey] ?? 1));
-            $coefficientBrut = $totalPronostics > 0 ? ($totalPronostics / $sameScoreCount) : 1.0;
-            $coefficient = round(min($coefficientBrut, self::MAX_COTE_COEFFICIENT), 2);
             $basePoints = $this->computeBasePoints(
                 $match,
                 $scoreDomicileReel,
@@ -108,6 +105,15 @@ final class PronosticSimulationService
                 $home,
                 $away,
             );
+            $coefficient = $this->matchCoteService->coefficientForPronosticLine(
+                $match,
+                $home,
+                $away,
+                $scoreDomicileReel,
+                $scoreExterieurReel,
+                $basePoints,
+                $pronosticList,
+            ) ?? 1.0;
             $standardPoints = (float) round($basePoints * $coefficient);
             $jokerCode = $teamId > 0 ? ($jokerCodeByTeamId[$teamId] ?? null) : null;
             $jokerPoints = null !== $jokerScoringApplicator

@@ -1,6 +1,8 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 parameters:
+    app.match_cote_mode_default: 'one_n_two'
+    app.match_cote_mode: '%env(default:app.match_cote_mode_default:MATCH_COTE_MODE)%'
     app.competition_start_at: '%env(default::COMPETITION_START_AT)%'
     app.cotisation_wire_phone: '%env(default::COTISATION_WIRE_PHONE)%'
     app.image_upload.webp_quality: 82
