@@ -1,0 +1,51 @@
+{# @var interactions_guide array #}
+<section class="joker-guide-interactions" id="guide-interactions" aria-labelledby="guide-interactions-title">
+    <header class="joker-guide-interactions__head">
+        <h2 class="joker-guide-interactions__title" id="guide-interactions-title">Interactions et exemples de points</h2>
+        <p class="joker-guide-interactions__lead">
+            Rappels chiffrés alignés sur le calcul en base. Les points buteur et les points prono suivent des règles distinctes.
+        </p>
+    </header>
+
+    <article class="joker-guide-interactions__block" id="guide-pipeline">
+        <h3 class="joker-guide-interactions__subtitle">{{ interactions_guide.pipeline.title }}</h3>
+        <p class="joker-guide-interactions__text">{{ interactions_guide.pipeline.intro }}</p>
+        {% include 'competition/_joker_guide_table.html.twig' with {
+            table: interactions_guide.pipeline.table,
+            caption: null,
+        } only %}
+    </article>
+
+    <article class="joker-guide-interactions__block" id="guide-cross-matrix">
+        <h3 class="joker-guide-interactions__subtitle">{{ interactions_guide.cross_matrix.title }}</h3>
+        <p class="joker-guide-interactions__text">{{ interactions_guide.cross_matrix.intro }}</p>
+        {% include 'competition/_joker_guide_table.html.twig' with {
+            table: interactions_guide.cross_matrix.table,
+            caption: null,
+        } only %}
+    </article>
+
+    {% for section in interactions_guide.jokers %}
+        <article class="joker-guide-interactions__block joker-guide-interactions__block--joker" id="{{ section.anchor }}">
+            <h3 class="joker-guide-interactions__subtitle">
+                <a href="#joker-{{ section.code|replace({'_': '-'}) }}" class="joker-guide-interactions__card-link">
+                    {{ section.title }}
+                </a>
+            </h3>
+            <p class="joker-guide-interactions__text">{{ section.intro }}</p>
+            {% for table in section.tables %}
+                {% include 'competition/_joker_guide_table.html.twig' with {
+                    table: table,
+                    caption: table.caption,
+                } only %}
+            {% endfor %}
+            {% if section.notes is not empty %}
+                <ul class="joker-guide-interactions__notes">
+                    {% for note in section.notes %}
+                        <li>{{ note }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </article>
+    {% endfor %}
+</section>

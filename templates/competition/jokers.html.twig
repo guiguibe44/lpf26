@@ -5,7 +5,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=7">
-    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=9">
+    <link rel="stylesheet" href="{{ asset('css/joker-catalog.css') }}?v=10">
 {% endblock %}
 
 {% block javascripts %}
@@ -38,6 +38,42 @@
             <li>Les jokers <strong>offensifs</strong> (pique, inversions) peuvent être neutralisés si la cible est protégée : le joker est alors consommé sans effet sur elle.</li>
         </ul>
     </details>
+
+    {% if joker_catalog is not empty or interactions_guide is defined %}
+        <nav class="joker-guide-toc ta-card" aria-label="Sommaire du guide">
+            <h2 class="joker-guide-toc__title">Sommaire</h2>
+            {% if joker_catalog is not empty %}
+                <div class="joker-guide-toc__group">
+                    <p class="joker-guide-toc__label">Fiches jokers</p>
+                    <ul class="joker-guide-toc__list">
+                        {% for entry in joker_catalog %}
+                            {% set code = entry.joker.code %}
+                            {% if code %}
+                                <li>
+                                    <a href="#joker-{{ code|replace({'_': '-'}) }}">{{ entry.joker.displayTitle }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if interactions_guide is defined %}
+                <div class="joker-guide-toc__group">
+                    <p class="joker-guide-toc__label">Interactions</p>
+                    <ul class="joker-guide-toc__list">
+                        <li><a href="#guide-interactions">Vue d’ensemble</a></li>
+                        <li><a href="#guide-pipeline">Ordre de calcul (pronos)</a></li>
+                        <li><a href="#guide-cross-matrix">Tableau croisé</a></li>
+                        {% for item in interactions_guide.toc %}
+                            {% if item.group == 'detail' %}
+                                <li><a href="#{{ item.id }}">{{ item.label }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </nav>
+    {% endif %}
 
     {% if joker_catalog is empty %}
         <section class="ta-card">
@@ -83,5 +119,12 @@
                 </figure>
             </div>
         </dialog>
+
+    {% endif %}
+
+    {% if interactions_guide is defined %}
+        {% include 'competition/_joker_guide_interactions.html.twig' with {
+            interactions_guide: interactions_guide,
+        } only %}
     {% endif %}
 {% endblock %}

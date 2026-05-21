@@ -467,3 +467,202 @@ html.dark .joker-catalog-lightbox__close:hover {
 html.dark .joker-catalog-lightbox__caption {
     color: #f1f5f9;
 }
+
+/* Sommaire + guide interactions */
+.joker-guide-toc {
+    margin-bottom: 1.25rem;
+    scroll-margin-top: 5.5rem;
+}
+
+.joker-guide-toc__title {
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.joker-guide-toc__group + .joker-guide-toc__group {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.joker-guide-toc__label {
+    margin: 0 0 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+.joker-guide-toc__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.65rem;
+}
+
+.joker-guide-toc__list a {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.joker-guide-toc__list a:hover {
+    background: #e2e8f0;
+}
+
+.joker-guide-interactions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+    scroll-margin-top: 5.5rem;
+}
+
+.joker-guide-interactions__head {
+    margin-bottom: 1.5rem;
+}
+
+.joker-guide-interactions__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.joker-guide-interactions__lead {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #475569;
+    max-width: 52rem;
+}
+
+.joker-guide-interactions__block {
+    margin-bottom: 2rem;
+    scroll-margin-top: 5.5rem;
+}
+
+.joker-guide-interactions__subtitle {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.joker-guide-interactions__card-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.joker-guide-interactions__card-link:hover {
+    text-decoration: underline;
+}
+
+.joker-guide-interactions__text {
+    margin: 0 0 0.85rem;
+    font-size: 0.9375rem;
+    color: #334155;
+    max-width: 52rem;
+}
+
+.joker-guide-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    background: #fff;
+}
+
+.joker-guide-table {
+    width: 100%;
+    min-width: 28rem;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.joker-guide-table__caption {
+    padding: 0.65rem 0.85rem 0;
+    text-align: left;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.joker-guide-table th,
+.joker-guide-table td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    text-align: left;
+}
+
+.joker-guide-table thead th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.joker-guide-table tbody tr:last-child th,
+.joker-guide-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.joker-guide-interactions__notes {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.joker-guide-interactions__notes li + li {
+    margin-top: 0.25rem;
+}
+
+html.dark .joker-guide-toc__group + .joker-guide-toc__group {
+    border-top-color: rgb(148 163 184 / 25%);
+}
+
+html.dark .joker-guide-toc__label {
+    color: #94a3b8;
+}
+
+html.dark .joker-guide-toc__list a {
+    background: rgb(30 41 59);
+    color: #f1f5f9;
+}
+
+html.dark .joker-guide-toc__list a:hover {
+    background: rgb(51 65 85);
+}
+
+html.dark .joker-guide-interactions {
+    border-top-color: rgb(148 163 184 / 25%);
+}
+
+html.dark .joker-guide-interactions__lead,
+html.dark .joker-guide-interactions__text,
+html.dark .joker-guide-interactions__notes {
+    color: #cbd5e1;
+}
+
+html.dark .joker-guide-table-wrap {
+    border-color: rgb(148 163 184 / 25%);
+    background: var(--lpf-surface, #1e293b);
+}
+
+html.dark .joker-guide-table th,
+html.dark .joker-guide-table td {
+    border-bottom-color: rgb(148 163 184 / 20%);
+}
+
+html.dark .joker-guide-table thead th {
+    background: rgb(15 23 42 / 50%);
+    color: #f1f5f9;
+}
+
+html.dark .joker-guide-table__caption {
+    color: #f1f5f9;
+}

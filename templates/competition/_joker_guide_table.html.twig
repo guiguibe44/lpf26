@@ -1,0 +1,24 @@
+{# @var table array{headers: list<string>, rows: list<list<string>>} @var caption string|null #}
+<div class="joker-guide-table-wrap">
+    <table class="joker-guide-table">
+        {% if caption %}
+            <caption class="joker-guide-table__caption">{{ caption }}</caption>
+        {% endif %}
+        <thead>
+            <tr>
+                {% for header in table.headers %}
+                    <th scope="col">{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table.rows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

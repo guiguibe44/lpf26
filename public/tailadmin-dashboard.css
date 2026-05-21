@@ -3064,6 +3064,10 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     margin-top: 0;
 }
 
+.match-partner--pronos .match-team-points-ring {
+    margin-left: auto;
+}
+
 .match-team-points-ring {
     display: flex;
     flex-direction: column;

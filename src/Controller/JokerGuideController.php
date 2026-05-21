@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\JokerGuideBuilder;
+use App\Service\JokerInteractionsGuideBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,8 +14,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class JokerGuideController extends AbstractController
 {
     #[Route('/jokers', name: 'app_jokers', methods: ['GET'])]
-    public function index(JokerGuideBuilder $jokerGuideBuilder): Response
-    {
+    public function index(
+        JokerGuideBuilder $jokerGuideBuilder,
+        JokerInteractionsGuideBuilder $jokerInteractionsGuideBuilder,
+    ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
@@ -22,6 +25,7 @@ final class JokerGuideController extends AbstractController
 
         return $this->render('competition/jokers.html.twig', [
             'joker_catalog' => $jokerGuideBuilder->buildCatalog(),
+            'interactions_guide' => $jokerInteractionsGuideBuilder->build(),
         ]);
     }
 }
