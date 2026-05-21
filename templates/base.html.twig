@@ -3,8 +3,17 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
-<html lang="fr" class="lpf-classic-light">
+<html
+    lang="fr"
+    class="lpf-classic-light"
+    data-lpf-main-theme="{{ lpf_main_theme_default_code|default('default') }}"
+    data-lpf-main-theme-codes="{{ lpf_main_theme_codes|default(['default'])|json_encode }}"
+    data-lpf-main-theme-default="{{ lpf_main_theme_default_code|default('default')|json_encode }}"
+>
     <head>
+        {% if not isAuthPage %}
+            {% include '_main_theme_styles.html.twig' %}
+        {% endif %}
         <script>
             (function () {
                 try {
@@ -16,6 +25,18 @@
                 var html = document.documentElement;
                 html.classList.remove('dark', 'lpf-gta-theme', 'lpf-gta-miami');
                 html.classList.add('lpf-classic-light');
+                var validCodes = {{ (lpf_main_theme_codes|default(['default']))|json_encode|raw }};
+                var defaultCode = {{ (lpf_main_theme_default_code|default('default'))|json_encode|raw }};
+                var mainTheme = defaultCode;
+                try {
+                    var storedMain = localStorage.getItem('lpfMainTheme');
+                    if (validCodes.indexOf(storedMain) !== -1) {
+                        mainTheme = storedMain;
+                    }
+                } catch (e2) {
+                    /* ignore */
+                }
+                html.setAttribute('data-lpf-main-theme', mainTheme);
             })();
         </script>
         <meta charset="UTF-8">
@@ -53,6 +74,9 @@
         {% endif %}
         <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=9">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=13">
+        {% if not isAuthPage %}
+            <link rel="stylesheet" href="{{ asset('css/lpf-main-theme.css') }}?v=2">
+        {% endif %}
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -133,5 +157,8 @@
             </div>
         {% endif %}
         <script src="{{ asset('js/lpf-theme-light.js') }}?v=1"></script>
+        {% if not isAuthPage %}
+            <script src="{{ asset('js/lpf-main-theme-switcher.js') }}?v=2"></script>
+        {% endif %}
     </body>
 </html>

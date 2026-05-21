@@ -65,12 +65,18 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::linkToRoute('Checklist de recette', 'fas fa-list-check', 'admin_qa_checklist');
         yield MenuItem::linkToRoute('Checklist compétition', 'fas fa-trophy', 'admin_compet_checklist');
+        yield MenuItem::linkToRoute('Scénario jokers (test)', 'fas fa-mask', 'admin_joker_test_scenario');
 
         yield MenuItem::subMenu('Gestion', 'fas fa-people-group')
             ->setSubItems([
                 MenuItem::linkToRoute('Equipes', 'fas fa-people-group', 'admin_team_index'),
                 MenuItem::linkToRoute('Utilisateurs', 'fas fa-users', 'admin_user_index'),
                 MenuItem::linkToRoute('Invitations', 'fas fa-envelope', 'admin_team_invitation_index'),
+            ]);
+
+        yield MenuItem::subMenu('Apparence', 'fas fa-palette')
+            ->setSubItems([
+                MenuItem::linkToRoute('Thèmes de page', 'fas fa-brush', 'admin_main_theme_index'),
             ]);
 
         yield MenuItem::subMenu('Compétition', 'fas fa-trophy')

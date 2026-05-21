@@ -1,0 +1,187 @@
+/**
+ * Thèmes de zone principale — main.ta-main uniquement.
+ * Variables définies par thème via #lpf-main-theme-dynamic (admin / BDD).
+ */
+
+/* --- Switcher (sidebar) --- */
+.ta-main-theme-switcher {
+    position: relative;
+    display: inline-flex;
+}
+
+.ta-main-theme-switcher__trigger[aria-expanded="true"] {
+    background: #dcfce7 !important;
+    border-color: #86efac !important;
+    color: #15803d !important;
+}
+
+.ta-main-theme-switcher__panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.5rem);
+    z-index: 120;
+    min-width: 10.5rem;
+    padding: 0.65rem 0.7rem;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    border-radius: 0.65rem;
+    background: var(--lpf-surface, #fff);
+    box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+}
+
+.ta-main-theme-switcher__panel[hidden] {
+    display: none !important;
+}
+
+.ta-main-theme-switcher__label {
+    margin: 0 0 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lpf-muted, #64748b);
+}
+
+.ta-main-theme-switcher__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.ta-main-theme-switcher__option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: var(--lpf-text, #0f172a);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.ta-main-theme-switcher__option:hover {
+    background: var(--lpf-surface-raised, #f1f5f9);
+}
+
+.ta-main-theme-switcher__option.is-active,
+.ta-main-theme-switcher__option[aria-checked="true"] {
+    border-color: var(--lpf-primary-muted, rgb(22 163 74 / 20%));
+    background: var(--lpf-primary-muted, rgb(22 163 74 / 12%));
+    color: var(--lpf-primary-hover, #15803d);
+}
+
+.ta-main-theme-switcher__swatch {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgb(15 23 42 / 12%);
+}
+
+/* --- Zone principale (variables par thème) --- */
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main {
+    background-color: var(--lpf-mt-bg-color, transparent) !important;
+    background-image: var(--lpf-mt-bg-overlay, none), var(--lpf-mt-bg-image, none);
+    background-position: var(--lpf-mt-bg-position, center center);
+    background-repeat: var(--lpf-mt-bg-repeat, no-repeat);
+    background-size: var(--lpf-mt-bg-size, auto);
+    color: var(--lpf-mt-title, inherit);
+}
+
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .ta-page-title,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .ta-page-subtitle,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .match-day-title,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .match-day-nav-label,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .forum-feed__heading,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .forum-feed__empty,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .ta-topbar,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main > p,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main > .ta-card-text,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .match-dashboard-wrap > .ta-card-text,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .match-dashboard-wrap > p.ta-card-text {
+    color: var(--lpf-mt-title, inherit) !important;
+}
+
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main a:not(.btn):not(.ta-menu-link):not(.match-card *):not(.ta-card *) {
+    color: var(--lpf-mt-title, inherit);
+    filter: brightness(1.15);
+}
+
+/* --- Blocs sur fond blanc (cartes, etc.) --- */
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
+    .ta-card,
+    article.ta-card,
+    section.ta-card,
+    .match-card,
+    .rounded-box,
+    .match-day-nav-link,
+    .match-day-nav-select,
+    .account-page > section,
+    .account-page .account-tab-panel > section,
+    .account-page .push-notifications-card,
+    .account-page .account-card-profile,
+    .account-page .account-card-password,
+    .account-page .account-card-team-edit,
+    .account-page .account-card-team-players,
+    .account-page .account-card-favorite-country,
+    .account-page .account-card-jokers,
+    .account-page .account-card-notifications,
+    .account-page .account-buteur-section,
+    .account-page .account-profile-password-row,
+    .account-page .account-equipe-top-row,
+    .account-page .account-tab-panel--columns,
+    .ranking-page-card,
+    .joker-catalog-card,
+    .joker-guide-rules-card
+) {
+    background-color: var(--lpf-mt-block-bg, #fff) !important;
+    color: var(--lpf-mt-block-text, #0f172a) !important;
+}
+
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
+    .ta-card,
+    .match-card,
+    .rounded-box
+) .ta-card-title,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
+    .ta-card,
+    .match-card
+) .ta-card-text,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
+    .ta-card,
+    .match-card
+) label,
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
+    .ta-card,
+    .match-card
+) p {
+    color: var(--lpf-mt-block-text, #0f172a) !important;
+}
+
+/* Flash : conserver fonds sémantiques, texte des blocs */
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .flash {
+    color: inherit !important;
+}
+
+/* --- Boutons primaires dans la zone principale --- */
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .btn-primary:not(.btn-outline),
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .ta-auth-submit {
+    background-color: var(--lpf-mt-btn-bg, #16a34a) !important;
+    border-color: var(--lpf-mt-btn-bg, #16a34a) !important;
+    color: var(--lpf-mt-btn-text, #fff) !important;
+}
+
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .btn-primary:not(.btn-outline):hover:not(:disabled),
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .ta-auth-submit:hover:not(:disabled) {
+    filter: brightness(0.92);
+    color: var(--lpf-mt-btn-text, #fff) !important;
+}

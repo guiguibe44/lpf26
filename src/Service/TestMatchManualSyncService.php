@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Data\JokerTestScenarioDefinition;
 use App\Entity\But;
 use App\Entity\Buteur;
 use App\Entity\Country;
@@ -37,7 +38,12 @@ final class TestMatchManualSyncService
     {
         $this->assertManualTestMatch($match);
 
-        $this->matchKickoffService->applyKickoff($match);
+        if (JokerTestScenarioDefinition::MATCH_MARKER === $match->getVenueName()) {
+            $this->matchKickoffService->applyKickoffForced($match);
+        } else {
+            $this->matchKickoffService->applyKickoff($match);
+        }
+
         $this->entityManager->flush();
     }
 

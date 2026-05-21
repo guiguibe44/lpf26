@@ -79,4 +79,22 @@ final class MatchKickoffService
 
         $this->defaultPronosticService->ensureDefaultsForMatch($match);
     }
+
+    /** Coup d’envoi manuel (scénario test) sans attendre l’heure du match. */
+    public function applyKickoffForced(GameMatch $match): void
+    {
+        if ('SCHEDULED' !== $match->getStatut()) {
+            return;
+        }
+
+        $match
+            ->setStatut('LIVE')
+            ->setLiveElapsedMinute(0);
+
+        if (null === $match->getScoreDomicile() || null === $match->getScoreExterieur()) {
+            $match->setScoreDomicile(0)->setScoreExterieur(0);
+        }
+
+        $this->defaultPronosticService->ensureDefaultsForMatch($match);
+    }
 }

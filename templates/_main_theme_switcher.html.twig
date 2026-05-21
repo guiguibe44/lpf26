@@ -1,0 +1,45 @@
+{% if lpf_main_themes is defined and lpf_main_themes|length > 0 %}
+<div class="ta-main-theme-switcher" data-lpf-main-theme-switcher>
+    <button
+        type="button"
+        class="ta-sidebar-notify ta-main-theme-switcher__trigger"
+        data-lpf-main-theme-toggle
+        aria-expanded="false"
+        aria-haspopup="true"
+        aria-controls="lpf-main-theme-panel"
+        title="Thème de la page"
+        aria-label="Choisir le thème de la page"
+    >
+        <i class="ti ti-brush" aria-hidden="true"></i>
+    </button>
+    <div
+        id="lpf-main-theme-panel"
+        class="ta-main-theme-switcher__panel"
+        data-lpf-main-theme-panel
+        role="menu"
+        aria-label="Thèmes de la page"
+        hidden
+    >
+        <p class="ta-main-theme-switcher__label">Fond de page</p>
+        <div class="ta-main-theme-switcher__options" role="group">
+            {% for theme in lpf_main_themes %}
+                <button
+                    type="button"
+                    class="ta-main-theme-switcher__option"
+                    role="menuitemradio"
+                    data-lpf-main-theme-option="{{ theme.code }}"
+                    aria-checked="{{ theme.isDefault ? 'true' : 'false' }}"
+                    title="{{ theme.label }}"
+                >
+                    <span
+                        class="ta-main-theme-switcher__swatch"
+                        aria-hidden="true"
+                        style="background: {% if theme.usesBackgroundImage and theme.backgroundImagePublicPath %}url('{{ theme.backgroundImagePublicPath }}') center / cover no-repeat{% else %}{{ theme.backgroundColor ?? 'transparent' }}{% endif %};"
+                    ></span>
+                    {{ theme.label }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}

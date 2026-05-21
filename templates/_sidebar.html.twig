@@ -101,6 +101,7 @@
                         <i class="ti ti-settings" aria-hidden="true"></i>
                     </a>
                 {% endif %}
+                {% include '_main_theme_switcher.html.twig' %}
                 <form method="post" action="{{ path('app_logout') }}" class="ta-sidebar-logout-form" data-turbo="false">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                     <button
