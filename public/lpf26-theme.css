@@ -876,6 +876,57 @@ html body .lpf-burger--light .lpf-burger__ball {
     color: #4b5563;
 }
 
+.team-jokers-status-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.team-jokers-status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.5rem;
+}
+
+.team-jokers-status-thumb {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.team-jokers-status-thumb--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--lpf-navy, #1b2d4f);
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.team-jokers-status-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--lpf-text, #0f172a);
+    line-height: 1.3;
+}
+
+.team-jokers-status-item--used .team-jokers-status-name {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    color: var(--lpf-text-muted, #64748b);
+}
+
+.team-jokers-status-item--used .team-jokers-status-thumb {
+    opacity: 0.55;
+    filter: grayscale(0.35);
+}
+
 /* Vignette joker (icône en haut à gauche) : voir tailadmin-dashboard.css (.match-card-joker-mark) */
 
 .match-joker-actions {

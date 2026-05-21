@@ -54,6 +54,7 @@
         </div>
 
         <div id="panel-compte" role="tabpanel" aria-labelledby="tab-btn-compte" class="account-tab-panel space-y-6">
+            <div class="account-profile-password-row">
             {% if profile_form %}
             <section class="account-card-profile rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-4 text-lg font-semibold">
@@ -95,8 +96,20 @@
             </section>
             {% endif %}
 
+            <section class="account-card-password rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <h2 class="mb-4 text-lg font-semibold">Mot de passe</h2>
+                {{ form_start(password_form, {'attr': {'class': 'space-y-3'}}) }}
+                    {{ form_row(password_form.plainPassword) }}
+                    <button type="submit" class="btn btn-outline btn-primary">
+                        <i class="ti ti-edit" aria-hidden="true"></i>
+                        Modifier mon mot de passe
+                    </button>
+                {{ form_end(password_form) }}
+            </section>
+            </div>
+
             {% if has_team_member and not competition_started %}
-                <section id="buteur" class="account-buteur-section rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+                <section id="buteur" class="account-buteur-section rounded-box border border-base-300 p-5">
                     <h2 class="mb-4 text-lg font-semibold">Choisir mon buteur</h2>
                     {% if not cotisation_payee %}
                         <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur.</p>
@@ -162,17 +175,6 @@
             </section>
             {% endif %}
 
-            <section class="account-card-password rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
-                <h2 class="mb-4 text-lg font-semibold">Mot de passe</h2>
-                {{ form_start(password_form, {'attr': {'class': 'space-y-3'}}) }}
-                    {{ form_row(password_form.plainPassword) }}
-                    <button type="submit" class="btn btn-outline btn-primary">
-                        <i class="ti ti-edit" aria-hidden="true"></i>
-                        Modifier mon mot de passe
-                    </button>
-                {{ form_end(password_form) }}
-            </section>
-
             {% include 'account/_push_notifications_card.html.twig' %}
         </div>
 
@@ -182,9 +184,14 @@
 
         {% if team %}
         <div id="panel-equipe" role="tabpanel" aria-labelledby="tab-btn-equipe" class="account-tab-panel account-tab-panel--columns" hidden>
-            {% if favorite_country_state %}
-                {% include 'account/_favorite_country_section.html.twig' %}
-            {% endif %}
+            <div class="account-equipe-top-row">
+                {% if favorite_country_state %}
+                    {% include 'account/_favorite_country_section.html.twig' %}
+                {% endif %}
+                {% if has_team_member %}
+                    {% include 'account/_team_jokers_list.html.twig' %}
+                {% endif %}
+            </div>
 
             {# Bloc résumé équipe masqué temporairement #}
             {% if false %}

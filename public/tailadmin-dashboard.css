@@ -3840,6 +3840,8 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     .account-page .account-card-jokers,
     .account-page .account-card-notifications,
     .account-page .account-buteur-section,
+    .account-page .account-profile-password-row,
+    .account-page .account-equipe-top-row,
     .account-page .account-tab-panel--columns {
         width: 100% !important;
         max-width: 100% !important;
@@ -4323,6 +4325,39 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 .account-buteur-section {
     width: 100%;
     max-width: 100%;
+    background: transparent !important;
+    box-shadow: none;
+}
+
+.account-profile-password-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.account-equipe-top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 1025px) {
+    .account-equipe-top-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .account-equipe-top-row > section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
 }
 
 .precomp-dashboard {
@@ -5194,7 +5229,22 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     margin-top: 0.35em;
 }
 
-/* Page compte : cartes à 50 % (ou grille 2 colonnes sur l’onglet équipe) */
+/* Page compte : profil + mot de passe côte à côte (desktop), autres cartes à 50 % */
+.account-profile-password-row .account-card-profile,
+.account-profile-password-row .account-card-password {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+@media (min-width: 1025px) {
+    .account-profile-password-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+        align-items: start;
+    }
+}
+
 .account-page .account-card-profile,
 .account-page .account-card-password,
 .account-page .account-card-team-edit,

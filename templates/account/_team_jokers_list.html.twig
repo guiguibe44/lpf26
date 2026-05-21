@@ -1,0 +1,41 @@
+{# @var team_joker_overview list<array{joker: Joker, status: string}> #}
+<section class="account-card-jokers rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+    <div class="account-jokers-head">
+        <h2 class="mb-1 text-lg font-semibold">Jokers de l’équipe</h2>
+        <a href="{{ path('app_jokers') }}" class="btn btn-outline btn-sm account-jokers-guide-link">
+            <i class="ti ti-book-2" aria-hidden="true"></i>
+            Guide
+        </a>
+    </div>
+    <p class="ta-card-text mb-4">
+        Chaque joker ne peut être utilisé qu’<strong>une fois</strong> par équipe.
+    </p>
+
+    {% set joker_rows = team_joker_overview|filter(row => row.joker.code != constant('App\\Entity\\Joker::CODE_EQUIPE_FAVORITE')) %}
+
+    {% if joker_rows is empty %}
+        <p class="ta-card-text">Aucun joker configuré pour le moment.</p>
+    {% else %}
+        <ul class="team-jokers-status-list" aria-label="État des jokers de l’équipe">
+            {% for row in joker_rows %}
+                {% set joker = row.joker %}
+                {% set is_used = row.status == 'used' %}
+                <li class="team-jokers-status-item{{ is_used ? ' team-jokers-status-item--used' : '' }}">
+                    <span class="team-jokers-status-media" aria-hidden="true">
+                        {% if joker.image %}
+                            <img src="{{ asset(joker.image) }}" alt="" class="team-jokers-status-thumb" width="40" height="40" loading="lazy">
+                        {% else %}
+                            <span class="team-jokers-status-thumb team-jokers-status-thumb--placeholder">
+                                <i class="ti {{ joker.getTablerIconClass() }}"></i>
+                            </span>
+                        {% endif %}
+                    </span>
+                    <span class="team-jokers-status-name">{{ joker.displayTitle }}</span>
+                    {% if is_used %}
+                        <span class="sr-only"> — déjà utilisé</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>

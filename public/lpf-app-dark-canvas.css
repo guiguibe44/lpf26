@@ -118,13 +118,18 @@ html.dark body.front-body .ta-main .admin-push-badge--muted {
 }
 
 /* --- Page compte (sections bg-base-100 dans le HTML) --- */
-html.dark body.front-body .account-page section.rounded-box,
-html.dark body.front-body .account-page .account-tab-panel > section,
+html.dark body.front-body .account-page section.rounded-box:not(.account-buteur-section),
+html.dark body.front-body .account-page .account-tab-panel > section:not(.account-buteur-section),
 html.dark body.front-body .account-page .push-notifications-card,
 html.dark body.front-body .account-buteur-section {
     background: var(--lpf-surface) !important;
     border-color: var(--lpf-border) !important;
     color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .account-buteur-section {
+    background: transparent !important;
+    box-shadow: none;
 }
 
 html.dark body.front-body .account-tabs-nav .tab {
