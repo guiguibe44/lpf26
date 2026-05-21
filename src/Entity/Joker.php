@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Trait\JokerLiveStoryTemplatesTrait;
 use App\Enum\JokerTag;
 use App\Repository\JokerRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'UNIQ_JOKER_CODE', fields: ['code'])]
 class Joker
 {
+    use JokerLiveStoryTemplatesTrait;
+
     public const CODE_DOUBLE_EQUIPE = 'double_equipe';
 
     public const CODE_PIQUE_POINTS = 'pique_points';

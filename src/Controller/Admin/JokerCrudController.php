@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Joker;
+use App\Enum\JokerLiveStoryCase;
 use App\Enum\JokerTag;
+use App\Service\JokerLiveStoryTemplateRenderer;
 use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,6 +63,7 @@ class JokerCrudController extends AbstractAppCrudController
                 ->setLabel('Explications techniques')
                 ->setHelp('Une règle par ligne (affichée en liste sur la page Jokers).')
                 ->hideOnIndex(),
+            ...$this->liveStoryTemplateFields(),
             ImageField::new('image')
                 ->setLabel('Image')
                 ->setBasePath('')
@@ -92,6 +95,32 @@ class JokerCrudController extends AbstractAppCrudController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    /**
+     * @return list<TextareaField>
+     */
+    private function liveStoryTemplateFields(): array
+    {
+        $fields = [];
+        $first = true;
+
+        foreach (JokerLiveStoryCase::cases() as $case) {
+            $help = $case->adminHelp();
+            if ($first) {
+                $help .= "\n\n".JokerLiveStoryTemplateRenderer::VARIABLES_HELP;
+                $first = false;
+            }
+
+            $fields[] = TextareaField::new($case->adminProperty())
+                ->setLabel('Phrase — '.$case->label())
+                ->setHelp($help)
+                ->setFormTypeOption('attr', ['rows' => 3])
+                ->hideOnIndex()
+                ->setFormTypeOption('empty_data', '');
+        }
+
+        return $fields;
     }
 
     private function applyOptimizedImageFilename(Joker $joker): void
