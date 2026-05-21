@@ -46,7 +46,7 @@ final class MatchLiveViewBuilder
         private readonly ButRepository $butRepository,
         private readonly MatchCotePreviewService $matchCotePreviewService,
         private readonly MatchTeamJokerDisplayBuilder $matchTeamJokerDisplayBuilder,
-        private readonly MatchJokerAnonymousExplanationBuilder $matchJokerAnonymousExplanationBuilder,
+        private readonly MatchJokerImpactExplanationBuilder $matchJokerImpactExplanationBuilder,
         private readonly PronosticCalcDisplayService $pronosticCalcDisplayService,
     ) {
     }
@@ -90,9 +90,15 @@ final class MatchLiveViewBuilder
      *         name: string,
      *         icon: string,
      *         image: ?string,
+     *         placer_team: string,
+     *         beneficiary_team: string,
+     *         target_team: ?string,
+     *         neutralized: bool,
+     *         score_label: string,
      *         summary: string,
      *         description: ?string,
-     *         technical_lines: list<string>
+     *         technical_lines: list<string>,
+     *         impact_rows: list<array{team: string, label: string, points: int, delta: ?int, baseline: ?int}>
      *     }>
      * }
      */
@@ -220,7 +226,15 @@ final class MatchLiveViewBuilder
             'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
             'matchButeurs' => $this->buildMatchButeurSelections($teams, $matchCountryIds),
             'viewerPronostic' => $this->buildViewerPronostic($pronostics, $simulatedLines),
-            'matchJokers' => $this->matchJokerAnonymousExplanationBuilder->buildForMatch($match),
+            'matchJokers' => $this->matchJokerImpactExplanationBuilder->buildForMatch(
+                $match,
+                $scoreDomicile,
+                $scoreExterieur,
+                $linesAfterSimulate,
+                $linesAfterSteal,
+                $simulatedLines,
+                $teams,
+            ),
         ];
     }
 

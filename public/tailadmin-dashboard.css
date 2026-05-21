@@ -1552,11 +1552,85 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     background: #f8fafc;
 }
 
+.match-live-jokers-card--neutralized {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
 .match-live-jokers-card__head {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.55rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.match-live-jokers-card__titles {
+    flex: 1;
+    min-width: 0;
+}
+
+.match-live-jokers-card__meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.match-live-jokers-card__teams {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.5rem 1rem;
+    margin: 0 0 0.65rem;
+    font-size: 0.85rem;
+}
+
+.match-live-jokers-card__teams dt {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #94a3b8;
+}
+
+.match-live-jokers-card__teams dd {
+    margin: 0.1rem 0 0;
+    color: #0f172a;
+}
+
+.match-live-jokers-card__points {
+    width: 100%;
+    margin: 0 0 0.65rem;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.match-live-jokers-card__points th,
+.match-live-jokers-card__points td {
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.match-live-jokers-card__num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.match-live-jokers-card__delta--pos {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.match-live-jokers-card__delta--neg {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+.match-live-jokers-card__baseline {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 400;
 }
 
 .match-live-jokers-card__icon {
