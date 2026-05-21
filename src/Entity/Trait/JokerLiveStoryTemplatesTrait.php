@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\Trait;
 
 use App\Enum\JokerLiveStoryCase;
+use App\Joker\JokerLiveStoryCasesForCode;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -50,6 +51,18 @@ trait JokerLiveStoryTemplatesTrait
         }
 
         $this->liveStoryTemplates = [] === $normalized ? null : $normalized;
+
+        return $this;
+    }
+
+    /** Supprime les modèles de phrases non liés au code technique du joker. */
+    public function pruneLiveStoryTemplatesForCode(): static
+    {
+        $code = \method_exists($this, 'getCode') ? $this->getCode() : null;
+        $this->liveStoryTemplates = JokerLiveStoryCasesForCode::pruneTemplatesForCode(
+            $code,
+            $this->liveStoryTemplates,
+        );
 
         return $this;
     }

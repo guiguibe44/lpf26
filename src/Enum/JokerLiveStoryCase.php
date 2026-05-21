@@ -41,14 +41,14 @@ enum JokerLiveStoryCase: string
         return match ($this) {
             self::Placed => 'Quand le joker est posé sans cible adverse (ex. double équipe, double buteur).',
             self::PlacedOnTarget => 'Quand le joker vise une autre équipe (pique, inversion score/buteur).',
-            self::ShieldActive => 'Uniquement pour le joker Bouclier.',
-            self::Neutralized => 'Joker offensif bloqué par bouclier ou équipe favorite.',
+            self::ShieldActive => 'Affichée quand le bouclier est actif sur ce match.',
+            self::Neutralized => 'Affichée si le joker est bloqué (bouclier ou équipe favorite adverse).',
             self::PointsGain => 'Une ligne par équipe qui gagne des points pronos (répéter la ligne si besoin).',
             self::PointsLoss => 'Une ligne par équipe qui perd des points pronos.',
             self::PointsNeutral => 'Si le calcul ne change pas les points pronos.',
             self::PointsGainButeur => 'Équipe qui gagne des points buteurs sur ce match.',
             self::PointsLossButeur => 'Équipe qui perd des points buteurs.',
-            self::Espion => 'Uniquement pour le joker Espion.',
+            self::Espion => 'Affichée quand l’espion est posé (sans impact points).',
         };
     }
 

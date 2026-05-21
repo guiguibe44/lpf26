@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Joker;
-use App\Enum\JokerLiveStoryCase;
 use App\Enum\JokerTag;
+use App\Joker\JokerLiveStoryCasesForCode;
 use App\Service\JokerLiveStoryTemplateRenderer;
 use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -23,6 +25,7 @@ class JokerCrudController extends AbstractAppCrudController
 {
     public function __construct(
         private readonly UploadedImageFinalizeService $uploadedImageFinalize,
+        private readonly AdminContextProviderInterface $adminContextProvider,
     ) {
     }
 
@@ -48,7 +51,10 @@ class JokerCrudController extends AbstractAppCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('code')->setHelp('Identifiant technique (ex. double_equipe). Ne pas modifier après mise en prod.'),
+            TextField::new('code')->setHelp(
+                'Identifiant technique (ex. double_equipe). Ne pas modifier après mise en prod. '
+                .'Les champs « Phrase — … » (live / match terminé) apparaissent à l’édition selon ce code.',
+            ),
             TextField::new('title')->setLabel('Titre')->setRequired(true),
             ChoiceField::new('tag')
                 ->setLabel('Tag')
@@ -63,7 +69,7 @@ class JokerCrudController extends AbstractAppCrudController
                 ->setLabel('Explications techniques')
                 ->setHelp('Une règle par ligne (affichée en liste sur la page Jokers).')
                 ->hideOnIndex(),
-            ...$this->liveStoryTemplateFields(),
+            ...$this->liveStoryTemplateFields($pageName),
             ImageField::new('image')
                 ->setLabel('Image')
                 ->setBasePath('')
@@ -82,7 +88,7 @@ class JokerCrudController extends AbstractAppCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Joker) {
-            $this->applyOptimizedImageFilename($entityInstance);
+            $this->finalizeJokerBeforeSave($entityInstance);
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -91,21 +97,36 @@ class JokerCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Joker) {
-            $this->applyOptimizedImageFilename($entityInstance);
+            $this->finalizeJokerBeforeSave($entityInstance);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    private function finalizeJokerBeforeSave(Joker $joker): void
+    {
+        $joker->pruneLiveStoryTemplatesForCode();
+        $this->applyOptimizedImageFilename($joker);
+    }
+
     /**
      * @return list<TextareaField>
      */
-    private function liveStoryTemplateFields(): array
+    private function liveStoryTemplateFields(string $pageName): array
     {
+        if (Crud::PAGE_INDEX === $pageName || Crud::PAGE_DETAIL === $pageName) {
+            return [];
+        }
+
+        $cases = JokerLiveStoryCasesForCode::forCode($this->resolveJokerCodeFromAdminContext());
+        if ([] === $cases) {
+            return [];
+        }
+
         $fields = [];
         $first = true;
 
-        foreach (JokerLiveStoryCase::cases() as $case) {
+        foreach ($cases as $case) {
             $help = $case->adminHelp();
             if ($first) {
                 $help .= "\n\n".JokerLiveStoryTemplateRenderer::VARIABLES_HELP;
@@ -121,6 +142,18 @@ class JokerCrudController extends AbstractAppCrudController
         }
 
         return $fields;
+    }
+
+    private function resolveJokerCodeFromAdminContext(): ?string
+    {
+        $context = $this->adminContextProvider->getContext();
+        if (null === $context) {
+            return null;
+        }
+
+        $instance = $context->getEntity()->getInstance();
+
+        return $instance instanceof Joker ? $instance->getCode() : null;
     }
 
     private function applyOptimizedImageFilename(Joker $joker): void
