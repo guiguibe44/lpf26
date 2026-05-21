@@ -30,6 +30,7 @@ final class TeamRankingService
         private readonly ButRepository $butRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly ButeurJokerPointsService $buteurJokerPointsService,
+        private readonly PronosticScoreInversionService $pronosticScoreInversionService,
     ) {
     }
 
@@ -73,8 +74,7 @@ final class TeamRankingService
 
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
         $scoredPronostics = $this->pronosticRepository->findScoredPronosticsWithTeamMembers();
-        $riskMatchesByTeam = [];
-        $riskSuccessMatchesByTeam = [];
+        $riskStatsByTeamId = $this->computePriseRisqueStatsByTeamId($scoredPronostics, $playerTeamMap);
 
         $statsByTeamId = [];
         foreach ($teams as $team) {
@@ -88,8 +88,8 @@ final class TeamRankingService
                 'totalPoints' => 0.0,
                 'scoresExacts' => 0,
                 'bonsResultats' => 0,
-                'prisesRisque' => 0,
-                'prisesRisqueReussies' => 0,
+                'prisesRisque' => $riskStatsByTeamId[$teamId]['tentees'] ?? 0,
+                'prisesRisqueReussies' => $riskStatsByTeamId[$teamId]['reussies'] ?? 0,
                 'resultatsFaux' => 0,
             ];
         }
@@ -113,28 +113,6 @@ final class TeamRankingService
                 ++$statsByTeamId[$teamId]['bonsResultats'];
             } else {
                 ++$statsByTeamId[$teamId]['resultatsFaux'];
-            }
-
-            if ($pronostic->isPriseRisque()) {
-                $matchId = $pronostic->getMatch()?->getId();
-                if (null !== $matchId) {
-                    $riskMatchesByTeam[$teamId][$matchId] = true;
-                    if ($this->isExactScore($pronostic) || $this->isGoodResult($pronostic)) {
-                        $riskSuccessMatchesByTeam[$teamId][$matchId] = true;
-                    }
-                }
-            }
-        }
-
-        foreach ($riskMatchesByTeam as $teamId => $riskMatches) {
-            if (isset($statsByTeamId[$teamId])) {
-                $statsByTeamId[$teamId]['prisesRisque'] = count($riskMatches);
-            }
-        }
-
-        foreach ($riskSuccessMatchesByTeam as $teamId => $riskSuccessMatches) {
-            if (isset($statsByTeamId[$teamId])) {
-                $statsByTeamId[$teamId]['prisesRisqueReussies'] = count($riskSuccessMatches);
             }
         }
 
@@ -189,6 +167,108 @@ final class TeamRankingService
             $this->entityManager->persist($snapshot);
         }
 
+    }
+
+    /**
+     * Prise de risque = au moins 2 pronos de la même équipe avec le même score effectif sur un match.
+     *
+     * @param iterable<Pronostic> $pronostics
+     * @param array<int, int>     $playerTeamMap
+     *
+     * @return array<int, array{tentees: int, reussies: int}>
+     */
+    private function computePriseRisqueStatsByTeamId(iterable $pronostics, array $playerTeamMap): array
+    {
+        $pronosticsByMatchId = [];
+        $matchesById = [];
+
+        foreach ($pronostics as $pronostic) {
+            $match = $pronostic->getMatch();
+            if (!$match instanceof GameMatch) {
+                continue;
+            }
+
+            $matchId = $match->getId();
+            if (null === $matchId) {
+                continue;
+            }
+
+            $pronosticsByMatchId[$matchId][] = $pronostic;
+            $matchesById[$matchId] = $match;
+        }
+
+        $statsByTeamId = [];
+
+        foreach ($pronosticsByMatchId as $matchId => $matchPronostics) {
+            $match = $matchesById[$matchId];
+            $realHome = $match->getScoreDomicile();
+            $realAway = $match->getScoreExterieur();
+            if (null === $realHome || null === $realAway) {
+                continue;
+            }
+
+            $invertedTargetTeamIds = $this->pronosticScoreInversionService->getTargetTeamIdsForMatch($match);
+            $effectiveByPronosticId = $this->pronosticScoreInversionService->buildEffectiveScoresByPronosticId(
+                $matchPronostics,
+                $playerTeamMap,
+                $invertedTargetTeamIds,
+            );
+
+            /** @var array<int, array<string, int>> $countByTeamAndScore */
+            $countByTeamAndScore = [];
+
+            foreach ($matchPronostics as $pronostic) {
+                $pronosticId = $pronostic->getId();
+                if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
+                    continue;
+                }
+
+                $playerId = $pronostic->getJoueur()?->getId();
+                $teamId = null !== $playerId ? ($playerTeamMap[$playerId] ?? null) : null;
+                if (null === $teamId) {
+                    continue;
+                }
+
+                $effective = $effectiveByPronosticId[$pronosticId];
+                $scoreKey = sprintf('%d-%d', $effective['home'], $effective['away']);
+                $countByTeamAndScore[$teamId][$scoreKey] = ($countByTeamAndScore[$teamId][$scoreKey] ?? 0) + 1;
+            }
+
+            foreach ($countByTeamAndScore as $teamId => $scoresOnMatch) {
+                foreach ($scoresOnMatch as $scoreKey => $sameScoreCount) {
+                    if ($sameScoreCount < 2) {
+                        continue;
+                    }
+
+                    if (!isset($statsByTeamId[$teamId])) {
+                        $statsByTeamId[$teamId] = ['tentees' => 0, 'reussies' => 0];
+                    }
+
+                    ++$statsByTeamId[$teamId]['tentees'];
+
+                    if (!preg_match('/^(\d+)-(\d+)$/', $scoreKey, $matches)) {
+                        continue;
+                    }
+
+                    $predHome = (int) $matches[1];
+                    $predAway = (int) $matches[2];
+                    if ($this->isSuccessfulPrediction($realHome, $realAway, $predHome, $predAway)) {
+                        ++$statsByTeamId[$teamId]['reussies'];
+                    }
+                }
+            }
+        }
+
+        return $statsByTeamId;
+    }
+
+    private function isSuccessfulPrediction(int $realHome, int $realAway, int $predHome, int $predAway): bool
+    {
+        if ($realHome === $predHome && $realAway === $predAway) {
+            return true;
+        }
+
+        return ($predHome <=> $predAway) === ($realHome <=> $realAway);
     }
 
     private function isExactScore(Pronostic $pronostic): bool
