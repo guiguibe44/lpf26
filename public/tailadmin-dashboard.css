@@ -1750,13 +1750,6 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     color: #64748b;
 }
 
-.match-card-cotes-row {
-    display: flex;
-    justify-content: center;
-    margin: 0.35rem 0 0.65rem;
-    padding: 0 0.15rem;
-}
-
 .match-cotes-1n2-blocks {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1764,8 +1757,7 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     width: 100%;
 }
 
-.match-cotes-1n2-blocks--square,
-.match-cotes-1n2-blocks--card {
+.match-cotes-1n2-blocks--square {
     display: inline-grid;
     grid-template-columns: repeat(3, 100px);
     gap: 0.65rem;
@@ -1792,8 +1784,7 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
-.match-cotes-1n2-blocks--square .match-cotes-1n2-blocks__item,
-.match-cotes-1n2-blocks--card .match-cotes-1n2-blocks__item {
+.match-cotes-1n2-blocks--square .match-cotes-1n2-blocks__item {
     width: 100px;
     height: 100px;
     min-height: 100px;
