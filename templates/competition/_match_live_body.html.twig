@@ -22,9 +22,8 @@
             {% elseif not show_simulator %}
                 <span class="ta-badge ta-badge-success">Terminé</span>
             {% endif %}
-            {% set viewer_pronostic = live_view.viewerPronostic|default(null) %}
-            {% if viewer_pronostic %}
-                {% include 'competition/_match_viewer_pronostic.html.twig' with { viewer_pronostic: viewer_pronostic } only %}
+            {% if show_simulator and live_view.viewerPronostic|default(null) %}
+                {% include 'competition/_match_viewer_pronostic.html.twig' with { viewer_pronostic: live_view.viewerPronostic } only %}
             {% endif %}
         </div>
         <div class="match-live-score-team match-live-score-team--away">

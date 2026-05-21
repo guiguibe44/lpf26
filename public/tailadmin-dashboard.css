@@ -1558,11 +1558,22 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     text-align: center;
 }
 
-.match-live-jokers-card__rule {
-    margin: 0 0 0.5rem;
-    font-size: 0.85rem;
-    line-height: 1.45;
-    color: #475569;
+.match-live-jokers-card__stories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    text-align: left;
+}
+
+.match-live-jokers-card__story {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+.match-live-jokers-card--neutralized .match-live-jokers-card__story {
+    color: #64748b;
 }
 
 .match-live-jokers-card__consequences {

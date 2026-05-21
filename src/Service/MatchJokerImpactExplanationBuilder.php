@@ -41,9 +41,8 @@ final class MatchJokerImpactExplanationBuilder
      *     name: string,
      *     icon: string,
      *     image: ?string,
-     *     rule: string,
      *     neutralized: bool,
-     *     consequences: list<array{team: string, text: string}>
+     *     stories: list<string>
      * }>
      */
     public function buildForMatch(
@@ -129,54 +128,105 @@ final class MatchJokerImpactExplanationBuilder
         $placerId = (int) ($usage->getTeam()?->getId() ?? 0);
         $targetId = (int) ($usage->getTargetTeam()?->getId() ?? 0);
         $neutralized = $this->jokerDefenseService->isUsageNeutralized($usage);
+        $jokerName = $joker instanceof Joker ? $joker->getDisplayTitle() : $code;
 
         if (Joker::CODE_BOUCLIER === $code) {
-            $consequences = [[
-                'team' => $placerName,
-                'text' => 'Protection active : jokers offensifs ciblant cette équipe neutralisés.',
-            ]];
+            $stories = [
+                sprintf(
+                    'L’équipe %s a activé %s : les attaques joker contre elle passent au frigo !',
+                    $placerName,
+                    $jokerName,
+                ),
+            ];
         } elseif ($neutralized && JokerDefenseService::isOffensiveAgainstTeam($code)) {
-            $consequences = [[
-                'team' => $targetName,
-                'text' => 'Aucun effet (équipe protégée).',
-            ]];
+            $stories = [
+                $this->phraseJokerPlaced($placerName, $jokerName, $targetName),
+                sprintf('Aïe aïe aïe… l’équipe %s est blindée : le joker est brûlé sans effet.', $targetName),
+            ];
         } else {
-            $consequences = $this->buildConsequences(
-                $code,
-                $placerId,
-                $placerName,
-                $targetId,
-                $targetName,
-                $match,
-                $scoreHome,
-                $scoreAway,
-                $linesAfterSimulate,
-                $rawTotals,
-                $stealTotals,
-                $buteurTotals,
+            $targetForIntro = $this->jokerTargetsOpponent($code) && $targetId > 0 ? $targetName : null;
+            $stories = array_merge(
+                [$this->phraseJokerPlaced($placerName, $jokerName, $targetForIntro)],
+                $this->buildOutcomeStories(
+                    $code,
+                    $placerId,
+                    $placerName,
+                    $targetId,
+                    $targetName,
+                    $match,
+                    $scoreHome,
+                    $scoreAway,
+                    $linesAfterSimulate,
+                    $rawTotals,
+                    $stealTotals,
+                    $buteurTotals,
+                ),
             );
         }
 
         return [
             'code' => $code,
-            'name' => $joker instanceof Joker ? $joker->getDisplayTitle() : $code,
+            'name' => $jokerName,
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $joker?->getImage(),
-            'rule' => $this->basicRuleForCode($code),
             'neutralized' => $neutralized,
-            'consequences' => $consequences,
+            'stories' => $stories,
         ];
     }
 
+    private function jokerTargetsOpponent(string $code): bool
+    {
+        return JokerDefenseService::isOffensiveAgainstTeam($code)
+            || Joker::CODE_INVERSE_SCORE === $code
+            || Joker::CODE_INVERSE_BUTEUR === $code;
+    }
+
+    private function phraseJokerPlaced(string $placerName, string $jokerName, ?string $targetName = null): string
+    {
+        if (null !== $targetName && 'Équipe inconnue' !== $targetName) {
+            return sprintf('L’équipe %s a posé %s sur l’équipe %s.', $placerName, $jokerName, $targetName);
+        }
+
+        return sprintf('L’équipe %s a posé %s sur ce match.', $placerName, $jokerName);
+    }
+
+    private function phraseTeamPointsOutcome(string $teamName, int $delta, bool $buteur = false): string
+    {
+        $context = $buteur ? ' sur les buteurs' : '';
+        $abs = abs($delta);
+
+        if ($delta > 0) {
+            return sprintf(
+                'Caramba !!! l’équipe %s obtient %d point%s%s.',
+                $teamName,
+                $abs,
+                $abs > 1 ? 's' : '',
+                $context,
+            );
+        }
+
+        if ($delta < 0) {
+            return sprintf(
+                'Aïe aïe aïe… l’équipe %s perd %d point%s%s.',
+                $teamName,
+                $abs,
+                $abs > 1 ? 's' : '',
+                $context,
+            );
+        }
+
+        return sprintf('Match serré : pas de swing en points%s pour l’équipe %s sur ce score.', $context, $teamName);
+    }
+
     /**
-     * @param array<int, float> $rawTotals
-     * @param array<int, float> $stealTotals
-     * @param array<int, float> $finalTotals
+     * @param list<SimulatedPronosticLine> $linesAfterSimulate
+     * @param array<int, float>          $rawTotals
+     * @param array<int, float>          $stealTotals
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function buildConsequences(
+    private function buildOutcomeStories(
         string $code,
         int $placerId,
         string $placerName,
@@ -191,7 +241,7 @@ final class MatchJokerImpactExplanationBuilder
         array $buteurTotals,
     ): array {
         return match ($code) {
-            Joker::CODE_DOUBLE_EQUIPE => $this->consequencesDoubleEquipe(
+            Joker::CODE_DOUBLE_EQUIPE => $this->outcomeStoriesDoubleEquipe(
                 $placerId,
                 $placerName,
                 $match,
@@ -200,7 +250,7 @@ final class MatchJokerImpactExplanationBuilder
                 $linesAfterSimulate,
                 $rawTotals,
             ),
-            Joker::CODE_INVERSE_SCORE => $this->consequencesInverseScore(
+            Joker::CODE_INVERSE_SCORE => $this->outcomeStoriesInverseScore(
                 $targetId,
                 $targetName,
                 $match,
@@ -209,8 +259,7 @@ final class MatchJokerImpactExplanationBuilder
                 $linesAfterSimulate,
                 $rawTotals,
             ),
-            Joker::CODE_PIQUE_POINTS => $this->consequencesPiquePoints(
-                $match,
+            Joker::CODE_PIQUE_POINTS => $this->outcomeStoriesPiquePoints(
                 $placerId,
                 $placerName,
                 $targetId,
@@ -218,43 +267,19 @@ final class MatchJokerImpactExplanationBuilder
                 $rawTotals,
                 $stealTotals,
             ),
-            Joker::CODE_DOUBLE_BUTEUR => $this->consequencesDoubleButeur($placerId, $placerName, $buteurTotals),
-            Joker::CODE_INVERSE_BUTEUR => $this->consequencesInverseButeur($targetId, $targetName, $buteurTotals),
+            Joker::CODE_DOUBLE_BUTEUR => $this->outcomeStoriesDoubleButeur($placerId, $placerName, $buteurTotals),
+            Joker::CODE_INVERSE_BUTEUR => $this->outcomeStoriesInverseButeur($targetId, $targetName, $buteurTotals),
             default => [],
         };
-    }
-
-    private function basicRuleForCode(string $code): string
-    {
-        return match ($code) {
-            Joker::CODE_DOUBLE_EQUIPE => 'Double les points pronos de l’équipe (×2 si bon, −3× cote si mauvais).',
-            Joker::CODE_PIQUE_POINTS => 'Vole tous les points pronos de l’équipe ciblée.',
-            Joker::CODE_INVERSE_SCORE => 'Note les pronos de la cible comme si le score était inversé.',
-            Joker::CODE_DOUBLE_BUTEUR => 'Double les points buteur de l’équipe sur ce match.',
-            Joker::CODE_INVERSE_BUTEUR => 'Les points buteur de la cible deviennent négatifs.',
-            Joker::CODE_COLLECTE_POINTS => 'Prélève 10 % des points pronos des autres équipes.',
-            Joker::CODE_BOUCLIER => 'Protège l’équipe : les jokers offensifs qui la ciblent sont annulés.',
-            Joker::CODE_ESPION => 'Renseignements avant coup d’envoi, sans effet sur les points.',
-            default => 'Joker actif sur ce match.',
-        };
-    }
-
-    private function formatPointsDelta(?int $delta, string $unit): string
-    {
-        if (null === $delta || 0 === $delta) {
-            return sprintf('0 pt %s sur ce score', $unit);
-        }
-
-        return sprintf('%s%d pt %s', $delta > 0 ? '+' : '', $delta, $unit);
     }
 
     /**
      * @param list<SimulatedPronosticLine> $linesAfterSimulate
      * @param array<int, float>          $rawTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function consequencesDoubleEquipe(
+    private function outcomeStoriesDoubleEquipe(
         int $placerId,
         string $placerName,
         GameMatch $match,
@@ -273,19 +298,16 @@ final class MatchJokerImpactExplanationBuilder
             Joker::CODE_DOUBLE_EQUIPE,
         ));
 
-        return [[
-            'team' => $placerName,
-            'text' => $this->formatPointsDelta($with - $without, 'pronos'),
-        ]];
+        return [$this->phraseTeamPointsOutcome($placerName, $with - $without)];
     }
 
     /**
      * @param list<SimulatedPronosticLine> $linesAfterSimulate
      * @param array<int, float>          $rawTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function consequencesInverseScore(
+    private function outcomeStoriesInverseScore(
         int $targetId,
         string $targetName,
         GameMatch $match,
@@ -305,20 +327,16 @@ final class MatchJokerImpactExplanationBuilder
             invertScores: false,
         ));
 
-        return [[
-            'team' => $targetName,
-            'text' => $this->formatPointsDelta($with - $without, 'pronos'),
-        ]];
+        return [$this->phraseTeamPointsOutcome($targetName, $with - $without)];
     }
 
     /**
      * @param array<int, float> $rawTotals
      * @param array<int, float> $stealTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function consequencesPiquePoints(
-        GameMatch $match,
+    private function outcomeStoriesPiquePoints(
         int $placerId,
         string $placerName,
         int $targetId,
@@ -332,41 +350,35 @@ final class MatchJokerImpactExplanationBuilder
             - (int) round((float) ($rawTotals[$targetId] ?? 0.0));
 
         return [
-            ['team' => $placerName, 'text' => $this->formatPointsDelta($deltaThief, 'pronos')],
-            ['team' => $targetName, 'text' => $this->formatPointsDelta($deltaVictim, 'pronos')],
+            $this->phraseTeamPointsOutcome($placerName, $deltaThief),
+            $this->phraseTeamPointsOutcome($targetName, $deltaVictim),
         ];
     }
 
     /**
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function consequencesDoubleButeur(int $placerId, string $placerName, array $buteurTotals): array
+    private function outcomeStoriesDoubleButeur(int $placerId, string $placerName, array $buteurTotals): array
     {
         $base = (int) ($buteurTotals[$placerId]['base'] ?? 0);
         $with = (int) ($buteurTotals[$placerId]['with_joker'] ?? 0);
 
-        return [[
-            'team' => $placerName,
-            'text' => $this->formatPointsDelta($with - $base, 'buteurs'),
-        ]];
+        return [$this->phraseTeamPointsOutcome($placerName, $with - $base, true)];
     }
 
     /**
      * @param array<int, array{base: int, with_joker: int}> $buteurTotals
      *
-     * @return list<array{team: string, text: string}>
+     * @return list<string>
      */
-    private function consequencesInverseButeur(int $targetId, string $targetName, array $buteurTotals): array
+    private function outcomeStoriesInverseButeur(int $targetId, string $targetName, array $buteurTotals): array
     {
         $base = (int) ($buteurTotals[$targetId]['base'] ?? 0);
         $with = (int) ($buteurTotals[$targetId]['with_joker'] ?? 0);
 
-        return [[
-            'team' => $targetName,
-            'text' => $this->formatPointsDelta($with - $base, 'buteurs'),
-        ]];
+        return [$this->phraseTeamPointsOutcome($targetName, $with - $base, true)];
     }
 
     /**
@@ -386,13 +398,14 @@ final class MatchJokerImpactExplanationBuilder
         $collectorName = $this->teamNameById($teams, $collectorId);
         $collecteJoker = $this->jokerRepository->findOneBy(['code' => Joker::CODE_COLLECTE_POINTS]);
         $code = Joker::CODE_COLLECTE_POINTS;
+        $jokerName = $collecteJoker instanceof Joker ? $collecteJoker->getDisplayTitle() : 'Collecte de points';
         $deltaCollector = (int) round((float) ($finalTotals[$collectorId] ?? 0.0))
             - (int) round((float) ($stealTotals[$collectorId] ?? 0.0));
 
-        $consequences = [[
-            'team' => $collectorName,
-            'text' => $this->formatPointsDelta($deltaCollector, 'pronos'),
-        ]];
+        $stories = [
+            $this->phraseJokerPlaced($collectorName, $jokerName),
+            $this->phraseTeamPointsOutcome($collectorName, $deltaCollector),
+        ];
 
         foreach ($teams as $team) {
             $teamId = (int) ($team->getId() ?? 0);
@@ -406,20 +419,16 @@ final class MatchJokerImpactExplanationBuilder
                 continue;
             }
 
-            $consequences[] = [
-                'team' => (string) $team->getName(),
-                'text' => $this->formatPointsDelta($delta, 'pronos'),
-            ];
+            $stories[] = $this->phraseTeamPointsOutcome((string) $team->getName(), $delta);
         }
 
         return [
             'code' => $code,
-            'name' => $collecteJoker instanceof Joker ? $collecteJoker->getDisplayTitle() : 'Collecte de points',
+            'name' => $jokerName,
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $collecteJoker?->getImage(),
-            'rule' => $this->basicRuleForCode($code),
             'neutralized' => false,
-            'consequences' => $consequences,
+            'stories' => $stories,
         ];
     }
 
@@ -432,17 +441,21 @@ final class MatchJokerImpactExplanationBuilder
         $code = Joker::CODE_ESPION;
         $placerName = $this->teamName($usage->getTeam());
 
+        $jokerName = $joker instanceof Joker ? $joker->getDisplayTitle() : 'Espion';
+
         return [
             'code' => $code,
-            'name' => $joker instanceof Joker ? $joker->getDisplayTitle() : 'Espion',
+            'name' => $jokerName,
             'icon' => Joker::tablerIconClassForCode($code),
             'image' => $joker?->getImage(),
-            'rule' => $this->basicRuleForCode($code),
             'neutralized' => false,
-            'consequences' => [[
-                'team' => $placerName,
-                'text' => 'Aucun impact points.',
-            ]],
+            'stories' => [
+                sprintf(
+                    'L’équipe %s a sorti %s : petit coup d’œil dans les cartes avant le match, zéro point en jeu mais la classe !',
+                    $placerName,
+                    $jokerName,
+                ),
+            ],
         ];
     }
 

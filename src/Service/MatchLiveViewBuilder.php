@@ -90,9 +90,8 @@ final class MatchLiveViewBuilder
      *         name: string,
      *         icon: string,
      *         image: ?string,
-     *         rule: string,
      *         neutralized: bool,
-     *         consequences: list<array{team: string, text: string}>
+     *         stories: list<string>
      *     }>
      * }
      */

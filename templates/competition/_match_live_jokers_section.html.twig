@@ -12,16 +12,12 @@
                             </span>
                             <h3 class="match-live-jokers-card__title">{{ joker.name }}</h3>
                         </div>
-                        <p class="match-live-jokers-card__rule">{{ joker.rule }}</p>
-                        {% if joker.consequences is not empty %}
-                            <ul class="match-live-jokers-card__consequences">
-                                {% for row in joker.consequences %}
-                                    <li>
-                                        <strong>{{ row.team }}</strong>
-                                        <span class="match-live-jokers-card__consequence-text">{{ row.text }}</span>
-                                    </li>
+                        {% if joker.stories is not empty %}
+                            <div class="match-live-jokers-card__stories">
+                                {% for story in joker.stories %}
+                                    <p class="match-live-jokers-card__story">{{ story }}</p>
                                 {% endfor %}
-                            </ul>
+                            </div>
                         {% endif %}
                     </div>
                 </li>
