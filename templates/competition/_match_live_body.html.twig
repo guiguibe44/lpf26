@@ -66,11 +66,6 @@
     </section>
 {% endif %}
 
-{% include 'competition/_match_live_jokers_section.html.twig' with {
-    match_jokers: live_view.matchJokers|default([]),
-    show_simulator: show_simulator,
-} only %}
-
 <section class="ta-card mt-5 match-live-teams-section">
     <h2 class="ta-card-title">Pronostics par équipe</h2>
     {% include 'competition/_match_live_teams.html.twig' with {
@@ -79,6 +74,11 @@
         viewer_pronostic: live_view.viewerPronostic|default(null),
     } only %}
 </section>
+
+{% include 'competition/_match_live_jokers_section.html.twig' with {
+    match_jokers: live_view.matchJokers|default([]),
+    show_simulator: show_simulator,
+} only %}
 
 {% if live_view.matchButeurs is not empty %}
     <section class="ta-card mt-5 match-live-buteurs-section">
