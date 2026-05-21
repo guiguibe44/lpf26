@@ -1,0 +1,50 @@
+{# home, draw, away: float|null — active_outcome: HOME|DRAW|AWAY|null — id_prefix: string — pronostics_count: int|null — variant: square|card|compact|banner #}
+{% set active = active_outcome|default(null) %}
+{% set block_variant = variant|default('banner') %}
+{% set pronostics_count = pronostics_count|default(null) %}
+{% set show_pronostics_meta = show_pronostics_meta|default(true) %}
+<div
+    class="match-cotes-1n2-blocks match-cotes-1n2-blocks--{{ block_variant }}{% if block_variant == 'compact' %} match-cotes-1n2-blocks--compact{% endif %}"
+    role="list"
+    aria-label="Cotes 1, N et 2"
+    {% if id_prefix|default('') %}data-cotes-blocks-id="{{ id_prefix }}"{% endif %}
+>
+    <div
+        class="match-cotes-1n2-blocks__item{% if active == 'HOME' %} match-cotes-1n2-blocks__item--active{% endif %}"
+        role="listitem"
+        data-cotes-outcome="HOME"
+        {% if id_prefix|default('') %}id="{{ id_prefix }}-cote-home"{% endif %}
+    >
+        <span class="match-cotes-1n2-blocks__label">1</span>
+        <span class="match-cotes-1n2-blocks__value">
+            {% if home is not null %}×{{ home|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+        </span>
+    </div>
+    <div
+        class="match-cotes-1n2-blocks__item{% if active == 'DRAW' %} match-cotes-1n2-blocks__item--active{% endif %}"
+        role="listitem"
+        data-cotes-outcome="DRAW"
+        {% if id_prefix|default('') %}id="{{ id_prefix }}-cote-draw"{% endif %}
+    >
+        <span class="match-cotes-1n2-blocks__label">N</span>
+        <span class="match-cotes-1n2-blocks__value">
+            {% if draw is not null %}×{{ draw|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+        </span>
+    </div>
+    <div
+        class="match-cotes-1n2-blocks__item{% if active == 'AWAY' %} match-cotes-1n2-blocks__item--active{% endif %}"
+        role="listitem"
+        data-cotes-outcome="AWAY"
+        {% if id_prefix|default('') %}id="{{ id_prefix }}-cote-away"{% endif %}
+    >
+        <span class="match-cotes-1n2-blocks__label">2</span>
+        <span class="match-cotes-1n2-blocks__value">
+            {% if away is not null %}×{{ away|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+        </span>
+    </div>
+</div>
+{% if show_pronostics_meta and pronostics_count is not null and pronostics_count > 0 %}
+    <p class="match-cotes-1n2-blocks__meta">
+        {{ pronostics_count }} pronostic{{ pronostics_count > 1 ? 's' : '' }} sur ce match
+    </p>
+{% endif %}

@@ -82,16 +82,24 @@
         {% if match.venueName %}
             <span class="match-venue"> · {{ match.venueName }}</span>
         {% endif %}
-        {% if cotes_visible %}
-            {% if match_cote_is_one_n_two() and match.coteDomicile is not null %}
-                · Cotes 1 <span class="match-meta-cote">{{ match.coteDomicile|number_format(1, ',', ' ') }}</span>
-                N <span class="match-meta-cote">{{ match.coteNul|number_format(1, ',', ' ') }}</span>
-                2 <span class="match-meta-cote">{{ match.coteExterieur|number_format(1, ',', ' ') }}</span>
-            {% elseif match.coteMoyenne is not null %}
-                · Cote moy. {{ match.coteMoyenne|number_format(2, ',', ' ') }}
-            {% endif %}
+        {% if cotes_visible and not match_cote_is_one_n_two() and match.coteMoyenne is not null %}
+            · Cote moy. {{ match.coteMoyenne|number_format(2, ',', ' ') }}
         {% endif %}
     </p>
+
+    {% if cotes_visible and match_cote_is_one_n_two() and match.coteDomicile is not null and (is_live or is_finished) %}
+        <div class="match-card-cotes-row">
+            {% include 'competition/_match_cotes_1n2_blocks.html.twig' with {
+                home: match.coteDomicile,
+                draw: match.coteNul,
+                away: match.coteExterieur,
+                active_outcome: match_outcome_from_scores(match.scoreDomicile, match.scoreExterieur),
+                variant: 'square',
+                show_pronostics_meta: false,
+                id_prefix: 'match-card-cotes-' ~ match.id,
+            } only %}
+        </div>
+    {% endif %}
 
     <div class="match-pronostic">
         {% if match_prono_blocked_cotisation %}

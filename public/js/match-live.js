@@ -74,6 +74,39 @@
         return '×' + formatCote(value);
     };
 
+    const formatCoteCoefShort = (value) => {
+        if (value === null || value === undefined) {
+            return '—';
+        }
+
+        const num = Number(value);
+        const digits = Number.isInteger(num) || num % 0.5 === 0 ? 1 : 2;
+
+        return '×' + num.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    };
+
+    const setBlockValue = (blockEl, value) => {
+        if (!blockEl) {
+            return;
+        }
+
+        const valueEl = blockEl.querySelector('.match-cotes-1n2-blocks__value');
+        if (valueEl) {
+            valueEl.textContent = formatCoteCoefShort(value);
+        }
+    };
+
+    const setActiveCoteOutcome = (banner, outcome) => {
+        if (!banner) {
+            return;
+        }
+
+        banner.querySelectorAll('[data-cotes-outcome]').forEach((block) => {
+            const isActive = Boolean(outcome) && block.dataset.cotesOutcome === outcome;
+            block.classList.toggle('match-cotes-1n2-blocks__item--active', isActive);
+        });
+    };
+
     const updateCotesBanner = (cotes) => {
         const banner = document.getElementById('match-live-cotes-banner');
         if (!banner || !cotes) {
@@ -83,34 +116,20 @@
         const count = Number(cotes.pronostics_count) || 0;
         banner.hidden = count === 0;
 
-        const scoreEl = document.getElementById('match-live-cotes-score');
-        const outcomeEl = document.getElementById('match-live-cotes-outcome');
         const forScoreEl = document.getElementById('match-live-cotes-for-score');
         const minEl = document.getElementById('match-live-cotes-min');
         const avgEl = document.getElementById('match-live-cotes-avg');
         const maxEl = document.getElementById('match-live-cotes-max');
-        const homeEl = document.getElementById('match-live-cotes-home');
-        const drawEl = document.getElementById('match-live-cotes-draw');
-        const awayEl = document.getElementById('match-live-cotes-away');
 
-        if (outcomeEl) {
-            outcomeEl.textContent = String(cotes.for_outcome_label ?? '');
-        }
-        if (scoreEl) {
-            scoreEl.textContent = String(cotes.score_label ?? '');
-        }
         if (forScoreEl) {
             forScoreEl.textContent = formatCoteCoef(cotes.for_score);
         }
-        if (homeEl) {
-            homeEl.textContent = formatCoteCoef(cotes.home);
-        }
-        if (drawEl) {
-            drawEl.textContent = formatCoteCoef(cotes.draw);
-        }
-        if (awayEl) {
-            awayEl.textContent = formatCoteCoef(cotes.away);
-        }
+
+        setBlockValue(banner.querySelector('[data-cotes-outcome="HOME"]'), cotes.home);
+        setBlockValue(banner.querySelector('[data-cotes-outcome="DRAW"]'), cotes.draw);
+        setBlockValue(banner.querySelector('[data-cotes-outcome="AWAY"]'), cotes.away);
+        setActiveCoteOutcome(banner, cotes.for_outcome ?? null);
+
         if (minEl) {
             minEl.textContent = formatCoteCoef(cotes.min);
         }

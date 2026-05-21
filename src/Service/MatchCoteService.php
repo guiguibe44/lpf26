@@ -52,7 +52,15 @@ final class MatchCoteService
      */
     public function computeOverviewForMatch(GameMatch $match, iterable $pronostics): array
     {
-        return $this->calculatorFor($this->activeMode)->computeOverview($this->normalizePronostics($pronostics));
+        $overview = $this->calculatorFor($this->activeMode)->computeOverview($this->normalizePronostics($pronostics));
+
+        $scoreHome = $match->getScoreDomicile();
+        $scoreAway = $match->getScoreExterieur();
+        if (null !== $scoreHome && null !== $scoreAway) {
+            $overview['active_outcome'] = $this->matchOutcomeResolver->resolve($scoreHome, $scoreAway);
+        }
+
+        return $overview;
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Entity\GameMatch;
 use App\Entity\Joker;
 use App\Enum\MatchCoteMode;
 use App\Service\MatchCoteService;
+use App\Service\MatchOutcomeResolver;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
 use App\Service\MatchLiveClockLabelResolver;
@@ -30,6 +31,7 @@ final class AppExtension extends AbstractExtension
         private readonly UserNotificationContext $userNotificationContext,
         private readonly TeamMatchPointsTierResolver $teamMatchPointsTierResolver,
         private readonly MatchCoteService $matchCoteService,
+        private readonly MatchOutcomeResolver $matchOutcomeResolver,
     ) {
     }
 
@@ -60,7 +62,20 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('joker_tabler_icon', [$this, 'getJokerTablerIcon']),
             new TwigFunction('match_cote_mode', [$this, 'getMatchCoteMode']),
             new TwigFunction('match_cote_is_one_n_two', [$this, 'isMatchCoteOneNTwo']),
+            new TwigFunction('match_outcome_from_scores', [$this, 'getMatchOutcomeFromScores']),
         ];
+    }
+
+    /**
+     * Issue 1/N/2 (HOME, DRAW, AWAY) à partir du score réel, ou null si incomplet.
+     */
+    public function getMatchOutcomeFromScores(?int $scoreHome, ?int $scoreAway): ?string
+    {
+        if (null === $scoreHome || null === $scoreAway) {
+            return null;
+        }
+
+        return $this->matchOutcomeResolver->resolve($scoreHome, $scoreAway);
     }
 
     public function getMatchCoteMode(): string

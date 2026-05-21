@@ -1,41 +1,27 @@
-{# cotes: buildDisplayContext #}
-<div class="match-live-cotes-banner" id="match-live-cotes-banner"{% if cotes.pronostics_count == 0 %} hidden{% endif %}>
-    <p class="match-live-cotes-banner__title">Cotes pronostics</p>
+{# cotes: buildDisplayContext — intégré dans la carte score live #}
+<div class="match-live-score-card__cotes" id="match-live-cotes-banner"{% if cotes.pronostics_count == 0 %} hidden{% endif %}>
     {% if cotes.pronostics_count > 0 %}
         {% if cotes.mode|default('one_n_two') == 'one_n_two' and cotes.home is not null %}
-            <p class="match-live-cotes-banner__main">
-                Issue du score affiché
-                {% if cotes.for_outcome_label is defined and cotes.for_outcome_label %}
-                    <strong id="match-live-cotes-outcome">{{ cotes.for_outcome_label }}</strong>
-                {% endif %}
-                <span class="match-live-cotes-banner__sep">→</span>
-                cote <strong class="match-live-cotes-banner__value" id="match-live-cotes-for-score">×{{ cotes.for_score|number_format(1, ',', ' ') }}</strong>
-            </p>
-            <p class="match-live-cotes-banner__range ta-card-text" id="match-live-cotes-1n2-grid">
-                <span class="match-live-cotes-1n2-item">1 <strong id="match-live-cotes-home">×{{ cotes.home|number_format(1, ',', ' ') }}</strong></span>
-                ·
-                <span class="match-live-cotes-1n2-item">N <strong id="match-live-cotes-draw">×{{ cotes.draw|number_format(1, ',', ' ') }}</strong></span>
-                ·
-                <span class="match-live-cotes-1n2-item">2 <strong id="match-live-cotes-away">×{{ cotes.away|number_format(1, ',', ' ') }}</strong></span>
-                <span class="match-live-cotes-banner__meta">({{ cotes.pronostics_count }} pronostic{{ cotes.pronostics_count > 1 ? 's' : '' }})</span>
-            </p>
+            {% include 'competition/_match_cotes_1n2_blocks.html.twig' with {
+                home: cotes.home,
+                draw: cotes.draw,
+                away: cotes.away,
+                active_outcome: cotes.for_outcome|default(null),
+                id_prefix: 'match-live-cotes',
+                variant: 'square',
+                show_pronostics_meta: false,
+            } only %}
         {% elseif cotes.for_score is not null %}
-            <p class="match-live-cotes-banner__main">
-                Score <strong id="match-live-cotes-score">{{ cotes.score_label }}</strong>
-                <span class="match-live-cotes-banner__sep">→</span>
-                cote <strong class="match-live-cotes-banner__value" id="match-live-cotes-for-score">×{{ cotes.for_score|number_format(2, ',', ' ') }}</strong>
+            <p class="match-live-cotes-inline ta-card-text">
+                Cote score <strong id="match-live-cotes-for-score">×{{ cotes.for_score|number_format(2, ',', ' ') }}</strong>
+                {% if cotes.min is not null and cotes.max is not null %}
+                    <span class="match-live-cotes-inline__range">
+                        · min <span id="match-live-cotes-min">×{{ cotes.min|number_format(2, ',', ' ') }}</span>
+                        · moy. <span id="match-live-cotes-avg">×{{ cotes.moyenne|number_format(2, ',', ' ') }}</span>
+                        · max <span id="match-live-cotes-max">×{{ cotes.max|number_format(2, ',', ' ') }}</span>
+                    </span>
+                {% endif %}
             </p>
-            {% if cotes.min is not null and cotes.max is not null %}
-                <p class="match-live-cotes-banner__range ta-card-text">
-                    Toutes les grilles :
-                    min <span id="match-live-cotes-min">×{{ cotes.min|number_format(2, ',', ' ') }}</span>
-                    · moy. <span id="match-live-cotes-avg">×{{ cotes.moyenne|number_format(2, ',', ' ') }}</span>
-                    · max <span id="match-live-cotes-max">×{{ cotes.max|number_format(2, ',', ' ') }}</span>
-                    <span class="match-live-cotes-banner__meta">({{ cotes.pronostics_count }} pronostic{{ cotes.pronostics_count > 1 ? 's' : '' }})</span>
-                </p>
-            {% endif %}
         {% endif %}
-    {% else %}
-        <p class="match-live-cotes-banner__empty ta-card-text">Pas encore assez de pronostics pour estimer les cotes.</p>
     {% endif %}
 </div>

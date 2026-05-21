@@ -150,13 +150,27 @@ html.dark body.front-body .ta-main .match-live-detail-panel {
     border-color: var(--lpf-border) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-cotes-banner {
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item {
     background: var(--lpf-bg) !important;
     border-color: var(--lpf-border) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-cotes-banner__value {
-    color: var(--lpf-link) !important;
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item--active {
+    border-color: #22c55e !important;
+    background: rgb(22 163 74 / 18%) !important;
+    box-shadow: 0 0 0 3px rgb(34 197 94 / 28%) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__value {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item--active .match-cotes-1n2-blocks__value {
+    color: #4ade80 !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__label {
+    color: #94a3b8 !important;
 }
 
 html.dark body.front-body .ta-main .match-live-match-buteurs-cote {

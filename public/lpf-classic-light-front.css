@@ -163,13 +163,9 @@ html.lpf-classic-light body.front-body .ta-main .match-live-detail-panel {
     border-color: var(--lpf-border) !important;
 }
 
-html.lpf-classic-light body.front-body .ta-main .match-live-cotes-banner {
-    background: var(--lpf-bg) !important;
-    border-color: var(--lpf-border) !important;
-}
-
-html.lpf-classic-light body.front-body .ta-main .match-live-cotes-banner__value {
-    color: var(--lpf-link) !important;
+html.lpf-classic-light body.front-body .ta-main .match-cotes-1n2-blocks__item--active {
+    border-color: #16a34a !important;
+    background: #ecfdf5 !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-live-match-buteurs-cote {

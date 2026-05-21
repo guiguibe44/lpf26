@@ -1637,6 +1637,23 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     text-align: left;
 }
 
+.match-live-score-card__cotes {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+    padding-top: 0.15rem;
+}
+
+.match-live-cotes-inline {
+    margin: 0;
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.match-live-cotes-inline__range {
+    color: #94a3b8;
+}
+
 .match-live-goals-wrap .match-goals-sides {
     max-width: 36rem;
     margin-left: auto;
@@ -1661,17 +1678,24 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     justify-self: start;
 }
 
+.match-live-score-team__crest {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .match-live-score-flag,
 .match-live-score-team .match-flag-placeholder {
     display: block;
-    width: 1.35rem;
-    height: 0.9rem;
-    border-radius: 0.15rem;
+    width: 2.75rem;
+    height: 1.85rem;
+    border-radius: 0.2rem;
     object-fit: cover;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 12%);
 }
 
 .match-live-score-team .match-flag-placeholder {
-    font-size: 0.55rem;
+    font-size: 0.85rem;
 }
 
 .match-live-score-team__name {
@@ -1726,50 +1750,89 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     color: #64748b;
 }
 
-.match-live-cotes-banner {
-    margin-bottom: 0.85rem;
-    padding: 0.65rem 0.75rem;
-    border-radius: 0.5rem;
+.match-card-cotes-row {
+    display: flex;
+    justify-content: center;
+    margin: 0.35rem 0 0.65rem;
+    padding: 0 0.15rem;
+}
+
+.match-cotes-1n2-blocks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.match-cotes-1n2-blocks--square,
+.match-cotes-1n2-blocks--card {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 0.65rem;
+    width: auto;
+}
+
+.match-cotes-1n2-blocks--compact {
+    gap: 0.5rem;
+}
+
+.match-cotes-1n2-blocks__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 4.5rem;
+    padding: 0.65rem 0.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.55rem;
     background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    text-align: center;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
-.match-live-cotes-banner__title {
-    margin: 0 0 0.35rem;
-    font-size: 0.72rem;
+.match-cotes-1n2-blocks--square .match-cotes-1n2-blocks__item,
+.match-cotes-1n2-blocks--card .match-cotes-1n2-blocks__item {
+    width: 100px;
+    height: 100px;
+    min-height: 100px;
+    padding: 0.75rem 0.5rem;
+    box-sizing: border-box;
+}
+
+.match-cotes-1n2-blocks__item--active {
+    border-color: #16a34a;
+    background: #ecfdf5;
+    box-shadow: 0 0 0 3px rgb(22 163 74 / 22%);
+}
+
+.match-cotes-1n2-blocks__label {
+    font-size: 0.65rem;
     font-weight: 700;
+    line-height: 1;
+    color: #94a3b8;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #64748b;
+    letter-spacing: 0.05em;
 }
 
-.match-live-cotes-banner__main {
-    margin: 0;
-    font-size: 0.95rem;
+.match-cotes-1n2-blocks__value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
     color: #0f172a;
+    letter-spacing: -0.02em;
 }
 
-.match-live-cotes-banner__value {
-    color: #2563eb;
-    font-size: 1.05rem;
+.match-cotes-1n2-blocks__item--active .match-cotes-1n2-blocks__value {
+    color: #15803d;
 }
 
-.match-live-cotes-banner__sep {
-    margin: 0 0.25rem;
+.match-cotes-1n2-blocks__meta {
+    margin: 0.45rem 0 0;
+    font-size: 0.75rem;
     color: #94a3b8;
-}
-
-.match-live-cotes-banner__range {
-    margin: 0.35rem 0 0;
-    font-size: 0.8rem;
-}
-
-.match-live-cotes-banner__meta {
-    color: #94a3b8;
-}
-
-.match-live-cotes-banner__empty {
-    margin: 0;
+    text-align: center;
 }
 
 .match-live-compact-table {
@@ -2445,34 +2508,8 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
     line-height: 1.45;
 }
 
-.match-cotes-overview__grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem 1rem;
-    align-items: center;
-}
-
-.match-cotes-overview__item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.65rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.45rem;
-    background: #f8fafc;
-}
-
-.match-cotes-overview__issue {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.25rem;
-    font-weight: 700;
-    color: #1d4ed8;
-}
-
-.match-live-cotes-1n2-item strong {
-    color: #0f172a;
+.match-cotes-overview .match-cotes-1n2-blocks {
+    margin: 0.35rem auto 0;
 }
 
 .match-espion-table-wrap {

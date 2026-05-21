@@ -49,6 +49,9 @@
     <div class="match-goals-wrap match-live-goals-wrap">
         {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
     </div>
+    {% if match_cotes_visible(match) %}
+        {% include 'competition/_match_live_cotes.html.twig' with { cotes: live_view.cotes } only %}
+    {% endif %}
 </section>
 
 {% if show_simulator %}
@@ -73,9 +76,6 @@
 
 <section class="ta-card mt-5 match-live-teams-section">
     <h2 class="ta-card-title">Pronostics par équipe</h2>
-    {% if match_cotes_visible(match) %}
-        {% include 'competition/_match_live_cotes.html.twig' with { cotes: live_view.cotes } only %}
-    {% endif %}
     {% include 'competition/_match_live_teams.html.twig' with {
         teams: live_view.teams,
         cotes_visible: match_cotes_visible(match),

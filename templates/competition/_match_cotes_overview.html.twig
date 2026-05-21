@@ -6,23 +6,14 @@
             <span class="match-cotes-overview__explain">
                 Cotes sur le résultat <strong>1 / N / 2</strong>, calculées sur l’ensemble des pronos du match (comme LPF24).
             </span>
-            <span class="match-cotes-overview__grid" role="list">
-                <span class="match-cotes-overview__item" role="listitem">
-                    <span class="match-cotes-overview__issue">1</span>
-                    <strong>×{{ cotes.home|number_format(1, ',', ' ') }}</strong>
-                </span>
-                <span class="match-cotes-overview__item" role="listitem">
-                    <span class="match-cotes-overview__issue">N</span>
-                    <strong>×{{ cotes.draw|number_format(1, ',', ' ') }}</strong>
-                </span>
-                <span class="match-cotes-overview__item" role="listitem">
-                    <span class="match-cotes-overview__issue">2</span>
-                    <strong>×{{ cotes.away|number_format(1, ',', ' ') }}</strong>
-                </span>
-            </span>
-            <span class="match-cotes-overview__meta match-espion-meta">
-                ({{ cotes.pronostics_count }} pronostic{{ cotes.pronostics_count > 1 ? 's' : '' }})
-            </span>
+            {% include 'competition/_match_cotes_1n2_blocks.html.twig' with {
+                home: cotes.home,
+                draw: cotes.draw,
+                away: cotes.away,
+                active_outcome: cotes.active_outcome|default(null),
+                pronostics_count: cotes.pronostics_count,
+                variant: 'square',
+            } only %}
             <span class="match-cotes-overview__hint match-espion-meta">
                 Bon prono ou score exact : cote du <strong>résultat réel</strong> du match.
                 Mauvais prono : cote de <strong>votre</strong> issue (1, N ou 2).
