@@ -9,14 +9,16 @@ export default class extends Controller {
     };
 
     connect() {
+        this._isOpen = false;
+        this._suppressOutsideCloseUntil = 0;
         this.buildList();
         this.syncFromSelect();
-        this.boundDocClick = this.onDocumentClick.bind(this);
-        document.addEventListener('click', this.boundDocClick);
+        this.boundDocPointerDown = this.onDocumentPointerDown.bind(this);
+        document.addEventListener('pointerdown', this.boundDocPointerDown, true);
     }
 
     disconnect() {
-        document.removeEventListener('click', this.boundDocClick);
+        document.removeEventListener('pointerdown', this.boundDocPointerDown, true);
     }
 
     toggle(event) {
@@ -25,22 +27,28 @@ export default class extends Controller {
         if (this.triggerTarget.disabled) {
             return;
         }
-        this.setOpen(this.dropdownTarget.hidden);
+        this.setOpen(!this._isOpen);
     }
 
     setOpen(open) {
+        this._isOpen = open;
         this.dropdownTarget.hidden = !open;
+        this.element.classList.toggle('country-flag-select--open', open);
         this.triggerTarget.setAttribute('aria-expanded', open ? 'true' : 'false');
+
         if (open) {
+            this._suppressOutsideCloseUntil = performance.now() + 350;
             if (this.hasSearchTarget) {
                 this.searchTarget.value = '';
             }
             this.applyFilter('');
-            window.requestAnimationFrame(() => {
-                if (this.hasSearchTarget) {
-                    this.searchTarget.focus();
-                }
-            });
+            if (this.hasSearchTarget && this.shouldFocusSearchOnOpen()) {
+                window.requestAnimationFrame(() => {
+                    if (this._isOpen && this.hasSearchTarget) {
+                        this.searchTarget.focus({ preventScroll: true });
+                    }
+                });
+            }
 
             return;
         }
@@ -51,15 +59,27 @@ export default class extends Controller {
         this.applyFilter('');
     }
 
-    onDocumentClick(event) {
-        if (!this.element.contains(event.target)) {
-            this.setOpen(false);
+    shouldFocusSearchOnOpen() {
+        return !window.matchMedia('(pointer: coarse)').matches;
+    }
+
+    onDocumentPointerDown(event) {
+        if (!this._isOpen) {
+            return;
         }
+        if (performance.now() < this._suppressOutsideCloseUntil) {
+            return;
+        }
+        if (this.element.contains(event.target)) {
+            return;
+        }
+        this.setOpen(false);
     }
 
     onSearchKeydown(event) {
         if (event.key === 'Escape') {
             event.preventDefault();
+            event.stopPropagation();
             this.setOpen(false);
             this.triggerTarget.focus();
         }
@@ -91,8 +111,9 @@ export default class extends Controller {
             label.className = 'country-flag-select__option-label';
             label.textContent = option.textContent;
             item.appendChild(label);
-            item.addEventListener('click', (clickEvent) => {
-                clickEvent.preventDefault();
+            item.addEventListener('pointerdown', (pointerEvent) => {
+                pointerEvent.preventDefault();
+                pointerEvent.stopPropagation();
                 this.pick(option.value);
             });
             this.listTarget.appendChild(item);
@@ -118,16 +139,23 @@ export default class extends Controller {
         if (this.hasEmptyTarget) {
             const showEmpty = normQuery !== '' && visibleCount === 0;
             this.emptyTarget.hidden = !showEmpty;
-            this.listTarget.hidden = showEmpty;
         }
     }
 
     normalizeLabel(text) {
-        return (text ?? '')
-            .normalize('NFD')
-            .replace(/\p{M}/gu, '')
-            .toLowerCase()
-            .trim();
+        const raw = (text ?? '').trim();
+
+        try {
+            return raw
+                .normalize('NFD')
+                .replace(/\p{M}/gu, '')
+                .toLowerCase();
+        } catch {
+            return raw
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase();
+        }
     }
 
     createFlagElement(option) {
