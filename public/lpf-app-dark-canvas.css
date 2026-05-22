@@ -87,6 +87,23 @@ html.dark body.front-body .ta-main .admin-push-history-table td {
     color: var(--lpf-text) !important;
 }
 
+html.dark body.front-body .ta-main .group-standings-row--qualified {
+    background: rgb(34 197 94 / 12%) !important;
+}
+
+html.dark body.front-body .ta-main .group-standings-row--eliminated {
+    background: rgb(15 23 42 / 35%) !important;
+}
+
+html.dark body.front-body .ta-main .group-standings-qual-mark {
+    color: var(--lpf-link, #4ade80) !important;
+}
+
+html.dark body.front-body .ta-main .group-standings-legend__item--qualified::before {
+    background: rgb(34 197 94 / 20%);
+    color: var(--lpf-link, #4ade80);
+}
+
 html.dark body.front-body .ta-main .table tbody tr:hover,
 html.dark body.front-body .ta-main .ta-table tbody tr:hover,
 html.dark body.front-body .ta-main .admin-push-history-table tbody tr:hover {

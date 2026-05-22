@@ -10,6 +10,7 @@ use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\TeamRepository;
 use App\Service\DefaultPronosticService;
+use App\Service\GroupKnockoutQualificationAnalyzer;
 use App\Service\GroupStandingsBuilder;
 use App\Service\KdoMatchWinnerService;
 use App\Service\MatchLiveViewBuilder;
@@ -249,10 +250,12 @@ class CompetitionController extends AbstractController
     }
 
     #[Route('/groupes', name: 'app_groups', methods: ['GET'])]
-    public function groups(GroupStandingsBuilder $groupStandingsBuilder): Response
-    {
+    public function groups(
+        GroupStandingsBuilder $groupStandingsBuilder,
+        GroupKnockoutQualificationAnalyzer $groupKnockoutQualificationAnalyzer,
+    ): Response {
         return $this->render('competition/groups.html.twig', [
-            'standings_by_group' => $groupStandingsBuilder->build(),
+            'standings_by_group' => $groupKnockoutQualificationAnalyzer->enrich($groupStandingsBuilder->build()),
         ]);
     }
 

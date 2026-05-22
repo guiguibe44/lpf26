@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Groupes des pays | LPF 2026{% endblock %}
+{% block title %}Groupes | LPF 2026{% endblock %}
 
 {% block body %}
 {#
@@ -13,6 +13,13 @@
     </section>
     #}
     <section class="ta-grid mt-5">
+        {% if standings_by_group is not empty %}
+            <p class="group-standings-legend ta-card-text mb-0">
+                <span class="group-standings-legend__item group-standings-legend__item--qualified">Qualifié pour la suite</span>
+                <span class="group-standings-legend__item group-standings-legend__item--eliminated">Éliminé</span>
+                <span class="group-standings-legend__item">Barré uniquement lorsque chaque équipe de la poule a joué au moins un match.</span>
+            </p>
+        {% endif %}
         {% if standings_by_group is empty %}
             <article class="ta-card p-5">
                 <p class="ta-card-text">
@@ -42,14 +49,21 @@
                             </thead>
                             <tbody>
                                 {% for row in rows %}
-                                    <tr>
+                                    {% set is_qualified = row.knockout_status in ['qualified_direct', 'qualified_third'] %}
+                                    {% set is_eliminated = row.knockout_status == 'eliminated' %}
+                                    <tr class="{{ is_eliminated ? 'group-standings-row--eliminated' : '' }}{{ is_qualified ? ' group-standings-row--qualified' : '' }}">
                                         <td class="ta-num">{{ loop.index }}</td>
                                         <td>
                                             <span class="group-standings-team">
                                                 <span class="group-country-flag-wrap group-country-flag-wrap--compact">
                                                     {% include 'components/_country_flag_img.html.twig' with { country: row.country } only %}
                                                 </span>
-                                                <span class="group-standings-name">{{ row.country.nom }}</span>
+                                                <span class="group-standings-name{{ is_eliminated ? ' group-standings-name--barred' : '' }}">
+                                                    {{ row.country.nom }}
+                                                    {% if is_qualified %}
+                                                        <span class="group-standings-qual-mark" title="Qualifié pour les 8es de finale">✓</span>
+                                                    {% endif %}
+                                                </span>
                                             </span>
                                         </td>
                                         <td class="ta-num">{{ row.joues }}</td>

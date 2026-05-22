@@ -1027,6 +1027,59 @@
     color: #0f172a;
 }
 
+.group-standings-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    align-items: center;
+    grid-column: 1 / -1;
+    font-size: 0.85rem;
+}
+
+.group-standings-legend__item--qualified::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: 0.35rem;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.group-standings-legend__item--eliminated {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
+.group-standings-row--qualified {
+    background: rgb(220 252 231 / 35%);
+}
+
+.group-standings-row--eliminated {
+    background: rgb(241 245 249 / 55%);
+}
+
+.group-standings-name--barred {
+    text-decoration: line-through;
+    opacity: 0.55;
+}
+
+.group-standings-row--eliminated .group-country-flag-wrap {
+    opacity: 0.55;
+}
+
+.group-standings-qual-mark {
+    margin-left: 0.35rem;
+    color: #16a34a;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
 .ta-table th.ta-num,
 .ta-table td.ta-num {
     text-align: right;
@@ -4064,6 +4117,8 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 
 /* Sélect pays avec drapeaux (équipe favorite) */
 .country-flag-select {
+    position: relative;
+    z-index: 0;
     --country-flag-select-bg: #ffffff;
     --country-flag-select-border: #cbd5e1;
     --country-flag-select-text: #1e293b;
@@ -4073,8 +4128,11 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
     --country-flag-select-flag-initial: #475569;
     --country-flag-select-shadow: 0 12px 28px rgb(15 23 42 / 14%);
 
-    position: relative;
     width: 100%;
+}
+
+.country-flag-select--open {
+    z-index: 60;
 }
 
 html.dark .country-flag-select {
@@ -4180,9 +4238,14 @@ html.dark .country-flag-select__flag {
     color: var(--country-flag-select-flag-initial);
 }
 
+.account-card-favorite-country,
+.account-card-favorite-country .ta-form-row {
+    overflow: visible;
+}
+
 .country-flag-select__dropdown {
     position: absolute;
-    z-index: 40;
+    z-index: 61;
     top: calc(100% + 0.35rem);
     left: 0;
     right: 0;
