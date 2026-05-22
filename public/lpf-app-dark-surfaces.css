@@ -115,6 +115,73 @@ html.dark body.front-body .ta-main .match-live-compact-table tr.match-live-row--
     background-color: rgb(120 53 15 / 36%) !important;
 }
 
+html.dark body.front-body .ta-main tr.match-live-row--has-joker.match-live-row--viewer > td,
+html.dark body.front-body .ta-main .match-live-compact-table tr.match-live-row--has-joker.match-live-row--viewer > td {
+    background-color: rgb(69 26 3 / 52%) !important;
+}
+
+html.dark body.front-body .ta-main tr.match-live-row--has-joker.match-live-row--viewer:hover > td,
+html.dark body.front-body .ta-main .match-live-compact-table tr.match-live-row--has-joker.match-live-row--viewer:hover > td {
+    background-color: rgb(69 26 3 / 62%) !important;
+}
+
+/* --- Match live — détail prono (panneau) --- */
+html.dark body.front-body .ta-main .match-live-prono-detail,
+html.dark body.front-body .ta-main .match-live-detail-panel__row .match-live-prono-detail {
+    background-color: var(--lpf-surface-raised) !important;
+    background-image: none !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-detail__player,
+html.dark body.front-body .ta-main .match-live-prono-detail__calc {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-detail__score,
+html.dark body.front-body .ta-main .match-live-prono-detail__score strong {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-detail--viewer {
+    outline-color: var(--lpf-warning) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-prono-joker-factor {
+    color: #fcd34d !important;
+}
+
+/* --- Boutons primaires zone main (texte + icônes verts) --- */
+html.dark body.front-body .ta-main .btn.btn-primary:not(.btn-outline),
+html.dark body.front-body .ta-main html body .match-card-pronos-btn.btn.btn-primary,
+html.dark body.front-body .ta-main html body .match-pronostic-submit.btn.btn-primary {
+    background-color: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+    -webkit-text-fill-color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .btn.btn-primary:not(.btn-outline) .ti,
+html.dark body.front-body .ta-main html body .match-card-pronos-btn.btn.btn-primary .ti,
+html.dark body.front-body .ta-main html body .match-pronostic-submit.btn.btn-primary .ti {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .btn.btn-primary:not(.btn-outline):hover:not(:disabled),
+html.dark body.front-body .ta-main html body .match-card-pronos-btn.btn.btn-primary:hover:not(:disabled),
+html.dark body.front-body .ta-main html body .match-pronostic-submit.btn.btn-primary:hover:not(:disabled) {
+    background-color: rgb(34 197 94 / 28%) !important;
+    border-color: var(--lpf-primary-hover) !important;
+    color: #86efac !important;
+    -webkit-text-fill-color: #86efac !important;
+}
+
+html.dark body.front-body .ta-main .btn.btn-primary:not(.btn-outline):hover:not(:disabled) .ti,
+html.dark body.front-body .ta-main html body .match-card-pronos-btn.btn.btn-primary:hover:not(:disabled) .ti,
+html.dark body.front-body .ta-main html body .match-pronostic-submit.btn.btn-primary:hover:not(:disabled) .ti {
+    color: #86efac !important;
+}
+
 /* --- Match live — détail ligne --- */
 html.dark body.front-body .ta-main td.match-live-detail-row__cell,
 html.dark body.front-body .ta-main .match-live-detail-row__cell {
