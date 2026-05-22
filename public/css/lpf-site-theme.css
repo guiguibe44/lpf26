@@ -29,7 +29,12 @@ html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-light {
     height: auto;
 }
 
-/* Bouton thème global (clair / sombre) — toutes les pages front, hors EasyAdmin */
+/* Bouton thème global (clair / sombre) — hors EasyAdmin */
+
+/* Sidebar : entre notifications et déconnexion */
+.ta-sidebar-actions .lpf-site-theme-toggle__btn {
+    flex-shrink: 0;
+}
 
 .lpf-site-theme-toggle--floating {
     position: fixed;

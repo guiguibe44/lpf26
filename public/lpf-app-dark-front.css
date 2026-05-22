@@ -6,7 +6,7 @@
 /* ========== Matchs — navigation & sections ========== */
 html.dark body.front-body .ta-main .match-day-nav-link {
     border-color: var(--lpf-border) !important;
-    background: var(--lpf-bg) !important;
+    background-color: var(--lpf-surface-raised) !important;
     color: var(--lpf-link) !important;
 }
 
@@ -98,8 +98,8 @@ html.dark body.front-body .ta-main .match-viewer-prono__pts {
     color: var(--lpf-success) !important;
 }
 
-html.dark body.front-body .ta-main .match-live-row--viewer {
-    background: rgba(245, 158, 11, 0.08) !important;
+html.dark body.front-body .ta-main tr.match-live-row--viewer > td {
+    background-color: rgb(120 53 15 / 28%) !important;
 }
 
 html.dark body.front-body .ta-main .match-final-score,
@@ -150,8 +150,8 @@ html.dark body.front-body .ta-main .match-live-compact-table tbody + tbody tr:fi
 
 html.dark body.front-body .ta-main .match-live-detail-row__cell,
 html.dark body.front-body .ta-main .match-live-prono-chip {
-    background: var(--lpf-bg) !important;
-    border-color: var(--lpf-border);
+    background-color: var(--lpf-bg) !important;
+    border-color: var(--lpf-border) !important;
 }
 
 html.dark body.front-body .ta-main .match-live-detail-panel {

@@ -5,10 +5,13 @@
 
 /* --- Navigation journées --- */
 html.dark body.front-body .ta-main .match-day-nav-list .match-day-nav-link,
+html.dark body.front-body .ta-main a.match-day-nav-link,
 html.dark body.front-body .ta-main .match-day-nav-link {
-    background: var(--lpf-surface-raised) !important;
+    background-color: var(--lpf-surface-raised) !important;
+    background-image: none !important;
     border-color: var(--lpf-border) !important;
     color: var(--lpf-link) !important;
+    box-shadow: none !important;
 }
 
 html.dark body.front-body .ta-main .match-day-nav-link:hover {
@@ -17,9 +20,11 @@ html.dark body.front-body .ta-main .match-day-nav-link:hover {
 }
 
 html.dark body.front-body .ta-main .match-day-nav-link--featured {
-    background: var(--lpf-primary-muted) !important;
+    background-color: var(--lpf-primary-muted) !important;
+    background-image: none !important;
     border-color: var(--lpf-primary) !important;
     color: var(--lpf-link) !important;
+    box-shadow: 0 0 0 1px var(--lpf-primary) !important;
 }
 
 html.dark body.front-body .ta-main .match-day-nav-select {
@@ -53,10 +58,77 @@ html.dark body.front-body .ta-main .match-cotes-1n2-blocks__meta {
     color: var(--lpf-muted) !important;
 }
 
+/* --- Anneaux de points (paliers) --- */
+html.dark body.front-body .ta-main .match-team-points-ring {
+    background-color: var(--lpf-surface-raised) !important;
+    background-image: none !important;
+    color: var(--lpf-text) !important;
+    border-color: var(--lpf-border) !important;
+    box-shadow: none !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-negative {
+    border-color: #f87171 !important;
+    background-color: rgb(127 29 29 / 40%) !important;
+    color: #fca5a5 !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-zero {
+    border-color: var(--lpf-border) !important;
+    background-color: var(--lpf-surface) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-low {
+    border-color: #f59e0b !important;
+    background-color: rgb(120 53 15 / 45%) !important;
+    color: #fcd34d !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-good {
+    border-color: #22c55e !important;
+    background-color: rgb(20 83 45 / 45%) !important;
+    color: #86efac !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-strong {
+    border-color: #0ea5e9 !important;
+    background-color: rgb(12 74 110 / 45%) !important;
+    color: #7dd3fc !important;
+}
+
+html.dark body.front-body .ta-main .match-team-points-ring--tier-high {
+    border-color: #3b82f6 !important;
+    background-color: rgb(30 58 138 / 45%) !important;
+    color: #93c5fd !important;
+}
+
+/* --- Match live — ligne joueur connecté --- */
+html.dark body.front-body .ta-main tr.match-live-row--viewer > td,
+html.dark body.front-body .ta-main .match-live-compact-table tr.match-live-row--viewer > td {
+    background-color: rgb(120 53 15 / 28%) !important;
+    background-image: none !important;
+}
+
+html.dark body.front-body .ta-main tr.match-live-row--viewer:hover > td,
+html.dark body.front-body .ta-main .match-live-compact-table tr.match-live-row--viewer:hover > td {
+    background-color: rgb(120 53 15 / 36%) !important;
+}
+
+/* --- Match live — détail ligne --- */
+html.dark body.front-body .ta-main td.match-live-detail-row__cell,
+html.dark body.front-body .ta-main .match-live-detail-row__cell {
+    background-color: var(--lpf-bg) !important;
+    background-image: none !important;
+    border-color: var(--lpf-border) !important;
+}
+
 /* --- Match live — jokers --- */
 html.dark body.front-body .ta-main .match-live-jokers-card,
-html.dark body.front-body .ta-main .match-live-jokers-card--neutralized {
-    background: var(--lpf-surface) !important;
+html.dark body.front-body .ta-main .match-live-jokers-card--neutralized,
+html.dark body.front-body .ta-main .match-live-jokers-stack .match-live-jokers-card {
+    background-color: var(--lpf-surface) !important;
+    background-image: none !important;
     border-color: var(--lpf-border) !important;
 }
 

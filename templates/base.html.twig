@@ -58,11 +58,11 @@
             <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=6">
         {% else %}
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
-            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=7">
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=8">
         {% endif %}
         <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=9">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=13">
-        <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v=4">
+        <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v=5">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -82,10 +82,10 @@
         {% endif %}
     </head>
     <body class="front-body{{ isAuthPage ? ' front-body--auth' : '' }}{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
-        <div class="lpf-site-theme-toggle--floating">
-            {% include '_site_theme_toggle.html.twig' %}
-        </div>
         {% if isAuthPage %}
+            <div class="lpf-site-theme-toggle--floating">
+                {% include '_site_theme_toggle.html.twig' %}
+            </div>
             <main class="auth-wrap">
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}

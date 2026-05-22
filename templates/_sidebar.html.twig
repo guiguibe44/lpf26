@@ -65,6 +65,7 @@
             {% include '_sidebar_user.html.twig' %}
             <div class="ta-sidebar-actions">
                 {% include '_notification_bell.html.twig' %}
+                {% include '_site_theme_toggle.html.twig' %}
                 {% if is_granted('ROLE_ADMIN') %}
                     {% if app.environment != 'prod' %}
                         <a
