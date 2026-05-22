@@ -608,8 +608,7 @@ html.lpf-classic-light body.front-body .ta-main .match-espion-target {
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-espion-panel {
-    background: rgb(59 130 246 / 12%) !important;
-    border-color: rgb(59 130 246 / 35%) !important;
+    background: transparent !important;
 }
 
 html.lpf-classic-light body.front-body .ta-main .match-espion-section-title,

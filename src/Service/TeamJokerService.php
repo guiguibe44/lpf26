@@ -337,6 +337,58 @@ final class TeamJokerService
         return ['allowed' => true, 'reason' => null];
     }
 
+    /**
+     * Contrôles métier avant enregistrement d'une utilisation joker depuis l'admin (EasyAdmin).
+     */
+    public function validateUsageForAdmin(TeamJokerUsage $usage, ?int $excludeUsageId = null): void
+    {
+        $team = $usage->getTeam();
+        $joker = $usage->getJoker();
+        $match = $usage->getMatch();
+        if (!$team instanceof Team || !$joker instanceof Joker || !$match instanceof GameMatch) {
+            throw new \InvalidArgumentException('Équipe, joker et match sont obligatoires.');
+        }
+
+        if (!$joker->isActive()) {
+            throw new \InvalidArgumentException('Ce joker n\'est pas actif.');
+        }
+
+        $canPlace = $this->canPlaceOnMatch($team, $match);
+        if (!$canPlace['allowed']) {
+            $existingOnMatch = $this->teamJokerUsageRepository->findOneByTeamAndMatch($team, $match);
+            if (
+                !$existingOnMatch instanceof TeamJokerUsage
+                || null === $excludeUsageId
+                || (int) $existingOnMatch->getId() !== $excludeUsageId
+            ) {
+                throw new \InvalidArgumentException((string) $canPlace['reason']);
+            }
+        }
+
+        $existingJokerType = $this->teamJokerUsageRepository->findOneByTeamAndJoker($team, $joker);
+        if (
+            $existingJokerType instanceof TeamJokerUsage
+            && (null === $excludeUsageId || (int) $existingJokerType->getId() !== $excludeUsageId)
+        ) {
+            throw new \InvalidArgumentException(sprintf(
+                'L\'équipe « %s » a déjà utilisé le joker « %s ».',
+                (string) $team->getName(),
+                $joker->getDisplayTitle(),
+            ));
+        }
+
+        if (Joker::CODE_DOUBLE_BUTEUR === $joker->getCode()
+            && !$this->buteurJokerPointsService->isMatchEligibleForDoubleButeurJoker($team, $match)) {
+            throw new \InvalidArgumentException($this->formatDoubleButeurIneligibleReason($team));
+        }
+
+        $this->resolveTargetTeamForJoker($team, $joker, $match, $usage->getTargetTeam());
+
+        if (Joker::CODE_EQUIPE_FAVORITE === $joker->getCode()) {
+            throw new \InvalidArgumentException('Le joker équipe favorite se gère depuis Mon compte, pas via une utilisation sur match.');
+        }
+    }
+
     public function placeJoker(User $user, GameMatch $match, Joker $joker, ?Team $targetTeam = null, ?Country $favoriteCountry = null): void
     {
         $teamMember = $this->teamMemberRepository->findOneBy(['player' => $user]);

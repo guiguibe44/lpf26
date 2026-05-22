@@ -57,7 +57,10 @@ final class MatchCoteOneNTwoCalculator
      *     pronostics_count: int,
      *     home: ?float,
      *     draw: ?float,
-     *     away: ?float
+     *     away: ?float,
+     *     home_pronos_count: int,
+     *     draw_pronos_count: int,
+     *     away_pronos_count: int,
      * }
      */
     public function computeOverview(array $pronosticList): array
@@ -82,6 +85,9 @@ final class MatchCoteOneNTwoCalculator
             'home' => $home,
             'draw' => $draw,
             'away' => $away,
+            'home_pronos_count' => $counts[MatchOutcomeResolver::OUTCOME_HOME],
+            'draw_pronos_count' => $counts[MatchOutcomeResolver::OUTCOME_DRAW],
+            'away_pronos_count' => $counts[MatchOutcomeResolver::OUTCOME_AWAY],
         ];
     }
 
@@ -214,7 +220,10 @@ final class MatchCoteOneNTwoCalculator
      *     pronostics_count: int,
      *     home: null,
      *     draw: null,
-     *     away: null
+     *     away: null,
+     *     home_pronos_count: int,
+     *     draw_pronos_count: int,
+     *     away_pronos_count: int,
      * }
      */
     private function emptyOverview(int $pronosticsCount = 0): array
@@ -228,6 +237,9 @@ final class MatchCoteOneNTwoCalculator
             'home' => null,
             'draw' => null,
             'away' => null,
+            'home_pronos_count' => 0,
+            'draw_pronos_count' => 0,
+            'away_pronos_count' => 0,
         ];
     }
 }

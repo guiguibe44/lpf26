@@ -1,8 +1,9 @@
-{# home, draw, away: float|null — active_outcome: HOME|DRAW|AWAY|null — id_prefix: string — pronostics_count: int|null — variant: square|card|compact|banner #}
+{# home, draw, away: float|null — active_outcome — home_count/draw_count/away_count — variant: square|card|compact|banner #}
 {% set active = active_outcome|default(null) %}
 {% set block_variant = variant|default('banner') %}
 {% set pronostics_count = pronostics_count|default(null) %}
 {% set show_pronostics_meta = show_pronostics_meta|default(true) %}
+{% set show_outcome_counts = show_outcome_counts|default(home_count is defined or draw_count is defined or away_count is defined) %}
 <div
     class="match-cotes-1n2-blocks match-cotes-1n2-blocks--{{ block_variant }}{% if block_variant == 'compact' %} match-cotes-1n2-blocks--compact{% endif %}"
     role="list"
@@ -19,6 +20,9 @@
         <span class="match-cotes-1n2-blocks__value">
             {% if home is not null %}×{{ home|number_format(1, ',', ' ') }}{% else %}—{% endif %}
         </span>
+        {% if show_outcome_counts and home_count is defined %}
+            <span class="match-cotes-1n2-blocks__count">{{ home_count }} prono{{ home_count > 1 ? 's' : '' }}</span>
+        {% endif %}
     </div>
     <div
         class="match-cotes-1n2-blocks__item{% if active == 'DRAW' %} match-cotes-1n2-blocks__item--active{% endif %}"
@@ -30,6 +34,9 @@
         <span class="match-cotes-1n2-blocks__value">
             {% if draw is not null %}×{{ draw|number_format(1, ',', ' ') }}{% else %}—{% endif %}
         </span>
+        {% if show_outcome_counts and draw_count is defined %}
+            <span class="match-cotes-1n2-blocks__count">{{ draw_count }} prono{{ draw_count > 1 ? 's' : '' }}</span>
+        {% endif %}
     </div>
     <div
         class="match-cotes-1n2-blocks__item{% if active == 'AWAY' %} match-cotes-1n2-blocks__item--active{% endif %}"
@@ -41,9 +48,12 @@
         <span class="match-cotes-1n2-blocks__value">
             {% if away is not null %}×{{ away|number_format(1, ',', ' ') }}{% else %}—{% endif %}
         </span>
+        {% if show_outcome_counts and away_count is defined %}
+            <span class="match-cotes-1n2-blocks__count">{{ away_count }} prono{{ away_count > 1 ? 's' : '' }}</span>
+        {% endif %}
     </div>
 </div>
-{% if show_pronostics_meta and pronostics_count is not null and pronostics_count > 0 %}
+{% if show_pronostics_meta and not show_outcome_counts and pronostics_count is not null and pronostics_count > 0 %}
     <p class="match-cotes-1n2-blocks__meta">
         {{ pronostics_count }} pronostic{{ pronostics_count > 1 ? 's' : '' }} sur ce match
     </p>

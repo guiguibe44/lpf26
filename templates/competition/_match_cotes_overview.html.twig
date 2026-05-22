@@ -12,6 +12,10 @@
                 away: cotes.away,
                 active_outcome: cotes.active_outcome|default(null),
                 pronostics_count: cotes.pronostics_count,
+                home_count: cotes.home_pronos_count|default(0),
+                draw_count: cotes.draw_pronos_count|default(0),
+                away_count: cotes.away_pronos_count|default(0),
+                show_pronostics_meta: false,
                 variant: 'square',
             } only %}
             <span class="match-cotes-overview__hint match-espion-meta">

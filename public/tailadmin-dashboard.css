@@ -2003,6 +2003,13 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     text-align: center;
 }
 
+.match-cotes-1n2-blocks__count {
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #64748b;
+}
+
 .match-live-compact-table {
     margin-bottom: 0;
     font-size: 0.875rem;
@@ -2731,9 +2738,10 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
 
 .match-espion-jokers-table {
     width: 100%;
-    min-width: 20rem;
+    min-width: 0;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+    table-layout: auto;
 }
 
 .match-espion-jokers-table th,
@@ -2755,18 +2763,46 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
     border-bottom: none;
 }
 
+.match-espion-jokers-table tbody tr {
+    white-space: nowrap;
+}
+
 .match-espion-jokers-table__team {
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    min-width: 8rem;
+    min-width: 0;
+    max-width: 9rem;
+    white-space: nowrap;
+}
+
+.match-espion-jokers-table__team .match-espion-team-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 6.5rem;
 }
 
 .match-espion-jokers-table__joker {
-    display: flex;
+    width: 100%;
+    min-width: 0;
+}
+
+.match-espion-joker-line {
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    min-width: 10rem;
+    flex-wrap: nowrap;
+    gap: 0.35rem 0.5rem;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+.match-espion-joker-line .match-espion-joker-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.9rem;
 }
 
 .match-espion-joker-icon {
@@ -2795,6 +2831,18 @@ html.dark body.front-body .match-live-team-jokers--detail .match-live-joker-badg
 }
 
 .match-espion-joker-label {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.match-espion-joker-line .match-espion-target {
+    color: #334155;
+    font-weight: 500;
+}
+
+.match-espion-joker-line .match-espion-blocked {
+    font-size: 0.72rem;
+    color: #b45309;
     font-weight: 600;
 }
 

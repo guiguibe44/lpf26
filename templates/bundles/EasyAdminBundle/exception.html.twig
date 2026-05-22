@@ -1,0 +1,58 @@
+{% extends layout_template_path %}
+
+{% block body_class 'error' %}
+{% block page_title %}{{ 'page_title.exception'|trans({'%count%': 1}, 'EasyAdminBundle') }}{% endblock %}
+
+{% block content_header_wrapper '' %}
+{% block content_footer_wrapper '' %}
+{% block main %}
+    <div class="error-message">
+        <h1><twig:ea:Icon name="internal:circle-exclamation" /> <span>{{ block('page_title') }}</span></h1>
+        <p>{{ exception.publicMessage|trans(exception.translationParameters, 'EasyAdminBundle') }}</p>
+        {% if is_granted('ROLE_ADMIN') and exception.debugMessage %}
+            <div class="ea-exception-debug" role="alert">
+                <p class="ea-exception-debug__label">Détail technique</p>
+                <pre class="ea-exception-debug__message">{{ exception.debugMessage }}</pre>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <style>
+        .ea-exception-debug {
+            margin-top: 1.25rem;
+            padding: 1rem 1.1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            text-align: left;
+        }
+        .ea-exception-debug__label {
+            margin: 0 0 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #991b1b;
+        }
+        .ea-exception-debug__message {
+            margin: 0;
+            padding: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #7f1d1d;
+            background: transparent;
+            border: none;
+        }
+        .ea-exception-debug__type {
+            margin: 0.65rem 0 0;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+    </style>
+{% endblock %}
