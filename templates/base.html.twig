@@ -76,6 +76,7 @@
             <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=9">
             <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
             <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=4">
+            <link rel="stylesheet" href="{{ asset('css/site-intro.css') }}?v=5">
             {# Dernier : surcharges dark ciblées (priorité sur tailadmin / thèmes) #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark-surfaces.css') }}?v={{ lpf_css_v }}">
         {% endif %}
@@ -137,10 +138,16 @@
                 </main>
                 {% if app.user %}
                     {% include 'forum/_shell.html.twig' %}
+                    {% if site_intro_slides()|length > 0 %}
+                        {% include '_site_intro_dialog.html.twig' %}
+                    {% endif %}
                 {% endif %}
             </div>
         {% endif %}
         <script src="{{ asset('js/lpf-alerts.js') }}?v={{ lpf_css_v }}" defer></script>
         <script src="{{ asset('js/lpf-site-theme.js') }}?v=2"></script>
+        {% if isAppShellPage and app.user and site_intro_slides()|length > 0 %}
+            <script src="{{ asset('js/site-intro.js') }}?v=4" defer></script>
+        {% endif %}
     </body>
 </html>

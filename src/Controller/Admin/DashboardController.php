@@ -77,6 +77,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::subMenu('Apparence', 'fas fa-palette')
             ->setSubItems([
                 MenuItem::linkToRoute('Thèmes de page', 'fas fa-brush', 'admin_main_theme_index'),
+                MenuItem::linkToRoute('Présentation du site', 'fas fa-play-circle', 'admin_site_intro_slide_index'),
             ]);
 
         yield MenuItem::subMenu('Compétition', 'fas fa-trophy')

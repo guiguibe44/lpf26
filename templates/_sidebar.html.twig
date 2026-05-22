@@ -29,6 +29,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ path('app_knockout') }}" class="ta-menu-link {{ currentRoute == 'app_knockout' ? 'active' : '' }}">
+                        <i class="ti ti-tournament" aria-hidden="true"></i>
+                        Phases finales
+                    </a>
+                </li>
+                <li>
                     <a href="{{ path('app_ranking') }}" class="ta-menu-link {{ currentRoute == 'app_ranking' ? 'active' : '' }}">
                         <i class="ti ti-trophy" aria-hidden="true"></i>
                         Classement
@@ -64,6 +70,15 @@
         <div class="ta-sidebar-footer">
             {% include '_sidebar_user.html.twig' %}
             <div class="ta-sidebar-actions">
+                <button
+                    type="button"
+                    class="ta-sidebar-notify site-intro-trigger"
+                    data-site-intro-open
+                    title="Découvrir le site"
+                    aria-label="Découvrir le site — présentation"
+                >
+                    <i class="ti ti-player-play" aria-hidden="true"></i>
+                </button>
                 {% include '_notification_bell.html.twig' %}
                 {% include '_site_theme_toggle.html.twig' %}
                 {% if is_granted('ROLE_ADMIN') %}

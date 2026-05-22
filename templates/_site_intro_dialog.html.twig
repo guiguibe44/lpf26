@@ -1,0 +1,79 @@
+{# Présentation du site — slides depuis EasyAdmin (site_intro_slide) #}
+{% set intro_slides = intro_slides|default(site_intro_slides()) %}
+{% if intro_slides is not empty %}
+<dialog
+    id="site-intro-dialog"
+    class="site-intro-dialog"
+    aria-labelledby="site-intro-dialog-title"
+    data-site-intro-dialog
+>
+    <div class="site-intro-dialog__panel" tabindex="-1">
+        <div class="site-intro-dialog__inner">
+            <header class="site-intro-dialog__bar">
+                <button type="button" class="site-intro-dialog__close" data-site-intro-close>
+                    Fermer
+                </button>
+            </header>
+
+            <div class="site-intro-dialog__main" data-site-intro-carousel>
+                <button
+                    type="button"
+                    class="site-intro-dialog__nav site-intro-dialog__nav--prev"
+                    data-site-intro-prev
+                    aria-label="Slide précédente"
+                >
+                    <i class="ti ti-chevron-left" aria-hidden="true"></i>
+                </button>
+
+                <div class="site-intro-carousel__viewport" data-site-intro-viewport>
+                    <div class="site-intro-carousel__track" data-site-intro-track>
+                        {% for slide in intro_slides %}
+                            <article
+                                class="site-intro-slide"
+                                data-site-intro-slide
+                                aria-hidden="{{ loop.first ? 'false' : 'true' }}"
+                            >
+                                <div class="site-intro-slide__visual site-intro-slide__visual--{{ slide.visualThemeValue }}">
+                                    {% if slide.hasUploadedImage %}
+                                        <img
+                                            src="{{ asset(slide.imagePublicPath) }}"
+                                            alt=""
+                                            class="site-intro-slide__img{{ slide.visualThemeValue == 'welcome' ? ' site-intro-slide__logo' : '' }}"
+                                        >
+                                    {% elseif slide.iconClass %}
+                                        <i class="{{ slide.iconClass }} site-intro-slide__icon" aria-hidden="true"></i>
+                                    {% endif %}
+                                    {% if slide.visualBadge %}
+                                        <span class="site-intro-slide__badge">{{ slide.visualBadge }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="site-intro-slide__copy">
+                                    {% if slide.eyebrow %}
+                                        <p
+                                            class="site-intro-slide__eyebrow"
+                                            {% if loop.first %}id="site-intro-dialog-title"{% endif %}
+                                        >{{ slide.eyebrow }}</p>
+                                    {% endif %}
+                                    <h3 class="site-intro-slide__title"{% if loop.first and not slide.eyebrow %} id="site-intro-dialog-title"{% endif %}>{{ slide.title }}</h3>
+                                    {% if slide.body %}
+                                        <div class="site-intro-slide__body ta-card-text">{{ slide.body|raw }}</div>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    class="site-intro-dialog__nav site-intro-dialog__nav--next"
+                    data-site-intro-next
+                    aria-label="Slide suivante"
+                >
+                    <i class="ti ti-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</dialog>
+{% endif %}
