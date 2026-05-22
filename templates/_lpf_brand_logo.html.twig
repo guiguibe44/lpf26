@@ -2,7 +2,7 @@
 {% set use_front_logo = front_logo|default(false) %}
 {% set logo_light_png = use_front_logo ? 'images/lpf-front-logo.png' : 'images/lpf26-logo-color.png' %}
 {% set logo_light_webp = use_front_logo ? 'images/lpf-front-logo.webp' : null %}
-{% set logo_dark_png = 'images/lpf26-logo-white.png' %}
+{% set logo_dark_png = use_front_logo ? 'images/lpf-front-logo-white.png' : 'images/lpf26-logo-white.png' %}
 {% set logo_width = width|default(use_front_logo ? 320 : null) %}
 {% set logo_height = height|default(use_front_logo ? 213 : null) %}
 <span class="lpf-brand-logo-wrap {{ wrap_class|default('') }}">
