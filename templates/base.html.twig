@@ -3,46 +3,34 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
-<html
-    lang="fr"
-    class="lpf-classic-light"
-    data-lpf-main-theme="{{ lpf_main_theme_default_code|default('default') }}"
-    data-lpf-main-theme-codes="{{ lpf_main_theme_codes|default(['default'])|json_encode }}"
-    data-lpf-main-theme-default="{{ lpf_main_theme_default_code|default('default')|json_encode }}"
->
+<html lang="fr" class="lpf-classic-light">
     <head>
-        {% if not isAuthPage %}
-            {% include '_main_theme_styles.html.twig' %}
-        {% endif %}
         <script>
             (function () {
+                var html = document.documentElement;
+                var siteTheme = 'light';
                 try {
-                    localStorage.setItem('lpfTheme', 'classic-light');
+                    var storedSite = localStorage.getItem('lpfSiteTheme');
+                    if (storedSite === 'dark' || storedSite === 'light') {
+                        siteTheme = storedSite;
+                    }
+                    localStorage.setItem('lpfTheme', siteTheme === 'dark' ? 'classic' : 'classic-light');
                     localStorage.setItem('lpfGtaTheme', '0');
                 } catch (e) {
                     /* ignore */
                 }
-                var html = document.documentElement;
-                html.classList.remove('dark', 'lpf-gta-theme', 'lpf-gta-miami');
-                html.classList.add('lpf-classic-light');
-                var validCodes = {{ (lpf_main_theme_codes|default(['default']))|json_encode|raw }};
-                var defaultCode = {{ (lpf_main_theme_default_code|default('default'))|json_encode|raw }};
-                var mainTheme = defaultCode;
-                try {
-                    var storedMain = localStorage.getItem('lpfMainTheme');
-                    if (validCodes.indexOf(storedMain) !== -1) {
-                        mainTheme = storedMain;
-                    }
-                } catch (e2) {
-                    /* ignore */
+                html.classList.remove('dark', 'lpf-gta-theme', 'lpf-gta-miami', 'lpf-classic-light');
+                if (siteTheme === 'dark') {
+                    html.classList.add('dark');
+                } else {
+                    html.classList.add('lpf-classic-light');
                 }
-                html.setAttribute('data-lpf-main-theme', mainTheme);
             })();
         </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <meta name="theme-color" content="#f8fafc">
+        <meta name="theme-color" content="#f8fafc" id="lpf-theme-color-meta">
         <title>{% block title %}LPF 2026{% endblock %}</title>
         <link rel="icon" href="{{ asset('images/favicon-lpf/favicon.ico') }}" sizes="any">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-lpf/favicon-32x32.png') }}">
@@ -65,18 +53,16 @@
         {% endblock %}
 
         {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=3">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=4">
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=5">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=6">
         {% else %}
             {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
-            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=6">
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=7">
         {% endif %}
         <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=9">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=13">
-        {% if not isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('css/lpf-main-theme.css') }}?v=2">
-        {% endif %}
+        <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v=4">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -96,6 +82,9 @@
         {% endif %}
     </head>
     <body class="front-body{{ isAuthPage ? ' front-body--auth' : '' }}{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
+        <div class="lpf-site-theme-toggle--floating">
+            {% include '_site_theme_toggle.html.twig' %}
+        </div>
         {% if isAuthPage %}
             <main class="auth-wrap">
                 {% for label, messages in app.flashes %}
@@ -156,9 +145,6 @@
                 {% endif %}
             </div>
         {% endif %}
-        <script src="{{ asset('js/lpf-theme-light.js') }}?v=1"></script>
-        {% if not isAuthPage %}
-            <script src="{{ asset('js/lpf-main-theme-switcher.js') }}?v=3"></script>
-        {% endif %}
+        <script src="{{ asset('js/lpf-site-theme.js') }}?v=2"></script>
     </body>
 </html>

@@ -4,7 +4,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/admin-qa-checklist.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/admin-qa-checklist.css') }}?v=3">
     <link rel="stylesheet" href="{{ asset('css/admin-compet-checklist.css') }}?v=2">
 {% endblock %}
 
@@ -17,20 +17,14 @@
 {% block body %}
     <section class="ta-topbar admin-qa-topbar">
         <div>
-            <h1 class="ta-page-title">
-                <i class="ti ti-trophy" aria-hidden="true"></i>
-                Checklist compétition
-            </h1>
+            <h1 class="ta-page-title">Checklist compétition</h1>
             <p class="ta-page-subtitle">
                 Scénario match test <strong>France – Allemagne 15h</strong> (sans API) : préparation, crons, buts, points, classement.
                 Cases cochées : ce navigateur. Notes : partagées entre tous les administrateurs.
             </p>
         </div>
         <div class="admin-qa-topbar__actions">
-            <a href="{{ path('admin_qa_checklist') }}" class="btn btn-outline btn-sm">
-                <i class="ti ti-list-check" aria-hidden="true"></i>
-                Checklist QA
-            </a>
+            <a href="{{ path('admin_qa_checklist') }}" class="btn btn-outline btn-sm">Checklist QA</a>
             <button type="button" class="btn btn-outline btn-sm admin-qa-btn-reset" data-admin-qa-action="reset-all">
                 <i class="ti ti-refresh" aria-hidden="true"></i>
                 Réinitialiser les cases
@@ -62,15 +56,9 @@
     </section>
 
     <div class="admin-qa-legend ta-card-text">
-        <span class="admin-qa-legend__item admin-qa-legend__item--action">
-            <i class="ti ti-player-play" aria-hidden="true"></i> Action à réaliser
-        </span>
-        <span class="admin-qa-legend__item admin-qa-legend__item--attention">
-            <i class="ti ti-eye" aria-hidden="true"></i> Point d’attention à vérifier
-        </span>
-        <span class="admin-qa-legend__item admin-qa-legend__item--notes">
-            <i class="ti ti-notes" aria-hidden="true"></i> Notes visibles par tous les admins
-        </span>
+        <span class="admin-qa-legend__item admin-qa-legend__item--action">Action à réaliser</span>
+        <span class="admin-qa-legend__item admin-qa-legend__item--attention">Point d’attention à vérifier</span>
+        <span class="admin-qa-legend__item admin-qa-legend__item--notes">Notes visibles par tous les admins</span>
     </div>
 
     <div
@@ -87,10 +75,7 @@
             >
                 <header class="admin-qa-section__header">
                     <div class="admin-qa-section__title-wrap">
-                        <h2 id="admin-compet-title-{{ section.id }}" class="admin-qa-section__title">
-                            <i class="ti {{ section.icon }}" aria-hidden="true"></i>
-                            {{ section.title }}
-                        </h2>
+                        <h2 id="admin-compet-title-{{ section.id }}" class="admin-qa-section__title">{{ section.title }}</h2>
                         <p class="admin-qa-section__desc">{{ section.description }}</p>
                     </div>
                     <span class="admin-qa-section__badge" data-admin-qa-section-badge>0 / {{ section.items|length }}</span>
@@ -114,13 +99,6 @@
                                     >
                                     <span class="admin-qa-check__box" aria-hidden="true"></span>
                                     <span class="admin-qa-check__content">
-                                        <span class="admin-qa-check__kind" title="{{ item.kind == 'action' ? 'Action' : 'Point d’attention' }}">
-                                            {% if item.kind == 'action' %}
-                                                <i class="ti ti-player-play" aria-hidden="true"></i>
-                                            {% else %}
-                                                <i class="ti ti-eye" aria-hidden="true"></i>
-                                            {% endif %}
-                                        </span>
                                         <span class="admin-qa-check__label">{{ item.label }}</span>
                                         {% if item.route is defined and item.route %}
                                             <a
@@ -130,24 +108,17 @@
                                                 rel="noopener noreferrer"
                                             >
                                                 {{ item.route_label|default('Ouvrir') }}
-                                                <i class="ti ti-external-link" aria-hidden="true"></i>
                                             </a>
                                         {% endif %}
                                     </span>
                                 </label>
 
                                 {% if item.description %}
-                                    <p class="admin-qa-item__description">
-                                        <i class="ti ti-info-circle" aria-hidden="true"></i>
-                                        {{ item.description }}
-                                    </p>
+                                    <p class="admin-qa-item__description">{{ item.description }}</p>
                                 {% endif %}
 
                                 <div class="admin-qa-notes" data-admin-qa-notes="{{ item.id }}">
-                                    <h3 class="admin-qa-notes__title">
-                                        <i class="ti ti-notes" aria-hidden="true"></i>
-                                        Notes des administrateurs
-                                    </h3>
+                                    <h3 class="admin-qa-notes__title">Notes des administrateurs</h3>
 
                                     <ul class="admin-qa-notes__list" data-admin-qa-notes-list>
                                         {% for note in item_notes %}

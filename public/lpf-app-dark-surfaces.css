@@ -1,0 +1,278 @@
+/**
+ * LPF'26 — surfaces claires résiduelles (tailadmin, joker-catalog, etc.)
+ * Chargé en dernier via lpf-app-dark.css (après front + canvas).
+ */
+
+/* --- Navigation journées --- */
+html.dark body.front-body .ta-main .match-day-nav-list .match-day-nav-link,
+html.dark body.front-body .ta-main .match-day-nav-link {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-nav-link:hover {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-nav-link--featured {
+    background: var(--lpf-primary-muted) !important;
+    border-color: var(--lpf-primary) !important;
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-day-nav-select {
+    background-color: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+/* --- Cotes 1/N/2 --- */
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item--active {
+    border-color: var(--lpf-primary) !important;
+    background: var(--lpf-primary-muted) !important;
+    box-shadow: 0 0 0 3px rgb(34 197 94 / 22%) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__value {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__item--active .match-cotes-1n2-blocks__value {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__label,
+html.dark body.front-body .ta-main .match-cotes-1n2-blocks__meta {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Match live — jokers --- */
+html.dark body.front-body .ta-main .match-live-jokers-card,
+html.dark body.front-body .ta-main .match-live-jokers-card--neutralized {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-jokers-card__title,
+html.dark body.front-body .ta-main .match-live-jokers-card__teams dd,
+html.dark body.front-body .ta-main .match-live-jokers-card__story,
+html.dark body.front-body .ta-main .match-live-jokers-card__consequence-text {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-jokers-card__meta,
+html.dark body.front-body .ta-main .match-live-jokers-card__teams dt,
+html.dark body.front-body .ta-main .match-live-jokers-card__baseline {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-jokers-card__points th,
+html.dark body.front-body .ta-main .match-live-jokers-card__points td {
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-live-jokers-card__icon {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-link) !important;
+}
+
+/* --- Fiche équipe --- */
+html.dark body.front-body .ta-main .team-show-member-card {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .team-show-member-nick {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .team-show-member-mail {
+    color: var(--lpf-muted) !important;
+}
+
+/* --- Guide jokers — interactions --- */
+html.dark body.front-body .ta-main .joker-guide-interactions {
+    border-top-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__title {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__lead {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__block--general,
+html.dark body.front-body .ta-main .joker-guide-interactions__block--joker {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    box-shadow: 0 4px 18px rgb(0 0 0 / 25%) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__subtitle,
+html.dark body.front-body .ta-main .joker-guide-interactions__card-link {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__text,
+html.dark body.front-body .ta-main .joker-guide-interactions__text--intro {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__joker-head {
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__thumb {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__thumb-placeholder {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-interactions__notes {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-table-wrap {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-table thead th {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-table th,
+html.dark body.front-body .ta-main .joker-guide-table td {
+    color: var(--lpf-text) !important;
+    border-bottom-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .joker-guide-table__caption {
+    color: var(--lpf-text) !important;
+}
+
+/* --- Dialogues & panneaux --- */
+html.dark body.front-body .match-espion-intel-dialog__panel,
+html.dark body.front-body .ta-main .joker-dialog__panel {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__title {
+    color: var(--lpf-link) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__close {
+    background: var(--lpf-surface-raised) !important;
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog__close:hover {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-section-title,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-cotes,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-empty,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-team-name,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-joker-label,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table__target {
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-meta {
+    color: var(--lpf-muted) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-table-wrap {
+    background: var(--lpf-surface-raised) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table thead th {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table th,
+html.dark body.front-body .match-espion-intel-dialog .match-espion-jokers-table td {
+    border-bottom-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .match-espion-intel-dialog .match-espion-joker-icon {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+/* --- Compte, préférences, classements --- */
+html.dark body.front-body .ta-main .notification-prefs__group,
+html.dark body.front-body .ta-main .group-standings-card,
+html.dark body.front-body .ta-main .ranking-page-card,
+html.dark body.front-body .ta-main .reglement-item {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .match-pronostic-editor,
+html.dark body.front-body .ta-main .match-live-detail-panel,
+html.dark body.front-body .ta-main .match-live-prono-calc,
+html.dark body.front-body .ta-main .dashboard-buteur-form-card,
+html.dark body.front-body .ta-main .dashboard-buteur-taken-card {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+html.dark body.front-body .ta-main .dashboard-buteur-results > .dashboard-buteur-hint,
+html.dark body.front-body .ta-main .dashboard-buteur-results > .dashboard-buteur-error,
+html.dark body.front-body .ta-main .dashboard-buteur-result-panel {
+    background: var(--lpf-surface) !important;
+    border-color: var(--lpf-border) !important;
+    color: var(--lpf-text) !important;
+}
+
+html.dark body.front-body .ta-main .dashboard-buteur-result-group-label {
+    background: var(--lpf-bg) !important;
+    color: var(--lpf-muted) !important;
+    border-color: var(--lpf-border) !important;
+}
+
+/* --- Filet : panneaux / items / blocs « carte » dans .ta-main --- */
+html.dark body.front-body .ta-main :is(
+    [class*="__panel"]:not([class*="dialog"]):not(.match-espion-panel--dialog),
+    [class*="__block"],
+    [class*="__card"]:not(.match-card):not([class*="badge"]),
+    [class*="__item"],
+    [class*="__wrap"],
+    [class*="__box"],
+    .rounded-box:not(.account-buteur-section),
+    .bg-base-100,
+    .bg-base-200
+) {
+    background-color: var(--lpf-surface) !important;
+    border-color: var(--lpf-border);
+}
+
+html.dark body.front-body .ta-main .bg-base-200 {
+    background-color: var(--lpf-surface-raised) !important;
+}

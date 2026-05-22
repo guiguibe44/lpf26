@@ -21,7 +21,6 @@
             <ul class="precomp-checklist">
                 {% for check in account.checks %}
                     <li class="precomp-checklist__item {{ check.done ? 'precomp-checklist__item--done' : '' }}">
-                        <i class="ti {{ check.done ? 'ti-circle-check' : 'ti-circle' }}" aria-hidden="true"></i>
                         {{ check.label }}
                     </li>
                 {% endfor %}

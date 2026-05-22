@@ -77,8 +77,7 @@ html.dark .ta-auth-brand-block {
     margin: 0 auto;
 }
 
-html.dark .ta-auth-logo {
-    display: block;
+html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark {
     width: min(480px, 88vw);
     max-width: 100%;
     height: auto;
@@ -367,7 +366,7 @@ html.dark .ta-form-choice-item label {
         padding: 2rem 1rem 1.5rem;
     }
 
-    html.dark .ta-auth-logo {
+    html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark {
         width: min(360px, 94vw);
     }
 

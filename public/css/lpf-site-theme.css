@@ -1,0 +1,68 @@
+/* Logos clair / sombre (un seul visible selon html.dark / html.lpf-classic-light) */
+.lpf-brand-logo-wrap .lpf-brand-logo--classic-light,
+.lpf-brand-logo-wrap .lpf-brand-logo--classic-dark,
+.lpf-brand-logo-wrap picture.lpf-brand-logo--classic-light {
+    display: none !important;
+}
+
+html.lpf-classic-light .lpf-brand-logo-wrap .lpf-brand-logo--classic-light,
+html.lpf-classic-light .lpf-brand-logo-wrap picture.lpf-brand-logo--classic-light {
+    display: block !important;
+}
+
+html.lpf-classic-light .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark {
+    display: none !important;
+}
+
+html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark {
+    display: block !important;
+}
+
+html.dark .lpf-brand-logo-wrap picture.lpf-brand-logo--classic-light,
+html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-light {
+    display: none !important;
+}
+
+.lpf-brand-logo-wrap picture.lpf-brand-logo--classic-light img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Bouton thème global (clair / sombre) — toutes les pages front, hors EasyAdmin */
+
+.lpf-site-theme-toggle--floating {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 200;
+}
+
+/* Shell mobile : décaler à gauche du burger */
+@media (max-width: 1023px) {
+    body.front-body:not(.front-body--auth) .lpf-site-theme-toggle--floating {
+        top: 0.65rem;
+        right: 4.25rem;
+    }
+}
+
+.lpf-site-theme-toggle--floating .lpf-site-theme-toggle__btn {
+    box-shadow: 0 4px 16px rgb(15 23 42 / 12%);
+}
+
+html.dark .lpf-site-theme-toggle--floating .lpf-site-theme-toggle__btn {
+    box-shadow: 0 4px 16px rgb(0 0 0 / 35%);
+}
+
+html.dark .lpf-site-theme-toggle__btn[aria-pressed="true"] {
+    background: var(--lpf-primary-muted, rgb(34 197 94 / 15%)) !important;
+    border-color: var(--lpf-primary, #22c55e) !important;
+    color: var(--lpf-link, #4ade80) !important;
+}
+
+html.lpf-classic-light .lpf-site-theme-toggle__btn[aria-pressed="false"]:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+    color: #1b2d4f !important;
+}
+

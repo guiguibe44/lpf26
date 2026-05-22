@@ -4547,24 +4547,13 @@ html body .match-pronostic-form .match-pronostic-submit.btn.btn-primary .ti {
 }
 
 .precomp-checklist__item {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
     font-size: 0.82rem;
     color: #64748b;
 }
 
-.precomp-checklist__item .ti {
-    font-size: 1rem;
-    flex-shrink: 0;
-}
-
 .precomp-checklist__item--done {
     color: #166534;
-}
-
-.precomp-checklist__item--done .ti {
-    color: #16a34a;
+    font-weight: 600;
 }
 
 .precomp-card__hint {
