@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\GameMatch;
+use App\Enum\ReminderChannel;
 use App\Enum\ReminderDeliveryMode;
 use App\Enum\ReminderTrigger;
 use App\Repository\GameMatchRepository;
@@ -70,7 +71,6 @@ final class MatchPronosticReminderService
             }
 
             $users = $this->userRepository->findPlayersWithoutPronosticForMatch($match);
-            [$title, $body] = $this->messageFactory->buildForMatch($match, $kickoff);
             $url = '/matchs';
 
             foreach ($users as $user) {
@@ -82,6 +82,28 @@ final class MatchPronosticReminderService
                 if ($this->matchReminderLogRepository->hasSuccessfulAutoReminder($match, $userId)) {
                     continue;
                 }
+
+                $dayKey = MatchdayKey::fromMatch($match);
+                $usesEmail = ReminderChannel::Email === $this->playerReminderDispatcher->peekDeliveryChannel(
+                    $user,
+                    ReminderDeliveryMode::PreferPush,
+                );
+                if (
+                    null !== $dayKey
+                    && $usesEmail
+                    && $this->matchReminderLogRepository->hasSuccessfulAutoEmailReminderForMatchday($userId, $dayKey)
+                ) {
+                    continue;
+                }
+
+                [$title, $body] = $this->resolveReminderMessage(
+                    $userId,
+                    $match,
+                    $kickoff,
+                    $dayKey,
+                    $usesEmail,
+                    $now,
+                );
 
                 ++$summary['playersTargeted'];
 
@@ -125,5 +147,30 @@ final class MatchPronosticReminderService
         }
 
         return $summary;
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function resolveReminderMessage(
+        int $userId,
+        GameMatch $match,
+        \DateTimeImmutable $kickoff,
+        ?string $dayKey,
+        bool $usesEmail,
+        \DateTimeImmutable $now,
+    ): array {
+        if ($usesEmail && null !== $dayKey) {
+            $forgottenMatches = $this->gameMatchRepository->findScheduledWithoutPronosticForUserOnMatchday(
+                $userId,
+                $dayKey,
+                $now,
+            );
+            if ([] !== $forgottenMatches) {
+                return $this->messageFactory->buildForMatchday($forgottenMatches);
+            }
+        }
+
+        return $this->messageFactory->buildForMatch($match, $kickoff);
     }
 }

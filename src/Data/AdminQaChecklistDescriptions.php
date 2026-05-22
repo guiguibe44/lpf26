@@ -95,7 +95,7 @@ final class AdminQaChecklistDescriptions
 
             'push-subscribe' => 'Mon compte → activer push (HTTPS, VAPID configurés) : abonnement enregistré en base.',
             'push-forum-mention' => 'Avec push actif : mention @ → notification reçue sur l’appareil.',
-            'prono-reminder-cron' => 'Cron app:push:pronostic-reminders : entrées dans Historique relances, pas de doublon par match/joueur.',
+            'prono-reminder-cron' => 'Cron app:push:pronostic-reminders : entrées dans Historique relances ; e-mail : max 1/jour/joueur/journée calendaire ; push : 1 par match.',
             'manual-message-admin' => 'Admin Messages manuels : envoi ciblé ou global, réception push et/ou e-mail selon choix.',
 
             'admin-access' => 'Joueur : /admin → 403. Admin : accès EasyAdmin. Super admin : menu sync API en plus.',

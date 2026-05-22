@@ -154,9 +154,35 @@
                 <i class="ti ti-chevron-down reglement-item__chevron" aria-hidden="true"></i>
             </summary>
             <div class="reglement-item__body ta-card-text">
+                <p>
+                    Si vous avez oublié un ou plusieurs pronostics, le site peut vous envoyer une <strong>relance automatique</strong>
+                    (e-mail et/ou notification push selon vos choix dans
+                    <a href="{{ path('app_account') }}#notifications">Mon compte → Notifications</a>).
+                </p>
                 <ul>
-                    <li>Relances automatiques si vous n’avez pas pronostiqué un match à venir (push ou e-mail selon vos préférences).</li>
-                    <li>Activez les notifications push depuis <a href="{{ path('app_account') }}#notifications">Mon compte → Notifications</a>.</li>
+                    <li><strong>Qui est concerné ?</strong> Joueurs à jour de <strong>cotisation</strong>, sans pronostic enregistré sur le match, tant que celui-ci est encore <strong>programmé</strong> (avant le coup d’envoi).</li>
+                    <li><strong>Journée calendaire</strong> : les matchs sont regroupés par <strong>date de coup d’envoi</strong> (fuseau <strong>Europe/Paris</strong>). Ex. tous les matchs du 15 juin forment la même journée, même si l’un est à 15h et l’autre à 21h.</li>
+                    <li><strong>Heure d’envoi</strong> (Paris) :
+                        <ul>
+                            <li>coup d’envoi entre <strong>10h et minuit</strong> → relance <strong>1 h avant</strong> le match ;</li>
+                            <li>coup d’envoi entre <strong>0h et 10h</strong> → relance la <strong>veille à 22h</strong>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>E-mail</strong> :
+                        <ul>
+                            <li><strong>une seule relance par journée</strong>, envoyée avant le <strong>premier match oublié</strong> de cette journée ;</li>
+                            <li>le message <strong>liste tous les matchs</strong> de la journée pour lesquels vous n’avez pas encore pronostiqué (équipes et heures de coup d’envoi) ;</li>
+                            <li>pas de second e-mail le même jour pour d’autres matchs de la journée.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Notification push</strong> :
+                        <ul>
+                            <li><strong>une relance par match oublié</strong> (message centré sur ce match) ;</li>
+                            <li>nécessite d’avoir activé la préférence et d’avoir <strong>autorisé les notifications</strong> sur au moins un appareil (navigateur) ;</li>
+                            <li>si vous n’avez pas d’abonnement push actif, la relance part par <strong>e-mail</strong> (si cette option est activée), avec le regroupement par journée décrit ci-dessus.</li>
+                        </ul>
+                    </li>
+                    <li>Les relances sont déclenchées automatiquement par le serveur (cron régulier). Vous pouvez désactiver chaque canal dans <a href="{{ path('app_account') }}#notifications">Mon compte → Notifications</a>.</li>
                 </ul>
             </div>
         </details>

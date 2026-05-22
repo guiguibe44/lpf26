@@ -33,7 +33,7 @@ enum NotificationPreference: string
     public function description(): string
     {
         return match ($this) {
-            self::PronosticReminderEmail => 'Si vous n’avez pas encore pronostiqué un match à venir : envoi automatique selon l’heure du coup d’envoi — match entre 10h et minuit, relance 1 h avant ; match entre 0h et 10h, relance la veille à 22h (heure de Paris). Une seule relance par match.',
+            self::PronosticReminderEmail => 'Si vous n’avez pas encore pronostiqué un ou plusieurs matchs de la même journée : un seul e-mail avant le premier match concerné, listant tous les matchs oubliés — match entre 10h et minuit, relance 1 h avant ; match entre 0h et 10h, relance la veille à 22h (heure de Paris).',
             self::PronosticReminderPush => 'Même logique que la relance e-mail, sur les appareils où vous avez activé les notifications push (bouton ci-dessous). Si le push échoue, l’e-mail peut prendre le relais si vous l’avez laissé activé.',
             self::ForumMentionPush => 'Quand un joueur vous cite avec @votre surnom sur le forum, vous recevez une alerte sur cet appareil (et une entrée dans le centre de notifications du site).',
             self::ButeurGoalEmail => 'Dès qu’un but officiel est enregistré pour le joueur que vous avez choisi comme buteur, vous recevez un e-mail avec le détail du match et des points gagnés.',

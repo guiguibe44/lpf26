@@ -120,7 +120,7 @@
                     <li>Commande cron : <code>php bin/console app:push:pronostic-reminders</code> (ex. toutes les 5–10 min, fuseau <strong>Europe/Paris</strong>).</li>
                     <li>Cible : joueurs <strong>cotisation payée</strong>, sans prono sur le match, match pas encore commencé, relance pas déjà envoyée avec succès.</li>
                     <li>Heure d’envoi : coup d’envoi entre <strong>10h et minuit</strong> → relance <strong>1 h avant</strong> ; entre <strong>0h et 10h</strong> → relance la veille à <strong>22h</strong>.</li>
-                    <li>Canal : <strong>push</strong> si abonnement actif, sinon <strong>e-mail</strong> (layout LPF'26).</li>
+                    <li>Canal : <strong>push</strong> si abonnement actif (une relance par match), sinon <strong>e-mail</strong> (une seule relance par journée calendaire, avant le premier match oublié).</li>
                     <li>Historique : <a href="{{ path('admin_pronostic_reminders_history') }}">Relances pronostic</a> (admin).</li>
                 </ul>
 </div>

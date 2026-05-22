@@ -119,6 +119,11 @@ final class PlayerReminderDispatcher
         return $result;
     }
 
+    public function peekDeliveryChannel(User $user, ReminderDeliveryMode $mode): ?ReminderChannel
+    {
+        return $this->resolveChannel($user, $mode);
+    }
+
     private function resolveChannel(User $user, ReminderDeliveryMode $mode): ?ReminderChannel
     {
         $userId = (int) $user->getId();

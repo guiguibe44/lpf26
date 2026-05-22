@@ -18,7 +18,7 @@
 
     <section class="ta-card admin-push-history-card">
         <p class="ta-card-text admin-push-history-card__lead">
-            Les relances partent via le cron <code>app:push:pronostic-reminders</code> (1 h avant le match, ou 22 h la veille pour les matchs de nuit).
+            Les relances partent via le cron <code>app:push:pronostic-reminders</code> (1 h avant le match, ou 22 h la veille pour les matchs de nuit). E-mail : une seule relance par journée calendaire ; push : une relance par match.
         </p>
 
         {% if reminder_history is empty %}

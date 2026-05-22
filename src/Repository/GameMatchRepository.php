@@ -361,4 +361,42 @@ class GameMatchRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Matchs programmés à venir d'une journée calendaire sans pronostic pour le joueur.
+     *
+     * @return list<GameMatch>
+     */
+    public function findScheduledWithoutPronosticForUserOnMatchday(
+        int $userId,
+        string $dayKey,
+        \DateTimeImmutable $now,
+    ): array {
+        $bounds = \App\Service\MatchdayKey::dayBounds($dayKey);
+        if (null === $bounds) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('m')
+            ->addSelect('hd', 'aw')
+            ->join('m.paysDomicile', 'hd')
+            ->join('m.paysExterieur', 'aw')
+            ->andWhere('m.statut = :scheduled')
+            ->andWhere('m.dateHeure >= :start')
+            ->andWhere('m.dateHeure < :end')
+            ->andWhere('m.dateHeure > :now')
+            ->andWhere('NOT EXISTS (
+                SELECT 1 FROM App\Entity\Pronostic p
+                WHERE IDENTITY(p.joueur) = :userId AND p.match = m
+            )')
+            ->setParameter('scheduled', 'SCHEDULED')
+            ->setParameter('start', $bounds['start'])
+            ->setParameter('end', $bounds['end'])
+            ->setParameter('now', $now)
+            ->setParameter('userId', $userId)
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
