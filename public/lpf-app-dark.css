@@ -682,6 +682,4 @@ html.dark body.front-body .dashboard-buteur-error {
     color: #fca5a5 !important;
 }
 
-@import url("lpf-app-dark-front.css");
-@import url("lpf-app-dark-canvas.css");
-@import url("lpf-app-dark-surfaces.css");
+/* front / canvas / surfaces : chargés en <link> séparés dans base.html.twig (cache-busting ?v=) */

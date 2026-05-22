@@ -3,6 +3,7 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
+{% set lpf_css_v = '9' %}
 <html lang="fr" class="lpf-classic-light">
     <head>
         <script>
@@ -57,12 +58,14 @@
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
             <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=6">
         {% else %}
-            {# Shell connecté : même principe qu’auth, après tailadmin + importmap #}
-            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v=8">
+            {# Shell connecté : dark en fichiers séparés (évite @import sans ?v=, cache navigateur) #}
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v={{ lpf_css_v }}">
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark-front.css') }}?v={{ lpf_css_v }}">
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark-canvas.css') }}?v={{ lpf_css_v }}">
         {% endif %}
-        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v=9">
+        <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v={{ lpf_css_v }}">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=13">
-        <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v=5">
+        <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v={{ lpf_css_v }}">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -72,6 +75,8 @@
             <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=9">
             <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
             <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=4">
+            {# Dernier : surcharges dark ciblées (priorité sur tailadmin / thèmes) #}
+            <link rel="stylesheet" href="{{ asset('lpf-app-dark-surfaces.css') }}?v={{ lpf_css_v }}">
         {% endif %}
 
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
