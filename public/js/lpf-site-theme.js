@@ -1,9 +1,9 @@
 /**
- * Thème global du site (clair / sombre) — non administrable, hors EasyAdmin.
- * Clair : html.lpf-classic-light — Sombre : html.dark (lpf-app-dark.css, lpf-auth-dark.css).
+ * Bascule clair / sombre (sidebar) — compatible thème GTA via lpfTheme.
  */
 (function () {
-    const STORAGE_KEY = 'lpfSiteTheme';
+    const SITE_STORAGE_KEY = 'lpfSiteTheme';
+    const THEME_STORAGE_KEY = 'lpfTheme';
     const BOUND_FLAG = 'lpfSiteThemeBound';
     const LIGHT = 'light';
     const DARK = 'dark';
@@ -13,9 +13,22 @@
         dark: '#09090b',
     };
 
-    function readStoredTheme() {
+    function readLpfTheme() {
         try {
-            const stored = localStorage.getItem(STORAGE_KEY);
+            const stored = localStorage.getItem(THEME_STORAGE_KEY);
+            if (stored === 'gta' || stored === 'miami') {
+                return stored;
+            }
+        } catch (e) {
+            /* ignore */
+        }
+
+        return null;
+    }
+
+    function readStoredSiteTheme() {
+        try {
+            const stored = localStorage.getItem(SITE_STORAGE_KEY);
             if (stored === LIGHT || stored === DARK) {
                 return stored;
             }
@@ -26,36 +39,26 @@
         return LIGHT;
     }
 
-    function persistTheme(theme) {
+    function persistSiteTheme(theme) {
         try {
-            localStorage.setItem(STORAGE_KEY, theme);
-            localStorage.setItem('lpfTheme', theme === DARK ? 'classic' : 'classic-light');
+            localStorage.setItem(SITE_STORAGE_KEY, theme);
+            localStorage.setItem(
+                THEME_STORAGE_KEY,
+                theme === DARK ? 'classic' : 'classic-light',
+            );
             localStorage.setItem('lpfGtaTheme', '0');
         } catch (e) {
             /* ignore */
         }
     }
 
-    function syncToggleUi(theme) {
-        const isDark = theme === DARK;
-        document.querySelectorAll('[data-lpf-site-theme-toggle]').forEach((btn) => {
-            btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-            btn.setAttribute(
-                'title',
-                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
-            );
-            btn.setAttribute(
-                'aria-label',
-                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
-            );
-            const icon = btn.querySelector('[data-lpf-site-theme-icon]');
-            if (icon) {
-                icon.className = isDark ? 'ti ti-sun' : 'ti ti-moon';
-            }
-        });
-    }
+    function applyClassicTheme(theme) {
+        if (window.lpfTheme && typeof window.lpfTheme.applyTheme === 'function') {
+            window.lpfTheme.applyTheme(theme === DARK ? 'classic' : 'classic-light');
 
-    function applyTheme(theme) {
+            return;
+        }
+
         const resolved = theme === DARK ? DARK : LIGHT;
         const html = document.documentElement;
         const body = document.body;
@@ -82,14 +85,41 @@
         if (meta) {
             meta.setAttribute('content', META_COLOR[resolved]);
         }
+    }
 
-        syncToggleUi(resolved);
+    function syncToggleUi(theme) {
+        const isDark = theme === DARK;
+        document.querySelectorAll('[data-lpf-site-theme-toggle]').forEach((btn) => {
+            btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+            btn.setAttribute(
+                'title',
+                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
+            );
+            btn.setAttribute(
+                'aria-label',
+                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
+            );
+            const icon = btn.querySelector('[data-lpf-site-theme-icon]');
+            if (icon) {
+                icon.className = isDark ? 'ti ti-sun' : 'ti ti-moon';
+            }
+        });
     }
 
     function toggleTheme() {
-        const next = readStoredTheme() === DARK ? LIGHT : DARK;
-        persistTheme(next);
-        applyTheme(next);
+        const lpf = readLpfTheme();
+        if (lpf === 'gta' || lpf === 'miami') {
+            if (window.lpfTheme && typeof window.lpfTheme.setTheme === 'function') {
+                window.lpfTheme.setTheme('classic-light');
+            }
+
+            return;
+        }
+
+        const next = readStoredSiteTheme() === DARK ? LIGHT : DARK;
+        persistSiteTheme(next);
+        applyClassicTheme(next);
+        syncToggleUi(next);
     }
 
     function onClick(event) {
@@ -113,9 +143,20 @@
 
     function boot() {
         bindEventsOnce();
-        const theme = readStoredTheme();
-        persistTheme(theme);
-        applyTheme(theme);
+
+        const lpf = readLpfTheme();
+        if (lpf === 'gta' || lpf === 'miami') {
+            if (window.lpfTheme && typeof window.lpfTheme.applyTheme === 'function') {
+                window.lpfTheme.applyTheme(lpf);
+            }
+
+            return;
+        }
+
+        const site = readStoredSiteTheme();
+        persistSiteTheme(site);
+        applyClassicTheme(site);
+        syncToggleUi(site);
     }
 
     document.addEventListener('turbo:load', boot);
@@ -126,11 +167,12 @@
     }
 
     window.lpfSiteTheme = {
-        getTheme: readStoredTheme,
+        getTheme: readStoredSiteTheme,
         setTheme: (theme) => {
             const resolved = theme === DARK ? DARK : LIGHT;
-            persistTheme(resolved);
-            applyTheme(resolved);
+            persistSiteTheme(resolved);
+            applyClassicTheme(resolved);
+            syncToggleUi(resolved);
         },
         toggle: toggleTheme,
     };

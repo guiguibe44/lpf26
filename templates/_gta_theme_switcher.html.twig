@@ -1,8 +1,8 @@
-{# Thèmes visibles : sombre | clair — GTA / Miami conservés mais masqués (réactivables) #}
+{# Thèmes : sombre | clair | GTA (Miami masqué) #}
 <div class="lpf-theme-switcher{% if modifier is defined and modifier %} lpf-theme-switcher--{{ modifier }}{% endif %}" data-lpf-theme-switcher>
     <span class="lpf-theme-switcher__legend" id="{{ switcher_id|default('lpf-theme-switcher-label') }}">Thème</span>
     <div
-        class="lpf-theme-switcher__track lpf-theme-switcher__track--dual"
+        class="lpf-theme-switcher__track lpf-theme-switcher__track--triple"
         role="group"
         aria-labelledby="{{ switcher_id|default('lpf-theme-switcher-label') }}"
     >
@@ -24,15 +24,12 @@
         >
             Clair
         </button>
-        {# Masqués pour l’instant — retirer la classe --hidden pour réafficher #}
         <button
             type="button"
-            class="lpf-theme-switcher__option lpf-theme-switcher__option--hidden"
+            class="lpf-theme-switcher__option lpf-theme-switcher__option--gta"
             data-lpf-theme-option="gta"
             aria-pressed="false"
-            aria-hidden="true"
-            tabindex="-1"
-            title="Thème GTA sombre"
+            title="Thème GTA — gaming, vert néon"
         >
             GTA
         </button>

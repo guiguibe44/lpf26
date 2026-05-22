@@ -1,19 +1,19 @@
 /**
- * Thèmes LPF'26 — visibles : classique sombre | classique clair.
- * GTA / Miami conservés (masqués dans le switcher, réactivables via setTheme).
+ * Thèmes LPF'26 : classique sombre | classique clair | GTA.
  */
 (function () {
     const STORAGE_KEY = 'lpfTheme';
+    const SITE_THEME_KEY = 'lpfSiteTheme';
     const LEGACY_KEY = 'lpfGtaTheme';
     const VALID = ['classic', 'classic-light', 'gta', 'miami'];
-    const PUBLIC_THEMES = ['classic', 'classic-light'];
-    const HIDDEN_THEMES = ['gta', 'miami'];
-    const DEFAULT_THEME = 'classic';
+    const PUBLIC_THEMES = ['classic', 'classic-light', 'gta'];
+    const HIDDEN_THEMES = ['miami'];
+    const DEFAULT_THEME = 'classic-light';
 
     const META = {
         classic: '#09090b',
         'classic-light': '#f8fafc',
-        gta: '#050505',
+        gta: '#0d0f0e',
         miami: '#f3e8ff',
     };
 
@@ -24,34 +24,41 @@
                 return stored;
             }
             const legacy = localStorage.getItem(LEGACY_KEY);
-            if (legacy === '0') {
-                return 'classic';
-            }
             if (legacy === '1') {
                 return 'gta';
+            }
+            const site = localStorage.getItem(SITE_THEME_KEY);
+            if (site === 'dark') {
+                return 'classic';
+            }
+            if (site === 'light') {
+                return 'classic-light';
             }
         } catch (e) {
             /* ignore */
         }
+
         return DEFAULT_THEME;
     }
 
-    /** Thème affiché dans le switcher (GTA/Miami → classique sombre tant qu’ils sont masqués). */
     function readTheme() {
         const stored = readStoredTheme();
         if (PUBLIC_THEMES.includes(stored)) {
             return stored;
         }
-        if (HIDDEN_THEMES.includes(stored)) {
-            return DEFAULT_THEME;
-        }
+
         return DEFAULT_THEME;
     }
 
     function persistTheme(theme) {
         try {
             localStorage.setItem(STORAGE_KEY, theme);
-            localStorage.setItem(LEGACY_KEY, theme === 'classic' || theme === 'classic-light' ? '0' : '1');
+            localStorage.setItem(LEGACY_KEY, theme === 'gta' || theme === 'miami' ? '1' : '0');
+            if (theme === 'classic') {
+                localStorage.setItem(SITE_THEME_KEY, 'dark');
+            } else if (theme === 'classic-light') {
+                localStorage.setItem(SITE_THEME_KEY, 'light');
+            }
         } catch (e) {
             /* ignore */
         }
@@ -60,7 +67,7 @@
     function setMetaThemeColor(theme) {
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) {
-            meta.setAttribute('content', META[theme] || META.classic);
+            meta.setAttribute('content', META[theme] || META['classic-light']);
         }
     }
 
@@ -77,6 +84,25 @@
         });
     }
 
+    function syncSiteThemeToggle(theme) {
+        const isDark = theme === 'classic' || theme === 'gta';
+        document.querySelectorAll('[data-lpf-site-theme-toggle]').forEach((btn) => {
+            btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+            btn.setAttribute(
+                'title',
+                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
+            );
+            btn.setAttribute(
+                'aria-label',
+                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
+            );
+            const icon = btn.querySelector('[data-lpf-site-theme-icon]');
+            if (icon) {
+                icon.className = isDark ? 'ti ti-sun' : 'ti ti-moon';
+            }
+        });
+    }
+
     function applyTheme(theme) {
         const resolved = VALID.includes(theme) ? theme : DEFAULT_THEME;
         const isGta = resolved === 'gta' || resolved === 'miami';
@@ -85,17 +111,40 @@
         const isDark = resolved === 'classic' || resolved === 'gta';
 
         const html = document.documentElement;
-        html.classList.toggle('dark', isDark);
-        html.classList.toggle('lpf-classic-light', isClassicLight);
-        html.classList.toggle('lpf-gta-theme', isGta);
-        html.classList.toggle('lpf-gta-miami', isMiami);
+        const body = document.body;
 
-        document.body.classList.toggle('lpf-gta-theme-active', isGta);
-        document.body.classList.toggle('lpf-gta-miami-active', isMiami);
-        document.body.classList.toggle('lpf-classic-light-active', isClassicLight);
+        html.classList.remove('dark', 'lpf-classic-light', 'lpf-gta-theme', 'lpf-gta-miami');
+        if (body) {
+            body.classList.remove(
+                'lpf-gta-theme-active',
+                'lpf-gta-miami-active',
+                'lpf-classic-light-active',
+            );
+        }
+
+        if (isGta) {
+            html.classList.add('dark', 'lpf-gta-theme');
+            if (isMiami) {
+                html.classList.add('lpf-gta-miami');
+            }
+            if (body) {
+                body.classList.add('lpf-gta-theme-active');
+                if (isMiami) {
+                    body.classList.add('lpf-gta-miami-active');
+                }
+            }
+        } else if (isClassicLight) {
+            html.classList.add('lpf-classic-light');
+            if (body) {
+                body.classList.add('lpf-classic-light-active');
+            }
+        } else if (isDark) {
+            html.classList.add('dark');
+        }
 
         setMetaThemeColor(resolved);
         syncSwitcherUi(resolved);
+        syncSiteThemeToggle(resolved);
     }
 
     function setTheme(theme) {
@@ -126,6 +175,7 @@
         if (HIDDEN_THEMES.includes(stored)) {
             persistTheme(DEFAULT_THEME);
             applyTheme(DEFAULT_THEME);
+
             return;
         }
         applyTheme(stored);
@@ -144,12 +194,19 @@
         getTheme: readStoredTheme,
         getPublicTheme: readTheme,
         setTheme,
-        isEnabled: () => HIDDEN_THEMES.includes(readStoredTheme()),
+        applyTheme,
+        isEnabled: () => readStoredTheme() === 'gta',
         enable: () => setTheme('gta'),
         disable: () => setTheme('classic'),
         toggle: () => {
             const t = readTheme();
-            setTheme(t === 'classic-light' ? 'classic' : 'classic-light');
+            if (t === 'gta') {
+                setTheme('classic-light');
+            } else if (t === 'classic-light') {
+                setTheme('classic');
+            } else {
+                setTheme('gta');
+            }
         },
     };
 

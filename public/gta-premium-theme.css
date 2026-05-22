@@ -10,27 +10,37 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap");
 
 html.lpf-gta-theme {
-    /* Palette LPF26 — planche graphique GTA / FUT / esport */
-    --bg-main: #050505;
-    --bg-secondary: #0c0c0c;
-    --bg-card: #121212;
-    --border-dark: #2a2a2a;
-    --text-main: #ededed;
-    --text-secondary: #a8a8a8;
-    --bonus: #59ff6a;
-    --malus: #ff4d4d;
-    --spy: #4db8ff;
-    --steal: #b266ff;
-    --shield: #4db8ff;
-    --gold: #f4c542;
+    /* Palette LPF26 — design system GTA (voir lpf-gta-design-system.css) */
+    --bg-primary: #0d0f0e;
+    --bg-secondary: #1a1d1b;
+    --bg-tertiary: #242826;
+    --text-primary: #fff;
+    --text-secondary: #a0a8a3;
+    --text-muted: #5a625c;
+    --accent-green: #4ade40;
+    --accent-green-glow: rgb(74 222 64 / 30%);
+    --border-default: #2a2e2c;
+    --border-hover: #4ade40;
+    --border-light: #3a3e3c;
+
+    --bg-main: var(--bg-primary);
+    --bg-card: var(--bg-secondary);
+    --border-dark: var(--border-default);
+    --text-main: var(--text-primary);
+    --bonus: var(--accent-green);
+    --malus: #dc2626;
+    --spy: #3b82f6;
+    --steal: #8b5cf6;
+    --shield: #3b82f6;
+    --gold: #d4a026;
     --mexico: #00a86b;
     --usa: #3a86ff;
     --canada: #d7263d;
 
     --gta-font-display: "Bebas Neue", "Impact", sans-serif;
     --gta-font-body: "Montserrat", system-ui, sans-serif;
-    --gta-radius: 0;
-    --gta-radius-lg: 0;
+    --gta-radius: 6px;
+    --gta-radius-lg: 6px;
     --gta-border-btn: 2px;
     --gta-shadow-hard: 4px 4px 0 rgb(0 0 0 / 85%);
     --gta-shadow-deep: 6px 6px 0 rgb(0 0 0 / 90%);
@@ -50,8 +60,8 @@ html.lpf-gta-theme {
     --lpf-navy: #ededed;
     --lpf-text: #ededed;
     --lpf-muted: #a8a8a8;
-    --th-ui-primary: #59ff6a;
-    --th-ui-primary-hover: #8fff9a;
+    --th-ui-primary: var(--accent-green);
+    --th-ui-primary-hover: #86efac;
     --th-ui-menu-muted: #a8a8a8;
 
     color-scheme: dark;

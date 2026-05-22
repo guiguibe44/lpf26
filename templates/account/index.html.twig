@@ -54,6 +54,14 @@
         </div>
 
         <div id="panel-compte" role="tabpanel" aria-labelledby="tab-btn-compte" class="account-tab-panel space-y-6">
+            <section class="ta-card account-theme-card p-5">
+                <h2 class="mb-1 text-lg font-semibold">Apparence du site</h2>
+                <p class="ta-page-subtitle mb-4">
+                    Choisissez le thème global : classique clair, classique sombre ou GTA (style gaming, vert néon).
+                </p>
+                {% include '_gta_theme_switcher.html.twig' with { switcher_id: 'account-theme-switcher-label' } %}
+            </section>
+
             <div class="account-profile-password-row">
             {% if profile_form %}
             <section class="account-card-profile rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">

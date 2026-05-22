@@ -175,9 +175,15 @@ html.lpf-gta-theme .lpf-theme-switcher__option:hover {
 
 html.lpf-gta-theme:not(.lpf-gta-miami) .lpf-theme-switcher__option.is-active,
 html.lpf-gta-theme:not(.lpf-gta-miami) .lpf-theme-switcher__option[aria-pressed="true"] {
-    background: rgb(89 255 106 / 14%);
-    color: var(--bonus, #59ff6a);
-    box-shadow: 0 0 12px rgb(89 255 106 / 20%);
+    background: rgb(74 222 64 / 14%);
+    color: var(--accent-green, #4ade40);
+    box-shadow: 0 0 12px var(--accent-green-glow, rgb(74 222 64 / 20%));
+}
+
+html.lpf-gta-theme .lpf-theme-switcher__option--gta.is-active,
+html.lpf-gta-theme .lpf-theme-switcher__option--gta[aria-pressed="true"] {
+    color: #000;
+    background: var(--accent-green, #4ade40);
 }
 
 .lpf-theme-switcher__option--miami:not(.is-active) {
