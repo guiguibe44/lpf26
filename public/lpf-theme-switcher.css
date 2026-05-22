@@ -29,12 +29,11 @@ html.lpf-classic-light:not(.lpf-gta-theme) .lpf-brand-logo--gta {
     display: none;
 }
 
-html.lpf-gta-theme .lpf-brand-logo--classic-dark,
 html.lpf-gta-theme .lpf-brand-logo--classic-light {
     display: none;
 }
 
-html.lpf-gta-theme .lpf-brand-logo--gta {
+html.lpf-gta-theme .lpf-brand-logo--classic-dark {
     display: block;
 }
 
