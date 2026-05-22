@@ -9,7 +9,7 @@
         </div>
         <div class="ta-auth-form-wrap">
             {% for flash_error in app.flashes('reset_password_error') %}
-                <div class="flash flash-danger" role="alert">{{ flash_error }}</div>
+                <div class="flash flash-danger" role="alert" data-lpf-alert-dismiss="persist">{{ flash_error }}</div>
             {% endfor %}
             <h1 class="section-title ta-auth-title">Reinitialiser le mot de passe</h1>
             <p class="ta-auth-lead">Entre l'adresse email associee a ton compte.</p>

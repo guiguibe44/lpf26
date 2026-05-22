@@ -10,7 +10,7 @@
     <div class="ta-auth-form-wrap">
         <form method="post" class="ta-auth-form">
             {% if error %}
-                <div class="flash flash-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="flash flash-danger" data-lpf-alert-dismiss="persist" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
             {% endif %}
 
             <h1 class="section-title ta-auth-title">Connexion</h1>

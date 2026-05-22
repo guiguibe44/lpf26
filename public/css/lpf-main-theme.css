@@ -168,7 +168,7 @@ html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main :is(
 }
 
 /* Flash : conserver fonds sémantiques, texte des blocs */
-html.lpf-classic-light[data-lpf-main-theme] body.front-body .ta-main .flash {
+html.lpf-classic-light[data-lpf-main-theme] body.front-body .lpf-alerts .flash {
     color: inherit !important;
 }
 

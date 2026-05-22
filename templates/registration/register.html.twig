@@ -13,7 +13,7 @@
 
 
             {% if registrationForm.vars.submitted and registrationForm.vars.errors|length > 0 %}
-                <div class="flash flash-danger mb-4" role="alert">
+                <div class="flash flash-danger mb-4" role="alert" data-lpf-alert-dismiss="persist">
                     <p class="m-0 font-semibold">Une erreur bloque l’inscription :</p>
                     <ul class="ta-form-errors ta-form-errors--alert mt-2 mb-0">
                         {% for error in registrationForm.vars.errors %}

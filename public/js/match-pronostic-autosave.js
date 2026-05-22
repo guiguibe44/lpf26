@@ -1,9 +1,7 @@
 (function () {
     const DEBOUNCE_MS = 1000;
-    const TOAST_HIDE_MS = 2200;
-
-    let toastEl = null;
-    let toastHideTimer = null;
+    const getPronosticDismissMs = () =>
+        window.lpfAlerts?.AUTO_DISMISS_PRONOSTIC_MS ?? 3500;
 
     const parseScore = (value) => {
         const raw = String(value ?? '').trim();
@@ -18,46 +16,32 @@
         return Number.isFinite(n) && n >= 0 ? n : null;
     };
 
-    const getToast = () => {
-        if (!toastEl) {
-            toastEl = document.createElement('div');
-            toastEl.className = 'match-pronostic-toast';
-            toastEl.setAttribute('role', 'status');
-            toastEl.setAttribute('aria-live', 'polite');
-            toastEl.hidden = true;
-            document.body.appendChild(toastEl);
-        }
-
-        return toastEl;
-    };
+    let toastEl = null;
 
     const setToast = (state, message) => {
-        const el = getToast();
-        window.clearTimeout(toastHideTimer);
-
-        el.classList.remove(
-            'match-pronostic-toast--idle',
-            'match-pronostic-toast--saving',
-            'match-pronostic-toast--saved',
-            'match-pronostic-toast--error',
-        );
-
         if ('idle' === state) {
-            el.textContent = '';
-            el.hidden = true;
+            if (toastEl) {
+                toastEl.remove();
+                toastEl = null;
+            }
 
             return;
         }
 
-        el.hidden = false;
-        el.classList.add('match-pronostic-toast--' + state);
-        el.textContent = message || '';
-
-        if ('saved' === state) {
-            toastHideTimer = window.setTimeout(() => {
-                setToast('idle');
-            }, TOAST_HIDE_MS);
+        if (!window.lpfAlerts) {
+            return;
         }
+
+        if (toastEl) {
+            toastEl.remove();
+            toastEl = null;
+        }
+
+        const variant = 'error' === state ? 'danger' : 'success';
+        toastEl = window.lpfAlerts.show(message || '', variant, {
+            dismiss: 'saving' === state ? 'transient' : 'auto',
+            durationMs: 'saved' === state ? getPronosticDismissMs() : undefined,
+        });
     };
 
     const readScores = (form) => {

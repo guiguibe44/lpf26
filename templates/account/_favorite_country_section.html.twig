@@ -16,7 +16,7 @@
     </p>
 
     {% if favorite_country_state.locked %}
-        <div class="alert alert-warning mb-4 text-sm">
+        <div class="lpf-alert lpf-alert--warning alert alert-warning mb-4 text-sm" role="status" data-lpf-alert-dismiss="persist">
             <span>
                 {% if favorite_country_state.country_name %}
                     <span class="country-flag-select-readonly">

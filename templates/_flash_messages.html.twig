@@ -1,0 +1,20 @@
+{# Messages flash Symfony — éphémères, barre fixe en haut #}
+{% set flash_variant = {
+    'success': 'success',
+    'danger': 'danger',
+    'warning': 'warning',
+    'info': 'info',
+    'reset_password_error': 'danger',
+} %}
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        {% set variant = flash_variant[label]|default('info') %}
+        <div
+            class="lpf-alert lpf-alert--{{ variant }} flash flash-{{ variant }}"
+            role="alert"
+            data-lpf-alert-dismiss="auto"
+        >
+            <span class="lpf-alert__text">{{ message }}</span>
+        </div>
+    {% endfor %}
+{% endfor %}

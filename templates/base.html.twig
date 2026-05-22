@@ -66,6 +66,7 @@
         <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v={{ lpf_css_v }}">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=14">
         <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v={{ lpf_css_v }}">
+        <link rel="stylesheet" href="{{ asset('css/lpf-alerts.css') }}?v={{ lpf_css_v }}">
         <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=1">
         <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
         {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
@@ -87,18 +88,14 @@
         {% endif %}
     </head>
     <body class="front-body{{ isAuthPage ? ' front-body--auth' : '' }}{{ show_cotisation_banner ? ' front-body--cotisation-banner' : '' }}">
+        <div id="lpf-alerts" class="lpf-alerts" aria-live="polite" aria-relevant="additions removals">
+            {% include '_flash_messages.html.twig' %}
+        </div>
         {% if isAuthPage %}
             <div class="lpf-site-theme-toggle--floating">
                 {% include '_site_theme_toggle.html.twig' %}
             </div>
             <main class="auth-wrap">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
-                            <span>{{ message }}</span>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
                 {{ block('body') }}
             </main>
         {% else %}
@@ -136,13 +133,6 @@
                     {% include '_sidebar.html.twig' %}
                 </div>
                 <main class="ta-main">
-                    {% for label, messages in app.flashes %}
-                        {% for message in messages %}
-                            <div class="flash {{ label == 'success' ? 'flash-success' : (label == 'danger' ? 'flash-danger' : 'flash-info') }}">
-                                <span>{{ message }}</span>
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
                     {{ block('body') }}
                 </main>
                 {% if app.user %}
@@ -150,6 +140,7 @@
                 {% endif %}
             </div>
         {% endif %}
+        <script src="{{ asset('js/lpf-alerts.js') }}?v={{ lpf_css_v }}" defer></script>
         <script src="{{ asset('js/lpf-site-theme.js') }}?v=2"></script>
     </body>
 </html>
