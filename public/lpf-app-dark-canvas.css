@@ -137,7 +137,7 @@ html.dark body.front-body .account-tabs-nav .tab {
 }
 
 /* --- Filet large : blocs « carte / panneau / item » dans le contenu --- */
-html.dark body.front-body .ta-main [class*="card"]:not([class*="badge"]):not(.match-card-joker-mark__btn),
+html.dark body.front-body .ta-main [class*="card"]:not([class*="badge"]):not(.match-card-joker-mark__btn):not([class*="match-card-"]):not(.match-card-grid),
 html.dark body.front-body .ta-main [class*="-panel"]:not(.joker-dialog):not([class*="dialog"]),
 html.dark body.front-body .ta-main [class*="__item"],
 html.dark body.front-body .ta-main .alert:not(.app-cotisation-banner),
@@ -176,6 +176,12 @@ html.dark body.front-body .ta-main :where(
 ) {
     background-color: var(--lpf-surface-raised) !important;
     border-color: var(--lpf-border);
+}
+
+/* Grille matchs : fond transparent (le fond gris est sur chaque .match-card) */
+html.dark body.front-body .ta-main .match-card-grid {
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
 /* Cartes match KDO : teinte ambre sur fond sombre */

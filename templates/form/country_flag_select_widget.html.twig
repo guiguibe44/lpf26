@@ -43,11 +43,30 @@
             {% set options = choices %}
             {{ block('choice_widget_options') }}
         </select>
-        <ul
-            class="country-flag-select__list"
-            data-country-flag-select-target="list"
-            role="listbox"
+        <div
+            class="country-flag-select__dropdown"
+            data-country-flag-select-target="dropdown"
             hidden
-        ></ul>
+        >
+            <label class="country-flag-select__search-wrap">
+                <span class="sr-only">Rechercher un pays</span>
+                <i class="ti ti-search country-flag-select__search-icon" aria-hidden="true"></i>
+                <input
+                    type="search"
+                    class="country-flag-select__search ta-form-input"
+                    placeholder="Rechercher un pays…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    data-country-flag-select-target="search"
+                    data-action="input->country-flag-select#filter keydown->country-flag-select#onSearchKeydown"
+                >
+            </label>
+            <ul
+                class="country-flag-select__list"
+                data-country-flag-select-target="list"
+                role="listbox"
+            ></ul>
+            <p class="country-flag-select__empty" data-country-flag-select-target="empty" hidden>Aucun pays trouvé.</p>
+        </div>
     </div>
 {% endblock %}

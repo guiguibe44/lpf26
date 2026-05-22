@@ -2,7 +2,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['select', 'trigger', 'triggerFlag', 'triggerLabel', 'list'];
+    static targets = ['select', 'trigger', 'triggerFlag', 'triggerLabel', 'dropdown', 'search', 'list', 'empty'];
 
     static values = {
         placeholder: String,
@@ -25,12 +25,30 @@ export default class extends Controller {
         if (this.triggerTarget.disabled) {
             return;
         }
-        this.setOpen(this.listTarget.hidden);
+        this.setOpen(this.dropdownTarget.hidden);
     }
 
     setOpen(open) {
-        this.listTarget.hidden = !open;
+        this.dropdownTarget.hidden = !open;
         this.triggerTarget.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+            if (this.hasSearchTarget) {
+                this.searchTarget.value = '';
+            }
+            this.applyFilter('');
+            window.requestAnimationFrame(() => {
+                if (this.hasSearchTarget) {
+                    this.searchTarget.focus();
+                }
+            });
+
+            return;
+        }
+
+        if (this.hasSearchTarget) {
+            this.searchTarget.value = '';
+        }
+        this.applyFilter('');
     }
 
     onDocumentClick(event) {
@@ -39,13 +57,32 @@ export default class extends Controller {
         }
     }
 
+    onSearchKeydown(event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            this.setOpen(false);
+            this.triggerTarget.focus();
+        }
+    }
+
+    filter() {
+        const query = this.hasSearchTarget ? this.searchTarget.value : '';
+        this.applyFilter(query);
+    }
+
     buildList() {
         this.listTarget.replaceChildren();
         Array.from(this.selectTarget.options).forEach((option) => {
+            if (option.disabled) {
+                return;
+            }
+
             const item = document.createElement('li');
             item.className = 'country-flag-select__option';
             item.setAttribute('role', 'option');
             item.dataset.value = option.value;
+            item.dataset.label = option.textContent.trim();
+            item.dataset.labelNorm = this.normalizeLabel(option.textContent);
             if (option.value === '') {
                 item.classList.add('country-flag-select__option--placeholder');
             }
@@ -60,6 +97,37 @@ export default class extends Controller {
             });
             this.listTarget.appendChild(item);
         });
+    }
+
+    applyFilter(query) {
+        const normQuery = this.normalizeLabel(query);
+        let visibleCount = 0;
+
+        this.listTarget.querySelectorAll('.country-flag-select__option').forEach((item) => {
+            const isPlaceholder = item.classList.contains('country-flag-select__option--placeholder');
+            const matches =
+                normQuery === ''
+                || (!isPlaceholder && item.dataset.labelNorm.includes(normQuery));
+
+            item.hidden = !matches;
+            if (matches) {
+                visibleCount += 1;
+            }
+        });
+
+        if (this.hasEmptyTarget) {
+            const showEmpty = normQuery !== '' && visibleCount === 0;
+            this.emptyTarget.hidden = !showEmpty;
+            this.listTarget.hidden = showEmpty;
+        }
+    }
+
+    normalizeLabel(text) {
+        return (text ?? '')
+            .normalize('NFD')
+            .replace(/\p{M}/gu, '')
+            .toLowerCase()
+            .trim();
     }
 
     createFlagElement(option) {
