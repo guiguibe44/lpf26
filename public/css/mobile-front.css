@@ -2,6 +2,10 @@
  * Front connecté — lisibilité mobile (textes, boutons, cartes match).
  */
 @media (max-width: 767px) {
+    body.front-body {
+        overflow-x: clip;
+    }
+
     .ta-main {
         font-size: 1.125rem;
         line-height: 1.55;

@@ -421,28 +421,24 @@
                 simulatedPosEl.textContent = '#' + team.simulatedRankingPosition;
             }
 
-            const generalTotalEl = teamSection.querySelector('[data-team-total-general]');
-            if (generalTotalEl) {
-                generalTotalEl.textContent = formatCellNumber(team.simulatedTotalPoints);
-            }
+            teamSection.querySelectorAll('[data-team-total-general]').forEach((el) => {
+                el.textContent = formatCellNumber(team.simulatedTotalPoints);
+            });
 
-            const matchTotalEl = teamSection.querySelector('[data-team-match-total]');
-            if (matchTotalEl) {
-                const matchPts =
-                    Number(team.matchPoints) ||
-                    Number(team.pronosticMatchPoints || 0) + Number(team.buteurMatchPoints || 0);
-                matchTotalEl.textContent = formatCellNumber(matchPts);
-            }
+            const matchPts =
+                Number(team.matchPoints) ||
+                Number(team.pronosticMatchPoints || 0) + Number(team.buteurMatchPoints || 0);
+            teamSection.querySelectorAll('[data-team-match-total]').forEach((el) => {
+                el.textContent = formatCellNumber(matchPts);
+            });
 
-            const pronoMatchEl = teamSection.querySelector('[data-team-prono-points]');
-            if (pronoMatchEl) {
-                pronoMatchEl.textContent = formatCellNumber(team.pronosticMatchPoints);
-            }
+            teamSection.querySelectorAll('[data-team-prono-points]').forEach((el) => {
+                el.textContent = formatCellNumber(team.pronosticMatchPoints);
+            });
 
-            const buteurMatchEl = teamSection.querySelector('[data-team-buteur-points]');
-            if (buteurMatchEl) {
-                buteurMatchEl.textContent = formatCellNumber(team.buteurMatchPoints);
-            }
+            teamSection.querySelectorAll('[data-team-buteur-points]').forEach((el) => {
+                el.textContent = formatCellNumber(team.buteurMatchPoints);
+            });
 
             const mainRow = teamSection.querySelector('.match-live-row');
             const hasJokerBadges = Array.isArray(team.jokerBadges) && team.jokerBadges.length > 0;

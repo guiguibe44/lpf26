@@ -2078,6 +2078,48 @@ html body .match-card-pronos-btn.btn.btn-primary .ti {
     overflow: visible;
 }
 
+@media (max-width: 767px) {
+    .match-live-teams-section.ta-card {
+        overflow-x: hidden;
+        min-width: 0;
+    }
+
+    .match-live-teams-wrap--jokers {
+        margin: 0.65rem 0 1rem;
+        padding: 0 0 0.25rem;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .match-live-teams-wrap--jokers .match-live-compact-table {
+        width: max-content;
+        min-width: 100%;
+        max-width: none;
+        table-layout: auto;
+    }
+
+    .match-live-compact-th-team,
+    .match-live-compact-team {
+        min-width: 8.5rem;
+    }
+
+    .match-live-compact-th-prono {
+        min-width: 4.15rem;
+    }
+
+    .match-live-detail-row__cell {
+        padding-left: 0.35rem !important;
+        padding-right: 0.35rem !important;
+    }
+
+    .match-live-prono-detail {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+}
+
 .match-live-compact-th-jokers {
     width: 1%;
     white-space: nowrap;
