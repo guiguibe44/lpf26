@@ -104,21 +104,25 @@
 }
 
 .site-intro-carousel__viewport {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    align-self: center;
     min-width: 0;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    transition: height 0.28s ease;
 }
 
 .site-intro-carousel__track {
     display: flex;
+    align-items: flex-start;
     transition: transform 0.32s ease;
     will-change: transform;
 }
 
 .site-intro-slide {
     flex: 0 0 100%;
+    align-self: flex-start;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
     align-items: stretch;

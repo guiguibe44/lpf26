@@ -65,6 +65,31 @@
         let index = 0;
         let slideWidth = 0;
 
+        const getMaxViewportHeight = () => Math.max(0, Math.round(root.getBoundingClientRect().height));
+
+        const syncActiveSlideHeight = () => {
+            const slide = slides[index];
+            if (!slide) {
+                return;
+            }
+
+            const naturalHeight = Math.round(slide.offsetHeight);
+            const maxHeight = getMaxViewportHeight();
+
+            if (naturalHeight <= 0) {
+                viewport.style.height = '';
+                viewport.style.maxHeight = maxHeight > 0 ? maxHeight + 'px' : '';
+                return;
+            }
+
+            if (maxHeight > 0) {
+                viewport.style.maxHeight = maxHeight + 'px';
+                viewport.style.height = Math.min(naturalHeight, maxHeight) + 'px';
+            } else {
+                viewport.style.height = naturalHeight + 'px';
+            }
+        };
+
         const updateNav = () => {
             const single = slides.length <= 1;
             if (prevBtn) {
@@ -86,7 +111,11 @@
                 slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
             });
 
+            viewport.scrollTop = 0;
             updateNav();
+            requestAnimationFrame(() => {
+                syncActiveSlideHeight();
+            });
         };
 
         const layout = () => {
@@ -106,8 +135,21 @@
             goTo(index);
             requestAnimationFrame(() => {
                 track.style.transition = '';
+                syncActiveSlideHeight();
             });
         };
+
+        slides.forEach((slide) => {
+            slide.querySelectorAll('img').forEach((img) => {
+                if (!img.complete) {
+                    img.addEventListener('load', () => {
+                        if (slide === slides[index]) {
+                            syncActiveSlideHeight();
+                        }
+                    });
+                }
+            });
+        });
 
         carouselApi = { layout };
 
@@ -153,10 +195,17 @@
         );
 
         if (typeof ResizeObserver !== 'undefined') {
-            const resizeObserver = new ResizeObserver(() => layout());
-            resizeObserver.observe(viewport);
+            const layoutObserver = new ResizeObserver(() => layout());
+            layoutObserver.observe(viewport);
+            layoutObserver.observe(root);
+
+            const slideObserver = new ResizeObserver(() => syncActiveSlideHeight());
+            slides.forEach((slide) => slideObserver.observe(slide));
         } else {
-            window.addEventListener('resize', layout);
+            window.addEventListener('resize', () => {
+                layout();
+                syncActiveSlideHeight();
+            });
         }
 
         window.addEventListener('lpf:site-intro-open', () => layout());
