@@ -106,19 +106,19 @@
 .site-intro-carousel__viewport {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .site-intro-carousel__track {
     display: flex;
-    height: 100%;
     transition: transform 0.32s ease;
     will-change: transform;
 }
 
 .site-intro-slide {
     flex: 0 0 100%;
-    height: 100%;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
     align-items: stretch;
@@ -142,14 +142,11 @@
 }
 
 .site-intro-slide__bg-img {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
     display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+    height: auto;
+    object-fit: contain;
+    object-position: center center;
 }
 
 .site-intro-slide__visual--has-bg-image .site-intro-slide__badge {
@@ -383,11 +380,11 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
 
     .site-intro-slide {
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(10rem, 32vh) 1fr;
+        grid-template-rows: auto 1fr;
     }
 
     .site-intro-slide__visual--has-bg-image {
-        min-height: min(32vh, 100%);
+        min-height: 0;
     }
 
     .site-intro-slide__copy {
