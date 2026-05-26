@@ -3,7 +3,8 @@
 {% set isAuthPage = currentRoute in ['app_login', 'app_register', 'app_forgot_password_request', 'app_check_email', 'app_reset_password', 'app_team_invitation_accept'] %}
 {% set isAppShellPage = (not isAuthPage) %}
 {% set show_cotisation_banner = isAppShellPage and app.user and not app.user.cotisationPayee %}
-{% set lpf_css_v = '10' %}
+{% set lpf_css_v = '11' %}
+{% set page_hero_banner_routes = ['app_matches', 'app_groups', 'app_ranking', 'app_jokers'] %}
 <html lang="fr" class="lpf-classic-light">
     <head>
         <script>
@@ -12,10 +13,13 @@
                 var theme = 'classic-light';
                 try {
                     var stored = localStorage.getItem('lpfTheme');
-                    if (stored === 'classic' || stored === 'classic-light' || stored === 'gta' || stored === 'miami') {
-                        theme = stored;
-                    } else if (localStorage.getItem('lpfGtaTheme') === '1') {
-                        theme = 'gta';
+                    var legacyGta = localStorage.getItem('lpfGtaTheme') === '1';
+                    if (stored === 'classic') {
+                        theme = 'classic';
+                    } else if (stored === 'classic-light') {
+                        theme = 'classic-light';
+                    } else if (stored === 'gta' || stored === 'miami' || legacyGta) {
+                        theme = 'classic-light';
                     } else {
                         var site = localStorage.getItem('lpfSiteTheme');
                         theme = site === 'dark' ? 'classic' : 'classic-light';
@@ -24,12 +28,7 @@
                     /* ignore */
                 }
                 html.classList.remove('dark', 'lpf-gta-theme', 'lpf-gta-miami', 'lpf-classic-light');
-                if (theme === 'gta' || theme === 'miami') {
-                    html.classList.add('dark', 'lpf-gta-theme');
-                    if (theme === 'miami') {
-                        html.classList.add('lpf-gta-miami');
-                    }
-                } else if (theme === 'classic') {
+                if (theme === 'classic') {
                     html.classList.add('dark');
                 } else {
                     html.classList.add('lpf-classic-light');
@@ -47,7 +46,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         {% if not isAuthPage %}
             <link rel="stylesheet" href="{{ asset('tailadmin-dashboard.css') }}?v=lpf-match-live-table-scroll">
             <link rel="stylesheet" href="{{ asset('css/mobile-front.css') }}?v=25">
@@ -63,6 +61,7 @@
 
         {% if isAuthPage %}
             <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=4">
+            <link rel="stylesheet" href="{{ asset('css/auth-aside-background.css') }}?v=3">
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
             <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=6">
         {% else %}
@@ -74,14 +73,10 @@
         <link rel="stylesheet" href="{{ asset('lpf-classic-light.css') }}?v={{ lpf_css_v }}">
         <link rel="stylesheet" href="{{ asset('lpf-classic-light-front.css') }}?v=14">
         <link rel="stylesheet" href="{{ asset('css/lpf-site-theme.css') }}?v={{ lpf_css_v }}">
+        <link rel="stylesheet" href="{{ asset('css/dashboard-banner.css') }}?v=6">
+        <link rel="stylesheet" href="{{ asset('css/page-hero-banner.css') }}?v=4">
         <link rel="stylesheet" href="{{ asset('css/lpf-alerts.css') }}?v={{ lpf_css_v }}">
-        <link rel="stylesheet" href="{{ asset('lpf-theme-switcher.css') }}?v=2">
-        <link rel="stylesheet" href="{{ asset('gta-premium-theme.css') }}?v=2">
-        <link rel="stylesheet" href="{{ asset('gta-miami-theme.css') }}?v=1">
-        {# Typo + boutons GTA — actifs uniquement avec html.lpf-gta-theme #}
-        <link rel="stylesheet" href="{{ asset('lpf-gta-typography.css') }}?v=2">
-        <link rel="stylesheet" href="{{ asset('lpf-gta-buttons.css') }}?v=3">
-        <link rel="stylesheet" href="{{ asset('css/lpf-gta-design-system.css') }}?v=1">
+        <link rel="stylesheet" href="{{ asset('lpf-theme-switcher.css') }}?v=4">
         {% if not isAuthPage %}
             <link rel="stylesheet" href="{{ asset('css/joker-match-drawer.css') }}?v=9">
             <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
@@ -144,6 +139,9 @@
                     {% include '_sidebar.html.twig' %}
                 </div>
                 <main class="ta-main">
+                    {% if currentRoute in page_hero_banner_routes %}
+                        {% include '_page_hero_banner.html.twig' %}
+                    {% endif %}
                     {{ block('body') }}
                 </main>
                 {% if app.user %}
@@ -155,8 +153,10 @@
             </div>
         {% endif %}
         <script src="{{ asset('js/lpf-alerts.js') }}?v={{ lpf_css_v }}" defer></script>
-        <script src="{{ asset('js/lpf-theme-switcher.js') }}?v=2"></script>
-        <script src="{{ asset('js/lpf-site-theme.js') }}?v=3"></script>
+        <script src="{{ asset('js/lpf-site-theme.js') }}?v=5"></script>
+        {% if currentRoute in page_hero_banner_routes %}
+            <script src="{{ asset('js/page-hero-banner.js') }}?v=2" defer></script>
+        {% endif %}
         {% if isAppShellPage and app.user and site_intro_slides()|length > 0 %}
             <script src="{{ asset('js/site-intro.js') }}?v=4" defer></script>
         {% endif %}

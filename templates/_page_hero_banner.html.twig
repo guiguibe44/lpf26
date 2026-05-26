@@ -1,0 +1,26 @@
+{% set page_banner_pairs = page_banner_pairs() %}
+{% if page_banner_pairs is not empty %}
+    {% set page_banner = random(page_banner_pairs) %}
+    <div
+        class="page-hero-banner"
+        data-page-hero-banner
+        data-page-banner-pairs="{{ page_banner_pairs|map(p => { light: asset(p.light), dark: asset(p.dark) })|json_encode|e('html_attr') }}"
+        role="img"
+        aria-label="Bannière décorative"
+    >
+        <div class="page-hero-banner__parallax" data-page-hero-banner-layer>
+            <span
+                class="page-hero-banner__bg page-hero-banner__bg--light"
+                style="background-image: url('{{ asset(page_banner.light) }}')"
+                data-page-banner-bg="light"
+                aria-hidden="true"
+            ></span>
+            <span
+                class="page-hero-banner__bg page-hero-banner__bg--dark"
+                style="background-image: url('{{ asset(page_banner.dark) }}')"
+                data-page-banner-bg="dark"
+                aria-hidden="true"
+            ></span>
+        </div>
+    </div>
+{% endif %}

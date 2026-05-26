@@ -97,6 +97,23 @@
 
         <details class="ta-card reglement-item">
             <summary class="reglement-item__summary">
+                <span><i class="ti ti-gift" aria-hidden="true"></i> Matchs KDO (cadeau)</span>
+                <i class="ti ti-chevron-down reglement-item__chevron" aria-hidden="true"></i>
+            </summary>
+            <div class="reglement-item__body ta-card-text">
+                <ul>
+                    <li>Sur certains matchs, le site affiche le badge <strong>KDO</strong> : ce sont des <strong>matchs cadeau</strong> hors barème de points.</li>
+                    <li>À l’issue du match, un <strong>petit cadeau</strong> est offert à l’équipe désignée gagnante du KDO.</li>
+                    <li>Éligibilité : avoir trouvé le <strong>score exact</strong> du match (au moins un des deux joueurs de l’équipe).</li>
+                    <li>Équipe gagnante : celle qui cumule le <strong>plus grand nombre de scores exacts</strong> sur ce match (0, 1 ou 2 — un par joueur). Une équipe avec <strong>2 scores exacts</strong> (les deux coéquipiers sur le bon score, {{ bigballs_term('name')|lower }} réussi) passe donc avant une équipe qui n’en aurait qu’un.</li>
+                    <li>Si plusieurs équipes sont à égalité sur ce maximum (ex. chacune 1 score exact), l’équipe <strong>la moins bien classée</strong> au classement général <strong>juste avant</strong> ce match l’emporte.</li>
+                    <li>Le détail (vainqueur potentiel ou confirmé) est visible sur la fiche du match KDO une fois le score connu.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details class="ta-card reglement-item">
+            <summary class="reglement-item__summary">
                 <span><i class="ti ti-target" aria-hidden="true"></i> Buteur</span>
                 <i class="ti ti-chevron-down reglement-item__chevron" aria-hidden="true"></i>
             </summary>

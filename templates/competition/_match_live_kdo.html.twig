@@ -15,7 +15,7 @@
         {% else %}
             Selon le score simulé <strong id="match-live-kdo-score-label">{{ kdo_outlook.scoreDomicile }} - {{ kdo_outlook.scoreExterieur }}</strong>.
         {% endif %}
-        En cas d’égalité au meilleur nombre de scores exacts, l’équipe la moins bien classée avant le match l’emporte.
+        L’équipe avec le plus de scores exacts l’emporte ; en cas d’égalité, priorité à celle avec <strong>2 scores exacts</strong> (les deux coéquipiers sur le bon score), sinon à l’équipe la moins bien classée avant le match.
     </p>
 
     <div class="overflow-x-auto mt-4" id="match-live-kdo-table-wrap">

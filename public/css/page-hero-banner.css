@@ -1,0 +1,86 @@
+/* Bannière pages compétition — 100% largeur, 200px, parallax */
+
+.ta-main > .page-hero-banner {
+    --page-banner-pad-x: 1.5rem;
+    --page-banner-pad-top: 1.5rem;
+    --page-banner-height: 200px;
+
+    position: relative;
+    width: calc(100% + 2 * var(--page-banner-pad-x));
+    max-width: none;
+    height: var(--page-banner-height);
+    margin:
+        calc(-1 * var(--page-banner-pad-top))
+        calc(-1 * var(--page-banner-pad-x))
+        1.25rem;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid rgb(148 163 184 / 20%);
+    border-radius: 0;
+    background: #0f172a;
+}
+
+.page-hero-banner__parallax {
+    position: absolute;
+    inset: -25% 0;
+    height: 150%;
+    will-change: transform;
+}
+
+.page-hero-banner__bg {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+}
+
+html.lpf-classic-light .page-hero-banner {
+    background: #e8eef5;
+}
+
+html.lpf-classic-light .page-hero-banner__bg--light {
+    display: block;
+}
+
+html.dark .page-hero-banner {
+    background: #0d0f12;
+}
+
+html.dark .page-hero-banner__bg--dark {
+    display: block;
+}
+
+html.lpf-classic-light .ta-main > .page-hero-banner {
+    border-bottom-color: #e2e8f0;
+}
+
+html.dark .ta-main > .page-hero-banner {
+    border-bottom-color: rgb(148 163 184 / 15%);
+}
+
+@media (max-width: 1023px) {
+    .ta-main > .page-hero-banner {
+        --page-banner-pad-x: 1rem;
+        --page-banner-pad-top: 6.75rem;
+    }
+
+    .front-body--cotisation-banner .ta-main > .page-hero-banner {
+        --page-banner-pad-top: 8rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .ta-main > .page-hero-banner {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-hero-banner__parallax {
+        inset: 0;
+        height: 100%;
+        transform: none !important;
+    }
+}

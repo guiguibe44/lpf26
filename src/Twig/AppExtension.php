@@ -9,6 +9,7 @@ use App\Entity\Joker;
 use App\Enum\MatchCoteMode;
 use App\Service\MatchCoteService;
 use App\Service\MatchOutcomeResolver;
+use App\Service\PageBannerResolver;
 use App\Service\ConnectedPlayerContext;
 use App\Service\CountryShortLabelResolver;
 use App\Service\MatchLiveClockLabelResolver;
@@ -32,6 +33,7 @@ final class AppExtension extends AbstractExtension
         private readonly TeamMatchPointsTierResolver $teamMatchPointsTierResolver,
         private readonly MatchCoteService $matchCoteService,
         private readonly MatchOutcomeResolver $matchOutcomeResolver,
+        private readonly PageBannerResolver $pageBannerResolver,
     ) {
     }
 
@@ -63,7 +65,25 @@ final class AppExtension extends AbstractExtension
             new TwigFunction('match_cote_mode', [$this, 'getMatchCoteMode']),
             new TwigFunction('match_cote_is_one_n_two', [$this, 'isMatchCoteOneNTwo']),
             new TwigFunction('match_outcome_from_scores', [$this, 'getMatchOutcomeFromScores']),
+            new TwigFunction('random_page_banner', [$this, 'getRandomPageBanner']),
+            new TwigFunction('page_banner_pairs', [$this, 'getPageBannerPairs']),
         ];
+    }
+
+    /**
+     * @return array{light: string, dark: string}|null
+     */
+    public function getRandomPageBanner(): ?array
+    {
+        return $this->pageBannerResolver->resolveRandomPair();
+    }
+
+    /**
+     * @return list<array{light: string, dark: string}>
+     */
+    public function getPageBannerPairs(): array
+    {
+        return $this->pageBannerResolver->getAvailablePairs();
     }
 
     /**
