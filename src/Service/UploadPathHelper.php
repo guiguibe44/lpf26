@@ -21,14 +21,35 @@ final class UploadPathHelper
 
         $prefix = '/uploads/'.$subdir.'/';
         if (str_starts_with($stored, $prefix)) {
-            return $stored;
+            return self::encodePublicUploadPath($stored);
         }
 
         if (str_starts_with($stored, '/')) {
-            return $stored;
+            return self::encodePublicUploadPath($stored);
         }
 
-        return $prefix.$stored;
+        return $prefix.self::encodeUploadFilename($stored);
+    }
+
+    /**
+     * Encode le nom de fichier pour une URL HTTP (espaces, virgules, etc.).
+     */
+    public static function encodeUploadFilename(string $filename): string
+    {
+        return rawurlencode($filename);
+    }
+
+    private static function encodePublicUploadPath(string $path): string
+    {
+        $lastSlash = strrpos($path, '/');
+        if (false === $lastSlash) {
+            return self::encodeUploadFilename($path);
+        }
+
+        $dir = substr($path, 0, $lastSlash + 1);
+        $file = substr($path, $lastSlash + 1);
+
+        return $dir.self::encodeUploadFilename($file);
     }
 
     /**
