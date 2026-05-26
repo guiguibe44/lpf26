@@ -380,14 +380,29 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
 
     .site-intro-slide {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 0;
+        align-items: start;
+    }
+
+    .site-intro-slide__copy {
+        order: 1;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        padding: 0.65rem 0.5rem 0;
+    }
+
+    .site-intro-slide__visual {
+        order: 2;
+        min-height: 0;
+        padding: 0;
+    }
+
+    .site-intro-slide__visual:not(.site-intro-slide__visual--has-bg-image) {
+        padding: 0.5rem 0.75rem 0;
     }
 
     .site-intro-slide__visual--has-bg-image {
         min-height: 0;
-    }
-
-    .site-intro-slide__copy {
-        padding: 1.1rem 0.5rem 0.5rem;
     }
 }
