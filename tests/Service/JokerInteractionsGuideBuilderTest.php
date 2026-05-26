@@ -75,4 +75,34 @@ final class JokerInteractionsGuideBuilderTest extends TestCase
         self::assertSame('guide-joker-pique-points', $pique['anchor']);
         self::assertNotEmpty($pique['tables']);
     }
+
+    public function testButeurJokerSectionsUseTenPointBaseExamples(): void
+    {
+        $repo = $this->createMock(JokerRepository::class);
+        $repo->method('findAllOrdered')->willReturn([]);
+
+        $guide = (new JokerInteractionsGuideBuilder($repo))->build();
+
+        $doubleButeur = null;
+        $inverseButeur = null;
+        foreach ($guide['jokers'] as $section) {
+            if (Joker::CODE_DOUBLE_BUTEUR === $section['code']) {
+                $doubleButeur = $section;
+            }
+            if (Joker::CODE_INVERSE_BUTEUR === $section['code']) {
+                $inverseButeur = $section;
+            }
+        }
+
+        self::assertNotNull($doubleButeur);
+        self::assertSame(
+            '40 → 80 pts pour votre équipe',
+            $doubleButeur['tables'][0]['rows'][1][2],
+        );
+
+        self::assertNotNull($inverseButeur);
+        self::assertSame('+50', $inverseButeur['tables'][0]['rows'][0][1]);
+        self::assertSame('−50', $inverseButeur['tables'][0]['rows'][0][2]);
+        self::assertSame('+80', $inverseButeur['tables'][0]['rows'][1][1]);
+    }
 }

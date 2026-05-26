@@ -3,7 +3,7 @@
 {% set buteur = precomp_checklist.buteur %}
 {% set favorite = precomp_checklist.favorite %}
 {% set notifications = precomp_checklist.notifications %}
-{% if not precomp_checklist.all_done %}
+{% if not precomp_checklist.all_done or not cotisation_payee %}
 <section class="precomp-dashboard" aria-labelledby="precomp-dashboard-title">
     <header class="precomp-dashboard__header">
         <h2 id="precomp-dashboard-title" class="precomp-dashboard__title">Avant la compétition</h2>
@@ -11,6 +11,11 @@
     </header>
 
     <div class="precomp-dashboard__grid">
+        {% if not cotisation_payee %}
+            {% include 'home/_dashboard_cotisation_block.html.twig' %}
+        {% endif %}
+
+        {% if not precomp_checklist.all_done %}
         {% if not account.done %}
         <article class="precomp-card ta-card precomp-card--pending">
             {% include 'home/_precomp_card_status_mark.html.twig' with { done: false } only %}
@@ -73,6 +78,7 @@
                 Gérer mes notifications
             </a>
         </article>
+        {% endif %}
         {% endif %}
     </div>
 </section>

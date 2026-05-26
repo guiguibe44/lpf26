@@ -3,12 +3,17 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
+    {% include 'home/_dashboard_banner.html.twig' %}
+
     {% if competition_started and buteur_stats %}
         {% include 'buteur/_stats_summary.html.twig' with { buteur_stats: buteur_stats } only %}
     {% endif %}
 
-    {% if not competition_started and not precomp_checklist.all_done %}
-        {% include 'home/_precompetition_checklist.html.twig' with { precomp_checklist: precomp_checklist } only %}
+    {% if not competition_started and (not precomp_checklist.all_done or not cotisation_payee) %}
+        {% include 'home/_precompetition_checklist.html.twig' with {
+            precomp_checklist: precomp_checklist,
+            cotisation_payee: cotisation_payee,
+        } only %}
     {% endif %}
 
     <section class="match-dashboard-wrap mt-5 {{ prono_access_blocked ? 'match-dashboard-wrap--locked' : '' }}">

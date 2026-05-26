@@ -12,6 +12,8 @@ use App\Repository\JokerRepository;
  */
 final class JokerInteractionsGuideBuilder
 {
+    private const int BUTEUR_POINTS_BASE = ButeurGoalScoringService::DEFAULT_POINTS_BASE;
+
     /**
      * @var array<string, array{title: string, image: ?string, icon: string}>
      */
@@ -470,8 +472,8 @@ final class JokerInteractionsGuideBuilder
                     'caption' => 'Calcul des points buteur',
                     'headers' => ['Étape', 'Valeur', 'Exemple'],
                     'rows' => [
-                        ['Points d’un but (base)', '10 × coefficient de popularité du buteur (max ×5)', 'But = 40 pts (ex. cote ×4)'],
-                        ['Avec double buteur', '×2 sur ce match', '4 → 8 pts pour votre équipe'],
+                        ['Points d’un but (base)', self::BUTEUR_POINTS_BASE.' × coefficient de popularité du buteur (max ×5)', 'But = '.(self::BUTEUR_POINTS_BASE * 4).' pts (ex. cote ×4)'],
+                        ['Avec double buteur', '×2 sur ce match', (self::BUTEUR_POINTS_BASE * 4).' → '.(self::BUTEUR_POINTS_BASE * 8).' pts pour votre équipe'],
                     ],
                 ],
                 [
@@ -519,8 +521,8 @@ final class JokerInteractionsGuideBuilder
                     'caption' => 'Exemples de points buteur sur le match',
                     'headers' => ['But', 'Points normaux', 'Avec inversion (cible)'],
                     'rows' => [
-                        ['1 but à 5 pts', '+5', '−5'],
-                        ['2 buts à 4 pts chacun', '+8', '−8'],
+                        ['1 but (cote ×5, max)', '+'.(self::BUTEUR_POINTS_BASE * 5), '−'.(self::BUTEUR_POINTS_BASE * 5)],
+                        ['2 buts à '.(self::BUTEUR_POINTS_BASE * 4).' pts chacun (cote ×4)', '+'.(self::BUTEUR_POINTS_BASE * 8), '−'.(self::BUTEUR_POINTS_BASE * 8)],
                     ],
                 ],
                 [
@@ -529,7 +531,7 @@ final class JokerInteractionsGuideBuilder
                     'rows' => [
                         [
                             $this->t(Joker::CODE_DOUBLE_BUTEUR).' (cible, même match)',
-                            'Points doublés puis passés en négatif (ex. +10 → −10).',
+                            'Points doublés puis passés en négatif (ex. +'.(self::BUTEUR_POINTS_BASE * 4).' → +'.(self::BUTEUR_POINTS_BASE * 8).' → −'.(self::BUTEUR_POINTS_BASE * 8).').',
                         ],
                         [
                             $this->protectionPairLabel().' (cible)',
@@ -702,7 +704,7 @@ final class JokerInteractionsGuideBuilder
                         'Vous pouvez collecter même si protégé',
                     ],
                     [
-                        $doubleButeur.' (+8 but)',
+                        $doubleButeur.' (×2, ex. '.(self::BUTEUR_POINTS_BASE * 4).' → '.(self::BUTEUR_POINTS_BASE * 8).' pts buteur)',
                         'Buts non volés',
                         'Buts non taxés',
                         '—',
