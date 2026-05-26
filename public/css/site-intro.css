@@ -366,7 +366,7 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
 
 @media (max-width: 900px) {
     .site-intro-dialog__inner {
-        padding: 1rem 0.75rem 1.25rem;
+        padding: 1rem 0 1.25rem;
     }
 
     .site-intro-dialog__main {
@@ -392,7 +392,7 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
     .site-intro-slide__copy {
         justify-content: flex-start;
         gap: 0.5rem;
-        padding: 0.65rem 0.5rem 0;
+        padding: 0.75rem 0 0;
     }
 
     .site-intro-slide__visual {
@@ -401,7 +401,7 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
     }
 
     .site-intro-slide__visual:not(.site-intro-slide__visual--has-bg-image) {
-        padding: 0.5rem 0.75rem 0;
+        padding: 0;
     }
 
     .site-intro-slide__visual--has-bg-image {
@@ -409,16 +409,16 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
     }
 
     .site-intro-slide__eyebrow {
-        font-size: 0.9rem;
+        font-size: 1.05rem;
     }
 
     .site-intro-slide__title {
-        font-size: clamp(1.45rem, 5vw, 1.75rem);
+        font-size: clamp(1.6rem, 6vw, 2.05rem);
         line-height: 1.25;
     }
 
     .site-intro-slide__body {
-        font-size: clamp(1.12rem, 3.8vw, 1.28rem);
-        line-height: 1.5;
+        font-size: clamp(1.22rem, 4.2vw, 1.5rem);
+        line-height: 1.45;
     }
 }
