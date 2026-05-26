@@ -477,10 +477,6 @@ html.dark .app-cotisation-banner.app-cotisation-banner--alert {
     box-shadow: 0 2px 10px rgb(245 158 11 / 20%);
 }
 
-html.dark .app-cotisation-banner.app-cotisation-banner--alert:hover {
-    background: linear-gradient(180deg, rgb(124 45 18 / 0.95) 0%, rgb(154 52 18 / 0.9) 100%) !important;
-}
-
 html.dark .app-cotisation-banner__title {
     color: #fdba74 !important;
 }

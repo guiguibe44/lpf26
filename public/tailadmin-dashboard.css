@@ -4359,7 +4359,7 @@ html.dark .country-flag-select__flag {
     font-size: 0.8rem;
 }
 
-/* --- Bandeau cotisation (alerte cliquable + modale virement) --- */
+/* --- Bandeau cotisation (alerte fixe) --- */
 .app-cotisation-banner-wrap {
     position: fixed;
     top: 0;
@@ -4381,21 +4381,8 @@ html.dark .country-flag-select__flag {
     border-radius: 0;
     background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
     box-shadow: 0 2px 10px rgba(234, 88, 12, 0.18);
-    cursor: pointer;
+    cursor: default;
     color: #7c2d12;
-    transition:
-        background 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.app-cotisation-banner.app-cotisation-banner--alert:hover {
-    background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 100%);
-    box-shadow: 0 3px 14px rgba(234, 88, 12, 0.22);
-}
-
-.app-cotisation-banner.app-cotisation-banner--alert:focus {
-    outline: 3px solid #fb923c;
-    outline-offset: 2px;
 }
 
 .app-cotisation-banner__title {
