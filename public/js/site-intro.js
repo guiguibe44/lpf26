@@ -73,21 +73,28 @@
                 return;
             }
 
-            const naturalHeight = Math.round(slide.offsetHeight);
+            viewport.style.height = 'auto';
+            viewport.style.overflowY = 'hidden';
+
+            const contentHeight = Math.ceil(slide.getBoundingClientRect().height);
             const maxHeight = getMaxViewportHeight();
 
-            if (naturalHeight <= 0) {
+            if (contentHeight <= 0) {
                 viewport.style.height = '';
                 viewport.style.maxHeight = maxHeight > 0 ? maxHeight + 'px' : '';
                 return;
             }
 
-            if (maxHeight > 0) {
+            if (maxHeight > 0 && contentHeight > maxHeight) {
                 viewport.style.maxHeight = maxHeight + 'px';
-                viewport.style.height = Math.min(naturalHeight, maxHeight) + 'px';
-            } else {
-                viewport.style.height = naturalHeight + 'px';
+                viewport.style.height = maxHeight + 'px';
+                viewport.style.overflowY = 'auto';
+                return;
             }
+
+            viewport.style.maxHeight = maxHeight > 0 ? maxHeight + 'px' : '';
+            viewport.style.height = contentHeight + 'px';
+            viewport.style.overflowY = 'hidden';
         };
 
         const updateNav = () => {
@@ -196,7 +203,6 @@
 
         if (typeof ResizeObserver !== 'undefined') {
             const layoutObserver = new ResizeObserver(() => layout());
-            layoutObserver.observe(viewport);
             layoutObserver.observe(root);
 
             const slideObserver = new ResizeObserver(() => syncActiveSlideHeight());
