@@ -10,7 +10,7 @@ use App\Entity\Joker;
 use App\Repository\TeamJokerUsageRepository;
 use App\Service\JokerScoringApplicator;
 use App\Service\PronosticScoreInversionService;
-use App\Service\PronosticSimulationService;
+use App\Tests\Support\PronosticSimulationServiceFactory;
 use PHPUnit\Framework\TestCase;
 
 final class JokerScoringApplicatorTest extends TestCase
@@ -19,8 +19,9 @@ final class JokerScoringApplicatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $inversion = new PronosticScoreInversionService($this->createMock(TeamJokerUsageRepository::class));
-        $this->applicator = new JokerScoringApplicator(new PronosticSimulationService($inversion));
+        $this->applicator = new JokerScoringApplicator(PronosticSimulationServiceFactory::create(
+            $this->createMock(TeamJokerUsageRepository::class),
+        ));
     }
 
     public function testDoubleEquipeExactScoreIsTripleCoteTimesTwo(): void
@@ -38,8 +39,8 @@ final class JokerScoringApplicatorTest extends TestCase
         );
 
         self::assertNotNull($result);
-        self::assertSame(12.0, $result['playerPoints']);
-        self::assertSame(12.0, $result['teamPoints']);
+        self::assertSame(120.0, $result['playerPoints']);
+        self::assertSame(120.0, $result['teamPoints']);
     }
 
     public function testDoubleEquipeGoodResultIsCoteTimesTwo(): void
@@ -57,8 +58,8 @@ final class JokerScoringApplicatorTest extends TestCase
         );
 
         self::assertNotNull($result);
-        self::assertSame(5.0, $result['playerPoints']);
-        self::assertSame(5.0, $result['teamPoints']);
+        self::assertSame(50.0, $result['playerPoints']);
+        self::assertSame(50.0, $result['teamPoints']);
     }
 
     public function testDoubleEquipeWrongResultIsMinusTripleCote(): void

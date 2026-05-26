@@ -69,9 +69,8 @@
             </summary>
             <div class="reglement-item__body ta-card-text">
                 <ul>
-                    <li><strong>Score exact</strong> : en général <strong>3 points de base</strong> (valeur affichée sur le match).</li>
-                    <li><strong>Bon résultat</strong> (1 / N / 2 correct sans le bon score) : en général <strong>1 point de base</strong>.</li>
-                    <li><strong>Mauvais résultat</strong> : <strong>0 point</strong>.</li>
+                    <li>Barème de base (comme LPF24) : <strong>score exact = 30 pts</strong>, <strong>bon résultat (1 / N / 2) = 10 pts</strong>, <strong>mauvais résultat = 0 pt</strong> (valeurs affichées sur chaque match, modifiables en admin).</li>
+                    <li>Avec cote au maximum (×5) : jusqu’à <strong>150 pts</strong> pour un score exact, <strong>50 pts</strong> pour un bon résultat.</li>
                     <li><strong>Cote</strong> : trois cotes par match sur le résultat <strong>1 / N / 2</strong>, calculées sur l’ensemble des pronos (issue déduite de votre score saisi). Plafond ×5, arrondi au 0,5 le plus proche.</li>
                     <li>Points finaux = points de base × cote (arrondi à l’entier). <strong>Bon prono ou score exact</strong> : cote du résultat réel du match. <strong>Mauvais prono</strong> : cote de votre issue (1, N ou 2).</li>
                     <li>Ex. : 2-2 et 1-1 sont tous deux des pronos «&nbsp;N&nbsp;» : ils partagent la même cote nul.</li>
@@ -123,7 +122,7 @@
                     <li>Posés sur un match <strong>à venir</strong>, avant le coup d’envoi (retirables sauf mention contraire, ex. Espion = définitif).</li>
                     <li><strong>Équipe favorite</strong> : pays choisi en secret dans Mon compte, avant le début de la compétition.</li>
                     <li>Les jokers <strong>offensifs</strong> (pique points, inversions) peuvent être <strong>neutralisés</strong> si la cible est protégée (bouclier ou équipe favorite en poule) : le joker est consommé sans effet.</li>
-                    <li>Barème indicatif <strong>Double équipe</strong> : chaque joueur est noté sur sa cote ×2 ; score exact 3×cote×2, bon 1×2, mauvais −3×cote ; total équipe = somme des deux joueurs.</li>
+                    <li>Barème indicatif <strong>Double équipe</strong> : chaque joueur est noté sur sa cote ×2 ; score exact <strong>30×cote×2</strong>, bon résultat <strong>10×cote×2</strong>, mauvais prono <strong>−3×cote</strong> ; total équipe = somme des deux joueurs.</li>
                 </ul>
                 <p class="reglement-item__more">
                     <a href="{{ path('app_jokers') }}" class="btn btn-outline btn-sm">

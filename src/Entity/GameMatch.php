@@ -97,8 +97,8 @@ class GameMatch
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->pointsScoreExact = 3;
-        $this->pointsBonResultat = 1;
+        $this->pointsScoreExact = 30;
+        $this->pointsBonResultat = 10;
         $this->pointsMauvaisResultat = 0;
     }
 

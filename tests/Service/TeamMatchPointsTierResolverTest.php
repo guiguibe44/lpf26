@@ -21,8 +21,8 @@ final class TeamMatchPointsTierResolverTest extends TestCase
         self::assertSame('negative', $this->resolver->resolveTier(-12));
         self::assertSame('zero', $this->resolver->resolveTier(0));
         self::assertSame('low', $this->resolver->resolveTier(8));
-        self::assertSame('good', $this->resolver->resolveTier(24));
-        self::assertSame('strong', $this->resolver->resolveTier(48));
-        self::assertSame('high', $this->resolver->resolveTier(120));
+        self::assertSame('low', $this->resolver->resolveTier(24));
+        self::assertSame('good', $this->resolver->resolveTier(48));
+        self::assertSame('strong', $this->resolver->resolveTier(120));
     }
 }

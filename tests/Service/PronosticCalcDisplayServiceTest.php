@@ -11,7 +11,7 @@ use App\Repository\JokerRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Service\JokerScoringApplicator;
 use App\Service\PronosticCalcDisplayService;
-use App\Service\PronosticSimulationService;
+use App\Tests\Support\PronosticSimulationServiceFactory;
 use PHPUnit\Framework\TestCase;
 
 final class PronosticCalcDisplayServiceTest extends TestCase
@@ -19,7 +19,7 @@ final class PronosticCalcDisplayServiceTest extends TestCase
     public function testDoubleEquipeShowsMultiplierFactor(): void
     {
         $match = new GameMatch();
-        $line = new SimulatedPronosticLine(1, 5, 'Joueur 1', 2, 1, 3, 1.5, 9.0, false, 9.0);
+        $line = new SimulatedPronosticLine(1, 5, 'Joueur 1', 2, 1, 30, 1.5, 90.0, false, 90.0);
 
         $joker = (new Joker())
             ->setCode(Joker::CODE_DOUBLE_EQUIPE)
@@ -34,8 +34,8 @@ final class PronosticCalcDisplayServiceTest extends TestCase
         $usageRepo->method('findPiquePointsTargetsByTeamForMatch')->willReturn([]);
         $usageRepo->method('findCollecteTeamIdsForMatch')->willReturn([]);
 
-        $scoring = new JokerScoringApplicator(new PronosticSimulationService(
-            new \App\Service\PronosticScoreInversionService($usageRepo),
+        $scoring = new JokerScoringApplicator(PronosticSimulationServiceFactory::create(
+            $this->createMock(TeamJokerUsageRepository::class),
         ));
 
         $service = new PronosticCalcDisplayService($scoring, $usageRepo, $jokerRepo);

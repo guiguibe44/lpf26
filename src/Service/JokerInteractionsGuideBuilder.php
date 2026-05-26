@@ -177,7 +177,7 @@ final class JokerInteractionsGuideBuilder
             'title' => 'Ordre de calcul des points prono sur un match',
             'intro' => 'Sur un match terminé, les points affichés au classement équipe passent par les étapes suivantes (les buteurs suivent un calcul séparé, voir plus bas).',
             'table' => [
-                'headers' => ['Étape', 'Ce qui change', 'Exemple (2 joueurs, 10 pts chacun avant jokers)'],
+                'headers' => ['Étape', 'Ce qui change', 'Exemple (2 joueurs, bon 1/N/2 = 10 pts de base × cote 1)'],
                 'rows' => [
                     [
                         '1. Score effectif',
@@ -273,9 +273,9 @@ final class JokerInteractionsGuideBuilder
             'tables' => [
                 [
                     'caption' => 'Formules (par joueur, après barème × cote)',
-                    'headers' => ['Cas', 'Calcul', 'Exemple (base 3 pts, cote 2 → 6 pts standard)'],
+                    'headers' => ['Cas', 'Calcul', 'Exemple (base 30 pts, cote 2 → 60 pts standard)'],
                     'rows' => [
-                        ['Bon prono (pas « mauvais résultat »)', '2 × base × cote', '2 × 3 × 2 = 12 pts joueur et équipe'],
+                        ['Bon prono (pas « mauvais résultat »)', '2 × base × cote', '2 × 30 × 2 = 120 pts joueur et équipe'],
                         ['Mauvais prono', '−'.$mult.' × cote (arrondi)', '−'.$mult.' × 2 = −6 pts joueur et équipe'],
                     ],
                 ],

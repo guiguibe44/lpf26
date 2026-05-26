@@ -9,8 +9,8 @@ use App\Entity\GameMatch;
 use App\Entity\Pronostic;
 use App\Entity\User;
 use App\Repository\TeamJokerUsageRepository;
-use App\Service\PronosticScoreInversionService;
 use App\Service\PronosticSimulationService;
+use App\Tests\Support\PronosticSimulationServiceFactory;
 use PHPUnit\Framework\TestCase;
 
 final class PronosticSimulationServiceTest extends TestCase
@@ -19,16 +19,18 @@ final class PronosticSimulationServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $inversion = new PronosticScoreInversionService($this->createMock(TeamJokerUsageRepository::class));
-        $this->service = new PronosticSimulationService($inversion);
+        $this->service = PronosticSimulationServiceFactory::create(
+            $this->createMock(TeamJokerUsageRepository::class),
+            'exact_score',
+        );
     }
 
     public function testExactScoreGetsHigherBaseAndCoteWhenRare(): void
     {
         $match = $this->createMatch();
         $unique = $this->pronostic($match, 1, 2, 1);
-        $common = $this->pronostic($match, 2, 0, 0);
-        $other = $this->pronostic($match, 3, 0, 0);
+        $common = $this->pronostic($match, 2, 2, 0);
+        $other = $this->pronostic($match, 3, 3, 0);
 
         $lines = $this->service->simulate($match, 2, 1, [$unique, $common, $other]);
 
@@ -38,12 +40,12 @@ final class PronosticSimulationServiceTest extends TestCase
             $byId[$line->pronosticId] = $line;
         }
 
-        self::assertSame(3, $byId[1]->basePoints);
+        self::assertSame(30, $byId[1]->basePoints);
         self::assertSame(3.0, $byId[1]->coefficient);
-        self::assertSame(9.0, $byId[1]->points);
-        self::assertSame(0, $byId[2]->basePoints);
-        self::assertSame(1.5, $byId[2]->coefficient);
-        self::assertSame(0.0, $byId[2]->points);
+        self::assertSame(90.0, $byId[1]->points);
+        self::assertSame(10, $byId[2]->basePoints);
+        self::assertSame(3.0, $byId[2]->coefficient);
+        self::assertSame(30.0, $byId[2]->points);
     }
 
     public function testTeamRiskWhenBothPlayersSameScore(): void
@@ -51,7 +53,7 @@ final class PronosticSimulationServiceTest extends TestCase
         $match = $this->createMatch();
         $a = $this->pronostic($match, 1, 1, 0);
         $b = $this->pronostic($match, 2, 1, 0);
-        $c = $this->pronostic($match, 3, 0, 0);
+        $c = $this->pronostic($match, 3, 3, 0);
 
         $lines = $this->service->simulate($match, 1, 0, [$a, $b, $c], [1 => 10, 2 => 10]);
 
@@ -69,7 +71,7 @@ final class PronosticSimulationServiceTest extends TestCase
     {
         $match = $this->createMatch();
         $a = $this->pronostic($match, 1, 1, 1);
-        $b = $this->pronostic($match, 2, 3, 0);
+        $b = $this->pronostic($match, 2, 2, 3);
 
         $lines = $this->service->simulate(
             $match,
@@ -91,10 +93,10 @@ final class PronosticSimulationServiceTest extends TestCase
         self::assertSame(1, $byId[1]->predHome);
         self::assertSame(1, $byId[1]->predAway);
         self::assertFalse($byId[1]->scoreInverted);
-        self::assertSame(0, $byId[2]->predHome);
-        self::assertSame(3, $byId[2]->predAway);
+        self::assertSame(3, $byId[2]->predHome);
+        self::assertSame(2, $byId[2]->predAway);
         self::assertTrue($byId[2]->scoreInverted);
-        self::assertSame(3, $byId[2]->basePoints);
+        self::assertSame(0, $byId[2]->basePoints);
     }
 
     private function createMatch(): GameMatch

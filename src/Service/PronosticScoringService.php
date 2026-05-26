@@ -13,9 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class PronosticScoringService
 {
-    private const DEFAULT_POINTS_SCORE_EXACT = 3;
-    private const DEFAULT_POINTS_BON_RESULTAT = 1;
-    private const DEFAULT_POINTS_MAUVAIS_RESULTAT = 0;
     public function __construct(
         private readonly PronosticRepository $pronosticRepository,
         private readonly TeamMemberRepository $teamMemberRepository,

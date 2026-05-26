@@ -126,7 +126,7 @@ final class AdminCompetChecklistScenario
                 ],
             ],
             'prono_results' => [
-                ['team' => 'A – J1', 'prono' => '2-1', 'expected' => 'Score exact (3 pts × cote, sans joker)'],
+                ['team' => 'A – J1', 'prono' => '2-1', 'expected' => 'Score exact (30 pts × cote, sans joker)'],
                 ['team' => 'A – J2', 'prono' => '1-1', 'expected' => 'Mauvais (nul prédit, victoire France réelle)'],
                 ['team' => 'B – J1', 'prono' => '1-2', 'expected' => 'Mauvais (victoire extérieure prédite)'],
                 ['team' => 'B – J2', 'prono' => '0-0 (auto)', 'expected' => 'Mauvais'],

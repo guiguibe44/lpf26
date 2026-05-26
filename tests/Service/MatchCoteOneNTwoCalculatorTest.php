@@ -10,6 +10,7 @@ use App\Entity\Pronostic;
 use App\Entity\User;
 use App\Service\MatchCoteOneNTwoCalculator;
 use App\Service\MatchOutcomeResolver;
+use App\Service\PronosticSimulationService;
 use PHPUnit\Framework\TestCase;
 
 final class MatchCoteOneNTwoCalculatorTest extends TestCase
@@ -49,9 +50,9 @@ final class MatchCoteOneNTwoCalculatorTest extends TestCase
             1,
             1,
             1,
-            $match->getPointsScoreExact() ?? 3,
-            $match->getPointsBonResultat() ?? 1,
-            $match->getPointsMauvaisResultat() ?? 0,
+            $match->getPointsScoreExact() ?? PronosticSimulationService::DEFAULT_POINTS_SCORE_EXACT,
+            $match->getPointsBonResultat() ?? PronosticSimulationService::DEFAULT_POINTS_BON_RESULTAT,
+            $match->getPointsMauvaisResultat() ?? PronosticSimulationService::DEFAULT_POINTS_MAUVAIS_RESULTAT,
             $pronostics,
         );
 
@@ -75,9 +76,9 @@ final class MatchCoteOneNTwoCalculatorTest extends TestCase
             0,
             1,
             0,
-            $match->getPointsScoreExact() ?? 3,
-            $match->getPointsBonResultat() ?? 1,
-            $match->getPointsMauvaisResultat() ?? 0,
+            $match->getPointsScoreExact() ?? PronosticSimulationService::DEFAULT_POINTS_SCORE_EXACT,
+            $match->getPointsBonResultat() ?? PronosticSimulationService::DEFAULT_POINTS_BON_RESULTAT,
+            $match->getPointsMauvaisResultat() ?? PronosticSimulationService::DEFAULT_POINTS_MAUVAIS_RESULTAT,
             $pronostics,
         );
 

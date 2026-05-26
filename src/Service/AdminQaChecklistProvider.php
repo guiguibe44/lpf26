@@ -526,12 +526,12 @@ final class AdminQaChecklistProvider
             'items' => [
                 [
                     'id' => 'points-exact-score',
-                    'label' => 'Score exact : points de base × cote (défaut 3 pts, modifiable par match en admin).',
+                    'label' => 'Score exact : points de base × cote (défaut 30 pts, modifiable par match en admin).',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'points-good-result',
-                    'label' => 'Bon 1N2 sans score exact : 1 pt par défaut.',
+                    'label' => 'Bon 1N2 sans score exact : 10 pts par défaut.',
                     'kind' => 'attention',
                 ],
                 [

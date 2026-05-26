@@ -16,8 +16,8 @@ final class PronosticSimulationService
     ) {
     }
 
-    public const DEFAULT_POINTS_SCORE_EXACT = 3;
-    public const DEFAULT_POINTS_BON_RESULTAT = 1;
+    public const DEFAULT_POINTS_SCORE_EXACT = 30;
+    public const DEFAULT_POINTS_BON_RESULTAT = 10;
     public const DEFAULT_POINTS_MAUVAIS_RESULTAT = 0;
     public const MAX_COTE_COEFFICIENT = 5.0;
 

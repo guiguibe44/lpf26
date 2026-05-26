@@ -19,15 +19,15 @@ final class TeamMatchPointsTierResolver
             return 'zero';
         }
 
-        if ($points < 15) {
+        if ($points < 30) {
             return 'low';
         }
 
-        if ($points < 35) {
+        if ($points < 75) {
             return 'good';
         }
 
-        if ($points < 60) {
+        if ($points < 125) {
             return 'strong';
         }
 
