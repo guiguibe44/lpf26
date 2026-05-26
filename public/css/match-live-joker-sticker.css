@@ -1,0 +1,196 @@
+/* Alerte visuelle — carte joker « collée » sur le match live */
+
+.match-live-joker-sticker-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 5200;
+    pointer-events: none;
+}
+
+.match-live-joker-sticker-layer.is-visible {
+    pointer-events: auto;
+}
+
+.match-live-joker-sticker-layer__backdrop {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(15 23 42 / 38%);
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.28s ease;
+}
+
+.match-live-joker-sticker-layer.is-visible .match-live-joker-sticker-layer__backdrop {
+    opacity: 1;
+}
+
+.match-live-joker-sticker-layer__stack {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    pointer-events: none;
+}
+
+.match-live-joker-sticker {
+    position: relative;
+    width: min(11.5rem, 44vw);
+    pointer-events: auto;
+    opacity: 0;
+    transform: scale(0.35) rotate(calc(var(--sticker-rotate, -6deg) - 14deg));
+    transform-origin: center center;
+    filter: drop-shadow(0 16px 28px rgb(15 23 42 / 35%));
+}
+
+.match-live-joker-sticker-layer.is-visible .match-live-joker-sticker {
+    animation: match-live-joker-sticker-slap 0.62s cubic-bezier(0.22, 1.25, 0.42, 1) forwards;
+}
+
+.match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+.match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(3) {
+    animation-delay: 0.16s;
+}
+
+@keyframes match-live-joker-sticker-slap {
+    0% {
+        opacity: 0;
+        transform: translateY(-2.5rem) scale(0.25) rotate(calc(var(--sticker-rotate, -6deg) - 18deg));
+    }
+
+    65% {
+        opacity: 1;
+        transform: translateY(0.35rem) scale(1.06) rotate(calc(var(--sticker-rotate, -6deg) + 3deg));
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(var(--sticker-rotate, -6deg));
+    }
+}
+
+.match-live-joker-sticker__close {
+    position: absolute;
+    top: -0.55rem;
+    right: -0.55rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 4px 14px rgb(15 23 42 / 25%);
+    cursor: pointer;
+}
+
+.match-live-joker-sticker__close:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.match-live-joker-sticker__card {
+    position: relative;
+    aspect-ratio: 140 / 186;
+    border-radius: 0.55rem;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fff7ed, #fff);
+    box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 85%),
+        0 0 0 1px rgb(251 191 36 / 55%);
+}
+
+.match-live-joker-sticker__card::before {
+    content: '';
+    position: absolute;
+    top: -0.35rem;
+    left: 50%;
+    z-index: 1;
+    width: 2.4rem;
+    height: 0.9rem;
+    transform: translateX(-50%) rotate(-4deg);
+    border-radius: 0.15rem;
+    background: rgb(254 240 138 / 72%);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 12%);
+}
+
+.match-live-joker-sticker__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.match-live-joker-sticker__placeholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #b45309;
+    background: linear-gradient(145deg, #fffbeb, #fef3c7);
+}
+
+.match-live-joker-sticker__placeholder .ti {
+    font-size: 2.6rem;
+    line-height: 1;
+}
+
+.match-live-joker-sticker__label {
+    margin: 0.55rem 0 0.15rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #b45309;
+}
+
+.match-live-joker-sticker__name {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+    color: #0f172a;
+}
+
+html.dark body.front-body .match-live-joker-sticker-layer__backdrop {
+    background: rgb(0 0 0 / 62%);
+}
+
+html.dark body.front-body .match-live-joker-sticker__close {
+    background: var(--lpf-surface, #1e293b);
+    color: var(--lpf-text, #f1f5f9);
+}
+
+html.dark body.front-body .match-live-joker-sticker__name {
+    color: var(--lpf-text, #f1f5f9);
+}
+
+html.dark body.front-body .match-live-joker-sticker__label {
+    color: #fbbf24;
+}
+
+@media (max-width: 767px) {
+    .match-live-joker-sticker {
+        width: min(10.5rem, 58vw);
+    }
+
+    .match-live-joker-sticker__name {
+        font-size: 1rem;
+    }
+}

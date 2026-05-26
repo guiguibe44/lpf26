@@ -92,6 +92,16 @@ final class MatchLiveViewBuilder
      *         image: ?string,
      *         neutralized: bool,
      *         stories: list<string>
+     *     }>,
+     *     incomingJokerAlerts: list<array{
+     *         id: int,
+     *         code: string,
+     *         name: string,
+     *         image: ?string,
+     *         icon: string,
+     *         placer_team_name: string,
+     *         label: string,
+     *         description: string
      *     }>
      * }
      */
@@ -211,6 +221,8 @@ final class MatchLiveViewBuilder
             },
         );
 
+        $viewerPronostic = $this->buildViewerPronostic($pronostics, $simulatedLines);
+
         return [
             'scoreDomicile' => $scoreDomicile,
             'scoreExterieur' => $scoreExterieur,
@@ -218,7 +230,11 @@ final class MatchLiveViewBuilder
             'kdoOutlook' => $this->kdoMatchWinnerService->buildOutlook($match, $scoreDomicile, $scoreExterieur),
             'cotes' => $this->matchCotePreviewService->buildDisplayContext($scoreDomicile, $scoreExterieur, $pronostics),
             'matchButeurs' => $this->buildMatchButeurSelections($teams, $matchCountryIds),
-            'viewerPronostic' => $this->buildViewerPronostic($pronostics, $simulatedLines),
+            'viewerPronostic' => $viewerPronostic,
+            'incomingJokerAlerts' => $this->matchTeamJokerDisplayBuilder->buildIncomingAlertsForTeam(
+                $match,
+                (int) ($viewerPronostic['team_id'] ?? 0),
+            ),
             'matchJokers' => $this->matchJokerImpactExplanationBuilder->buildForMatch(
                 $match,
                 $scoreDomicile,
@@ -246,6 +262,7 @@ final class MatchLiveViewBuilder
             'cotes' => $data['cotes'],
             'matchButeurs' => $data['matchButeurs'],
             'viewerPronostic' => $data['viewerPronostic'],
+            'incomingJokerAlerts' => $data['incomingJokerAlerts'],
             'matchJokers' => $data['matchJokers'],
         ];
     }

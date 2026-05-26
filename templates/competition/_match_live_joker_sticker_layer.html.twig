@@ -1,0 +1,56 @@
+{# Alertes visuelles : jokers offensifs adverses ciblant l'équipe du joueur #}
+{% if incoming_joker_alerts is not empty %}
+    <div
+        id="match-live-joker-sticker-layer"
+        class="match-live-joker-sticker-layer"
+        hidden
+        data-match-id="{{ match_id }}"
+        aria-live="polite"
+    >
+        <button
+            type="button"
+            class="match-live-joker-sticker-layer__backdrop"
+            data-joker-sticker-dismiss
+            hidden
+            aria-label="Fermer l'alerte joker"
+        ></button>
+
+        <div class="match-live-joker-sticker-layer__stack">
+            {% for alert in incoming_joker_alerts %}
+                <article
+                    class="match-live-joker-sticker"
+                    data-joker-sticker
+                    data-sticker-id="{{ alert.id }}"
+                    style="--sticker-rotate: {{ (-8 + loop.index0 * 6)|round(1) }}deg;"
+                >
+                    <button
+                        type="button"
+                        class="match-live-joker-sticker__close"
+                        data-joker-sticker-close
+                        aria-label="Fermer cette carte joker"
+                    >
+                        <i class="ti ti-x" aria-hidden="true"></i>
+                    </button>
+                    <div class="match-live-joker-sticker__card">
+                        {% if alert.image %}
+                            <img
+                                src="{{ asset(alert.image) }}"
+                                alt=""
+                                class="match-live-joker-sticker__image"
+                                width="140"
+                                height="186"
+                                decoding="async"
+                            >
+                        {% else %}
+                            <span class="match-live-joker-sticker__placeholder" aria-hidden="true">
+                                <i class="ti {{ alert.icon|default('ti-wand') }}"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+                    <p class="match-live-joker-sticker__label">{{ alert.label }}</p>
+                    <p class="match-live-joker-sticker__name">{{ alert.name }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

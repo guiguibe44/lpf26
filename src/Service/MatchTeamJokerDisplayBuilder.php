@@ -119,6 +119,60 @@ final class MatchTeamJokerDisplayBuilder
         return $badges;
     }
 
+    /**
+     * Jokers offensifs actifs ciblant l'équipe du joueur (alerte visuelle match live).
+     *
+     * @return list<array{
+     *     id: int,
+     *     code: string,
+     *     name: string,
+     *     image: ?string,
+     *     icon: string,
+     *     placer_team_name: string,
+     *     label: string,
+     *     description: string
+     * }>
+     */
+    public function buildIncomingAlertsForTeam(GameMatch $match, int $teamId): array
+    {
+        if ($teamId <= 0) {
+            return [];
+        }
+
+        $alerts = [];
+        foreach ($this->teamJokerUsageRepository->findByMatch($match) as $usage) {
+            $code = $usage->getJoker()?->getCode();
+            if (!JokerDefenseService::isOffensiveAgainstTeam($code)) {
+                continue;
+            }
+
+            $targetId = (int) ($usage->getTargetTeam()?->getId() ?? 0);
+            if ($targetId !== $teamId) {
+                continue;
+            }
+
+            if ($this->jokerDefenseService->isUsageNeutralized($usage)) {
+                continue;
+            }
+
+            $card = $this->cardFromUsage($usage);
+            $placerName = (string) ($usage->getTeam()?->getName() ?? 'Une équipe');
+
+            $alerts[] = [
+                'id' => (int) ($usage->getId() ?? 0),
+                'code' => $card['code'],
+                'name' => $card['name'],
+                'image' => $card['image'],
+                'icon' => $card['icon'] ?? Joker::tablerIconClassForCode($card['code']),
+                'placer_team_name' => $placerName,
+                'label' => sprintf('%s vous cible', $placerName),
+                'description' => (string) ($card['description'] ?? ''),
+            ];
+        }
+
+        return $alerts;
+    }
+
     private function formatEspionTeamsCountLabel(int $teamsCount): string
     {
         if ($teamsCount <= 0) {

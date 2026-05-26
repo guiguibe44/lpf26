@@ -23,6 +23,16 @@
         live_view: live_view,
         match_goals: match_goals,
     } %}
+
+    {% include 'competition/_match_live_joker_sticker_layer.html.twig' with {
+        match_id: match.id,
+        incoming_joker_alerts: live_view.incomingJokerAlerts|default([]),
+    } only %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/match-live-joker-sticker.css') }}?v=1">
 {% endblock %}
 
 {% block javascripts %}
@@ -38,4 +48,5 @@
     </script>
     <script src="{{ asset('js/match-live.js') }}" defer></script>
     <script src="{{ asset('js/match-live-joker-info.js') }}?v=4" defer></script>
+    <script src="{{ asset('js/match-live-joker-sticker.js') }}?v=1" defer></script>
 {% endblock %}

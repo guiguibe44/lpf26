@@ -55,6 +55,41 @@ final class MatchTeamJokerDisplayBuilderTest extends TestCase
         self::assertSame('own', $map[3][0]['kind']);
     }
 
+    public function testIncomingAlertsForTeamListsActiveOffensiveJokers(): void
+    {
+        $match = new GameMatch();
+        $attacker = $this->createTeamMock(3, 'C');
+        $victim = $this->createTeamMock(2, 'B');
+
+        $pique = (new Joker())->setCode(Joker::CODE_PIQUE_POINTS)->setName('Pique')->setTitle('Pique points');
+        $usage = (new TeamJokerUsage())
+            ->setTeam($attacker)
+            ->setTargetTeam($victim)
+            ->setMatch($match)
+            ->setJoker($pique);
+
+        $usageRepo = $this->createMock(TeamJokerUsageRepository::class);
+        $usageRepo->method('findByMatch')->willReturn([$usage]);
+        $usageRepo->method('findCollecteTeamIdsForMatch')->willReturn([]);
+        $usageRepo->method('findProtectedTeamIdsForMatchdayOfMatch')->willReturn([]);
+
+        $teamRepo = $this->createMock(TeamRepository::class);
+        $teamRepo->method('findTeamIdsWithFavoriteCountryInGroupMatch')->willReturn([]);
+
+        $builder = new MatchTeamJokerDisplayBuilder(
+            $usageRepo,
+            $this->createMock(JokerRepository::class),
+            new JokerDefenseService($usageRepo, $teamRepo),
+        );
+
+        $alerts = $builder->buildIncomingAlertsForTeam($match, 2);
+
+        self::assertCount(1, $alerts);
+        self::assertSame(Joker::CODE_PIQUE_POINTS, $alerts[0]['code']);
+        self::assertSame('C vous cible', $alerts[0]['label']);
+        self::assertSame('C', $alerts[0]['placer_team_name']);
+    }
+
     public function testEspionBadgesOnePerUsageOnMatch(): void
     {
         $match = new GameMatch();
