@@ -134,28 +134,30 @@
     overflow: hidden;
 }
 
-/* Image uploadée : fond plein cadre (équipe, prono, etc.) */
+/* Image uploadée : plein cadre (équipe, prono, etc.) */
 .site-intro-slide__visual--has-bg-image {
     min-height: 0;
     padding: 0;
-    align-items: stretch;
-    justify-content: stretch;
     background-color: #0f172a;
-    background-image: var(--site-intro-slide-bg);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
-.site-intro-slide__visual--team.site-intro-slide__visual--has-bg-image {
-    background-color: #065f46;
+.site-intro-slide__bg-img {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
 .site-intro-slide__visual--has-bg-image .site-intro-slide__badge {
+    z-index: 1;
     background: rgb(0 0 0 / 45%);
 }
 
-.site-intro-slide__visual--welcome {
+.site-intro-slide__visual--welcome:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 55%, #38bdf8 100%);
 }
 
@@ -165,35 +167,35 @@
     filter: drop-shadow(0 8px 20px rgb(0 0 0 / 25%));
 }
 
-.site-intro-slide__visual--team {
+.site-intro-slide__visual--team:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #065f46, #10b981);
 }
 
-.site-intro-slide__visual--prono {
+.site-intro-slide__visual--prono:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #1e40af, #3b82f6);
 }
 
-.site-intro-slide__visual--points {
+.site-intro-slide__visual--points:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #7c2d12, #f97316);
 }
 
-.site-intro-slide__visual--bigballs {
+.site-intro-slide__visual--bigballs:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #9a3412, #fb923c);
 }
 
-.site-intro-slide__visual--buteur {
+.site-intro-slide__visual--buteur:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #581c87, #a855f7);
 }
 
-.site-intro-slide__visual--jokers {
+.site-intro-slide__visual--jokers:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #4c1d95, #8b5cf6);
 }
 
-.site-intro-slide__visual--ranking {
+.site-intro-slide__visual--ranking:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #854d0e, #eab308);
 }
 
-.site-intro-slide__visual--go {
+.site-intro-slide__visual--go:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #166534, #22c55e);
 }
 
@@ -272,11 +274,11 @@
     margin-top: 0.35rem;
 }
 
-.site-intro-slide__visual--neutral {
+.site-intro-slide__visual--neutral:not(.site-intro-slide__visual--has-bg-image) {
     background: linear-gradient(145deg, #334155, #64748b);
 }
 
-.site-intro-slide__visual--none {
+.site-intro-slide__visual--none:not(.site-intro-slide__visual--has-bg-image) {
     background: transparent;
 }
 

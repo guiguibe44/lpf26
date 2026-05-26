@@ -36,15 +36,20 @@
                             >
                                 <div
                                     class="site-intro-slide__visual site-intro-slide__visual--{{ slide.visualThemeValue }}{{ slide_bg_image ? ' site-intro-slide__visual--has-bg-image' : '' }}"
-                                    {% if slide_bg_image %}style="--site-intro-slide-bg: url('{{ asset(slide.imagePublicPath) }}')"{% endif %}
                                 >
-                                    {% if slide.hasUploadedImage and slide.visualThemeValue == 'welcome' %}
+                                    {% if slide_bg_image %}
+                                        <img
+                                            src="{{ asset(slide.imagePublicPath) }}"
+                                            alt=""
+                                            class="site-intro-slide__bg-img"
+                                        >
+                                    {% elseif slide.hasUploadedImage and slide.visualThemeValue == 'welcome' %}
                                         <img
                                             src="{{ asset(slide.imagePublicPath) }}"
                                             alt=""
                                             class="site-intro-slide__img site-intro-slide__logo"
                                         >
-                                    {% elseif slide.iconClass and not slide_bg_image %}
+                                    {% elseif slide.iconClass %}
                                         <i class="{{ slide.iconClass }} site-intro-slide__icon" aria-hidden="true"></i>
                                     {% endif %}
                                     {% if slide.visualBadge %}
