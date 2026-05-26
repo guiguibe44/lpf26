@@ -24,8 +24,8 @@ class But
     #[ORM\Column(nullable: true)]
     private ?int $minute = null;
 
-    #[ORM\Column(options: ['default' => 1])]
-    private int $pointsBase = 1;
+    #[ORM\Column(options: ['default' => 10])]
+    private int $pointsBase = 10;
 
     #[ORM\Column(nullable: true)]
     private ?float $coteCoefficient = null;

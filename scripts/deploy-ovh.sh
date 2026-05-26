@@ -140,6 +140,9 @@ ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && APP_ENV=prod APP_DEBUG=0 ${DEPLOY
 echo "==> Recalcul des points pronos (barème / cotes) …"
 ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console app:match:rescore-all --no-interaction"
 
+echo "==> Recalcul des points buteur …"
+ssh ${SSH_EXTRA} "${REMOTE}" "cd '${RPATH}' && APP_ENV=prod APP_DEBUG=0 ${DEPLOY_PHP_BIN} bin/console app:rescore:buteur-goals --no-interaction"
+
 echo "==> Cache prod …"
 # Sur mutualisé OVH, cache:clear seul échoue parfois (« Directory not empty » sur var/cache/prod).
 # On force la suppression puis warmup (équivalent fonctionnel à clear + warmup).

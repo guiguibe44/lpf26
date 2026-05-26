@@ -38,9 +38,9 @@ final class ButeurGoalScoringServiceTest extends TestCase
 
         $service->scoreBut($but);
 
-        self::assertSame(1, $but->getPointsBase());
+        self::assertSame(10, $but->getPointsBase());
         self::assertSame(5.0, $but->getCoteCoefficient());
-        self::assertSame(5, $but->getPointsAttribues());
+        self::assertSame(50, $but->getPointsAttribues());
     }
 
     private function createService(int $totalWithButeur, int $selectionsForButeur): ButeurGoalScoringService

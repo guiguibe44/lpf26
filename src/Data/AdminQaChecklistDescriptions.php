@@ -77,7 +77,7 @@ final class AdminQaChecklistDescriptions
             'points-exact-score' => 'Match terminé, score exact prono : points = pointsScoreExact du match × coefficient cote (défaut 30).',
             'points-good-result' => 'Bon 1N2 sans score exact : pointsBonResultat (défaut 10 pts).',
             'points-cote-display' => 'Avant le match : cote min, moyenne et max affichées sur la carte pour le score saisi.',
-            'points-buteur-goal' => 'But du buteur sélectionné : 1 pt × coefficient de rareté (max ×5), cumulé au classement équipe.',
+            'points-buteur-goal' => 'But du buteur sélectionné : 10 pts × coefficient de rareté (max ×5), cumulé au classement équipe.',
             'points-rescore-match' => 'Admin : saisir ou sync le score réel → recalcul automatique des pronos et snapshots classement.',
             'points-rescore-buteur-cmd' => 'Après import massif de buts : php bin/console app:rescore:buteur-goals si les coefficients semblent faux.',
 

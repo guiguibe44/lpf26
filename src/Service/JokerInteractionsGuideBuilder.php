@@ -470,7 +470,7 @@ final class JokerInteractionsGuideBuilder
                     'caption' => 'Calcul des points buteur',
                     'headers' => ['Étape', 'Valeur', 'Exemple'],
                     'rows' => [
-                        ['Points d’un but (base)', '1 × coefficient de popularité du buteur (max ×5)', 'But = 4 pts'],
+                        ['Points d’un but (base)', '10 × coefficient de popularité du buteur (max ×5)', 'But = 40 pts (ex. cote ×4)'],
                         ['Avec double buteur', '×2 sur ce match', '4 → 8 pts pour votre équipe'],
                     ],
                 ],

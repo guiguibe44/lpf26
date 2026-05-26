@@ -541,7 +541,7 @@ final class AdminQaChecklistProvider
                 ],
                 [
                     'id' => 'points-buteur-goal',
-                    'label' => 'But du buteur choisi : points = 1 × coefficient (plafond ×5).',
+                    'label' => 'But du buteur choisi : points = 10 × coefficient (plafond ×5).',
                     'kind' => 'attention',
                 ],
                 [
