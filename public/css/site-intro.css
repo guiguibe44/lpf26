@@ -224,7 +224,7 @@
 
 .site-intro-slide__eyebrow {
     margin: 0;
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -233,7 +233,7 @@
 
 .site-intro-slide__title {
     margin: 0;
-    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+    font-size: clamp(1.3rem, 2.8vw, 1.85rem);
     font-weight: 800;
     line-height: 1.2;
     color: #0f172a;
@@ -249,7 +249,7 @@
 
 .site-intro-slide__body {
     margin: 0;
-    font-size: clamp(0.92rem, 1.6vw, 1.05rem);
+    font-size: clamp(1.05rem, 1.9vw, 1.2rem);
     line-height: 1.55;
     color: #334155;
 }
@@ -404,5 +404,19 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
 
     .site-intro-slide__visual--has-bg-image {
         min-height: 0;
+    }
+
+    .site-intro-slide__eyebrow {
+        font-size: 0.9rem;
+    }
+
+    .site-intro-slide__title {
+        font-size: clamp(1.45rem, 5vw, 1.75rem);
+        line-height: 1.25;
+    }
+
+    .site-intro-slide__body {
+        font-size: clamp(1.12rem, 3.8vw, 1.28rem);
+        line-height: 1.5;
     }
 }
