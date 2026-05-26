@@ -28,19 +28,23 @@
                 <div class="site-intro-carousel__viewport" data-site-intro-viewport>
                     <div class="site-intro-carousel__track" data-site-intro-track>
                         {% for slide in intro_slides %}
+                            {% set slide_bg_image = slide.hasUploadedImage and slide.visualThemeValue != 'welcome' %}
                             <article
                                 class="site-intro-slide"
                                 data-site-intro-slide
                                 aria-hidden="{{ loop.first ? 'false' : 'true' }}"
                             >
-                                <div class="site-intro-slide__visual site-intro-slide__visual--{{ slide.visualThemeValue }}">
-                                    {% if slide.hasUploadedImage %}
+                                <div
+                                    class="site-intro-slide__visual site-intro-slide__visual--{{ slide.visualThemeValue }}{{ slide_bg_image ? ' site-intro-slide__visual--has-bg-image' : '' }}"
+                                    {% if slide_bg_image %}style="--site-intro-slide-bg: url('{{ asset(slide.imagePublicPath) }}')"{% endif %}
+                                >
+                                    {% if slide.hasUploadedImage and slide.visualThemeValue == 'welcome' %}
                                         <img
                                             src="{{ asset(slide.imagePublicPath) }}"
                                             alt=""
-                                            class="site-intro-slide__img{{ slide.visualThemeValue == 'welcome' ? ' site-intro-slide__logo' : '' }}"
+                                            class="site-intro-slide__img site-intro-slide__logo"
                                         >
-                                    {% elseif slide.iconClass %}
+                                    {% elseif slide.iconClass and not slide_bg_image %}
                                         <i class="{{ slide.iconClass }} site-intro-slide__icon" aria-hidden="true"></i>
                                     {% endif %}
                                     {% if slide.visualBadge %}

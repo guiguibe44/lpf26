@@ -131,6 +131,28 @@
     position: relative;
     min-height: 12rem;
     padding: 1.5rem;
+    overflow: hidden;
+}
+
+/* Image uploadée : fond plein cadre (équipe, prono, etc.) */
+.site-intro-slide__visual--has-bg-image {
+    min-height: 0;
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+    background-color: #0f172a;
+    background-image: var(--site-intro-slide-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.site-intro-slide__visual--team.site-intro-slide__visual--has-bg-image {
+    background-color: #065f46;
+}
+
+.site-intro-slide__visual--has-bg-image .site-intro-slide__badge {
+    background: rgb(0 0 0 / 45%);
 }
 
 .site-intro-slide__visual--welcome {
@@ -360,6 +382,10 @@ html.dark body.front-body .site-intro-slide__visual--none .site-intro-slide__bad
     .site-intro-slide {
         grid-template-columns: 1fr;
         grid-template-rows: minmax(10rem, 32vh) 1fr;
+    }
+
+    .site-intro-slide__visual--has-bg-image {
+        min-height: min(32vh, 100%);
     }
 
     .site-intro-slide__copy {
