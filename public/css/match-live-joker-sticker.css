@@ -11,10 +11,6 @@
     pointer-events: auto;
 }
 
-.match-live-joker-sticker-layer.is-docked {
-    pointer-events: none;
-}
-
 .match-live-joker-sticker-layer__backdrop {
     position: absolute;
     inset: 0;
@@ -29,10 +25,6 @@
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker-layer__backdrop {
     opacity: 1;
-}
-
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker-layer__backdrop {
-    opacity: 0;
 }
 
 .match-live-joker-sticker-layer__stack {
@@ -52,103 +44,18 @@
     width: min(16.2rem, 62vw);
     pointer-events: auto;
     opacity: 0;
-    transform: perspective(1200px) translateY(-1.6rem) scale(0.24) rotate(calc(var(--sticker-rotate, -6deg) - 20deg)) rotateX(22deg);
+    transform: rotate(var(--sticker-rotate, -6deg));
     transform-origin: center center;
-    filter: drop-shadow(0 22px 34px rgb(15 23 42 / 44%));
-    transition:
-        transform 0.65s ease,
-        width 0.55s ease,
-        opacity 0.35s ease;
+    filter: drop-shadow(0 18px 30px rgb(15 23 42 / 38%));
+    transition: opacity 0.28s ease;
 }
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker {
-    animation: match-live-joker-sticker-slap 1.55s cubic-bezier(0.18, 1.15, 0.34, 1) forwards;
+    opacity: 1;
 }
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(2) {
     animation-delay: 0.08s;
-}
-
-.match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(3) {
-    animation-delay: 0.22s;
-}
-
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker {
-    position: fixed;
-    top: 0.85rem;
-    right: 0.85rem;
-    width: min(5.4rem, 20vw);
-    opacity: 0.94;
-    pointer-events: none;
-    transform: scale(1) rotate(-3deg);
-    filter: drop-shadow(0 8px 16px rgb(15 23 42 / 28%));
-}
-
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker:nth-child(n + 2) {
-    display: none;
-}
-
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__close,
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__label,
-.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__name {
-    display: none;
-}
-
-@keyframes match-live-joker-sticker-slap {
-    0% {
-        opacity: 0;
-        transform:
-            perspective(1200px)
-            translateY(-4rem)
-            scale(0.2)
-            rotate(calc(var(--sticker-rotate, -6deg) - 24deg))
-            rotateX(25deg);
-        filter: drop-shadow(0 28px 40px rgb(15 23 42 / 48%));
-    }
-
-    46% {
-        opacity: 1;
-        transform:
-            perspective(1200px)
-            translateY(0.95rem)
-            scale(1.16)
-            rotate(calc(var(--sticker-rotate, -6deg) + 9deg))
-            rotateX(-8deg);
-        filter: drop-shadow(0 10px 18px rgb(15 23 42 / 34%));
-    }
-
-    68% {
-        opacity: 1;
-        transform:
-            perspective(1200px)
-            translateY(-0.55rem)
-            scale(0.97)
-            rotate(calc(var(--sticker-rotate, -6deg) - 3deg))
-            rotateX(4deg);
-        filter: drop-shadow(0 18px 26px rgb(15 23 42 / 38%));
-    }
-
-    84% {
-        opacity: 1;
-        transform:
-            perspective(1200px)
-            translateY(0.18rem)
-            scale(1.03)
-            rotate(calc(var(--sticker-rotate, -6deg) + 1.5deg))
-            rotateX(-2deg);
-        filter: drop-shadow(0 13px 22px rgb(15 23 42 / 33%));
-    }
-
-    100% {
-        opacity: 1;
-        transform:
-            perspective(1200px)
-            translateY(0)
-            scale(1)
-            rotate(var(--sticker-rotate, -6deg))
-            rotateX(0deg);
-        filter: drop-shadow(0 15px 24px rgb(15 23 42 / 34%));
-    }
 }
 
 .match-live-joker-sticker__close {
@@ -265,11 +172,5 @@ html.dark body.front-body .match-live-joker-sticker__label {
 
     .match-live-joker-sticker__name {
         font-size: 1.05rem;
-    }
-
-    .match-live-joker-sticker-layer.is-docked .match-live-joker-sticker {
-        top: 0.65rem;
-        right: 0.65rem;
-        width: min(4.7rem, 22vw);
     }
 }
