@@ -2,6 +2,7 @@
     const LAYER_ID = 'match-live-joker-sticker-layer';
     const STORAGE_PREFIX = 'lpf26-joker-sticker-dismissed';
     const SHOW_DELAY_MS = 1000;
+    const DOCK_AFTER_MS = 5000;
 
     const storageKey = (matchId, stickerId) => `${STORAGE_PREFIX}:${matchId}:${stickerId}`;
 
@@ -23,6 +24,7 @@
 
     const hideLayer = (layer) => {
         layer.classList.remove('is-visible');
+        layer.classList.remove('is-docked');
         window.setTimeout(() => {
             layer.hidden = true;
             layer.querySelector('[data-joker-sticker-dismiss]')?.setAttribute('hidden', 'hidden');
@@ -57,6 +59,20 @@
             return;
         }
 
+        let dockTimer = null;
+        let isDocked = false;
+
+        const dockLayer = () => {
+            if (isDocked || !document.body.contains(layer)) {
+                return;
+            }
+
+            isDocked = true;
+            layer.classList.remove('is-visible');
+            layer.classList.add('is-docked');
+            layer.querySelector('[data-joker-sticker-dismiss]')?.setAttribute('hidden', 'hidden');
+        };
+
         const dismissAll = () => {
             stickers.forEach((sticker) => {
                 const stickerId = sticker.dataset.stickerId || '';
@@ -64,20 +80,17 @@
                     markDismissed(matchId, stickerId);
                 }
             });
+            if (null !== dockTimer) {
+                window.clearTimeout(dockTimer);
+            }
             hideLayer(layer);
         };
 
-        const dismissOne = (sticker) => {
-            const stickerId = sticker.dataset.stickerId || '';
-            if ('' !== stickerId) {
-                markDismissed(matchId, stickerId);
+        const dismissOne = () => {
+            if (null !== dockTimer) {
+                window.clearTimeout(dockTimer);
             }
-
-            sticker.remove();
-
-            if (!layer.querySelector('[data-joker-sticker]')) {
-                hideLayer(layer);
-            }
+            dockLayer();
         };
 
         layer.dataset.jokerStickerReady = '1';
@@ -91,7 +104,7 @@
 
                 const sticker = button.closest('[data-joker-sticker]');
                 if (sticker) {
-                    dismissOne(sticker);
+                    dismissOne();
                 }
             });
         });
@@ -106,6 +119,10 @@
             requestAnimationFrame(() => {
                 layer.classList.add('is-visible');
             });
+
+            dockTimer = window.setTimeout(() => {
+                dockLayer();
+            }, DOCK_AFTER_MS);
         }, SHOW_DELAY_MS);
     };
 

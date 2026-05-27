@@ -11,6 +11,10 @@
     pointer-events: auto;
 }
 
+.match-live-joker-sticker-layer.is-docked {
+    pointer-events: none;
+}
+
 .match-live-joker-sticker-layer__backdrop {
     position: absolute;
     inset: 0;
@@ -27,6 +31,10 @@
     opacity: 1;
 }
 
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker-layer__backdrop {
+    opacity: 0;
+}
+
 .match-live-joker-sticker-layer__stack {
     position: absolute;
     inset: 0;
@@ -41,16 +49,20 @@
 
 .match-live-joker-sticker {
     position: relative;
-    width: min(11.5rem, 44vw);
+    width: min(14rem, 52vw);
     pointer-events: auto;
     opacity: 0;
     transform: scale(0.35) rotate(calc(var(--sticker-rotate, -6deg) - 14deg));
     transform-origin: center center;
     filter: drop-shadow(0 16px 28px rgb(15 23 42 / 35%));
+    transition:
+        transform 0.55s ease,
+        width 0.55s ease,
+        opacity 0.35s ease;
 }
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker {
-    animation: match-live-joker-sticker-slap 0.62s cubic-bezier(0.22, 1.25, 0.42, 1) forwards;
+    animation: match-live-joker-sticker-slap 1.2s cubic-bezier(0.2, 1.18, 0.38, 1) forwards;
 }
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(2) {
@@ -58,7 +70,28 @@
 }
 
 .match-live-joker-sticker-layer.is-visible .match-live-joker-sticker:nth-child(3) {
-    animation-delay: 0.16s;
+    animation-delay: 0.22s;
+}
+
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker {
+    position: fixed;
+    top: 0.85rem;
+    right: 0.85rem;
+    width: min(5.4rem, 20vw);
+    opacity: 0.94;
+    pointer-events: none;
+    transform: scale(1) rotate(-3deg);
+    filter: drop-shadow(0 8px 16px rgb(15 23 42 / 28%));
+}
+
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker:nth-child(n + 2) {
+    display: none;
+}
+
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__close,
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__label,
+.match-live-joker-sticker-layer.is-docked .match-live-joker-sticker__name {
+    display: none;
 }
 
 @keyframes match-live-joker-sticker-slap {
@@ -67,9 +100,9 @@
         transform: translateY(-2.5rem) scale(0.25) rotate(calc(var(--sticker-rotate, -6deg) - 18deg));
     }
 
-    65% {
+    62% {
         opacity: 1;
-        transform: translateY(0.35rem) scale(1.06) rotate(calc(var(--sticker-rotate, -6deg) + 3deg));
+        transform: translateY(0.55rem) scale(1.1) rotate(calc(var(--sticker-rotate, -6deg) + 5deg));
     }
 
     100% {
@@ -161,7 +194,7 @@
 
 .match-live-joker-sticker__name {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 1.08rem;
     font-weight: 700;
     line-height: 1.25;
     text-align: center;
@@ -187,10 +220,16 @@ html.dark body.front-body .match-live-joker-sticker__label {
 
 @media (max-width: 767px) {
     .match-live-joker-sticker {
-        width: min(10.5rem, 58vw);
+        width: min(12.8rem, 74vw);
     }
 
     .match-live-joker-sticker__name {
-        font-size: 1rem;
+        font-size: 1.05rem;
+    }
+
+    .match-live-joker-sticker-layer.is-docked .match-live-joker-sticker {
+        top: 0.65rem;
+        right: 0.65rem;
+        width: min(4.7rem, 22vw);
     }
 }
