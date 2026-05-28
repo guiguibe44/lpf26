@@ -95,7 +95,7 @@ services:
     App\Controller\Admin\DashboardController:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
-            $apiFootballPlayersSyncBatchSize: '%env(int:default:5:API_FOOTBALL_PLAYERS_SYNC_BATCH_SIZE)%'
+            $apiFootballPlayersSyncBatchSize: '%env(int:API_FOOTBALL_PLAYERS_SYNC_BATCH_SIZE)%'
 
     # EasyAdmin instancie chaque CRUD via le conteneur ; sans entrée explicite, le cache prod
     # génère `new UserCrudController()` sans argument (ArgumentCountError sur toute page admin).
