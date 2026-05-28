@@ -31,7 +31,7 @@ final class Wc2026SyncCommand extends Command
             ->addOption('countries-limit', null, InputOption::VALUE_REQUIRED, 'Nombre max de pays à récupérer', '500')
             ->addOption('players-limit', null, InputOption::VALUE_REQUIRED, 'Plafond requêtes HTTP API-Sports pour la synchro joueurs (équipes + pages)', (string) $this->defaultPlayersSyncMaxRequests)
             ->addOption('matches-limit', null, InputOption::VALUE_REQUIRED, 'Nombre max de matchs à récupérer', '500')
-            ->addOption('players-per-team', null, InputOption::VALUE_REQUIRED, 'Nombre max de joueurs par équipe nationale (0 = sans limite)', '0')
+            ->addOption('players-per-team', null, InputOption::VALUE_REQUIRED, 'Plafond optionnel par sélection nationale (0 = effectif complet API)', '0')
             ->addOption('only', null, InputOption::VALUE_REQUIRED, 'countries|matches|players|goals');
     }
 
@@ -69,7 +69,7 @@ final class Wc2026SyncCommand extends Command
 
             if ('' === $only || 'players' === $only) {
                 $resultPlayers = $this->syncService->syncButeurs($playersLimit, $maxPlayersPerTeam);
-                $capMsg = null !== $maxPlayersPerTeam ? sprintf(' (plafond %d joueurs / pays)', $maxPlayersPerTeam) : '';
+                $capMsg = null !== $maxPlayersPerTeam ? sprintf(' (plafond %d joueurs / sélection)', $maxPlayersPerTeam) : ' (sélections compétition)';
                 $io->success(sprintf(
                     'Joueurs synchronisés%s - créés: %d, mis à jour: %d, ignorés: %d',
                     $capMsg,

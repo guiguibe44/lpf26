@@ -55,8 +55,7 @@ security:
         - { path: ^/api/matchs/live-feed, roles: IS_AUTHENTICATED }
         - { path: ^/api/notifications, roles: IS_AUTHENTICATED }
         - { path: ^/api/forum, roles: IS_AUTHENTICATED }
-        - { path: ^/admin/sync/wc2026/goals, roles: ROLE_ADMIN }
-        - { path: ^/admin/sync, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/admin/sync, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         # Front : IS_AUTHENTICATED inclut « remember me » (admins = joueurs + lien menu EasyAdmin).
         - { path: ^/, roles: IS_AUTHENTICATED }

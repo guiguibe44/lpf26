@@ -4,9 +4,9 @@
 
 {% block body %}
     <div class="max-w-xl">
-        <h1 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Synchroniser tous les joueurs (un pays)</h1>
+        <h1 class="text-xl font-semibold text-gray-800 dark:text-white/90 mb-2">Sync joueurs par pays</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            Importe l’effectif complet renvoyé par API-Football pour l’équipe dont le nom correspond au pays sélectionné (même appariement que la synchro pays). La liste des pays vient de la base locale.
+            Importe la sélection compétition renvoyée par API-Football (/players/squads) pour l’équipe dont le nom correspond au pays sélectionné (même appariement que la synchro pays). La liste des pays vient de la base locale.
         </p>
 
         <form method="post" action="{{ path('admin_wc2026_sync_players_country_submit') }}" class="space-y-4">

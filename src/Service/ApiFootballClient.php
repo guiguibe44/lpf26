@@ -57,6 +57,44 @@ final class ApiFootballClient
     }
 
     /**
+     * Liste des équipes (sélections) d'une compétition, pour synchro joueurs par lots.
+     *
+     * @return list<array{id: int, name: string}>
+     */
+    public function fetchCompetitionTeamsForLeague(int $leagueId, int $season): array
+    {
+        $teams = [];
+        foreach ($this->fetchTeamsRowsForLeague($leagueId, $season) as $row) {
+            if (!\is_array($row)) {
+                continue;
+            }
+
+            $team = $row['team'] ?? $row;
+            if (!\is_array($team)) {
+                continue;
+            }
+
+            $rawTeamId = $team['id'] ?? null;
+            $teamName = $this->normalizeString($team['name'] ?? null);
+            if (!is_numeric($rawTeamId) || null === $teamName || '' === $teamName) {
+                continue;
+            }
+
+            $teams[] = [
+                'id' => (int) $rawTeamId,
+                'name' => $teamName,
+            ];
+        }
+
+        usort(
+            $teams,
+            static fn (array $a, array $b): int => strcmp($a['name'], $b['name']),
+        );
+
+        return $teams;
+    }
+
+    /**
      * @return list<array<string, mixed>> lignes brutes "fixture" (objet complet par match).
      */
     public function fetchFixturesForLeague(int $leagueId, int $season, int $maxHttpRequests): array
@@ -247,6 +285,160 @@ final class ApiFootballClient
         );
 
         return ['rows' => $chunk['rows'], 'cancelled' => $chunk['cancelled']];
+    }
+
+    /**
+     * Récupère la sélection compétition d'une équipe (endpoint /players/squads).
+     * Cette liste correspond aux joueurs convoqués par la sélection nationale.
+     *
+     * @return array{rows: list<array<string, mixed>>, cancelled: bool}
+     */
+    public function fetchCompetitionSquadPlayersForTeam(
+        int $teamId,
+        string $teamDisplayName,
+    ): array {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException(
+                'API_FOOTBALL_KEY manquante. Ajoutez-la dans .env.local (ne commitez jamais la clé).'
+            );
+        }
+
+        if ($this->playerSyncStop->isStopRequested()) {
+            return ['rows' => [], 'cancelled' => true];
+        }
+
+        $this->throttleBeforeNextRequest();
+        $data = $this->requestJson('/players/squads', ['team' => $teamId]);
+
+        $rows = [];
+        $response = $data['response'] ?? [];
+        if (!\is_array($response)) {
+            return ['rows' => [], 'cancelled' => false];
+        }
+
+        foreach ($response as $squadRow) {
+            if (!\is_array($squadRow)) {
+                continue;
+            }
+
+            $players = $squadRow['players'] ?? null;
+            if (!\is_array($players)) {
+                continue;
+            }
+
+            foreach ($players as $player) {
+                if (!\is_array($player)) {
+                    continue;
+                }
+
+                $fullName = $this->normalizeString($player['name'] ?? null);
+                $firstName = null;
+                $lastName = null;
+                if (null !== $fullName) {
+                    $parts = preg_split('/\s+/', $fullName) ?: [];
+                    if ([] !== $parts) {
+                        $firstName = trim((string) ($parts[0] ?? ''));
+                        $firstName = '' !== $firstName ? $firstName : null;
+                    }
+                    if (\count($parts) > 1) {
+                        array_shift($parts);
+                        $tmpLastName = trim(implode(' ', $parts));
+                        $lastName = '' !== $tmpLastName ? $tmpLastName : null;
+                    }
+                }
+
+                $rawPlayerId = $player['id'] ?? null;
+                $rows[] = [
+                    'firstname' => $firstName,
+                    'lastname' => $lastName,
+                    'name' => $fullName,
+                    'photo' => $this->normalizeString($player['photo'] ?? null),
+                    'team_name' => $teamDisplayName,
+                    'api_sports_player_id' => is_numeric($rawPlayerId) ? (int) $rawPlayerId : null,
+                ];
+            }
+        }
+
+        return ['rows' => $rows, 'cancelled' => false];
+    }
+
+    /**
+     * Sélections compétition de toutes les équipes d'une ligue (1× /teams + 1× /players/squads par équipe).
+     *
+     * @param int|null $maxPlayersPerTeam plafond optionnel par équipe (null = effectif complet renvoyé par l’API)
+     *
+     * @return array{rows: list<array<string, mixed>>, cancelled: bool}
+     */
+    public function fetchCompetitionSquadPlayersForLeague(
+        int $leagueId,
+        int $season,
+        int $maxHttpRequests,
+        ?int $maxPlayersPerTeam = null,
+    ): array {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException(
+                'API_FOOTBALL_KEY manquante. Ajoutez-la dans .env.local (ne commitez jamais la clé).'
+            );
+        }
+
+        if ($maxHttpRequests < 2) {
+            throw new \InvalidArgumentException('maxHttpRequests doit être au moins 2 (équipes + au moins une sélection).');
+        }
+
+        $calls = 0;
+        $teamsJson = $this->requestJson('/teams', ['league' => $leagueId, 'season' => $season]);
+        ++$calls;
+
+        $teams = $teamsJson['response'] ?? [];
+        if (!\is_array($teams)) {
+            throw new \UnexpectedValueException('Réponse API Football /teams invalide.');
+        }
+
+        $out = [];
+        $cancelled = false;
+
+        foreach ($teams as $row) {
+            if ($this->playerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            if ($calls >= $maxHttpRequests) {
+                break;
+            }
+
+            if (!\is_array($row)) {
+                continue;
+            }
+
+            $team = $row['team'] ?? null;
+            if (!\is_array($team)) {
+                continue;
+            }
+
+            $rawTeamId = $team['id'] ?? null;
+            $teamName = $this->normalizeString($team['name'] ?? null);
+            if (!is_numeric($rawTeamId) || null === $teamName || '' === $teamName) {
+                continue;
+            }
+
+            $chunk = $this->fetchCompetitionSquadPlayersForTeam((int) $rawTeamId, $teamName);
+            ++$calls;
+
+            if ($chunk['cancelled']) {
+                $cancelled = true;
+                break;
+            }
+
+            $teamRows = $chunk['rows'];
+            if (null !== $maxPlayersPerTeam && $maxPlayersPerTeam > 0) {
+                $teamRows = \array_slice($teamRows, 0, $maxPlayersPerTeam);
+            }
+
+            $out = array_merge($out, $teamRows);
+        }
+
+        return ['rows' => $out, 'cancelled' => $cancelled];
     }
 
     /**

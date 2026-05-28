@@ -25,6 +25,7 @@ final class Wc2026SyncService
     public function __construct(
         private readonly ApiFootballClient $apiFootballClient,
         private readonly ApiFootballPlayerSyncStop $apiFootballPlayerSyncStop,
+        private readonly ApiFootballPlayerBatchSyncState $playerBatchSyncState,
         private readonly ButeurRepository $buteurRepository,
         private readonly ButRepository $butRepository,
         private readonly CountryRepository $countryRepository,
@@ -346,7 +347,9 @@ final class Wc2026SyncService
     }
 
     /**
-     * @param int|null $maxPlayersPerTeam nombre max de joueurs à importer par équipe (pays) ; null = tous les joueurs retournés par l’API
+     * Synchronise les sélections compétition de toutes les équipes (endpoint API /players/squads).
+     *
+     * @param int|null $maxPlayersPerTeam plafond optionnel par pays (null = effectif complet de la sélection)
      *
      * @return array{created:int, updated:int, skipped:int, cancelled:bool}
      */
@@ -357,7 +360,7 @@ final class Wc2026SyncService
         $this->apiFootballPlayerSyncStop->clear();
 
         $maxRequests = max(5, min($limit, 5000));
-        $result = $this->apiFootballClient->fetchSquadPlayersForLeague(
+        $result = $this->apiFootballClient->fetchCompetitionSquadPlayersForLeague(
             $this->apiFootballWorldCupLeagueId,
             $this->apiFootballWorldCupSeason,
             $maxRequests,
@@ -373,9 +376,199 @@ final class Wc2026SyncService
     }
 
     /**
-     * Synchronise les joueurs d’un seul pays (équipe CDM) via l’API. Le nom du pays en base doit correspondre à une équipe /teams de la ligue (ex. après sync pays).
+     * État de la synchro joueurs par lots (toutes les sélections).
      *
-     * @param int|null $maxPlayersPerTeam null = tous les joueurs renvoyés par l’API pour cette équipe
+     * @return array{
+     *     active: bool,
+     *     teams_total: int,
+     *     teams_done: int,
+     *     teams_remaining: int,
+     *     completed: bool,
+     *     totals: array{created: int, updated: int, skipped: int},
+     *     next_team_names: list<string>
+     * }
+     */
+    public function getButeursBatchSyncStatus(int $previewCount = 5): array
+    {
+        $state = $this->playerBatchSyncState->load();
+        if (null === $state) {
+            return [
+                'active' => false,
+                'teams_total' => 0,
+                'teams_done' => 0,
+                'teams_remaining' => 0,
+                'completed' => false,
+                'totals' => ['created' => 0, 'updated' => 0, 'skipped' => 0],
+                'next_team_names' => [],
+            ];
+        }
+
+        $teamsTotal = \count($state['teams']);
+        $teamsDone = min($state['next_index'], $teamsTotal);
+        $remaining = max(0, $teamsTotal - $teamsDone);
+        $nextNames = [];
+        for ($i = $state['next_index']; $i < min($teamsTotal, $state['next_index'] + max(1, $previewCount)); ++$i) {
+            $nextNames[] = $state['teams'][$i]['name'];
+        }
+
+        return [
+            'active' => true,
+            'teams_total' => $teamsTotal,
+            'teams_done' => $teamsDone,
+            'teams_remaining' => $remaining,
+            'completed' => $state['completed'],
+            'totals' => $state['totals'],
+            'next_team_names' => $nextNames,
+        ];
+    }
+
+    public function resetButeursBatchSync(): void
+    {
+        $this->playerBatchSyncState->reset();
+        $this->apiFootballPlayerSyncStop->clear();
+    }
+
+    /**
+     * Synchronise un lot de sélections nationales (reprise automatique entre les lots).
+     *
+     * @return array{
+     *     created: int,
+     *     updated: int,
+     *     skipped: int,
+     *     cancelled: bool,
+     *     batch_teams: int,
+     *     teams_total: int,
+     *     teams_done: int,
+     *     teams_remaining: int,
+     *     completed: bool,
+     *     processed_team_names: list<string>,
+     *     totals: array{created: int, updated: int, skipped: int}
+     * }
+     */
+    public function syncButeursBatch(int $batchSize): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $batchSize = max(1, min($batchSize, 30));
+        $state = $this->playerBatchSyncState->load();
+
+        if (null === $state) {
+            $teams = $this->apiFootballClient->fetchCompetitionTeamsForLeague(
+                $this->apiFootballWorldCupLeagueId,
+                $this->apiFootballWorldCupSeason,
+            );
+            if ([] === $teams) {
+                throw new \RuntimeException('Aucune équipe trouvée pour cette compétition (vérifiez la clé API et la saison).');
+            }
+
+            $state = [
+                'league_id' => $this->apiFootballWorldCupLeagueId,
+                'season' => $this->apiFootballWorldCupSeason,
+                'teams' => $teams,
+                'next_index' => 0,
+                'completed' => false,
+                'totals' => ['created' => 0, 'updated' => 0, 'skipped' => 0],
+            ];
+            $this->playerBatchSyncState->save(
+                $state['league_id'],
+                $state['season'],
+                $state['teams'],
+                0,
+                false,
+                $state['totals'],
+            );
+        }
+
+        $teams = $state['teams'];
+        $teamsTotal = \count($teams);
+        $startIndex = $state['next_index'];
+
+        if ($state['completed'] || $startIndex >= $teamsTotal) {
+            return [
+                'created' => 0,
+                'updated' => 0,
+                'skipped' => 0,
+                'cancelled' => false,
+                'batch_teams' => 0,
+                'teams_total' => $teamsTotal,
+                'teams_done' => $teamsTotal,
+                'teams_remaining' => 0,
+                'completed' => true,
+                'processed_team_names' => [],
+                'totals' => $state['totals'],
+            ];
+        }
+
+        $allRows = [];
+        $cancelled = false;
+        $processedNames = [];
+        $endIndex = min($startIndex + $batchSize, $teamsTotal);
+
+        for ($i = $startIndex; $i < $endIndex; ++$i) {
+            if ($this->apiFootballPlayerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            $team = $teams[$i];
+            $chunk = $this->apiFootballClient->fetchCompetitionSquadPlayersForTeam(
+                $team['id'],
+                $team['name'],
+            );
+
+            if ($chunk['cancelled']) {
+                $cancelled = true;
+                break;
+            }
+
+            $allRows = array_merge($allRows, $chunk['rows']);
+            $processedNames[] = $team['name'];
+        }
+
+        $import = $this->importButeursFromNormalizedList($allRows);
+
+        $newIndex = $startIndex + \count($processedNames);
+        $completed = !$cancelled && $newIndex >= $teamsTotal;
+        $totals = [
+            'created' => $state['totals']['created'] + $import['created'],
+            'updated' => $state['totals']['updated'] + $import['updated'],
+            'skipped' => $state['totals']['skipped'] + $import['skipped'],
+        ];
+
+        $this->playerBatchSyncState->save(
+            $state['league_id'],
+            $state['season'],
+            $teams,
+            $newIndex,
+            $completed,
+            $totals,
+        );
+
+        if ($cancelled) {
+            $this->apiFootballPlayerSyncStop->clear();
+        }
+
+        return [
+            'created' => $import['created'],
+            'updated' => $import['updated'],
+            'skipped' => $import['skipped'],
+            'cancelled' => $cancelled,
+            'batch_teams' => \count($processedNames),
+            'teams_total' => $teamsTotal,
+            'teams_done' => $newIndex,
+            'teams_remaining' => max(0, $teamsTotal - $newIndex),
+            'completed' => $completed,
+            'processed_team_names' => $processedNames,
+            'totals' => $totals,
+        ];
+    }
+
+    /**
+     * Synchronise les joueurs d’un seul pays (équipe CDM) via la sélection compétition
+     * (endpoint API /players/squads). Le nom du pays en base doit correspondre à une
+     * équipe /teams de la ligue (ex. après sync pays).
+     *
+     * @param int|null $maxPlayersPerTeam paramètre conservé pour compatibilité (ignoré en mode sélection compétition)
      *
      * @return array{created:int, updated:int, skipped:int, cancelled:bool}
      */
@@ -437,13 +630,9 @@ final class Wc2026SyncService
             );
         }
 
-        $cap = max(5, min($maxHttpRequests, 5000));
-        $result = $this->apiFootballClient->fetchSquadPlayersForTeam(
+        $result = $this->apiFootballClient->fetchCompetitionSquadPlayersForTeam(
             $teamId,
-            $teamName,
-            $this->apiFootballWorldCupSeason,
-            $cap,
-            $maxPlayersPerTeam
+            $teamName
         );
 
         $import = $this->importButeursFromNormalizedList($result['rows']);
