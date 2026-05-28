@@ -85,9 +85,17 @@ final class MatchCoteOneNTwoCalculatorTest extends TestCase
         self::assertSame($homeOdds, $coef);
     }
 
-    public function testRoundsToHalfStep(): void
+    public function testRoundsToTwoDecimals(): void
     {
-        self::assertSame(3.5, $this->calculator->calculateOddsForOutcomeCount(4, 1));
+        self::assertSame(3.25, $this->calculator->calculateOddsForOutcomeCount(4, 1));
+    }
+
+    public function testTwoDecimalOddsProduceRoundedIntegerPoints(): void
+    {
+        $coef = $this->calculator->calculateOddsForOutcomeCount(4, 1);
+
+        self::assertSame(3.25, $coef);
+        self::assertSame(33, (int) round(10 * $coef));
     }
 
     private function createMatch(): GameMatch

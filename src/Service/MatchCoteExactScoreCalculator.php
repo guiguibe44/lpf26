@@ -8,7 +8,7 @@ use App\Entity\Pronostic;
 use App\Enum\MatchCoteMode;
 
 /**
- * Cotes par score exact (LPF26) : coefficient = total ÷ nb pronos sur le même score, plafond ×5.
+ * Cotes par score exact : coefficient = total ÷ nb pronos sur le même score, plafond ×5, arrondi à 2 décimales.
  */
 final class MatchCoteExactScoreCalculator
 {

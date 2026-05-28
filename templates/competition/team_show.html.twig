@@ -167,7 +167,7 @@
 
     <section class="ta-card mt-5">
         <h2 class="ta-card-title">Matchs joues et points par joueur</h2>
-        <p class="ta-card-text">Matchs avec score final enregistré ; points issus du barème LPF (30 / 10 / 0 × cote, après notation).</p>
+        <p class="ta-card-text">Matchs avec score final enregistré ; points issus du barème LPF (30 / 10 / 0 × cote à 2 décimales, arrondi à l’entier).</p>
 
         {% if played_rows is empty %}
             <p class="ta-card-text mt-3">Aucun match joue avec pronostic note pour les membres de cette equipe.</p>
@@ -202,7 +202,7 @@
                                                 <span class="team-show-prono-score">{{ prono.scoreDomicile }} - {{ prono.scoreExterieur }}</span>
                                                 {% if prono.points is not null %}
                                                     <span class="team-show-prono-sep" aria-hidden="true">·</span>
-                                                    <span class="team-show-prono-pts">{{ prono.points|number_format(2, ',', ' ') }} pts</span>
+                                                    <span class="team-show-prono-pts">{{ prono.points|number_format(0, ',', ' ') }} pts</span>
                                                 {% endif %}
                                             </span>
                                         {% else %}

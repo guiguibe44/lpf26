@@ -4,7 +4,7 @@
     {% if cotes.pronostics_count > 0 %}
         {% if mode == 'one_n_two' and cotes.home is not null %}
             <span class="match-cotes-overview__explain">
-                Cotes sur le résultat <strong>1 / N / 2</strong>, calculées sur l’ensemble des pronos du match (comme LPF24).
+                Cotes sur le résultat <strong>1 / N / 2</strong>, calculées sur l’ensemble des pronos du match (arrondi à <strong>2 décimales</strong>, plafond ×5).
             </span>
             {% include 'competition/_match_cotes_1n2_blocks.html.twig' with {
                 home: cotes.home,
@@ -21,10 +21,11 @@
             <span class="match-cotes-overview__hint match-espion-meta">
                 Bon prono ou score exact : cote du <strong>résultat réel</strong> du match.
                 Mauvais prono : cote de <strong>votre</strong> issue (1, N ou 2).
+                Points = base × cote, <strong>arrondis à l’entier</strong>.
             </span>
         {% elseif cotes.moyenne is not null %}
             <span class="match-cotes-overview__explain">
-                Cotes par <strong>score exact</strong> (mode LPF26) : plus un score est rare, plus sa cote est haute (max ×5).
+                Cotes par <strong>score exact</strong> : plus un score est rare, plus sa cote est haute (2 décimales, max ×5). Points = base × cote, arrondis à l’entier.
             </span>
             <span class="match-espion-cotes">
                 Moy. <strong>{{ cotes.moyenne|number_format(2, ',', ' ') }}</strong>

@@ -12,6 +12,6 @@
         <strong>×{{ buteur_stats.cote|number_format(2, ',', ' ') }}</strong>
     </p>
     <p class="dashboard-buteur-stats__hint">
-        10 pts de base par but × cote ({{ buteur_stats.selections }} joueur{{ buteur_stats.selections > 1 ? 's' : '' }} sur {{ buteur_stats.total_players }} l’ont choisi, max ×5).
+        10 pts de base par but × cote (2 décimales, points arrondis à l’entier ; {{ buteur_stats.selections }} joueur{{ buteur_stats.selections > 1 ? 's' : '' }} sur {{ buteur_stats.total_players }} l’ont choisi, max ×5).
     </p>
 </div>

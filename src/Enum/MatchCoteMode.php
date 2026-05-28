@@ -9,7 +9,7 @@ namespace App\Enum;
  */
 enum MatchCoteMode: string
 {
-    /** Cotes 1 / N / 2 (LPF24) : une cote par issue, appliquée selon le barème. */
+    /** Cotes 1 / N / 2 : une cote par issue (2 décimales), appliquée selon le barème. */
     case ONE_N_TWO = 'one_n_two';
 
     /** Cotes par score exact (LPF26 historique) : total pronos ÷ pronos sur le même score. */

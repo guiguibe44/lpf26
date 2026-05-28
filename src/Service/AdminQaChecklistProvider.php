@@ -526,22 +526,22 @@ final class AdminQaChecklistProvider
             'items' => [
                 [
                     'id' => 'points-exact-score',
-                    'label' => 'Score exact : points de base × cote (défaut 30 pts, modifiable par match en admin).',
+                    'label' => 'Score exact : arrondi(base × cote) — cote à 2 décimales (défaut 30 pts de base, modifiable par match).',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'points-good-result',
-                    'label' => 'Bon 1N2 sans score exact : 10 pts par défaut.',
+                    'label' => 'Bon 1N2 sans score exact : arrondi(10 × cote) par défaut.',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'points-cote-display',
-                    'label' => 'Cote min / moy / max affichée sur la carte avant le match.',
+                    'label' => 'Cotes affichées à 2 décimales (1/N/2 ou min/moy/max selon le mode).',
                     'kind' => 'attention',
                 ],
                 [
                     'id' => 'points-buteur-goal',
-                    'label' => 'But du buteur choisi : points = 10 × coefficient (plafond ×5).',
+                    'label' => 'But du buteur choisi : arrondi(10 × cote à 2 décimales, plafond ×5).',
                     'kind' => 'attention',
                 ],
                 [

@@ -42,7 +42,7 @@ final class AdminCompetChecklistDescriptions
 
             'compet-joker-effects' => 'Recalcul après finish si jokers offensifs/défensifs placés.',
 
-            'compet-points-exact' => 'Défaut 30 pts × cote pour score exact (ex. A-J1 avec 2-1).',
+            'compet-points-exact' => 'Défaut arrondi(30 × cote à 2 déc.) pour score exact (ex. A-J1 avec 2-1).',
             'compet-points-good-result' => 'Défaut 10 pts pour bon vainqueur/nul sans score exact.',
             'compet-live-rescore-on-goal' => 'À chaque goal step : PronosticScoringService::rescoreForMatch.',
             'compet-rank-order' => 'Critères de tri documentés dans le règlement.',

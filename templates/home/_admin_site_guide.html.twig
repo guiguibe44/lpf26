@@ -42,8 +42,8 @@
             <div class="lpf-admin-guide__body">
                 <ul>
                     <li>Chaque joueur cotisé choisit un buteur (accueil ou compte) avant verrouillage au début de la compétition.</li>
-                    <li>À chaque but marqué par ce joueur (sync API ou saisie admin), points = <strong>10 pts de base × cote</strong> (plafond ×5).</li>
-                    <li><strong>Cote</strong> = joueurs avec buteur ÷ joueurs ayant choisi ce buteur (comme les pronos : choix rare = cote haute).</li>
+                    <li>À chaque but marqué par ce joueur (sync API ou saisie admin), points = <strong>10 pts de base × cote</strong> (cote arrondie à <strong>2 décimales</strong>, points arrondis à l’<strong>entier</strong>, plafond ×5).</li>
+                    <li><strong>Cote</strong> = joueurs avec buteur ÷ joueurs l’ayant choisi (choix rare = cote haute), plafond ×5.</li>
                     <li>Les points buteur s’ajoutent au <strong>classement équipe</strong> (cumul des deux joueurs).</li>
                     <li>Recalcul : <code>php bin/console app:rescore:buteur-goals</code> après changement de sélections ou import de buts.</li>
                 </ul>
@@ -69,11 +69,11 @@
 <div class="lpf-admin-guide__body">
                 <ul>
                     <li>Calculées à chaque enregistrement de prono pour un match (tous joueurs ayant pronostiqué).</li>
-                    <li><strong>Coefficient</strong> = nombre total de pronos ÷ nombre de pronos sur le même score (plafonné à <strong>5,0</strong>).</li>
-                    <li>Plus un score est original, plus la cote est haute ; score très populaire → cote proche de 1.</li>
-                    <li>Cotes pronos : mode <code>MATCH_COTE_MODE</code> (<code>one_n_two</code> défaut, LPF24 — <code>exact_score</code> LPF26). Carte match : cotes 1 / N / 2 (<code>coteDomicile</code>, <code>coteNul</code>, <code>coteExterieur</code>) ou min/moy/max en mode score exact.</li>
+                    <li>Mode <code>one_n_two</code> (défaut) : trois cotes <strong>1 / N / 2</strong> selon la popularité de chaque issue (formule proportion + ajustement, plafond ×5, arrondi à <strong>2 décimales</strong>).</li>
+                    <li>Mode <code>exact_score</code> : coefficient = total pronos ÷ pronos sur le même score (plafond ×5, arrondi à 2 décimales).</li>
+                    <li>Carte match : cotes 1 / N / 2 (<code>coteDomicile</code>, <code>coteNul</code>, <code>coteExterieur</code>) ou min/moy/max en mode score exact.</li>
                     <li>Recalcul global après changement de mode : <code>php bin/console app:match:rescore-all</code>.</li>
-                    <li>Points finaux = <strong>points de base × coefficient</strong> (arrondi à l’entier).</li>
+                    <li>Points finaux = <strong>points de base × cote</strong>, <strong>arrondis à l’entier</strong> (ex. 10 × 3,25 → 33 pts).</li>
                 </ul>
 </div>
         </details>

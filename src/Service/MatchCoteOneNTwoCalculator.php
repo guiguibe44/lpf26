@@ -9,7 +9,7 @@ use App\Entity\Pronostic;
 use App\Enum\MatchCoteMode;
 
 /**
- * Cotes 1 / N / 2 (LPF24) : popularité par issue, formule proportion + ajustement, plafond ×5, arrondi 0,5.
+ * Cotes 1 / N / 2 : popularité par issue, formule proportion + ajustement, plafond ×5, arrondi à 2 décimales.
  */
 final class MatchCoteOneNTwoCalculator
 {
@@ -43,7 +43,7 @@ final class MatchCoteOneNTwoCalculator
         $odds = 1 + ((1 / $proportion) - 1) * $adjustmentFactor;
         $odds = min($odds, self::MAX_COEFFICIENT);
 
-        return round($odds * 2) / 2;
+        return round($odds, 2);
     }
 
     /**

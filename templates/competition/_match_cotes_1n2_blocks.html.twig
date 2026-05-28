@@ -18,7 +18,7 @@
     >
         <span class="match-cotes-1n2-blocks__label">1</span>
         <span class="match-cotes-1n2-blocks__value">
-            {% if home is not null %}×{{ home|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+            {% if home is not null %}×{{ home|number_format(2, ',', ' ') }}{% else %}—{% endif %}
         </span>
         {% if show_outcome_counts and home_count is defined %}
             <span class="match-cotes-1n2-blocks__count">{{ home_count }} prono{{ home_count > 1 ? 's' : '' }}</span>
@@ -32,7 +32,7 @@
     >
         <span class="match-cotes-1n2-blocks__label">N</span>
         <span class="match-cotes-1n2-blocks__value">
-            {% if draw is not null %}×{{ draw|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+            {% if draw is not null %}×{{ draw|number_format(2, ',', ' ') }}{% else %}—{% endif %}
         </span>
         {% if show_outcome_counts and draw_count is defined %}
             <span class="match-cotes-1n2-blocks__count">{{ draw_count }} prono{{ draw_count > 1 ? 's' : '' }}</span>
@@ -46,7 +46,7 @@
     >
         <span class="match-cotes-1n2-blocks__label">2</span>
         <span class="match-cotes-1n2-blocks__value">
-            {% if away is not null %}×{{ away|number_format(1, ',', ' ') }}{% else %}—{% endif %}
+            {% if away is not null %}×{{ away|number_format(2, ',', ' ') }}{% else %}—{% endif %}
         </span>
         {% if show_outcome_counts and away_count is defined %}
             <span class="match-cotes-1n2-blocks__count">{{ away_count }} prono{{ away_count > 1 ? 's' : '' }}</span>

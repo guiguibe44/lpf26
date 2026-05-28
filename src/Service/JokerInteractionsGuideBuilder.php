@@ -188,7 +188,7 @@ final class JokerInteractionsGuideBuilder
                     ],
                     [
                         '2. Barème × cote',
-                        'Points joueur = base du barème × cote 1 / N / 2 (plafond ×5, arrondi 0,5). '
+                        'Points joueur = base du barème × cote 1 / N / 2 (cote à 2 décimales, plafond ×5, points arrondis à l’entier). '
                         .'Bon prono ou score exact : cote du résultat réel ; mauvais prono : cote de votre issue.',
                         '10 + 10 = 20 pts équipe (contribution prono).',
                     ],
@@ -277,8 +277,8 @@ final class JokerInteractionsGuideBuilder
                     'caption' => 'Formules (par joueur, après barème × cote)',
                     'headers' => ['Cas', 'Calcul', 'Exemple (base 30 pts, cote 2 → 60 pts standard)'],
                     'rows' => [
-                        ['Bon prono (pas « mauvais résultat »)', '2 × base × cote', '2 × 30 × 2 = 120 pts joueur et équipe'],
-                        ['Mauvais prono', '−'.$mult.' × cote (arrondi)', '−'.$mult.' × 2 = −6 pts joueur et équipe'],
+                        ['Bon prono (pas « mauvais résultat »)', 'arrondi(2 × base × cote)', 'arrondi(2 × 30 × 2) = 120 pts joueur et équipe'],
+                        ['Mauvais prono', '−arrondi('.$mult.' × cote)', '−arrondi('.$mult.' × 2) = −6 pts joueur et équipe'],
                     ],
                 ],
                 [
@@ -472,7 +472,7 @@ final class JokerInteractionsGuideBuilder
                     'caption' => 'Calcul des points buteur',
                     'headers' => ['Étape', 'Valeur', 'Exemple'],
                     'rows' => [
-                        ['Points d’un but (base)', self::BUTEUR_POINTS_BASE.' × coefficient de popularité du buteur (max ×5)', 'But = '.(self::BUTEUR_POINTS_BASE * 4).' pts (ex. cote ×4)'],
+                        ['Points d’un but (base)', 'arrondi('.self::BUTEUR_POINTS_BASE.' × cote buteur à 2 déc., max ×5)', 'Cote ×4 → '.(self::BUTEUR_POINTS_BASE * 4).' pts par but'],
                         ['Avec double buteur', '×2 sur ce match', (self::BUTEUR_POINTS_BASE * 4).' → '.(self::BUTEUR_POINTS_BASE * 8).' pts pour votre équipe'],
                     ],
                 ],

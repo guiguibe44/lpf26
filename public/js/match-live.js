@@ -79,10 +79,7 @@
             return '—';
         }
 
-        const num = Number(value);
-        const digits = Number.isInteger(num) || num % 0.5 === 0 ? 1 : 2;
-
-        return '×' + num.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+        return '×' + formatCote(value);
     };
 
     const setBlockValue = (blockEl, value) => {

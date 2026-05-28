@@ -11,8 +11,8 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Points par but marqué par le buteur choisi : 10 pts de base × cote de popularité.
- * Cote = joueurs avec buteur / joueurs ayant choisi ce buteur (max 5), comme les pronos.
+ * Points par but marqué par le buteur choisi : arrondi(10 × cote de popularité à 2 décimales).
+ * Cote = joueurs avec buteur / joueurs l’ayant choisi (plafond ×5).
  */
 final class ButeurGoalScoringService
 {

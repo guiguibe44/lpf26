@@ -288,7 +288,7 @@ final class AdminCompetChecklistProvider
             'items' => [
                 [
                     'id' => 'compet-points-exact',
-                    'label' => 'Score exact : points de base × cote.',
+                    'label' => 'Score exact : arrondi(base × cote à 2 décimales).',
                     'kind' => 'attention',
                 ],
                 [
