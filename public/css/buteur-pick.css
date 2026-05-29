@@ -1,0 +1,230 @@
+/* Sélection de buteur par clic (terrain + liste + popup thémée light/dark). */
+
+.country-squad-picker__hint,
+.country-squad-picker__locked {
+    margin: 0 0 0.75rem;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--lpf-muted, #64748b);
+}
+
+.country-squad-picker__locked {
+    font-weight: 600;
+    color: var(--lpf-text, #0f172a);
+}
+
+.buteur-pick-player {
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, outline-color 0.12s ease;
+}
+
+.buteur-pick-player * {
+    pointer-events: none;
+}
+
+.buteur-pick-player:hover {
+    transform: translateY(-2px);
+}
+
+.buteur-pick-player:focus-visible {
+    outline: 2px solid var(--lpf-primary, #16a34a);
+    outline-offset: 2px;
+}
+
+.buteur-pick-player--selected .pitch-player__avatar,
+.buteur-pick-player--selected .roster-row__avatar {
+    box-shadow: 0 0 0 3px #f5c518, 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.roster-row.buteur-pick-player {
+    border-radius: 8px;
+}
+
+.roster-row.buteur-pick-player:hover {
+    background: var(--lpf-primary-muted, rgb(22 163 74 / 12%));
+}
+
+/* --- Popup choix buteur (variables --lpf-* : classic-light / dark) --- */
+
+.buteur-pick-dialog {
+    border: none;
+    padding: 0;
+    max-width: min(420px, calc(100vw - 2rem));
+    width: 100%;
+    margin: auto;
+    background: transparent;
+    color: var(--lpf-text, #0f172a);
+}
+
+.buteur-pick-dialog::backdrop {
+    background: rgb(15 23 42 / 45%);
+    backdrop-filter: blur(2px);
+}
+
+html.dark .buteur-pick-dialog::backdrop {
+    background: rgb(0 0 0 / 65%);
+}
+
+.buteur-pick-dialog__panel {
+    border-radius: 14px;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface, #ffffff);
+    color: var(--lpf-text, #0f172a);
+    box-shadow: 0 20px 50px rgb(15 23 42 / 18%);
+    overflow: hidden;
+}
+
+html.dark .buteur-pick-dialog__panel {
+    box-shadow: 0 20px 50px rgb(0 0 0 / 45%);
+}
+
+.buteur-pick-dialog__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface-raised, #f8fafc);
+}
+
+.buteur-pick-dialog__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--lpf-navy, var(--lpf-text, #0f172a));
+}
+
+.buteur-pick-dialog__close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    border-radius: 8px;
+    background: var(--lpf-bg, #f8fafc);
+    color: var(--lpf-muted, #64748b);
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.buteur-pick-dialog__close:hover {
+    background: var(--lpf-surface-raised, #f1f5f9);
+    color: var(--lpf-text, #0f172a);
+    border-color: var(--lpf-primary, #16a34a);
+}
+
+.buteur-pick-dialog__body {
+    padding: 1rem 1.1rem;
+    text-align: center;
+    background: var(--lpf-surface, #ffffff);
+}
+
+.buteur-pick-dialog__player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.buteur-pick-dialog__photo,
+.buteur-pick-dialog__photo-fallback {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--lpf-border, #e2e8f0);
+}
+
+.buteur-pick-dialog__photo-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--lpf-primary-muted, rgb(22 163 74 / 12%));
+    color: var(--lpf-primary, #16a34a);
+    font-weight: 700;
+    font-size: 1.35rem;
+}
+
+.buteur-pick-dialog__name {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--lpf-text, #0f172a);
+}
+
+.buteur-pick-dialog__message {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--lpf-muted, #64748b);
+}
+
+.buteur-pick-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--lpf-border, #e2e8f0);
+    background: var(--lpf-surface-raised, #f8fafc);
+}
+
+.buteur-pick-dialog__actions form {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0;
+    width: 100%;
+}
+
+.dashboard-buteur-clear-form {
+    margin: 0.75rem 0 1rem;
+}
+
+.dashboard-buteur-clear-form .btn {
+    color: var(--lpf-danger, #dc2626);
+    border-color: rgb(220 38 38 / 45%);
+}
+
+.dashboard-buteur-clear-form .btn:hover {
+    background: rgb(220 38 38 / 8%);
+    border-color: var(--lpf-danger, #dc2626);
+    color: var(--lpf-danger, #dc2626);
+}
+
+.buteur-choice-modes {
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--lpf-border, #e2e8f0);
+}
+
+.account-buteur-country-select {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.account-buteur-country-select__label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--lpf-text, #0f172a);
+}
+
+.account-buteur-country-select__select {
+    min-width: 220px;
+}
+
+.account-buteur-squad {
+    margin-top: 0.5rem;
+}

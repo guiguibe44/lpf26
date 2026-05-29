@@ -39,6 +39,10 @@ class Buteur
     #[ORM\Column(nullable: true)]
     private ?int $numero = null;
 
+    /** Joueur sélectionnable dans l'app (désactivé = masqué des listes et du choix buteur). */
+    #[ORM\Column(options: ['default' => true])]
+    private bool $actif = true;
+
     /**
      * @var Collection<int, But>
      */
@@ -140,6 +144,18 @@ class Buteur
     public function setNumero(?int $numero): static
     {
         $this->numero = $numero;
+
+        return $this;
+    }
+
+    public function isActif(): bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
 
         return $this;
     }

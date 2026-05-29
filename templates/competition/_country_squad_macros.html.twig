@@ -1,0 +1,65 @@
+{% macro player_card(player, buteur_pick, can_pick) %}
+    {% set photo = player.photoPublicPath %}
+    {% set photo_url = photo ? ((photo starts with 'http://' or photo starts with 'https://') ? photo : asset(photo)) : '' %}
+    {% set is_selected = buteur_pick.current_id is not null and buteur_pick.current_id == player.id %}
+    <div
+        class="pitch-player{% if can_pick %} buteur-pick-player{% endif %}{% if is_selected %} buteur-pick-player--selected{% endif %}"
+        title="{{ player.prenom }} {{ player.nom }}{% if player.position %} — {{ player.position }}{% endif %}"
+        {% if can_pick %}
+            role="button"
+            tabindex="0"
+            data-buteur-id="{{ player.id }}"
+            data-buteur-prenom="{{ player.prenom|default('')|e('html_attr') }}"
+            data-buteur-nom="{{ player.nom|default('')|e('html_attr') }}"
+            data-buteur-photo="{{ photo_url|e('html_attr') }}"
+        {% endif %}
+    >
+        <span class="pitch-player__avatar">
+            {% if photo %}
+                {% set src = (photo starts with 'http://' or photo starts with 'https://') ? photo : asset(photo) %}
+                <img src="{{ src }}" alt="" width="56" height="56" loading="lazy" decoding="async">
+            {% else %}
+                <span class="pitch-player__avatar-fallback">{{ player.nom|first|upper }}</span>
+            {% endif %}
+            {% if player.numero is not null %}
+                <span class="pitch-player__number">{{ player.numero }}</span>
+            {% endif %}
+        </span>
+        <span class="pitch-player__name">{{ player.nom }}</span>
+    </div>
+{% endmacro %}
+
+{% macro roster_row(player, buteur_pick, can_pick) %}
+    {% set photo = player.photoPublicPath %}
+    {% set photo_url = photo ? ((photo starts with 'http://' or photo starts with 'https://') ? photo : asset(photo)) : '' %}
+    {% set is_selected = buteur_pick.current_id is not null and buteur_pick.current_id == player.id %}
+    <li
+        class="roster-row{% if can_pick %} buteur-pick-player{% endif %}{% if is_selected %} buteur-pick-player--selected{% endif %}"
+        {% if can_pick %}
+            role="button"
+            tabindex="0"
+            data-buteur-id="{{ player.id }}"
+            data-buteur-prenom="{{ player.prenom|default('')|e('html_attr') }}"
+            data-buteur-nom="{{ player.nom|default('')|e('html_attr') }}"
+            data-buteur-photo="{{ photo_url|e('html_attr') }}"
+        {% endif %}
+    >
+        <span class="roster-row__number">
+            {% if player.numero is not null %}{{ player.numero }}{% else %}—{% endif %}
+        </span>
+        <span class="roster-row__avatar">
+            {% if photo %}
+                {% set src = (photo starts with 'http://' or photo starts with 'https://') ? photo : asset(photo) %}
+                <img src="{{ src }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+            {% else %}
+                <span class="roster-row__avatar-fallback">{{ player.nom|first|upper }}</span>
+            {% endif %}
+        </span>
+        <span class="roster-row__identity">
+            <span class="roster-row__name">{{ player.prenom }} {{ player.nom }}</span>
+            {% if player.position %}
+                <span class="roster-row__position">{{ player.position }}</span>
+            {% endif %}
+        </span>
+    </li>
+{% endmacro %}

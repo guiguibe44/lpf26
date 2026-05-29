@@ -24,6 +24,8 @@ class ButeurRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('b')
             ->addSelect('p')
             ->join('b.pays', 'p')
+            ->andWhere('b.actif = :actif')
+            ->setParameter('actif', true)
             ->orderBy('b.nom', 'ASC')
             ->addOrderBy('b.prenom', 'ASC')
             ->getQuery()
@@ -65,7 +67,9 @@ class ButeurRepository extends ServiceEntityRepository
             ->addSelect('p')
             ->join('b.pays', 'p')
             ->andWhere('p.id = :countryId')
+            ->andWhere('b.actif = :actif')
             ->setParameter('countryId', $countryId)
+            ->setParameter('actif', true)
             ->orderBy('b.numero', 'ASC')
             ->addOrderBy('b.nom', 'ASC')
             ->addOrderBy('b.prenom', 'ASC')
@@ -82,7 +86,9 @@ class ButeurRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('b')
             ->addSelect('p')
-            ->join('b.pays', 'p');
+            ->join('b.pays', 'p')
+            ->andWhere('b.actif = :actif')
+            ->setParameter('actif', true);
 
         if (null !== $paysId) {
             $qb->andWhere('p.id = :paysId')->setParameter('paysId', $paysId);

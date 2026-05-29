@@ -54,14 +54,6 @@
         </div>
 
         <div id="panel-compte" role="tabpanel" aria-labelledby="tab-btn-compte" class="account-tab-panel space-y-6">
-            <section class="ta-card account-theme-card p-5">
-                <h2 class="mb-1 text-lg font-semibold">Apparence du site</h2>
-                <p class="ta-page-subtitle mb-4">
-                    Choisissez le thème global : classique clair, classique sombre ou GTA (style gaming, vert néon).
-                </p>
-                {% include '_gta_theme_switcher.html.twig' with { switcher_id: 'account-theme-switcher-label' } %}
-            </section>
-
             <div class="account-profile-password-row">
             {% if profile_form %}
             <section class="account-card-profile rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
@@ -118,10 +110,26 @@
 
             {% if has_team_member and not competition_started %}
                 <section id="buteur" class="account-buteur-section p-5">
+                    <link rel="stylesheet" href="{{ asset('css/buteur-pick.css') }}?v=3">
                     <h2 class="mb-4 text-lg font-semibold">Choisir mon buteur</h2>
                     {% if not cotisation_payee %}
                         <p class="ta-card-text mb-3">Réglez votre cotisation pour pouvoir enregistrer un buteur.</p>
                     {% endif %}
+
+                    <div class="buteur-choice-modes mb-4">
+                        <p class="ta-card-text mb-3">Recherche par nom ou sélection visuelle sur le terrain.</p>
+                        {% if cotisation_payee %}
+                            <a href="{{ path('app_buteur_pick_by_country') }}" class="btn btn-outline btn-primary btn-sm">
+                                <i class="ti ti-soccer-field" aria-hidden="true"></i>
+                                Choisir sur le terrain par pays
+                            </a>
+                        {% else %}
+                            <button type="button" class="btn btn-outline btn-sm" disabled>
+                                Choisir sur le terrain par pays
+                            </button>
+                        {% endif %}
+                    </div>
+
                     {% include 'buteur/_picker_stack.html.twig' with {
                         picker_id_prefix: 'acc',
                         cotisation_payee: cotisation_payee,

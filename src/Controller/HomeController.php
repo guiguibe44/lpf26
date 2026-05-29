@@ -198,26 +198,91 @@ class HomeController extends AbstractController
             return $this->redirectAfterDashboardButeurSave($request);
         }
 
+        if (!$buteur->isActif()) {
+            $this->addFlash('danger', 'Ce joueur n\'est plus disponible pour le choix du buteur.');
+
+            return $this->redirectAfterDashboardButeurSave($request);
+        }
+
         $user->setButeurChoisi($buteur);
         $entityManager->flush();
 
-        $buteurGoalScoringService->rescoreAll();
-        $latestMatch = $gameMatchRepository->findLatestFinishedMatch();
-        if (null !== $latestMatch) {
-            $teamRankingService->rebuildSnapshotsFromMatch($latestMatch);
-        }
+        $this->afterButeurChoiceChanged($buteurGoalScoringService, $gameMatchRepository, $teamRankingService);
 
         $this->addFlash('success', 'Votre buteur a été enregistré.');
 
         return $this->redirectAfterDashboardButeurSave($request);
     }
 
+    #[Route('/accueil/buteur/effacer', name: 'app_dashboard_buteur_clear', methods: ['POST'])]
+    public function clearDashboardButeur(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CompetitionStatus $competitionStatus,
+        ButeurGoalScoringService $buteurGoalScoringService,
+        GameMatchRepository $gameMatchRepository,
+        TeamRankingService $teamRankingService,
+    ): Response {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if (!$this->isCsrfTokenValid('dashboard_buteur_clear', (string) $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Session expirée, veuillez réessayer.');
+
+            return $this->redirectAfterDashboardButeurSave($request);
+        }
+
+        if ($competitionStatus->isStarted()) {
+            $this->addFlash('danger', 'La compétition a déjà commencé : le buteur ne peut plus être modifié.');
+
+            return $this->redirectAfterDashboardButeurSave($request);
+        }
+
+        if (!$user->getButeurChoisi() instanceof Buteur) {
+            $this->addFlash('warning', 'Vous n\'avez pas de buteur sélectionné.');
+
+            return $this->redirectAfterDashboardButeurSave($request);
+        }
+
+        $user->setButeurChoisi(null);
+        $entityManager->flush();
+
+        $this->afterButeurChoiceChanged($buteurGoalScoringService, $gameMatchRepository, $teamRankingService);
+
+        $this->addFlash('success', 'Votre choix de buteur a été retiré.');
+
+        return $this->redirectAfterDashboardButeurSave($request);
+    }
+
+    private function afterButeurChoiceChanged(
+        ButeurGoalScoringService $buteurGoalScoringService,
+        GameMatchRepository $gameMatchRepository,
+        TeamRankingService $teamRankingService,
+    ): void {
+        $buteurGoalScoringService->rescoreAll();
+        $latestMatch = $gameMatchRepository->findLatestFinishedMatch();
+        if (null !== $latestMatch) {
+            $teamRankingService->rebuildSnapshotsFromMatch($latestMatch);
+        }
+    }
+
     private function redirectAfterDashboardButeurSave(Request $request): Response
     {
-        $url = 'account' === $request->request->getString('_return')
-            ? $this->generateUrl('app_account').'#tab-compte'
-            : $this->generateUrl('app_homepage');
+        $return = $request->request->getString('_return');
 
-        return $this->redirect($url);
+        if (str_starts_with($return, 'country:')) {
+            $countryId = (int) substr($return, 8);
+            if ($countryId > 0) {
+                return $this->redirectToRoute('app_country_players', ['id' => $countryId]);
+            }
+        }
+
+        if ('account' === $return) {
+            return $this->redirect($this->generateUrl('app_account').'#buteur');
+        }
+
+        return $this->redirectToRoute('app_homepage');
     }
 }

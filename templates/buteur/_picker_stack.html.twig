@@ -14,6 +14,22 @@
             {% if buteur_stats is defined and buteur_stats %}
                 {% include 'buteur/_stats_block.html.twig' with { buteur_stats: buteur_stats } only %}
             {% endif %}
+            <form
+                method="post"
+                action="{{ path('app_dashboard_buteur_clear') }}"
+                class="dashboard-buteur-clear-form"
+                data-turbo="false"
+                onsubmit="return confirm('Retirer votre buteur actuel ?');"
+            >
+                <input type="hidden" name="_token" value="{{ csrf_token('dashboard_buteur_clear') }}">
+                {% if form_return is defined and form_return %}
+                    <input type="hidden" name="_return" value="{{ form_return }}">
+                {% endif %}
+                <button type="submit" class="btn btn-outline btn-sm">
+                    <i class="ti ti-trash" aria-hidden="true"></i>
+                    Retirer mon buteur
+                </button>
+            </form>
         {% endif %}
 
         <div

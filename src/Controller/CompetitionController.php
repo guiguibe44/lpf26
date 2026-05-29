@@ -11,6 +11,8 @@ use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\TeamRepository;
 use App\Service\DefaultPronosticService;
+use App\Service\ButeurPickContextFactory;
+use App\Service\CompetitionStatus;
 use App\Service\CountrySquadPitchBuilder;
 use App\Service\GroupKnockoutQualificationAnalyzer;
 use App\Service\GroupStandingsBuilder;
@@ -266,10 +268,19 @@ class CompetitionController extends AbstractController
     public function countryPlayers(
         Country $country,
         CountrySquadPitchBuilder $countrySquadPitchBuilder,
+        ButeurPickContextFactory $buteurPickContextFactory,
+        CompetitionStatus $competitionStatus,
     ): Response {
+        $countryId = (int) $country->getId();
+
         return $this->render('competition/country_players.html.twig', [
             'country' => $country,
-            'squad' => $countrySquadPitchBuilder->build((int) $country->getId()),
+            'squad' => $countrySquadPitchBuilder->build($countryId),
+            'buteur_pick' => $buteurPickContextFactory->create(
+                $this->getUser() instanceof User ? $this->getUser() : null,
+            ),
+            'buteur_pick_return' => 'country:'.$countryId,
+            'competition_started' => $competitionStatus->isStarted(),
         ]);
     }
 

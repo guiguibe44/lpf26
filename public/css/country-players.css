@@ -1,8 +1,157 @@
-/* Page pays : effectif affiché sur un terrain de football. */
+/* Page pays : effectif sur terrain (image + 2 séparateurs pointillés entre les 3 zones). */
 
 .country-players-page {
-    max-width: 960px;
+    max-width: 1120px;
     margin: 0 auto;
+}
+
+/* Terrain à gauche, liste à droite (même hauteur que le terrain) */
+.country-players-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.country-players-layout__pitch {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.country-players-layout__pitch .pitch {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+}
+
+.country-players-layout__roster {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.country-players-roster {
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.country-players-roster__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+}
+
+.country-players-roster__list {
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.roster-section__divider {
+    height: 0;
+    margin: 0.5rem 0;
+    border: none;
+    border-top: 2px dashed rgba(0, 0, 0, 0.15);
+}
+
+.roster-section__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 0.35rem;
+    padding: 0 0.25rem;
+    opacity: 0.75;
+}
+
+.roster-section__players {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.roster-row {
+    display: grid;
+    grid-template-columns: 2rem 2.5rem 1fr;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.roster-row:last-child {
+    border-bottom: none;
+}
+
+.roster-row__number {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.roster-row__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.roster-row__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.roster-row__avatar-fallback {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #2e8b57;
+}
+
+.roster-row__identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.roster-row__name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.roster-row__position {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pitch-placeholder {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
 }
 
 .country-players-back {
@@ -40,51 +189,103 @@
     background: rgba(0, 0, 0, 0.08);
 }
 
-/* Terrain */
+/* Terrain — fond : public/images/country-pitch.png (682×1024) */
 .pitch {
-    margin-top: 0.5rem;
+    --pitch-bg-image: url("../images/country-pitch.png");
+    margin-top: 0;
 }
 
-.pitch__grass {
+.pitch__field {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 560px;
-    padding: 2rem 1rem;
-    border-radius: 16px;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            #2e8b57 0,
-            #2e8b57 56px,
-            #2f935c 56px,
-            #2f935c 112px
-        );
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+    gap: 0;
+    width: 100%;
+    aspect-ratio: 682 / 1024;
+    min-height: 0;
+    padding: 8% 6% 7%;
+    border-radius: 12px;
     position: relative;
+    overflow: hidden;
+    background-color: #1e6b3a;
+    background-image: var(--pitch-bg-image);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.pitch__grass::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 8px;
-    bottom: 8px;
-    width: 2px;
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateX(-50%);
-}
-
-.pitch__line {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem 0.5rem;
+.pitch__field > * {
     position: relative;
     z-index: 1;
+}
+
+/* Gardiens (hors zones) */
+.pitch__goalkeepers {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.25rem;
+    min-height: 72px;
+}
+
+/* Zones Défense / Milieu / Attaque — 2 lignes pointillées entre elles */
+.pitch__zone {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 0.55rem 0.65rem 0.65rem;
+}
+
+.pitch__zone + .pitch__zone {
+    border-top: 2px dashed rgba(255, 255, 255, 0.6);
+}
+
+.pitch__zone-label {
+    align-self: flex-start;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    margin-bottom: 0.35rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.pitch__zone-body {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    align-content: center;
+    gap: 0.75rem 1.25rem;
+    min-height: 0;
+}
+
+/* Groupe = même poste exact → joueurs plus proches */
+.pitch__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.15rem 0.2rem;
+}
+
+.pitch__zone--defense {
+    flex-grow: 1.05;
+}
+
+.pitch__zone--milieu {
+    flex-grow: 1.1;
+}
+
+.pitch__zone--attaque {
+    flex-grow: 0.95;
 }
 
 /* Carte joueur */
@@ -95,6 +296,10 @@
     gap: 0.3rem;
     width: 78px;
     text-align: center;
+}
+
+.pitch__group .pitch-player {
+    width: 72px;
 }
 
 .pitch-player__avatar {
@@ -109,6 +314,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.pitch__group .pitch-player__avatar {
+    width: 52px;
+    height: 52px;
 }
 
 .pitch-player__avatar img {
@@ -153,6 +363,11 @@
     white-space: nowrap;
 }
 
+.pitch__group .pitch-player__name {
+    max-width: 72px;
+    font-size: 0.74rem;
+}
+
 /* Banc / poste non renseigné */
 .pitch-bench {
     display: flex;
@@ -169,19 +384,55 @@
     color: #2e8b57;
 }
 
+@media (max-width: 900px) {
+    .country-players-layout {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .country-players-layout__roster {
+        display: block;
+    }
+
+    .country-players-roster {
+        height: auto;
+        overflow: visible;
+    }
+
+    .country-players-roster__list {
+        max-height: min(420px, 55vh);
+    }
+}
+
 @media (max-width: 640px) {
-    .pitch__grass {
-        min-height: 480px;
-        padding: 1.25rem 0.5rem;
+    .pitch__field {
+        padding: 7% 5% 6%;
+    }
+
+    .pitch__zone {
+        padding: 0.4rem 0.45rem 0.5rem;
+    }
+
+    .pitch__zone-body {
+        gap: 0.5rem 0.75rem;
     }
 
     .pitch-player {
         width: 64px;
     }
 
+    .pitch__group .pitch-player {
+        width: 58px;
+    }
+
     .pitch-player__avatar {
         width: 48px;
         height: 48px;
+    }
+
+    .pitch__group .pitch-player__avatar {
+        width: 44px;
+        height: 44px;
     }
 
     .pitch-player__name {

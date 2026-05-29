@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir mon buteur — {{ selected_country.nom }} | LPF 2026{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/country-players.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/buteur-pick.css') }}?v=3">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/buteur-pick.js') }}?v=2" defer></script>
+{% endblock %}
+
+{% block body %}
+<div class="country-players-page buteur-pick-page">
+    <section class="ta-card p-5 mb-4 country-players-header">
+        <a href="{{ path('app_account') }}#buteur" class="country-players-back">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Retour au choix du buteur
+        </a>
+        <h1 class="ta-card-title mb-2">Choisir sur le terrain</h1>
+        <p class="ta-card-text mb-0">
+            {% if competition_started|default(false) %}
+                Consultation de l'effectif uniquement — le choix du buteur est verrouillé depuis le début de la compétition.
+            {% else %}
+                Sélectionnez un pays, puis cliquez sur un joueur pour le définir comme buteur.
+            {% endif %}
+            {% if buteur_pick.current_name %}
+                Votre buteur actuel&nbsp;: <strong>{{ buteur_pick.current_name }}</strong>.
+            {% endif %}
+        </p>
+    </section>
+
+  {% if countries_with_squad is empty %}
+        <section class="ta-card p-5">
+            <p class="ta-card-text mb-0">Aucun effectif synchronisé pour le moment.</p>
+        </section>
+    {% else %}
+        <form method="get" action="{{ path('app_buteur_pick_by_country') }}" class="account-buteur-country-select ta-card p-4 mb-3">
+            <label class="account-buteur-country-select__label" for="buteur-pick-pays">Pays</label>
+            <select id="buteur-pick-pays" name="pays" class="ta-form-input account-buteur-country-select__select" onchange="this.form.submit()">
+                {% for c in countries_with_squad %}
+                    <option value="{{ c.id }}"{% if selected_country.id == c.id %} selected{% endif %}>{{ c.nom }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <div class="country-players-title mb-3">
+            <span class="country-players-flag">
+                {% include 'components/_country_flag_img.html.twig' with { country: selected_country } only %}
+            </span>
+            <h2 class="ta-card-title mb-0">{{ selected_country.nom }}</h2>
+            {% if selected_country.groupe %}
+                <span class="country-players-group">Groupe {{ selected_country.groupe }}</span>
+            {% endif %}
+        </div>
+
+        {% include 'competition/_country_squad_layout.html.twig' with {
+            country: selected_country,
+            squad: squad,
+            buteur_pick: buteur_pick,
+            buteur_pick_return: 'account',
+            competition_started: competition_started|default(false),
+        } only %}
+    {% endif %}
+</div>
+{% endblock %}

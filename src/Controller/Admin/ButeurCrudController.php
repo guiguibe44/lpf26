@@ -8,10 +8,10 @@ use App\Service\ButeurGoalScoringService;
 use App\Service\UploadedImageFinalizeService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ButeurCrudController extends AbstractAppCrudController
@@ -34,6 +34,8 @@ class ButeurCrudController extends AbstractAppCrudController
             'id',
             'prenom',
             'nom',
+            'position',
+            'numero',
             'photo',
             'apiSportsPlayerId',
             'pays.nom',
@@ -42,38 +44,56 @@ class ButeurCrudController extends AbstractAppCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
-            IdField::new('id')->hideOnForm(),
-            TextField::new('prenom'),
-            TextField::new('nom'),
-            AssociationField::new('pays'),
-            IntegerField::new('apiSportsPlayerId', 'Sélections')
-                ->onlyOnIndex()
-                ->setSortable(false)
-                ->formatValue(function (mixed $value, ?Buteur $buteur): string {
-                    if (!$buteur instanceof Buteur || null === $buteur->getId()) {
-                        return '—';
-                    }
+        yield IdField::new('id')->hideOnForm();
 
-                    return (string) $this->userRepository->countWithButeurChoisiId((int) $buteur->getId());
-                }),
-            TextField::new('photo', 'Cote actuelle')
-                ->onlyOnIndex()
-                ->setSortable(false)
-                ->formatValue(function (mixed $value, ?Buteur $buteur): string {
-                    if (!$buteur instanceof Buteur) {
-                        return '—';
-                    }
+        yield BooleanField::new('actif', 'Actif')
+            ->setHelp('Désactivé : masqué des effectifs, du terrain et du choix buteur.')
+            ->renderAsSwitch();
 
-                    return '×'.number_format($this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur), 2, ',', ' ');
-                }),
-            IntegerField::new('apiSportsPlayerId')->setLabel('ID API-Sports')->onlyOnDetail(),
-            ImageField::new('photo')
-                ->setLabel('Photo')
-                ->setBasePath('/uploads/buteurs')
-                ->setUploadDir('public/uploads/buteurs')
-                ->setRequired(false),
-        ];
+        yield TextField::new('prenom', 'Prénom');
+        yield TextField::new('nom', 'Nom');
+        yield AssociationField::new('pays', 'Pays');
+
+        yield TextField::new('position', 'Poste')
+            ->setHelp('Ex. Goalkeeper, Defender, Midfielder, Attacker — utilisé pour la compo terrain.')
+            ->hideOnIndex();
+
+        yield IntegerField::new('numero', 'N°')
+            ->setHelp('Numéro de maillot en sélection.');
+
+        yield TextField::new('position', 'Poste')
+            ->onlyOnIndex();
+
+        yield IntegerField::new('apiSportsPlayerId', 'Choix joueurs')
+            ->onlyOnIndex()
+            ->setSortable(false)
+            ->formatValue(function (mixed $value, ?Buteur $buteur): string {
+                if (!$buteur instanceof Buteur || null === $buteur->getId()) {
+                    return '—';
+                }
+
+                return (string) $this->userRepository->countWithButeurChoisiId((int) $buteur->getId());
+            });
+
+        yield TextField::new('photo', 'Cote')
+            ->onlyOnIndex()
+            ->setSortable(false)
+            ->formatValue(function (mixed $value, ?Buteur $buteur): string {
+                if (!$buteur instanceof Buteur) {
+                    return '—';
+                }
+
+                return '×'.number_format($this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur), 2, ',', ' ');
+            });
+
+        yield IntegerField::new('apiSportsPlayerId', 'ID API-Sports')
+            ->setHelp('Identifiant joueur API-Football (synchro). Laisser vide pour un ajout manuel.')
+            ->hideOnIndex();
+
+        yield ImageField::new('photo', 'Photo')
+            ->setBasePath('/uploads/buteurs')
+            ->setUploadDir('public/uploads/buteurs')
+            ->setRequired(false);
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
@@ -93,5 +113,4 @@ class ButeurCrudController extends AbstractAppCrudController
 
         parent::updateEntity($entityManager, $entityInstance);
     }
-
 }

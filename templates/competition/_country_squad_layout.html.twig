@@ -1,0 +1,110 @@
+{# country, squad, buteur_pick, buteur_pick_return, competition_started (optionnel) #}
+{% import 'competition/_country_squad_macros.html.twig' as squad_macros %}
+
+{% set buteur_pick = buteur_pick|default({ enabled: false, current_id: null, current_name: null, disabled_reason: null }) %}
+{% set competition_started = competition_started|default(false) %}
+{% set can_pick_buteur = buteur_pick.enabled and not competition_started %}
+
+<div
+    class="country-squad-picker"
+    {% if can_pick_buteur %}
+        data-buteur-pick-root
+        data-buteur-pick-enabled="true"
+        data-buteur-pick-current-id="{{ buteur_pick.current_id|default(0) }}"
+        data-buteur-pick-current-name="{{ buteur_pick.current_name|default('')|e('html_attr') }}"
+    {% endif %}
+>
+    {% if competition_started %}
+        <p class="country-squad-picker__locked ta-card-text" role="status">
+            <i class="ti ti-lock" aria-hidden="true"></i>
+            Le choix du buteur est verrouillé depuis le début de la compétition.
+        </p>
+    {% elseif can_pick_buteur %}
+        <p class="country-squad-picker__hint ta-card-text">
+            <i class="ti ti-click" aria-hidden="true"></i>
+            Cliquez sur un joueur pour le choisir comme buteur.
+        </p>
+    {% elseif buteur_pick.disabled_reason == 'cotisation' %}
+        <p class="country-squad-picker__locked ta-card-text">Réglez votre cotisation pour choisir un buteur.</p>
+    {% endif %}
+
+    {% if squad.total == 0 %}
+        <section class="ta-card p-5">
+            <p class="ta-card-text mb-0">
+                Aucun joueur synchronisé pour ce pays.
+            </p>
+        </section>
+    {% else %}
+        <div class="country-players-layout">
+            <div class="country-players-layout__pitch">
+                {% if squad.has_positions %}
+                    <section class="pitch" aria-label="Composition de {{ country.nom }}">
+                        <div class="pitch__field">
+                            {% if squad.goalkeepers|length > 0 %}
+                                <div class="pitch__goalkeepers" aria-label="Gardiens">
+                                    {% for player in squad.goalkeepers %}
+                                        {{ squad_macros.player_card(player, buteur_pick, can_pick_buteur) }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% for zone in squad.zones %}
+                                {% set zone_count = 0 %}
+                                {% for group in zone.groups %}
+                                    {% set zone_count = zone_count + group.players|length %}
+                                {% endfor %}
+                                {% if zone_count > 0 %}
+                                    <div class="pitch__zone pitch__zone--{{ zone.key }}">
+                                        <span class="pitch__zone-label">{{ zone.label }}</span>
+                                        <div class="pitch__zone-body">
+                                            {% for group in zone.groups %}
+                                                <div class="pitch__group"{% if group.position %} title="{{ group.position }}"{% endif %}>
+                                                    {% for player in group.players %}
+                                                        {{ squad_macros.player_card(player, buteur_pick, can_pick_buteur) }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% else %}
+                    <section class="ta-card p-5 pitch-placeholder">
+                        <p class="ta-card-text mb-0">
+                            Les postes ne sont pas encore disponibles. Relancez la synchro des joueurs pour afficher la composition sur le terrain.
+                        </p>
+                    </section>
+                {% endif %}
+            </div>
+
+            <aside class="country-players-layout__roster" aria-label="Liste des joueurs">
+                <section class="ta-card country-players-roster">
+                    <h2 class="country-players-roster__title">Effectif</h2>
+                    <div class="country-players-roster__list">
+                        {% for section in squad.roster_sections %}
+                            {% if not loop.first %}
+                                <div class="roster-section__divider" role="separator" aria-hidden="true"></div>
+                            {% endif %}
+                            <section class="roster-section" aria-label="{{ section.label }}">
+                                <h3 class="roster-section__title">{{ section.label }}</h3>
+                                <ul class="roster-section__players">
+                                    {% for player in section.players %}
+                                        {{ squad_macros.roster_row(player, buteur_pick, can_pick_buteur) }}
+                                    {% endfor %}
+                                </ul>
+                            </section>
+                        {% endfor %}
+                    </div>
+                </section>
+            </aside>
+        </div>
+    {% endif %}
+
+    {% if can_pick_buteur %}
+        {% include 'buteur/_pick_dialog.html.twig' with {
+            buteur_pick_return: buteur_pick_return,
+        } only %}
+    {% endif %}
+</div>

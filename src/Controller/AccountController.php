@@ -15,11 +15,14 @@ use App\Form\ResendTeamInvitationType;
 use App\Form\TeamFavoriteCountryType;
 use App\Form\TeamManageType;
 use App\Repository\ButRepository;
+use App\Repository\CountryRepository;
 use App\Repository\TeamInvitationRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
+use App\Service\ButeurPickContextFactory;
 use App\Service\CompetitionStatus;
+use App\Service\CountrySquadPitchBuilder;
 use App\Enum\UploadImageCategory;
 use App\Service\TeamFavoriteCountryService;
 use App\Service\UserNotificationPreferenceService;
@@ -376,6 +379,96 @@ class AccountController extends AbstractController
                 ? $teamJokerService->buildOverviewForTeam($team)
                 : [],
         ]);
+    }
+
+    #[Route('/mon-compte/choisir-buteur', name: 'app_buteur_pick_by_country', methods: ['GET'])]
+    public function pickButeurByCountry(
+        Request $request,
+        TeamMemberRepository $teamMemberRepository,
+        CompetitionStatus $competitionStatus,
+        CountryRepository $countryRepository,
+        CountrySquadPitchBuilder $countrySquadPitchBuilder,
+        ButeurPickContextFactory $buteurPickContextFactory,
+    ): Response {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if (null === $teamMemberRepository->findOneBy(['player' => $user])) {
+            $this->addFlash('warning', 'Créez d’abord votre profil joueur pour choisir un buteur.');
+
+            return $this->redirectToRoute('app_account').'#buteur';
+        }
+
+        $competitionStarted = $competitionStatus->isStarted();
+
+        if (!$competitionStarted && !$user->isCotisationPayee()) {
+            $this->addFlash('warning', 'Réglez votre cotisation pour choisir un buteur.');
+
+            return $this->redirectToRoute('app_account').'#buteur';
+        }
+
+        $countriesWithSquad = $countryRepository->findAllWithSquadOrderedByName();
+        if ([] === $countriesWithSquad) {
+            return $this->render('buteur/pick_by_country.html.twig', [
+                'countries_with_squad' => [],
+                'selected_country' => null,
+                'squad' => null,
+                'buteur_pick' => $buteurPickContextFactory->create($user),
+                'competition_started' => $competitionStarted,
+            ]);
+        }
+
+        $teamMember = $teamMemberRepository->findOneBy(['player' => $user]);
+        $team = $teamMember?->getTeam();
+        $buteurChoisi = $user->getButeurChoisi();
+
+        $selectedCountry = $this->resolvePickCountry(
+            $request->query->getInt('pays'),
+            $countriesWithSquad,
+            $buteurChoisi?->getPays(),
+            $team?->getFavoriteCountry(),
+        );
+
+        return $this->render('buteur/pick_by_country.html.twig', [
+            'countries_with_squad' => $countriesWithSquad,
+            'selected_country' => $selectedCountry,
+            'squad' => $countrySquadPitchBuilder->build((int) $selectedCountry->getId()),
+            'buteur_pick' => $buteurPickContextFactory->create($user),
+            'competition_started' => $competitionStarted,
+        ]);
+    }
+
+    /**
+     * @param list<Country> $countries
+     */
+    private function resolvePickCountry(
+        int $requestedCountryId,
+        array $countries,
+        ?Country $buteurCountry,
+        ?Country $favoriteCountry,
+    ): Country {
+        if ($requestedCountryId > 0) {
+            foreach ($countries as $country) {
+                if ((int) $country->getId() === $requestedCountryId) {
+                    return $country;
+                }
+            }
+        }
+
+        foreach ([$buteurCountry, $favoriteCountry] as $preferred) {
+            if (!$preferred instanceof Country) {
+                continue;
+            }
+            foreach ($countries as $country) {
+                if ((int) $country->getId() === (int) $preferred->getId()) {
+                    return $country;
+                }
+            }
+        }
+
+        return $countries[0];
     }
 
     private function deletePublicFile(?string $publicPath): void

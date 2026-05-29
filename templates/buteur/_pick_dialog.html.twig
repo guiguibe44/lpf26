@@ -1,0 +1,31 @@
+<dialog id="buteur-pick-dialog" class="buteur-pick-dialog" aria-labelledby="buteur-pick-dialog-title">
+    <div class="buteur-pick-dialog__panel">
+        <header class="buteur-pick-dialog__head">
+            <h2 id="buteur-pick-dialog-title" class="buteur-pick-dialog__title">Choisir mon buteur</h2>
+            <button type="button" class="buteur-pick-dialog__close" data-buteur-pick-close aria-label="Fermer">
+                <i class="ti ti-x" aria-hidden="true"></i>
+            </button>
+        </header>
+
+        <div class="buteur-pick-dialog__body">
+            <div class="buteur-pick-dialog__player">
+                <img id="buteur-pick-dialog-photo" class="buteur-pick-dialog__photo" src="" alt="" width="72" height="72" hidden>
+                <span id="buteur-pick-dialog-photo-fallback" class="buteur-pick-dialog__photo-fallback" hidden aria-hidden="true"></span>
+                <p id="buteur-pick-dialog-player-name" class="buteur-pick-dialog__name"></p>
+            </div>
+            <p id="buteur-pick-dialog-message" class="buteur-pick-dialog__message ta-card-text"></p>
+        </div>
+
+        <footer class="buteur-pick-dialog__actions">
+            <form id="buteur-pick-dialog-form" method="post" action="{{ path('app_dashboard_buteur_save') }}" class="buteur-pick-dialog__form">
+                <input type="hidden" name="_token" value="{{ csrf_token('dashboard_buteur') }}">
+                <input type="hidden" name="buteur_id" id="buteur-pick-dialog-input-id" value="">
+                <input type="hidden" name="_return" value="{{ buteur_pick_return }}">
+                <button type="button" class="btn btn-outline btn-sm" data-buteur-pick-close>Annuler</button>
+                <button type="button" class="btn btn-primary btn-sm" id="buteur-pick-dialog-confirm">
+                    Confirmer
+                </button>
+            </form>
+        </footer>
+    </div>
+</dialog>
