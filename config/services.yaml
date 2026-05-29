@@ -72,12 +72,6 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
-    App\Service\Wc2026SyncService:
-        arguments:
-            $apiFootballWorldCupLeagueId: '%env(int:API_FOOTBALL_WC_LEAGUE_ID)%'
-            $apiFootballWorldCupSeason: '%env(int:API_FOOTBALL_WC_SEASON)%'
-            $apiFootballSyncGoalsMaxRequests: '%env(int:API_FOOTBALL_SYNC_GOALS_MAX_REQUESTS)%'
-
     App\Service\LiveMatchSyncService:
         arguments:
             $liveSyncEnabled: '%env(bool:API_FOOTBALL_LIVE_SYNC_ENABLED)%'
@@ -92,10 +86,22 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\Service\ApiFootballPlayerProfileEnrichBatchSyncState:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\Wc2026SyncService:
+        arguments:
+            $apiFootballWorldCupLeagueId: '%env(int:API_FOOTBALL_WC_LEAGUE_ID)%'
+            $apiFootballWorldCupSeason: '%env(int:API_FOOTBALL_WC_SEASON)%'
+            $apiFootballSyncGoalsMaxRequests: '%env(int:API_FOOTBALL_SYNC_GOALS_MAX_REQUESTS)%'
+            $apiFootballPlayersProfileEnrichMaxCallsPerBatch: '%env(int:API_FOOTBALL_PLAYERS_PROFILE_ENRICH_MAX_CALLS_PER_BATCH)%'
+
     App\Controller\Admin\DashboardController:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
             $apiFootballPlayersSyncBatchSize: '%env(int:API_FOOTBALL_PLAYERS_SYNC_BATCH_SIZE)%'
+            $apiFootballPlayersProfileEnrichMaxCallsPerBatch: '%env(int:API_FOOTBALL_PLAYERS_PROFILE_ENRICH_MAX_CALLS_PER_BATCH)%'
 
     # EasyAdmin instancie chaque CRUD via le conteneur ; sans entrée explicite, le cache prod
     # génère `new UserCrudController()` sans argument (ArgumentCountError sur toute page admin).

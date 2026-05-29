@@ -348,6 +348,7 @@ final class ApiFootballClient
                 }
 
                 $rawPlayerId = $player['id'] ?? null;
+                $rawNumber = $player['number'] ?? null;
                 $rows[] = [
                     'firstname' => $firstName,
                     'lastname' => $lastName,
@@ -355,11 +356,78 @@ final class ApiFootballClient
                     'photo' => $this->normalizeString($player['photo'] ?? null),
                     'team_name' => $teamDisplayName,
                     'api_sports_player_id' => is_numeric($rawPlayerId) ? (int) $rawPlayerId : null,
+                    'position' => $this->normalizeString($player['position'] ?? null),
+                    'number' => is_numeric($rawNumber) ? (int) $rawNumber : null,
                 ];
             }
         }
 
         return ['rows' => $rows, 'cancelled' => false];
+    }
+
+    /**
+     * Profil joueur (prénom / nom complets) via /players?id=&season=.
+     *
+     * @return array{
+     *     firstname: ?string,
+     *     lastname: ?string,
+     *     position: ?string,
+     *     number: ?int
+     * }|null null si joueur introuvable
+     */
+    public function fetchPlayerProfileById(int $playerId, int $season): ?array
+    {
+        if (!$this->isConfigured()) {
+            throw new \RuntimeException('API_FOOTBALL_KEY manquante.');
+        }
+
+        if ($this->playerSyncStop->isStopRequested()) {
+            return null;
+        }
+
+        $this->throttleBeforeNextRequest();
+        $data = $this->requestJson('/players', ['id' => $playerId, 'season' => $season]);
+        $items = $data['response'] ?? [];
+        if (!\is_array($items) || [] === $items) {
+            return null;
+        }
+
+        $item = $items[0] ?? null;
+        if (!\is_array($item)) {
+            return null;
+        }
+
+        $player = $item['player'] ?? null;
+        if (!\is_array($player)) {
+            return null;
+        }
+
+        $position = null;
+        $number = null;
+        $statistics = $item['statistics'] ?? null;
+        if (\is_array($statistics)) {
+            foreach ($statistics as $stat) {
+                if (!\is_array($stat)) {
+                    continue;
+                }
+                $games = $stat['games'] ?? null;
+                if (!\is_array($games)) {
+                    continue;
+                }
+                $position = $position ?? $this->normalizeString($games['position'] ?? null);
+                $rawNumber = $games['number'] ?? null;
+                if (null === $number && is_numeric($rawNumber)) {
+                    $number = (int) $rawNumber;
+                }
+            }
+        }
+
+        return [
+            'firstname' => $this->normalizeString($player['firstname'] ?? null),
+            'lastname' => $this->normalizeString($player['lastname'] ?? null),
+            'position' => $position,
+            'number' => $number,
+        ];
     }
 
     /**
@@ -512,6 +580,12 @@ final class ApiFootballClient
                 }
 
                 $pid = $player['id'] ?? null;
+                $statistics = $item['statistics'] ?? null;
+                $position = null;
+                if (\is_array($statistics) && isset($statistics[0]['games']['position'])) {
+                    $position = $this->normalizeString($statistics[0]['games']['position']);
+                }
+                $rawNumber = $statistics[0]['games']['number'] ?? null;
                 $out[] = [
                     'firstname' => $this->normalizeString($player['firstname'] ?? null),
                     'lastname' => $this->normalizeString($player['lastname'] ?? null),
@@ -519,6 +593,8 @@ final class ApiFootballClient
                     'photo' => $this->normalizeString($player['photo'] ?? null),
                     'team_name' => $teamName,
                     'api_sports_player_id' => is_numeric($pid) ? (int) $pid : null,
+                    'position' => $position,
+                    'number' => is_numeric($rawNumber) ? (int) $rawNumber : null,
                 ];
                 ++$playersAddedForTeam;
             }

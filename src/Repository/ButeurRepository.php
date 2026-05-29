@@ -36,6 +36,44 @@ class ButeurRepository extends ServiceEntityRepository
     }
 
     /**
+     * Joueurs d'un pays, triés par numéro de maillot puis nom (pour la compo terrain).
+     *
+     * @return list<Buteur>
+     */
+    /**
+     * Joueurs d'un pays ayant un identifiant API-Sports (pour enrichissement profil).
+     *
+     * @return list<Buteur>
+     */
+    public function findByCountryWithApiPlayerId(int $countryId): array
+    {
+        return $this->createQueryBuilder('b')
+            ->addSelect('p')
+            ->join('b.pays', 'p')
+            ->andWhere('p.id = :countryId')
+            ->andWhere('b.apiSportsPlayerId IS NOT NULL')
+            ->setParameter('countryId', $countryId)
+            ->orderBy('b.nom', 'ASC')
+            ->addOrderBy('b.prenom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCountryForPitch(int $countryId): array
+    {
+        return $this->createQueryBuilder('b')
+            ->addSelect('p')
+            ->join('b.pays', 'p')
+            ->andWhere('p.id = :countryId')
+            ->setParameter('countryId', $countryId)
+            ->orderBy('b.numero', 'ASC')
+            ->addOrderBy('b.nom', 'ASC')
+            ->addOrderBy('b.prenom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Recherche pour le sélecteur dashboard (nom / prénom / pays, filtre pays optionnel).
      *
      * @return list<Buteur>

@@ -1,0 +1,191 @@
+/* Page pays : effectif affiché sur un terrain de football. */
+
+.country-players-page {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.country-players-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+}
+
+.country-players-back:hover {
+    text-decoration: underline;
+}
+
+.country-players-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.country-players-flag img {
+    width: 40px;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.country-players-group {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* Terrain */
+.pitch {
+    margin-top: 0.5rem;
+}
+
+.pitch__grass {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 560px;
+    padding: 2rem 1rem;
+    border-radius: 16px;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #2e8b57 0,
+            #2e8b57 56px,
+            #2f935c 56px,
+            #2f935c 112px
+        );
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+    position: relative;
+}
+
+.pitch__grass::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-50%);
+}
+
+.pitch__line {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Carte joueur */
+.pitch-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    width: 78px;
+    text-align: center;
+}
+
+.pitch-player__avatar {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pitch-player__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pitch-player__avatar-fallback {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #2e8b57;
+}
+
+.pitch-player__number {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    overflow: visible;
+}
+
+.pitch-player__name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    line-height: 1.1;
+    max-width: 78px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Banc / poste non renseigné */
+.pitch-bench {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pitch-bench .pitch-player__name {
+    color: inherit;
+    text-shadow: none;
+}
+
+.pitch-bench .pitch-player__avatar-fallback {
+    color: #2e8b57;
+}
+
+@media (max-width: 640px) {
+    .pitch__grass {
+        min-height: 480px;
+        padding: 1.25rem 0.5rem;
+    }
+
+    .pitch-player {
+        width: 64px;
+    }
+
+    .pitch-player__avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    .pitch-player__name {
+        max-width: 64px;
+        font-size: 0.72rem;
+    }
+}

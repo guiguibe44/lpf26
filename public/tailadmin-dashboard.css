@@ -1022,6 +1022,21 @@
     min-width: 0;
 }
 
+.group-standings-team--link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.group-standings-team--link:hover .group-standings-name {
+    text-decoration: underline;
+}
+
+.group-standings-team--link:hover {
+    opacity: 0.85;
+}
+
 .group-standings-name {
     font-weight: 600;
     color: #0f172a;

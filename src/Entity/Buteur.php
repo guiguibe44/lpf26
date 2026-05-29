@@ -31,6 +31,14 @@ class Buteur
     #[ORM\Column(nullable: true, unique: true)]
     private ?int $apiSportsPlayerId = null;
 
+    /** Poste renvoyé par l'API (Goalkeeper, Defender, Midfielder, Attacker), nullable. */
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $position = null;
+
+    /** Numéro de maillot dans la sélection, nullable. */
+    #[ORM\Column(nullable: true)]
+    private ?int $numero = null;
+
     /**
      * @var Collection<int, But>
      */
@@ -108,6 +116,30 @@ class Buteur
     public function setApiSportsPlayerId(?int $apiSportsPlayerId): static
     {
         $this->apiSportsPlayerId = $apiSportsPlayerId;
+
+        return $this;
+    }
+
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?string $position): static
+    {
+        $this->position = (null === $position || '' === trim($position)) ? null : trim($position);
+
+        return $this;
+    }
+
+    public function getNumero(): ?int
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(?int $numero): static
+    {
+        $this->numero = $numero;
 
         return $this;
     }

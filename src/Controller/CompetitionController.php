@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Team;
 use App\Entity\TeamMember;
@@ -10,8 +11,10 @@ use App\Repository\ButRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\TeamRepository;
 use App\Service\DefaultPronosticService;
+use App\Service\CountrySquadPitchBuilder;
 use App\Service\GroupKnockoutQualificationAnalyzer;
 use App\Service\GroupStandingsBuilder;
+use App\Service\KnockoutSchedulePresenter;
 use App\Service\KdoMatchWinnerService;
 use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
@@ -256,6 +259,25 @@ class CompetitionController extends AbstractController
     ): Response {
         return $this->render('competition/groups.html.twig', [
             'standings_by_group' => $groupKnockoutQualificationAnalyzer->enrich($groupStandingsBuilder->build()),
+        ]);
+    }
+
+    #[Route('/groupes/pays/{id}', name: 'app_country_players', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function countryPlayers(
+        Country $country,
+        CountrySquadPitchBuilder $countrySquadPitchBuilder,
+    ): Response {
+        return $this->render('competition/country_players.html.twig', [
+            'country' => $country,
+            'squad' => $countrySquadPitchBuilder->build((int) $country->getId()),
+        ]);
+    }
+
+    #[Route('/phases-finales', name: 'app_knockout', methods: ['GET'])]
+    public function knockout(KnockoutSchedulePresenter $knockoutSchedulePresenter): Response
+    {
+        return $this->render('competition/knockout.html.twig', [
+            'knockout_bracket' => $knockoutSchedulePresenter->buildBracket(),
         ]);
     }
 

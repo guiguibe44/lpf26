@@ -26,6 +26,7 @@ final class Wc2026SyncService
         private readonly ApiFootballClient $apiFootballClient,
         private readonly ApiFootballPlayerSyncStop $apiFootballPlayerSyncStop,
         private readonly ApiFootballPlayerBatchSyncState $playerBatchSyncState,
+        private readonly ApiFootballPlayerProfileEnrichBatchSyncState $playerProfileEnrichBatchSyncState,
         private readonly ButeurRepository $buteurRepository,
         private readonly ButRepository $butRepository,
         private readonly CountryRepository $countryRepository,
@@ -41,6 +42,8 @@ final class Wc2026SyncService
         private readonly int $apiFootballWorldCupSeason = 2026,
         /** Nombre max de requêtes /fixtures/events pour une synchro buts (0 = désactivé). */
         private readonly int $apiFootballSyncGoalsMaxRequests = 300,
+        /** Appels API max par lot d'enrichissement profils (évite les timeouts HTTP). */
+        private readonly int $apiFootballPlayersProfileEnrichMaxCallsPerBatch = 30,
     ) {
     }
 
@@ -426,6 +429,380 @@ final class Wc2026SyncService
     {
         $this->playerBatchSyncState->reset();
         $this->apiFootballPlayerSyncStop->clear();
+    }
+
+    /**
+     * État de l'enrichissement profils (prénoms complets) par lots de pays.
+     *
+     * @return array{
+     *     active: bool,
+     *     countries_total: int,
+     *     countries_done: int,
+     *     countries_remaining: int,
+     *     completed: bool,
+     *     totals: array{updated: int, skipped: int, errors: int, api_calls: int},
+     *     next_country_names: list<string>
+     * }
+     */
+    public function getButeursProfileEnrichBatchStatus(int $previewCount = 5): array
+    {
+        $state = $this->playerProfileEnrichBatchSyncState->load();
+        if (null === $state) {
+            return [
+                'active' => false,
+                'countries_total' => 0,
+                'countries_done' => 0,
+                'countries_remaining' => 0,
+                'completed' => false,
+                'totals' => ['updated' => 0, 'skipped' => 0, 'errors' => 0, 'api_calls' => 0],
+                'next_country_names' => [],
+            ];
+        }
+
+        $total = \count($state['countries']);
+        $done = min($state['next_country_index'], $total);
+        $nextNames = [];
+        for ($i = $state['next_country_index']; $i < min($total, $state['next_country_index'] + max(1, $previewCount)); ++$i) {
+            $nextNames[] = $state['countries'][$i]['name'];
+        }
+
+        return [
+            'active' => true,
+            'countries_total' => $total,
+            'countries_done' => $done,
+            'countries_remaining' => max(0, $total - $done),
+            'completed' => $state['completed'],
+            'totals' => $state['totals'],
+            'next_country_names' => $nextNames,
+        ];
+    }
+
+    public function resetButeursProfileEnrichBatch(): void
+    {
+        $this->playerProfileEnrichBatchSyncState->reset();
+        $this->apiFootballPlayerSyncStop->clear();
+    }
+
+    /**
+     * Enrichit les profils joueurs (prénom / nom via /players?id=) par lots de pays.
+     *
+     * @return array{
+     *     updated: int,
+     *     skipped: int,
+     *     errors: int,
+     *     api_calls: int,
+     *     cancelled: bool,
+     *     batch_countries: int,
+     *     countries_total: int,
+     *     countries_done: int,
+     *     countries_remaining: int,
+     *     completed: bool,
+     *     processed_country_names: list<string>,
+     *     totals: array{updated: int, skipped: int, errors: int, api_calls: int},
+     *     hit_call_limit: bool
+     * }
+     */
+    public function enrichButeursProfilesBatch(int $countriesPerBatch): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $countriesPerBatch = max(1, min($countriesPerBatch, 20));
+        $maxCalls = max(5, $this->apiFootballPlayersProfileEnrichMaxCallsPerBatch);
+        $state = $this->playerProfileEnrichBatchSyncState->load();
+
+        if (null === $state) {
+            $countries = [];
+            foreach ($this->countryRepository->findAllOrderedByName() as $country) {
+                $id = $country->getId();
+                $nom = $country->getNom();
+                if (null === $id || null === $nom || '' === trim($nom)) {
+                    continue;
+                }
+                $countries[] = ['id' => (int) $id, 'name' => trim($nom)];
+            }
+
+            if ([] === $countries) {
+                throw new \RuntimeException('Aucun pays en base. Lancez d’abord la synchro des pays.');
+            }
+
+            $state = [
+                'season' => $this->apiFootballWorldCupSeason,
+                'countries' => $countries,
+                'next_country_index' => 0,
+                'completed' => false,
+                'totals' => ['updated' => 0, 'skipped' => 0, 'errors' => 0, 'api_calls' => 0],
+            ];
+            $this->playerProfileEnrichBatchSyncState->save(
+                $state['season'],
+                $state['countries'],
+                0,
+                false,
+                $state['totals'],
+            );
+        }
+
+        $countries = $state['countries'];
+        $countriesTotal = \count($countries);
+        $startIndex = $state['next_country_index'];
+
+        if ($state['completed'] || $startIndex >= $countriesTotal) {
+            return [
+                'updated' => 0,
+                'skipped' => 0,
+                'errors' => 0,
+                'api_calls' => 0,
+                'cancelled' => false,
+                'batch_countries' => 0,
+                'countries_total' => $countriesTotal,
+                'countries_done' => $countriesTotal,
+                'countries_remaining' => 0,
+                'completed' => true,
+                'processed_country_names' => [],
+                'totals' => $state['totals'],
+                'hit_call_limit' => false,
+            ];
+        }
+
+        $batchUpdated = 0;
+        $batchSkipped = 0;
+        $batchErrors = 0;
+        $batchApiCalls = 0;
+        $cancelled = false;
+        $hitCallLimit = false;
+        $processedNames = [];
+        $countriesProcessedInBatch = 0;
+        $countryIndex = $startIndex;
+
+        while ($countryIndex < $countriesTotal && $countriesProcessedInBatch < $countriesPerBatch) {
+            if ($this->apiFootballPlayerSyncStop->isStopRequested()) {
+                $cancelled = true;
+                break;
+            }
+
+            $countryRef = $countries[$countryIndex];
+            $countryDone = $this->enrichPlayersForCountry(
+                $countryRef['id'],
+                $state['season'],
+                $maxCalls - $batchApiCalls,
+                $batchUpdated,
+                $batchSkipped,
+                $batchErrors,
+                $batchApiCalls,
+                $cancelled,
+                $hitCallLimit,
+            );
+
+            if ($cancelled) {
+                break;
+            }
+
+            if ($countryDone) {
+                $processedNames[] = $countryRef['name'];
+                ++$countriesProcessedInBatch;
+                ++$countryIndex;
+            }
+
+            if ($hitCallLimit) {
+                break;
+            }
+        }
+
+        if ($batchApiCalls > 0) {
+            $this->entityManager->flush();
+        }
+
+        $completed = !$cancelled && !$hitCallLimit && $countryIndex >= $countriesTotal;
+        $totals = [
+            'updated' => $state['totals']['updated'] + $batchUpdated,
+            'skipped' => $state['totals']['skipped'] + $batchSkipped,
+            'errors' => $state['totals']['errors'] + $batchErrors,
+            'api_calls' => $state['totals']['api_calls'] + $batchApiCalls,
+        ];
+
+        $this->playerProfileEnrichBatchSyncState->save(
+            $state['season'],
+            $countries,
+            $countryIndex,
+            $completed,
+            $totals,
+        );
+
+        if ($cancelled) {
+            $this->apiFootballPlayerSyncStop->clear();
+        }
+
+        return [
+            'updated' => $batchUpdated,
+            'skipped' => $batchSkipped,
+            'errors' => $batchErrors,
+            'api_calls' => $batchApiCalls,
+            'cancelled' => $cancelled,
+            'batch_countries' => \count($processedNames),
+            'countries_total' => $countriesTotal,
+            'countries_done' => $countryIndex,
+            'countries_remaining' => max(0, $countriesTotal - $countryIndex),
+            'completed' => $completed,
+            'processed_country_names' => $processedNames,
+            'totals' => $totals,
+            'hit_call_limit' => $hitCallLimit,
+        ];
+    }
+
+    /**
+     * @param-out int $updated
+     * @param-out int $skipped
+     * @param-out int $errors
+     * @param-out int $apiCalls
+     * @param-out bool $cancelled
+     * @param-out bool $hitCallLimit
+     */
+    private function enrichPlayersForCountry(
+        int $countryId,
+        int $season,
+        int $remainingCalls,
+        int &$updated,
+        int &$skipped,
+        int &$errors,
+        int &$apiCalls,
+        bool &$cancelled,
+        bool &$hitCallLimit,
+    ): bool {
+        $players = $this->buteurRepository->findByCountryWithApiPlayerId($countryId);
+        $needsAny = false;
+
+        foreach ($players as $buteur) {
+            if ($this->needsProfileEnrichment($buteur)) {
+                $needsAny = true;
+                break;
+            }
+        }
+
+        if (!$needsAny) {
+            foreach ($players as $buteur) {
+                ++$skipped;
+            }
+
+            return true;
+        }
+
+        foreach ($players as $buteur) {
+            if ($this->apiFootballPlayerSyncStop->isStopRequested()) {
+                $cancelled = true;
+
+                return false;
+            }
+
+            if ($apiCalls >= $remainingCalls) {
+                $hitCallLimit = true;
+
+                return false;
+            }
+
+            if (!$this->needsProfileEnrichment($buteur)) {
+                ++$skipped;
+                continue;
+            }
+
+            $apiPlayerId = $buteur->getApiSportsPlayerId();
+            if (null === $apiPlayerId) {
+                ++$skipped;
+                continue;
+            }
+
+            try {
+                $profile = $this->apiFootballClient->fetchPlayerProfileById($apiPlayerId, $season);
+                ++$apiCalls;
+
+                if (null === $profile) {
+                    ++$errors;
+                    continue;
+                }
+
+                if ($this->applyProfileToButeur($buteur, $profile)) {
+                    ++$updated;
+                } else {
+                    ++$skipped;
+                }
+            } catch (\Throwable) {
+                ++$errors;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array{firstname: ?string, lastname: ?string, position: ?string, number: ?int} $profile
+     */
+    private function applyProfileToButeur(Buteur $buteur, array $profile): bool
+    {
+        $changed = false;
+        $firstname = $profile['firstname'] ?? null;
+        $lastname = $profile['lastname'] ?? null;
+
+        if ($this->shouldReplaceFirstName((string) $buteur->getPrenom(), $firstname)) {
+            $buteur->setPrenom($firstname);
+            $changed = true;
+        }
+
+        if (null !== $lastname && '' !== $lastname && $buteur->getNom() !== $lastname) {
+            $buteur->setNom($lastname);
+            $changed = true;
+        }
+
+        $position = $profile['position'] ?? null;
+        if (null !== $position && (null === $buteur->getPosition() || '' === $buteur->getPosition())) {
+            $buteur->setPosition($position);
+            $changed = true;
+        }
+
+        $number = $profile['number'] ?? null;
+        if (null !== $number && null === $buteur->getNumero()) {
+            $buteur->setNumero($number);
+            $changed = true;
+        }
+
+        return $changed;
+    }
+
+    private function needsProfileEnrichment(Buteur $buteur): bool
+    {
+        $prenom = trim((string) $buteur->getPrenom());
+        if ('' === $prenom || '-' === $prenom) {
+            return true;
+        }
+
+        return $this->isAbbreviatedFirstName($prenom);
+    }
+
+    private function isAbbreviatedFirstName(string $prenom): bool
+    {
+        if (preg_match('/^[A-Za-zÀ-ÿ]\.?$/u', $prenom)) {
+            return true;
+        }
+
+        if (str_ends_with($prenom, '.') && mb_strlen($prenom) <= 4) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function shouldReplaceFirstName(string $current, ?string $apiFirstname): bool
+    {
+        if (null === $apiFirstname || '' === $apiFirstname) {
+            return false;
+        }
+
+        if ($current === $apiFirstname) {
+            return false;
+        }
+
+        if ('' === $current || '-' === $current || $this->isAbbreviatedFirstName($current)) {
+            return true;
+        }
+
+        return mb_strlen($apiFirstname) > mb_strlen($current);
     }
 
     /**
@@ -1121,6 +1498,10 @@ final class Wc2026SyncService
             $apiPlayerId = isset($apiPlayer['api_sports_player_id']) && is_numeric($apiPlayer['api_sports_player_id'])
                 ? (int) $apiPlayer['api_sports_player_id']
                 : null;
+            $position = $this->normalizeNullableString($apiPlayer['position'] ?? null);
+            $numero = isset($apiPlayer['number']) && is_numeric($apiPlayer['number'])
+                ? (int) $apiPlayer['number']
+                : null;
 
             if (null === $countryName) {
                 ++$skipped;
@@ -1153,7 +1534,9 @@ final class Wc2026SyncService
                 $buteur
                     ->setPrenom($prenom ?: '-')
                     ->setNom($nom ?: '-')
-                    ->setPays($country);
+                    ->setPays($country)
+                    ->setPosition($position)
+                    ->setNumero($numero);
                 $this->applyButeurPhoto($buteur, $photo);
                 if (null !== $apiPlayerId) {
                     $buteur->setApiSportsPlayerId($apiPlayerId);
@@ -1186,6 +1569,14 @@ final class Wc2026SyncService
             }
             if (null !== $apiPlayerId && $buteur->getApiSportsPlayerId() !== $apiPlayerId) {
                 $buteur->setApiSportsPlayerId($apiPlayerId);
+                $changed = true;
+            }
+            if (null !== $position && $buteur->getPosition() !== $position) {
+                $buteur->setPosition($position);
+                $changed = true;
+            }
+            if (null !== $numero && $buteur->getNumero() !== $numero) {
+                $buteur->setNumero($numero);
                 $changed = true;
             }
 

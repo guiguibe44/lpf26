@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ country.nom }} — Effectif | LPF 2026{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/country-players.css') }}?v=1">
+{% endblock %}
+
+{% macro player_card(player) %}
+    {% set photo = player.photoPublicPath %}
+    <div class="pitch-player" title="{{ player.prenom }} {{ player.nom }}">
+        <span class="pitch-player__avatar">
+            {% if photo %}
+                {% set src = (photo starts with 'http://' or photo starts with 'https://') ? photo : asset(photo) %}
+                <img src="{{ src }}" alt="" width="56" height="56" loading="lazy" decoding="async">
+            {% else %}
+                <span class="pitch-player__avatar-fallback">{{ player.nom|first|upper }}</span>
+            {% endif %}
+            {% if player.numero is not null %}
+                <span class="pitch-player__number">{{ player.numero }}</span>
+            {% endif %}
+        </span>
+        <span class="pitch-player__name">{{ player.nom }}</span>
+    </div>
+{% endmacro %}
+
+{% import _self as squad_macros %}
+
+{% block body %}
+<div class="country-players-page">
+    <section class="ta-card p-5 mb-4 country-players-header">
+        <a href="{{ path('app_groups') }}" class="country-players-back">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Retour aux groupes
+        </a>
+        <div class="country-players-title">
+            <span class="country-players-flag">
+                {% include 'components/_country_flag_img.html.twig' with { country: country } only %}
+            </span>
+            <h1 class="ta-card-title mb-0">{{ country.nom }}</h1>
+            {% if country.groupe %}
+                <span class="country-players-group">Groupe {{ country.groupe }}</span>
+            {% endif %}
+        </div>
+        <p class="ta-card-text mb-0">
+            {{ squad.total }} joueur{{ squad.total > 1 ? 's' : '' }} dans la sélection.
+        </p>
+    </section>
+
+    {% if squad.total == 0 %}
+        <section class="ta-card p-5">
+            <p class="ta-card-text mb-0">
+                Aucun joueur synchronisé pour ce pays. Lancez la synchro des joueurs (admin) pour remplir l'effectif.
+            </p>
+        </section>
+    {% else %}
+        {% if squad.has_positions %}
+            <section class="pitch" aria-label="Composition de {{ country.nom }}">
+                <div class="pitch__grass">
+                    {% for line in squad.lines %}
+                        {% if line.players|length > 0 %}
+                            <div class="pitch__line pitch__line--{{ line.key }}">
+                                {% for player in line.players %}
+                                    {{ squad_macros.player_card(player) }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+
+            {% if squad.unplaced|length > 0 %}
+                <section class="ta-card p-5 mt-4">
+                    <h2 class="ta-card-title h5">Poste non renseigné</h2>
+                    <div class="pitch-bench">
+                        {% for player in squad.unplaced %}
+                            {{ squad_macros.player_card(player) }}
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+        {% else %}
+            <section class="ta-card p-5">
+                <p class="ta-card-text">
+                    Les postes ne sont pas encore disponibles (relancez la synchro des joueurs pour les récupérer depuis l'API).
+                    Voici l'effectif&nbsp;:
+                </p>
+                <div class="pitch-bench">
+                    {% for player in squad.unplaced %}
+                        {{ squad_macros.player_card(player) }}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

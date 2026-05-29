@@ -27,6 +27,7 @@ class DashboardController extends AbstractDashboardController
     public function __construct(
         private readonly int $apiFootballSyncMaxRequests,
         private readonly int $apiFootballPlayersSyncBatchSize,
+        private readonly int $apiFootballPlayersProfileEnrichMaxCallsPerBatch,
     ) {
     }
 
@@ -95,6 +96,7 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToRoute('Sync matchs', 'fas fa-calendar-days', 'admin_wc2026_sync_matches'),
                 MenuItem::linkToRoute('Sync joueurs par pays', 'fas fa-user', 'admin_wc2026_sync_players_country_form'),
                 MenuItem::linkToRoute('Sync joueurs (tous)', 'fas fa-users', 'admin_wc2026_sync_players'),
+                MenuItem::linkToRoute('Enrichir profils joueurs', 'fas fa-id-card', 'admin_wc2026_sync_players_profile_enrich'),
                 MenuItem::linkToRoute('Sync buts', 'fas fa-bullseye', 'admin_wc2026_sync_goals'),
             ]);
     }
@@ -277,6 +279,90 @@ class DashboardController extends AbstractDashboardController
         $this->addFlash('success', 'Progression réinitialisée. Cliquez sur « Démarrer » pour une nouvelle synchro.');
 
         return $this->redirectToRoute('admin_wc2026_sync_players');
+    }
+
+    #[Route('/admin/sync/wc2026/players/profile-enrich', name: 'admin_wc2026_sync_players_profile_enrich', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Synchronisation API réservée aux administrateurs.')]
+    public function syncWc2026PlayersProfileEnrichPage(Wc2026SyncService $syncService): Response
+    {
+        return $this->render('admin/sync_players_profile_enrich.html.twig', [
+            'status' => $syncService->getButeursProfileEnrichBatchStatus(),
+            'batch_size' => $this->apiFootballPlayersSyncBatchSize,
+            'max_calls_per_batch' => $this->apiFootballPlayersProfileEnrichMaxCallsPerBatch,
+        ]);
+    }
+
+    #[Route('/admin/sync/wc2026/players/profile-enrich/batch', name: 'admin_wc2026_sync_players_profile_enrich_run', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Synchronisation API réservée aux administrateurs.')]
+    public function syncWc2026PlayersProfileEnrichRun(Request $request, Wc2026SyncService $syncService): Response
+    {
+        if (!$this->isCsrfTokenValid('sync_wc2026_players_profile_enrich', (string) $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Jeton de sécurité invalide (CSRF).');
+
+            return $this->redirectToRoute('admin_wc2026_sync_players_profile_enrich');
+        }
+
+        try {
+            if (\function_exists('set_time_limit')) {
+                @set_time_limit(600);
+            }
+
+            $result = $syncService->enrichButeursProfilesBatch($this->apiFootballPlayersSyncBatchSize);
+
+            if ($result['completed'] && 0 === $result['batch_countries']) {
+                $this->addFlash('info', 'Enrichissement déjà terminé. Cliquez sur « Réinitialiser » pour recommencer.');
+            } else {
+                $countriesLabel = implode(', ', $result['processed_country_names']);
+                $msg = sprintf(
+                    'Lot traité (%d pays : %s). Ce lot : %d maj, %d ignorés, %d erreurs, %d appels API. Progression %d/%d.',
+                    $result['batch_countries'],
+                    $countriesLabel,
+                    $result['updated'],
+                    $result['skipped'],
+                    $result['errors'],
+                    $result['api_calls'],
+                    $result['countries_done'],
+                    $result['countries_total'],
+                );
+                if ($result['hit_call_limit']) {
+                    $msg .= ' Limite d’appels API atteinte pour cette requête : relancez « Lot suivant » (les joueurs déjà enrichis seront ignorés).';
+                }
+                if ($result['completed']) {
+                    $msg .= sprintf(
+                        ' Terminé (cumul : %d maj, %d ignorés, %d erreurs, %d appels API).',
+                        $result['totals']['updated'],
+                        $result['totals']['skipped'],
+                        $result['totals']['errors'],
+                        $result['totals']['api_calls'],
+                    );
+                    $this->addFlash('success', $msg);
+                } elseif ($result['cancelled']) {
+                    $this->addFlash('warning', $msg.' Interruption demandée.');
+                } else {
+                    $this->addFlash('success', $msg);
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('admin_wc2026_sync_players_profile_enrich');
+    }
+
+    #[Route('/admin/sync/wc2026/players/profile-enrich/reset', name: 'admin_wc2026_sync_players_profile_enrich_reset', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Synchronisation API réservée aux administrateurs.')]
+    public function syncWc2026PlayersProfileEnrichReset(Request $request, Wc2026SyncService $syncService): Response
+    {
+        if (!$this->isCsrfTokenValid('sync_wc2026_players_profile_enrich_reset', (string) $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Jeton de sécurité invalide (CSRF).');
+
+            return $this->redirectToRoute('admin_wc2026_sync_players_profile_enrich');
+        }
+
+        $syncService->resetButeursProfileEnrichBatch();
+        $this->addFlash('success', 'Progression réinitialisée. Cliquez sur « Démarrer » pour un nouvel enrichissement.');
+
+        return $this->redirectToRoute('admin_wc2026_sync_players_profile_enrich');
     }
 
     #[Route('/admin/sync/wc2026/players/by-country', name: 'admin_wc2026_sync_players_country_form', methods: ['GET'])]

@@ -3,6 +3,13 @@
 {% block title %}Groupes | LPF 2026{% endblock %}
 
 {% block body %}
+    <section class="ta-card p-5 mb-4">
+        <p class="ta-card-text mb-2">
+            Après la phase de groupes, consultez le
+            <a href="{{ path('app_knockout') }}">calendrier des phases finales</a>
+            (16es de finale → finale).
+        </p>
+    </section>
 {#
     <section class="ta-card p-5">
         <h1 class="ta-card-title">Groupes des pays</h1>
@@ -54,17 +61,17 @@
                                     <tr class="{{ is_eliminated ? 'group-standings-row--eliminated' : '' }}{{ is_qualified ? ' group-standings-row--qualified' : '' }}">
                                         <td class="ta-num">{{ loop.index }}</td>
                                         <td>
-                                            <span class="group-standings-team">
+                                            <a class="group-standings-team group-standings-team--link" href="{{ path('app_country_players', { id: row.country.id }) }}" title="Voir les joueurs de {{ row.country.nom }}">
                                                 <span class="group-country-flag-wrap group-country-flag-wrap--compact">
                                                     {% include 'components/_country_flag_img.html.twig' with { country: row.country } only %}
                                                 </span>
                                                 <span class="group-standings-name{{ is_eliminated ? ' group-standings-name--barred' : '' }}">
                                                     {{ row.country.nom }}
                                                     {% if is_qualified %}
-                                                        <span class="group-standings-qual-mark" title="Qualifié pour les 8es de finale">✓</span>
+                                                        <span class="group-standings-qual-mark" title="Qualifié pour les 16es de finale">✓</span>
                                                     {% endif %}
                                                 </span>
-                                            </span>
+                                            </a>
                                         </td>
                                         <td class="ta-num">{{ row.joues }}</td>
                                         <td class="ta-num">{{ row.victoires }}</td>
