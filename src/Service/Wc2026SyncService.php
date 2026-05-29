@@ -441,7 +441,9 @@ final class Wc2026SyncService
      *     countries_remaining: int,
      *     completed: bool,
      *     totals: array{updated: int, skipped: int, errors: int, api_calls: int},
-     *     next_country_names: list<string>
+     *     next_country_names: list<string>,
+     *     countries_done_names: list<string>,
+     *     countries_pending_names: list<string>
      * }
      */
     public function getButeursProfileEnrichBatchStatus(int $previewCount = 5): array
@@ -456,6 +458,8 @@ final class Wc2026SyncService
                 'completed' => false,
                 'totals' => ['updated' => 0, 'skipped' => 0, 'errors' => 0, 'api_calls' => 0],
                 'next_country_names' => [],
+                'countries_done_names' => [],
+                'countries_pending_names' => [],
             ];
         }
 
@@ -466,6 +470,16 @@ final class Wc2026SyncService
             $nextNames[] = $state['countries'][$i]['name'];
         }
 
+        $doneNames = [];
+        for ($i = 0; $i < $done; ++$i) {
+            $doneNames[] = $state['countries'][$i]['name'];
+        }
+
+        $pendingNames = [];
+        for ($i = $done; $i < $total; ++$i) {
+            $pendingNames[] = $state['countries'][$i]['name'];
+        }
+
         return [
             'active' => true,
             'countries_total' => $total,
@@ -474,7 +488,55 @@ final class Wc2026SyncService
             'completed' => $state['completed'],
             'totals' => $state['totals'],
             'next_country_names' => $nextNames,
+            'countries_done_names' => $doneNames,
+            'countries_pending_names' => $pendingNames,
         ];
+    }
+
+    /**
+     * Vue par pays (base de données) : profils complets vs prénoms encore à enrichir.
+     *
+     * @return array{
+     *     synced: list<array{id: int, name: string, players_total: int, players_to_enrich: int}>,
+     *     pending: list<array{id: int, name: string, players_total: int, players_to_enrich: int}>
+     * }
+     */
+    public function getProfileEnrichCountriesOverview(): array
+    {
+        $idsWithApiPlayers = array_flip($this->buteurRepository->findCountryIdsWithApiPlayers());
+        $synced = [];
+        $pending = [];
+
+        foreach ($this->countryRepository->findAllOrderedByName() as $country) {
+            $id = $country->getId();
+            $nom = $country->getNom();
+            if (null === $id || null === $nom || '' === trim($nom) || !isset($idsWithApiPlayers[$id])) {
+                continue;
+            }
+
+            $players = $this->buteurRepository->findByCountryWithApiPlayerId((int) $id);
+            $toEnrich = 0;
+            foreach ($players as $buteur) {
+                if ($this->needsProfileEnrichment($buteur)) {
+                    ++$toEnrich;
+                }
+            }
+
+            $entry = [
+                'id' => (int) $id,
+                'name' => trim($nom),
+                'players_total' => \count($players),
+                'players_to_enrich' => $toEnrich,
+            ];
+
+            if (0 === $toEnrich) {
+                $synced[] = $entry;
+            } else {
+                $pending[] = $entry;
+            }
+        }
+
+        return ['synced' => $synced, 'pending' => $pending];
     }
 
     public function resetButeursProfileEnrichBatch(): void
@@ -511,18 +573,12 @@ final class Wc2026SyncService
         $state = $this->playerProfileEnrichBatchSyncState->load();
 
         if (null === $state) {
-            $countries = [];
-            foreach ($this->countryRepository->findAllOrderedByName() as $country) {
-                $id = $country->getId();
-                $nom = $country->getNom();
-                if (null === $id || null === $nom || '' === trim($nom)) {
-                    continue;
-                }
-                $countries[] = ['id' => (int) $id, 'name' => trim($nom)];
-            }
+            $countries = $this->buildProfileEnrichCountryList();
 
             if ([] === $countries) {
-                throw new \RuntimeException('Aucun pays en base. Lancez d’abord la synchro des pays.');
+                throw new \RuntimeException(
+                    'Aucun pays avec joueurs liés à l’API-Sports. Lancez d’abord la synchro des effectifs.',
+                );
             }
 
             $state = [
@@ -763,6 +819,27 @@ final class Wc2026SyncService
         }
 
         return $changed;
+    }
+
+    /**
+     * @return list<array{id: int, name: string}>
+     */
+    private function buildProfileEnrichCountryList(): array
+    {
+        $idsWithApiPlayers = array_flip($this->buteurRepository->findCountryIdsWithApiPlayers());
+        $countries = [];
+
+        foreach ($this->countryRepository->findAllOrderedByName() as $country) {
+            $id = $country->getId();
+            $nom = $country->getNom();
+            if (null === $id || null === $nom || '' === trim($nom) || !isset($idsWithApiPlayers[$id])) {
+                continue;
+            }
+
+            $countries[] = ['id' => (int) $id, 'name' => trim($nom)];
+        }
+
+        return $countries;
     }
 
     private function needsProfileEnrichment(Buteur $buteur): bool

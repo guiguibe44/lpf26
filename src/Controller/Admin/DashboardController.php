@@ -27,6 +27,7 @@ class DashboardController extends AbstractDashboardController
     public function __construct(
         private readonly int $apiFootballSyncMaxRequests,
         private readonly int $apiFootballPlayersSyncBatchSize,
+        private readonly int $apiFootballPlayersProfileEnrichBatchSize,
         private readonly int $apiFootballPlayersProfileEnrichMaxCallsPerBatch,
     ) {
     }
@@ -287,7 +288,8 @@ class DashboardController extends AbstractDashboardController
     {
         return $this->render('admin/sync_players_profile_enrich.html.twig', [
             'status' => $syncService->getButeursProfileEnrichBatchStatus(),
-            'batch_size' => $this->apiFootballPlayersSyncBatchSize,
+            'overview' => $syncService->getProfileEnrichCountriesOverview(),
+            'default_batch_size' => $this->apiFootballPlayersProfileEnrichBatchSize,
             'max_calls_per_batch' => $this->apiFootballPlayersProfileEnrichMaxCallsPerBatch,
         ]);
     }
@@ -307,7 +309,13 @@ class DashboardController extends AbstractDashboardController
                 @set_time_limit(600);
             }
 
-            $result = $syncService->enrichButeursProfilesBatch($this->apiFootballPlayersSyncBatchSize);
+            $countriesPerBatch = (int) $request->request->get(
+                'countries_per_batch',
+                $this->apiFootballPlayersProfileEnrichBatchSize,
+            );
+            $countriesPerBatch = max(1, min(5, $countriesPerBatch));
+
+            $result = $syncService->enrichButeursProfilesBatch($countriesPerBatch);
 
             if ($result['completed'] && 0 === $result['batch_countries']) {
                 $this->addFlash('info', 'Enrichissement déjà terminé. Cliquez sur « Réinitialiser » pour recommencer.');
@@ -343,7 +351,14 @@ class DashboardController extends AbstractDashboardController
                 }
             }
         } catch (\Throwable $e) {
-            $this->addFlash('danger', $e->getMessage());
+            $message = $e->getMessage();
+            if (
+                str_contains($message, 'Failed opening required')
+                && (str_contains($message, 'var/cache') || str_contains($message, 'Container'))
+            ) {
+                $message .= ' — Le cache Symfony semble incomplet : exécutez « php bin/console cache:clear --env=prod » sur le serveur, puis relancez avec 1 pays par lot.';
+            }
+            $this->addFlash('danger', $message);
         }
 
         return $this->redirectToRoute('admin_wc2026_sync_players_profile_enrich');

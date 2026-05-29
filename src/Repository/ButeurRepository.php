@@ -47,6 +47,23 @@ class ButeurRepository extends ServiceEntityRepository
      *
      * @return list<Buteur>
      */
+    /**
+     * Identifiants des pays ayant au moins un buteur lié à l'API-Sports.
+     *
+     * @return list<int>
+     */
+    public function findCountryIdsWithApiPlayers(): array
+    {
+        $ids = $this->createQueryBuilder('b')
+            ->select('DISTINCT c.id')
+            ->innerJoin('b.pays', 'c')
+            ->andWhere('b.apiSportsPlayerId IS NOT NULL')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_values(array_map(static fn (mixed $id): int => (int) $id, $ids));
+    }
+
     public function findByCountryWithApiPlayerId(int $countryId): array
     {
         return $this->createQueryBuilder('b')

@@ -11,6 +11,7 @@ parameters:
     env(VAPID_PUBLIC_KEY): ''
     env(VAPID_PRIVATE_KEY): ''
     env(VAPID_SUBJECT): ''
+    env(API_FOOTBALL_PLAYERS_PROFILE_ENRICH_BATCH_SIZE): '1'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -101,6 +102,7 @@ services:
         arguments:
             $apiFootballSyncMaxRequests: '%env(int:API_FOOTBALL_SYNC_MAX_REQUESTS)%'
             $apiFootballPlayersSyncBatchSize: '%env(int:API_FOOTBALL_PLAYERS_SYNC_BATCH_SIZE)%'
+            $apiFootballPlayersProfileEnrichBatchSize: '%env(int:API_FOOTBALL_PLAYERS_PROFILE_ENRICH_BATCH_SIZE)%'
             $apiFootballPlayersProfileEnrichMaxCallsPerBatch: '%env(int:API_FOOTBALL_PLAYERS_PROFILE_ENRICH_MAX_CALLS_PER_BATCH)%'
 
     # EasyAdmin instancie chaque CRUD via le conteneur ; sans entrée explicite, le cache prod
