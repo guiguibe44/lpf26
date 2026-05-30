@@ -44,8 +44,26 @@ final class Wc2026SyncService
         private readonly int $apiFootballSyncGoalsMaxRequests = 300,
         /** Appels API max par lot d'enrichissement profils (évite les timeouts HTTP). */
         private readonly int $apiFootballPlayersProfileEnrichMaxCallsPerBatch = 30,
+        /** Effectif max importé par sélection (CDM : 26 joueurs). */
+        private readonly int $apiFootballSquadMaxPlayers = 26,
     ) {
     }
+
+    /** @var array<string, list<string>> clé pays normalisée => noms équipe API équivalents */
+    private const API_TEAM_COUNTRY_ALIASES = [
+        'mexique' => ['mexico'],
+        'mexico' => ['mexique'],
+        'etats unis' => ['united states', 'usa'],
+        'états-unis' => ['united states', 'usa'],
+        'usa' => ['united states', 'etats unis'],
+        'united states' => ['usa', 'etats unis'],
+        'coree du sud' => ['south korea'],
+        'corée du sud' => ['south korea'],
+        'south korea' => ['coree du sud', 'corée du sud'],
+        'republique tcheque' => ['czechia'],
+        'république tchèque' => ['czechia'],
+        'czechia' => ['republique tcheque', 'république tchèque'],
+    ];
 
     /**
      * @return array{created:int, updated:int, flags_downloaded:int}
@@ -953,9 +971,9 @@ final class Wc2026SyncService
             ];
         }
 
-        $allRows = [];
         $cancelled = false;
         $processedNames = [];
+        $import = ['created' => 0, 'updated' => 0, 'skipped' => 0];
         $endIndex = min($startIndex + $batchSize, $teamsTotal);
 
         for ($i = $startIndex; $i < $endIndex; ++$i) {
@@ -968,6 +986,7 @@ final class Wc2026SyncService
             $chunk = $this->apiFootballClient->fetchCompetitionSquadPlayersForTeam(
                 $team['id'],
                 $team['name'],
+                $this->apiFootballSquadMaxPlayers,
             );
 
             if ($chunk['cancelled']) {
@@ -975,11 +994,17 @@ final class Wc2026SyncService
                 break;
             }
 
-            $allRows = array_merge($allRows, $chunk['rows']);
+            $teamImport = $this->importButeursFromNormalizedList($chunk['rows']);
+            $import['created'] += $teamImport['created'];
+            $import['updated'] += $teamImport['updated'];
+            $import['skipped'] += $teamImport['skipped'];
+            $this->applySquadMembershipForTeamName($team['name'], $chunk['rows']);
             $processedNames[] = $team['name'];
         }
 
-        $import = $this->importButeursFromNormalizedList($allRows);
+        if ([] !== $processedNames) {
+            $this->entityManager->flush();
+        }
 
         $newIndex = $startIndex + \count($processedNames);
         $completed = !$cancelled && $newIndex >= $teamsTotal;
@@ -1024,7 +1049,7 @@ final class Wc2026SyncService
      *
      * @param int|null $maxPlayersPerTeam paramètre conservé pour compatibilité (ignoré en mode sélection compétition)
      *
-     * @return array{created:int, updated:int, skipped:int, cancelled:bool}
+     * @return array{created:int, updated:int, skipped:int, cancelled:bool, squad_size:int, deactivated:int}
      */
     public function syncButeursForCountry(int $countryId, int $maxHttpRequests, ?int $maxPlayersPerTeam = null): array
     {
@@ -1061,7 +1086,7 @@ final class Wc2026SyncService
                 continue;
             }
 
-            if ($this->normalizeNameKey($name) !== $targetKey) {
+            if (!$this->countryMatchesApiTeamName((string) $country->getNom(), $name)) {
                 continue;
             }
 
@@ -1084,17 +1109,30 @@ final class Wc2026SyncService
             );
         }
 
+        $maxPlayers = (null !== $maxPlayersPerTeam && $maxPlayersPerTeam > 0)
+            ? $maxPlayersPerTeam
+            : $this->apiFootballSquadMaxPlayers;
+
         $result = $this->apiFootballClient->fetchCompetitionSquadPlayersForTeam(
             $teamId,
-            $teamName
+            $teamName,
+            $maxPlayers,
         );
 
         $import = $this->importButeursFromNormalizedList($result['rows']);
+        $deactivated = $this->applySquadMembershipForCountry($country, $result['rows']);
+
         if ($result['cancelled']) {
             $this->apiFootballPlayerSyncStop->clear();
         }
 
-        return array_merge($import, ['cancelled' => $result['cancelled']]);
+        $this->entityManager->flush();
+
+        return array_merge($import, [
+            'cancelled' => $result['cancelled'],
+            'squad_size' => \count($result['rows']),
+            'deactivated' => $deactivated,
+        ]);
     }
 
     /**
@@ -1683,6 +1721,30 @@ final class Wc2026SyncService
     /**
      * @param array<string, Country> $countries
      */
+    private function findCountryByName(array $countries, string $name): ?Country
+    {
+        $key = $this->normalizeNameKey($name);
+        if ('' === $key) {
+            return null;
+        }
+
+        $country = $countries[$key] ?? null;
+        if ($country instanceof Country) {
+            return $country;
+        }
+
+        foreach ($countries as $country) {
+            if ($this->countryMatchesApiTeamName((string) $country->getNom(), $name)) {
+                return $country;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, Country> $countries
+     */
     private function findOrCreateCountry(array &$countries, string $name, ?string $flag): ?Country
     {
         $key = $this->normalizeNameKey($name);
@@ -1750,6 +1812,81 @@ final class Wc2026SyncService
     private function normalizeNameKey(string $name): string
     {
         return mb_strtolower(trim($name));
+    }
+
+    private function countryMatchesApiTeamName(string $countryName, string $apiTeamName): bool
+    {
+        $countryKey = $this->normalizeNameKey($countryName);
+        $apiKey = $this->normalizeNameKey($apiTeamName);
+
+        if ($countryKey === $apiKey) {
+            return true;
+        }
+
+        return \in_array($apiKey, self::API_TEAM_COUNTRY_ALIASES[$countryKey] ?? [], true)
+            || \in_array($countryKey, self::API_TEAM_COUNTRY_ALIASES[$apiKey] ?? [], true);
+    }
+
+    /**
+     * @param list<array<string, mixed>> $squadRows
+     */
+    private function applySquadMembershipForTeamName(string $teamName, array $squadRows): int
+    {
+        $countries = $this->indexCountriesByName();
+        $country = $this->findCountryByName($countries, $teamName);
+        if (!$country instanceof Country) {
+            return 0;
+        }
+
+        return $this->applySquadMembershipForCountry($country, $squadRows);
+    }
+
+    /**
+     * Active uniquement les joueurs présents dans la sélection importée (les autres passent inactifs).
+     *
+     * @param list<array<string, mixed>> $squadRows
+     */
+    private function applySquadMembershipForCountry(Country $country, array $squadRows): int
+    {
+        $countryId = $country->getId();
+        if (null === $countryId) {
+            return 0;
+        }
+
+        $activeApiIds = [];
+        foreach ($squadRows as $row) {
+            if (!\is_array($row)) {
+                continue;
+            }
+            $apiId = $row['api_sports_player_id'] ?? null;
+            if (is_numeric($apiId)) {
+                $activeApiIds[(int) $apiId] = true;
+            }
+        }
+
+        if ([] === $activeApiIds) {
+            return 0;
+        }
+
+        $deactivated = 0;
+        foreach ($this->buteurRepository->findAllByCountryId($countryId) as $buteur) {
+            $apiId = $buteur->getApiSportsPlayerId();
+            if (null === $apiId) {
+                continue;
+            }
+
+            $shouldBeActive = isset($activeApiIds[$apiId]);
+            if ($buteur->isActif() === $shouldBeActive) {
+                continue;
+            }
+
+            $buteur->setActif($shouldBeActive);
+            if (!$shouldBeActive) {
+                ++$deactivated;
+            }
+        }
+
+        return $deactivated;
     }
 
     private function normalizeNullableString(mixed $value): ?string

@@ -78,6 +78,18 @@ class ButeurRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return list<Buteur>
+     */
+    public function findAllByCountryId(int $countryId): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.pays = :countryId')
+            ->setParameter('countryId', $countryId)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByCountryForPitch(int $countryId): array
     {
         return $this->createQueryBuilder('b')

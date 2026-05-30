@@ -12,6 +12,7 @@ parameters:
     env(VAPID_PRIVATE_KEY): ''
     env(VAPID_SUBJECT): ''
     env(API_FOOTBALL_PLAYERS_PROFILE_ENRICH_BATCH_SIZE): '1'
+    env(API_FOOTBALL_SQUAD_MAX_PLAYERS): '26'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -97,6 +98,7 @@ services:
             $apiFootballWorldCupSeason: '%env(int:API_FOOTBALL_WC_SEASON)%'
             $apiFootballSyncGoalsMaxRequests: '%env(int:API_FOOTBALL_SYNC_GOALS_MAX_REQUESTS)%'
             $apiFootballPlayersProfileEnrichMaxCallsPerBatch: '%env(int:API_FOOTBALL_PLAYERS_PROFILE_ENRICH_MAX_CALLS_PER_BATCH)%'
+            $apiFootballSquadMaxPlayers: '%env(int:API_FOOTBALL_SQUAD_MAX_PLAYERS)%'
 
     App\Controller\Admin\DashboardController:
         arguments:

@@ -415,11 +415,15 @@ class DashboardController extends AbstractDashboardController
             $players = $syncService->syncButeursForCountry($countryId, $this->apiFootballSyncMaxRequests, null);
 
             $msg = sprintf(
-                'Synchro joueurs pays terminée (sélection compétition API). +%d créés, %d mis à jour, %d ignorés.',
+                'Synchro joueurs pays terminée (sélection compétition API). Effectif retenu : %d joueurs. +%d créés, %d mis à jour, %d ignorés.',
+                $players['squad_size'] ?? 0,
                 $players['created'],
                 $players['updated'],
-                $players['skipped']
+                $players['skipped'],
             );
+            if (!empty($players['deactivated'])) {
+                $msg .= sprintf(' %d joueur(s) retiré(s) de la sélection (inactifs).', $players['deactivated']);
+            }
             if (!empty($players['cancelled'])) {
                 $this->addFlash('warning', $msg.' Interruption demandée : données partielles enregistrées.');
             } else {

@@ -296,6 +296,7 @@ final class ApiFootballClient
     public function fetchCompetitionSquadPlayersForTeam(
         int $teamId,
         string $teamDisplayName,
+        ?int $maxPlayers = null,
     ): array {
         if (!$this->isConfigured()) {
             throw new \RuntimeException(
@@ -331,36 +332,11 @@ final class ApiFootballClient
                     continue;
                 }
 
-                $fullName = $this->normalizeString($player['name'] ?? null);
-                $firstName = null;
-                $lastName = null;
-                if (null !== $fullName) {
-                    $parts = preg_split('/\s+/', $fullName) ?: [];
-                    if ([] !== $parts) {
-                        $firstName = trim((string) ($parts[0] ?? ''));
-                        $firstName = '' !== $firstName ? $firstName : null;
-                    }
-                    if (\count($parts) > 1) {
-                        array_shift($parts);
-                        $tmpLastName = trim(implode(' ', $parts));
-                        $lastName = '' !== $tmpLastName ? $tmpLastName : null;
-                    }
-                }
-
-                $rawPlayerId = $player['id'] ?? null;
-                $rawNumber = $player['number'] ?? null;
-                $rows[] = [
-                    'firstname' => $firstName,
-                    'lastname' => $lastName,
-                    'name' => $fullName,
-                    'photo' => $this->normalizeString($player['photo'] ?? null),
-                    'team_name' => $teamDisplayName,
-                    'api_sports_player_id' => is_numeric($rawPlayerId) ? (int) $rawPlayerId : null,
-                    'position' => $this->normalizeString($player['position'] ?? null),
-                    'number' => is_numeric($rawNumber) ? (int) $rawNumber : null,
-                ];
+                $rows[] = $this->normalizeSquadPlayerRow($player, $teamDisplayName);
             }
         }
+
+        $rows = $this->deduplicateAndLimitSquadRows($rows, $maxPlayers);
 
         return ['rows' => $rows, 'cancelled' => false];
     }
@@ -490,7 +466,7 @@ final class ApiFootballClient
                 continue;
             }
 
-            $chunk = $this->fetchCompetitionSquadPlayersForTeam((int) $rawTeamId, $teamName);
+            $chunk = $this->fetchCompetitionSquadPlayersForTeam((int) $rawTeamId, $teamName, $maxPlayersPerTeam);
             ++$calls;
 
             if ($chunk['cancelled']) {
@@ -498,12 +474,7 @@ final class ApiFootballClient
                 break;
             }
 
-            $teamRows = $chunk['rows'];
-            if (null !== $maxPlayersPerTeam && $maxPlayersPerTeam > 0) {
-                $teamRows = \array_slice($teamRows, 0, $maxPlayersPerTeam);
-            }
-
-            $out = array_merge($out, $teamRows);
+            $out = array_merge($out, $chunk['rows']);
         }
 
         return ['rows' => $out, 'cancelled' => $cancelled];
@@ -696,5 +667,92 @@ final class ApiFootballClient
         $value = trim($value);
 
         return '' === $value ? null : $value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function normalizeSquadPlayerRow(array $player, string $teamDisplayName): array
+    {
+        $fullName = $this->normalizeString($player['name'] ?? null);
+        $firstName = null;
+        $lastName = null;
+        if (null !== $fullName) {
+            $parts = preg_split('/\s+/', $fullName) ?: [];
+            if ([] !== $parts) {
+                $firstName = trim((string) ($parts[0] ?? ''));
+                $firstName = '' !== $firstName ? $firstName : null;
+            }
+            if (\count($parts) > 1) {
+                array_shift($parts);
+                $tmpLastName = trim(implode(' ', $parts));
+                $lastName = '' !== $tmpLastName ? $tmpLastName : null;
+            }
+        }
+
+        $rawPlayerId = $player['id'] ?? null;
+        $rawNumber = $player['number'] ?? null;
+
+        return [
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'name' => $fullName,
+            'photo' => $this->normalizeString($player['photo'] ?? null),
+            'team_name' => $teamDisplayName,
+            'api_sports_player_id' => is_numeric($rawPlayerId) ? (int) $rawPlayerId : null,
+            'position' => $this->normalizeString($player['position'] ?? null),
+            'number' => is_numeric($rawNumber) ? (int) $rawNumber : null,
+        ];
+    }
+
+    /**
+     * L’API peut renvoyer plusieurs blocs « players » (doublons) ou un effectif élargi (> 26).
+     *
+     * @param list<array<string, mixed>> $rows
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function deduplicateAndLimitSquadRows(array $rows, ?int $maxPlayers): array
+    {
+        $byKey = [];
+        foreach ($rows as $row) {
+            $apiId = $row['api_sports_player_id'] ?? null;
+            if (is_numeric($apiId)) {
+                $key = 'id:'.(int) $apiId;
+            } else {
+                $name = mb_strtolower(trim((string) ($row['name'] ?? '')));
+                if ('' === $name) {
+                    continue;
+                }
+                $key = 'name:'.$name;
+            }
+
+            $byKey[$key] = $row;
+        }
+
+        $unique = array_values($byKey);
+        if (null === $maxPlayers || $maxPlayers <= 0 || \count($unique) <= $maxPlayers) {
+            return $unique;
+        }
+
+        usort($unique, static function (array $a, array $b): int {
+            $numA = $a['number'] ?? null;
+            $numB = $b['number'] ?? null;
+            $hasA = is_numeric($numA);
+            $hasB = is_numeric($numB);
+            if ($hasA !== $hasB) {
+                return $hasB <=> $hasA;
+            }
+            if ($hasA && $hasB) {
+                $cmp = (int) $numA <=> (int) $numB;
+                if (0 !== $cmp) {
+                    return $cmp;
+                }
+            }
+
+            return strcmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
+        });
+
+        return \array_slice($unique, 0, $maxPlayers);
     }
 }
