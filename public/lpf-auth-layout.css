@@ -373,10 +373,10 @@ html.lpf-classic-light .ta-form-choice-expanded {
     html.dark .ta-auth-aside,
     html.lpf-classic-light .auth-aside,
     html.lpf-classic-light .ta-auth-aside {
-        min-height: auto;
+        min-height: clamp(220px, 38vh, 340px);
         border-right: none;
         border-bottom: 1px solid var(--auth-border, var(--lpf-border, #e2e8f0));
-        padding: 2rem 1rem 1.5rem;
+        padding: 0;
     }
 
     html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark,

@@ -60,10 +60,10 @@
         {% endblock %}
 
         {% if isAuthPage %}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=4">
-            <link rel="stylesheet" href="{{ asset('css/auth-aside-background.css') }}?v=3">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-layout.css') }}?v=5">
+            <link rel="stylesheet" href="{{ asset('css/auth-aside-background.css') }}?v=4">
             {# Auth : chargé en dernier (bat anciennes surcharges claires) #}
-            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=6">
+            <link rel="stylesheet" href="{{ asset('lpf-auth-dark.css') }}?v=7">
         {% else %}
             {# Shell connecté : dark en fichiers séparés (évite @import sans ?v=, cache navigateur) #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark.css') }}?v={{ lpf_css_v }}">

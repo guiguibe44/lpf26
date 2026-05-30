@@ -60,7 +60,7 @@ html.dark .ta-auth-aside {
     justify-content: center;
     padding: 3rem 2rem;
     text-align: center;
-    background: var(--auth-panel) !important;
+    background: transparent !important;
     color: var(--auth-text) !important;
     border-right: 1px solid var(--auth-border);
     min-height: 100vh;
@@ -360,10 +360,10 @@ html.dark .ta-form-choice-item label {
 
     html.dark .auth-aside,
     html.dark .ta-auth-aside {
-        min-height: auto;
+        min-height: clamp(220px, 38vh, 340px);
         border-right: none;
         border-bottom: 1px solid var(--auth-border);
-        padding: 2rem 1rem 1.5rem;
+        padding: 0;
     }
 
     html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-dark {

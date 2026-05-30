@@ -391,9 +391,14 @@ html.lpf-classic-light .auth-wrap {
 }
 
 html.lpf-classic-light .ta-auth-aside {
-    background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%) !important;
     color: var(--lpf-text) !important;
     border-right: 1px solid var(--lpf-border);
+}
+
+/* Photo de fond (auth-aside-background.css) : pas de panneau opaque par-dessus */
+html.lpf-classic-light .auth-aside.ta-auth-aside,
+html.lpf-classic-light .ta-auth-aside.auth-aside {
+    background: transparent !important;
 }
 
 html.lpf-classic-light body.front-body--auth .auth-wrap .ta-auth-form-wrap {
@@ -482,20 +487,10 @@ html.lpf-classic-light .lpf-theme-switcher__legend {
     color: var(--lpf-muted);
 }
 
-html.lpf-classic-light .lpf-theme-switcher__track {
+html.lpf-classic-light .lpf-theme-switcher__select {
     border-color: var(--lpf-border);
-    background: var(--lpf-surface-raised);
-}
-
-html.lpf-classic-light .lpf-theme-switcher__option {
-    color: var(--lpf-muted);
-}
-
-html.lpf-classic-light .lpf-theme-switcher__option.is-active,
-html.lpf-classic-light .lpf-theme-switcher__option[aria-pressed="true"] {
-    background: var(--lpf-surface);
-    color: var(--lpf-primary);
-    box-shadow: 0 1px 4px rgb(15 23 42 / 10%);
+    background-color: var(--lpf-surface-raised);
+    color: var(--lpf-text);
 }
 
 html.lpf-classic-light .lpf-theme-switcher--floating {
