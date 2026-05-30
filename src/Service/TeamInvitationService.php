@@ -17,6 +17,7 @@ final class TeamInvitationService
         private readonly EntityManagerInterface $entityManager,
         private readonly MailerInterface $mailer,
         private readonly LpfEmailRenderer $lpfEmailRenderer,
+        private readonly AdminActivityNotifier $adminActivityNotifier,
     ) {
     }
 
@@ -68,6 +69,8 @@ final class TeamInvitationService
                 ->subject('Invitation à rejoindre votre équipe — LPF\'26')
                 ->html($html),
         );
+
+        $this->adminActivityNotifier->notifyInvitationSent($invitation);
 
         return $invitation;
     }

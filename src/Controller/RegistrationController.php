@@ -7,6 +7,7 @@ use App\Entity\TeamInvitation;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Service\AdminActivityNotifier;
 use App\Service\LpfEmailRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +28,7 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         MailerInterface $mailer,
         LpfEmailRenderer $lpfEmailRenderer,
+        AdminActivityNotifier $adminActivityNotifier,
         LoggerInterface $logger,
     ): Response
     {
@@ -105,6 +107,17 @@ class RegistrationController extends AbstractController
                     'user_email' => $user->getEmail(),
                     'exception' => $e,
                 ]);
+            }
+
+            $adminActivityNotifier->notifyNewRegistration(
+                $user,
+                $team,
+                $owner,
+                'owner',
+                $invitation?->getInvitedEmail(),
+            );
+            if ($invitation instanceof TeamInvitation) {
+                $adminActivityNotifier->notifyInvitationSent($invitation);
             }
 
             if ($emailDeliveryFailed) {

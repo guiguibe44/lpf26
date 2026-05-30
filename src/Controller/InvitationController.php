@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Form\InvitationAcceptFormType;
+use App\Service\AdminActivityNotifier;
 use App\Repository\TeamInvitationRepository;
 use App\Repository\TeamMemberRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +24,8 @@ class InvitationController extends AbstractController
         TeamInvitationRepository $invitationRepository,
         TeamMemberRepository $teamMemberRepository,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        AdminActivityNotifier $adminActivityNotifier,
     ): Response {
         $invitation = $invitationRepository->findValidByToken($token);
         if (null === $invitation) {
@@ -73,6 +75,11 @@ class InvitationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->persist($member);
             $entityManager->flush();
+
+            $team = $invitation->getTeam();
+            if (null !== $team) {
+                $adminActivityNotifier->notifyNewRegistration($user, $team, $member, 'partner');
+            }
 
             $this->addFlash('success', 'Inscription terminée. Connectez-vous pour commencer.');
 

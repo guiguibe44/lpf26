@@ -13,6 +13,7 @@ parameters:
     env(VAPID_SUBJECT): ''
     env(API_FOOTBALL_PLAYERS_PROFILE_ENRICH_BATCH_SIZE): '1'
     env(API_FOOTBALL_SQUAD_MAX_PLAYERS): '26'
+    app.admin_notification_email_default: 'guigui@lotopotofoot.fr'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -91,6 +92,10 @@ services:
     App\Service\ApiFootballPlayerProfileEnrichBatchSyncState:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Service\AdminActivityNotifier:
+        arguments:
+            $adminNotificationEmail: '%env(default:app.admin_notification_email_default:ADMIN_NOTIFICATION_EMAIL)%'
 
     App\Service\Wc2026SyncService:
         arguments:

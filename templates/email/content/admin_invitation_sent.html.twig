@@ -1,0 +1,26 @@
+<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">Bonjour,</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Une <strong>invitation équipe</strong> vient d'être envoyée par e-mail à un partenaire.
+</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:15px;line-height:1.5;color:#2a2a2a;">
+    <tr>
+        <td style="padding:8px 12px;background:#f1f5f9;font-weight:600;width:40%;">Équipe</td>
+        <td style="padding:8px 12px;background:#f8fafc;">{{ team.name }}</td>
+    </tr>
+    <tr>
+        <td style="padding:8px 12px;background:#f1f5f9;font-weight:600;">Invité par</td>
+        <td style="padding:8px 12px;background:#f8fafc;">{{ inviter ? inviter.email : '—' }}</td>
+    </tr>
+    <tr>
+        <td style="padding:8px 12px;background:#f1f5f9;font-weight:600;">E-mail invité</td>
+        <td style="padding:8px 12px;background:#f8fafc;">{{ invitation.invitedEmail }}</td>
+    </tr>
+    <tr>
+        <td style="padding:8px 12px;background:#f1f5f9;font-weight:600;">Expire le</td>
+        <td style="padding:8px 12px;background:#f8fafc;">{{ invitation.expiresAt|date('d/m/Y H:i') }} (Paris)</td>
+    </tr>
+</table>
+{% include 'email/content/_cta_button.html.twig' with {
+    actionUrl: absolute_url(path('admin_team_invitation_index')),
+    ctaLabel: 'Voir les invitations (admin)',
+} only %}
