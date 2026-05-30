@@ -124,8 +124,52 @@
         </details>
     {% endif %}
 
+    {% if status.completed and overview.pending is not empty %}
+        <section class="ta-card" style="border-color: rgba(245, 158, 11, 0.45);">
+            <h2 class="ta-card-title">Pays restants hors parcours</h2>
+            <p class="ta-card-text">
+                Le parcours global est marqué <strong>terminé</strong>, mais <strong>{{ overview.pending|length }} pays</strong>
+                ont encore des joueurs à enrichir (souvent synchronisés après la fin du parcours, ou limite API par requête).
+                Utilisez <strong>Enrichir ce pays</strong> pour Türkiye, Uruguay, USA, Uzbekistan, etc.
+            </p>
+            <form method="post" action="{{ path('admin_wc2026_sync_players_profile_enrich_resume_pending') }}" class="admin-profile-enrich-actions" style="margin-top: 0.75rem;">
+                <input type="hidden" name="_token" value="{{ csrf_token('sync_wc2026_players_profile_enrich_resume') }}">
+                <button type="submit" class="btn btn-outline">Reprendre les {{ overview.pending|length }} pays en file</button>
+            </form>
+        </section>
+    {% endif %}
+
     <section class="ta-card">
-        <h2 class="ta-card-title">Actions</h2>
+        <h2 class="ta-card-title">Enrichir un seul pays</h2>
+        <p class="ta-card-text">
+            Recommandé pour finir les derniers pays : jusqu’à {{ max_calls_per_country }} appels API pour ce pays (joueurs actifs uniquement).
+        </p>
+        <form method="post" action="{{ path('admin_wc2026_sync_players_profile_enrich_country') }}" class="admin-profile-enrich-actions">
+            <input type="hidden" name="_token" value="{{ csrf_token('sync_wc2026_players_profile_enrich_country') }}">
+            <label>
+                Pays
+                <select name="country" required>
+                    <option value="" disabled selected>— Choisir —</option>
+                    {% if overview.pending is not empty %}
+                        <optgroup label="À enrichir">
+                            {% for country in overview.pending %}
+                                <option value="{{ country.id }}">{{ country.name }} ({{ country.players_to_enrich }}/{{ country.players_total }})</option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endif %}
+                    <optgroup label="Tous les pays">
+                        {% for c in countries %}
+                            <option value="{{ c.id }}">{{ c.nom }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </label>
+            <button type="submit" class="btn btn-primary">Enrichir ce pays</button>
+        </form>
+    </section>
+
+    <section class="ta-card">
+        <h2 class="ta-card-title">Parcours séquentiel (tous les pays)</h2>
         <div class="admin-profile-enrich-actions">
             {% if not status.completed %}
                 <form method="post" action="{{ path('admin_wc2026_sync_players_profile_enrich_run') }}" class="admin-profile-enrich-actions">
@@ -146,8 +190,10 @@
                         {% endif %}
                     </button>
                 </form>
+            {% elseif overview.pending is empty %}
+                <p class="ta-card-text">Parcours terminé. Tous les pays sont à jour.</p>
             {% else %}
-                <p class="ta-card-text">Parcours terminé. Réinitialisez pour recommencer.</p>
+                <p class="ta-card-text">Parcours terminé — voir « Enrichir un seul pays » ou « Reprendre les pays en file » ci-dessus.</p>
             {% endif %}
 
             <form method="post" action="{{ path('admin_wc2026_sync_players_profile_enrich_reset') }}">

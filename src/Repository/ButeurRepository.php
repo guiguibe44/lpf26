@@ -79,6 +79,28 @@ class ButeurRepository extends ServiceEntityRepository
     }
 
     /**
+     * Joueurs actifs d'un pays (sélection courante) pour enrichissement profil.
+     *
+     * @return list<Buteur>
+     */
+    public function findActiveByCountryWithApiPlayerId(int $countryId): array
+    {
+        return $this->createQueryBuilder('b')
+            ->addSelect('p')
+            ->join('b.pays', 'p')
+            ->andWhere('p.id = :countryId')
+            ->andWhere('b.apiSportsPlayerId IS NOT NULL')
+            ->andWhere('b.actif = :actif')
+            ->setParameter('countryId', $countryId)
+            ->setParameter('actif', true)
+            ->orderBy('b.numero', 'ASC')
+            ->addOrderBy('b.nom', 'ASC')
+            ->addOrderBy('b.prenom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @return list<Buteur>
      */
     public function findAllByCountryId(int $countryId): array

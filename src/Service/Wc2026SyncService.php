@@ -532,7 +532,7 @@ final class Wc2026SyncService
                 continue;
             }
 
-            $players = $this->buteurRepository->findByCountryWithApiPlayerId((int) $id);
+            $players = $this->buteurRepository->findActiveByCountryWithApiPlayerId((int) $id);
             $toEnrich = 0;
             foreach ($players as $buteur) {
                 if ($this->needsProfileEnrichment($buteur)) {
@@ -561,6 +561,102 @@ final class Wc2026SyncService
     {
         $this->playerProfileEnrichBatchSyncState->reset();
         $this->apiFootballPlayerSyncStop->clear();
+    }
+
+    /**
+     * Reprend le parcours séquentiel uniquement sur les pays encore « à synchroniser » (vue base).
+     *
+     * @return int nombre de pays dans la nouvelle file
+     */
+    public function resumeButeursProfileEnrichBatchForPendingCountries(): int
+    {
+        $pending = $this->getProfileEnrichCountriesOverview()['pending'];
+        if ([] === $pending) {
+            $this->resetButeursProfileEnrichBatch();
+
+            return 0;
+        }
+
+        $countries = array_map(
+            static fn (array $c): array => ['id' => $c['id'], 'name' => $c['name']],
+            $pending,
+        );
+
+        $this->playerProfileEnrichBatchSyncState->save(
+            $this->apiFootballWorldCupSeason,
+            $countries,
+            0,
+            false,
+            ['updated' => 0, 'skipped' => 0, 'errors' => 0, 'api_calls' => 0],
+        );
+
+        return \count($countries);
+    }
+
+    /**
+     * Enrichit tous les joueurs actifs d’un seul pays (hors file séquentielle).
+     *
+     * @return array{
+     *     country_name: string,
+     *     updated: int,
+     *     skipped: int,
+     *     errors: int,
+     *     api_calls: int,
+     *     hit_call_limit: bool,
+     *     players_still_to_enrich: int
+     * }
+     */
+    public function enrichButeursProfilesForCountry(int $countryId, int $maxApiCalls): array
+    {
+        $this->assertApiFootballConfigured();
+
+        $country = $this->countryRepository->find($countryId);
+        if (!$country instanceof Country) {
+            throw new \InvalidArgumentException('Pays introuvable.');
+        }
+
+        $maxApiCalls = max(10, $maxApiCalls);
+        $this->apiFootballPlayerSyncStop->clear();
+
+        $updated = 0;
+        $skipped = 0;
+        $errors = 0;
+        $apiCalls = 0;
+        $cancelled = false;
+        $hitCallLimit = false;
+
+        $this->enrichPlayersForCountry(
+            $countryId,
+            $this->apiFootballWorldCupSeason,
+            $maxApiCalls,
+            $updated,
+            $skipped,
+            $errors,
+            $apiCalls,
+            $cancelled,
+            $hitCallLimit,
+        );
+
+        if ($apiCalls > 0) {
+            $this->entityManager->flush();
+        }
+
+        $stillToEnrich = 0;
+        foreach ($this->buteurRepository->findActiveByCountryWithApiPlayerId($countryId) as $buteur) {
+            if ($this->needsProfileEnrichment($buteur)) {
+                ++$stillToEnrich;
+            }
+        }
+
+        return [
+            'country_name' => (string) $country->getNom(),
+            'updated' => $updated,
+            'skipped' => $skipped,
+            'errors' => $errors,
+            'api_calls' => $apiCalls,
+            'hit_call_limit' => $hitCallLimit,
+            'players_still_to_enrich' => $stillToEnrich,
+        ];
     }
 
     /**
@@ -741,7 +837,7 @@ final class Wc2026SyncService
         bool &$cancelled,
         bool &$hitCallLimit,
     ): bool {
-        $players = $this->buteurRepository->findByCountryWithApiPlayerId($countryId);
+        $players = $this->buteurRepository->findActiveByCountryWithApiPlayerId($countryId);
         $needsAny = false;
 
         foreach ($players as $buteur) {
@@ -752,9 +848,7 @@ final class Wc2026SyncService
         }
 
         if (!$needsAny) {
-            foreach ($players as $buteur) {
-                ++$skipped;
-            }
+            $skipped += \count($players);
 
             return true;
         }
