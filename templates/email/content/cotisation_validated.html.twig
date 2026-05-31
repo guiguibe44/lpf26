@@ -1,0 +1,22 @@
+<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">Bonjour{% if nickname %}, <strong>{{ nickname }}</strong>{% endif %},</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Votre cotisation LPF'26 a été <strong style="color:#16a34a;">validée</strong> par l'organisation.
+    {% if teamName %}
+        Votre équipe <strong style="color:#1b2d4f;">{{ teamName }}</strong> peut désormais jouer à plein.
+    {% endif %}
+</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    Vous avez accès à toutes les fonctionnalités&nbsp;:
+</p>
+<ul style="margin:0 0 20px;padding-left:1.25rem;font-size:15px;line-height:1.6;color:#2a2a2a;">
+    <li>pronostics sur les matchs&nbsp;;</li>
+    <li>choix de votre buteur&nbsp;;</li>
+    <li>jokers et équipe favorite.</li>
+</ul>
+{% include 'email/content/_cta_button.html.twig' with {
+    actionUrl: absolute_url(path('app_homepage')),
+    ctaLabel: 'Accéder à mon espace',
+} only %}
+<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#6b7280;">
+    Compte&nbsp;: {{ userEmail }}
+</p>
