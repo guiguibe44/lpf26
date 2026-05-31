@@ -14,6 +14,7 @@ parameters:
     env(API_FOOTBALL_PLAYERS_PROFILE_ENRICH_BATCH_SIZE): '1'
     env(API_FOOTBALL_SQUAD_MAX_PLAYERS): '26'
     app.admin_notification_email_default: 'guigui@lotopotofoot.fr'
+    app.admin_registration_notification_emails_default: 'guigui@lotopotofoot.fr,guillaume.bex44@gmail.com'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -96,6 +97,7 @@ services:
     App\Service\AdminActivityNotifier:
         arguments:
             $adminNotificationEmail: '%env(default:app.admin_notification_email_default:ADMIN_NOTIFICATION_EMAIL)%'
+            $adminRegistrationNotificationEmails: '%env(default:app.admin_registration_notification_emails_default:ADMIN_REGISTRATION_NOTIFICATION_EMAILS)%'
 
     App\Service\Wc2026SyncService:
         arguments:

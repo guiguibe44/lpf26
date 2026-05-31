@@ -23,6 +23,7 @@ final class AdminActivityNotifier
         private readonly LpfEmailRenderer $lpfEmailRenderer,
         private readonly LoggerInterface $logger,
         private readonly string $adminNotificationEmail = SuperAdminAuthorization::EMAIL,
+        private readonly string $adminRegistrationNotificationEmails = '',
     ) {
     }
 
@@ -36,7 +37,8 @@ final class AdminActivityNotifier
         string $registrationKind,
         ?string $invitedPartnerEmail = null,
     ): void {
-        if (!$this->isConfigured()) {
+        $recipients = $this->registrationNotificationRecipients();
+        if ([] === $recipients) {
             return;
         }
 
@@ -53,7 +55,7 @@ final class AdminActivityNotifier
 
             $this->mailer->send(
                 (new Email())
-                    ->to($this->adminNotificationEmail)
+                    ->to(...$recipients)
                     ->subject(sprintf('[LPF\'26] Nouvelle inscription — %s', (string) $team->getName()))
                     ->html($html),
             );
@@ -106,5 +108,35 @@ final class AdminActivityNotifier
     private function isConfigured(): bool
     {
         return '' !== trim($this->adminNotificationEmail);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function registrationNotificationRecipients(): array
+    {
+        $fromRegistrationList = $this->parseEmailList($this->adminRegistrationNotificationEmails);
+        if ([] !== $fromRegistrationList) {
+            return $fromRegistrationList;
+        }
+
+        return $this->parseEmailList($this->adminNotificationEmail);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function parseEmailList(string $raw): array
+    {
+        $unique = [];
+        foreach (preg_split('/[,;]+/', $raw) ?: [] as $part) {
+            $email = mb_strtolower(trim($part));
+            if ('' === $email || false === filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+            $unique[$email] = $email;
+        }
+
+        return array_values($unique);
     }
 }
