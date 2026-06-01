@@ -31,7 +31,6 @@ html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-light {
 
 /* Bouton thème global (clair / sombre) — hors EasyAdmin */
 
-/* Sidebar : entre notifications et déconnexion */
 .ta-sidebar-actions .lpf-site-theme-toggle__btn {
     flex-shrink: 0;
 }
@@ -43,7 +42,6 @@ html.dark .lpf-brand-logo-wrap .lpf-brand-logo--classic-light {
     z-index: 200;
 }
 
-/* Shell mobile : décaler à gauche du burger */
 @media (max-width: 1023px) {
     body.front-body:not(.front-body--auth) .lpf-site-theme-toggle--floating {
         top: 0.65rem;
@@ -70,4 +68,3 @@ html.lpf-classic-light .lpf-site-theme-toggle__btn[aria-pressed="false"]:hover {
     border-color: #93c5fd !important;
     color: #1b2d4f !important;
 }
-

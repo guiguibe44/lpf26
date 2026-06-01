@@ -346,9 +346,9 @@ html.lpf-gta-theme .rounded-box::after {
 
 html.lpf-gta-theme .ta-card:hover,
 html.lpf-gta-theme .rounded-box:hover {
-    transform: translate(-2px, -2px);
-    border-color: var(--bonus) !important;
-    box-shadow: 6px 6px 0 rgb(0 0 0 / 80%), var(--gta-glow-bonus);
+    transform: none;
+    border-color: var(--border-default, var(--border-dark)) !important;
+    box-shadow: var(--gta-shadow-card);
 }
 
 html.lpf-gta-theme .ta-card-title {
@@ -386,35 +386,9 @@ html.lpf-gta-theme .ta-auth-submit:active {
 }
 
 /* Primaire — INSCRIPTION / CTA vert */
-html.lpf-gta-theme body .btn.btn-primary,
-html.lpf-gta-theme body a.btn.btn-primary,
-html.lpf-gta-theme body button.btn.btn-primary,
-html.lpf-gta-theme .btn.btn-primary,
-html.lpf-gta-theme .btn-primary,
-html.lpf-gta-theme .ta-auth-submit,
-html.lpf-gta-theme .auth-wrap button[type="submit"],
-html.lpf-gta-theme body.front-body--auth .auth-wrap button[type="submit"],
-html.lpf-gta-theme .match-pronostic-submit.btn-primary {
-    background-image:
-        linear-gradient(180deg, var(--bonus), #45e657) padding-box,
-        var(--gta-grad-border-primary) border-box !important;
-    color: #050505 !important;
-    font-size: 0.95rem;
-    padding: 0.7rem 1.35rem;
-    box-shadow: var(--gta-shadow-hard), var(--gta-glow-bonus) !important;
-}
+/* Base primaire : voir css/lpf-gta-design-system.css */
 
-html.lpf-gta-theme .btn.btn-primary:hover:not(:disabled),
-html.lpf-gta-theme .btn-primary:hover:not(:disabled),
-html.lpf-gta-theme .ta-auth-submit:hover:not(:disabled),
-html.lpf-gta-theme .auth-wrap button[type="submit"]:hover:not(:disabled) {
-    background-image:
-        linear-gradient(180deg, #8fff9a, var(--bonus)) padding-box,
-        var(--gta-grad-border-primary) border-box !important;
-    box-shadow: 5px 5px 0 rgb(0 0 0 / 85%), 0 0 28px rgb(89 255 106 / 55%) !important;
-    transform: translate(-1px, -1px);
-    filter: brightness(1.05);
-}
+/* Hover primaire : voir css/lpf-gta-design-system.css (mur fissuré, sans glow vert) */
 
 /* Danger */
 html.lpf-gta-theme .btn.btn-error,
@@ -803,9 +777,9 @@ html.lpf-gta-theme .match-pronostic {
 }
 
 html.lpf-gta-theme .match-card:hover {
-    border-color: var(--bonus);
-    box-shadow: 5px 5px 0 rgb(0 0 0 / 80%), var(--gta-glow-bonus);
-    transform: translate(-2px, -2px);
+    border-color: var(--border-dark);
+    box-shadow: var(--gta-shadow-card);
+    transform: none;
 }
 
 html.lpf-gta-theme .match-card--kdo {

@@ -82,19 +82,9 @@
                 {% include '_notification_bell.html.twig' %}
                 {% include '_site_theme_toggle.html.twig' %}
                 {% if is_granted('ROLE_ADMIN') %}
-                    {% if app.environment != 'prod' %}
-                        <a
-                            href="{{ path('admin_joker_test_scenario') }}"
-                            class="ta-sidebar-notify ta-sidebar-jokers{{ currentRoute == 'admin_joker_test_scenario' ? ' ta-sidebar-notify--current' : '' }}"
-                            title="Scénario jokers"
-                            aria-label="Scénario jokers"
-                        >
-                            <i class="ti ti-mask" aria-hidden="true"></i>
-                        </a>
-                    {% endif %}
                     <a
                         href="{{ path('admin') }}"
-                        class="ta-sidebar-notify ta-sidebar-admin{% if app.environment == 'prod' %}{{ currentRoute starts with 'admin' ? ' ta-sidebar-notify--current' : '' }}{% else %}{{ currentRoute starts with 'admin' and currentRoute != 'admin_qa_checklist' and currentRoute != 'admin_compet_checklist' and currentRoute != 'admin_joker_test_scenario' ? ' ta-sidebar-notify--current' : '' }}{% endif %}"
+                        class="ta-sidebar-notify ta-sidebar-admin{{ currentRoute starts with 'admin' ? ' ta-sidebar-notify--current' : '' }}"
                         title="Administration"
                         aria-label="Administration"
                     >

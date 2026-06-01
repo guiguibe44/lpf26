@@ -2,6 +2,17 @@
 
 {% block title %}{{ team.name }} | Equipe | LPF 2026{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/lpf-image-lightbox.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/team-show.css') }}?v=1">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/lpf-image-lightbox.js') }}?v=1" defer></script>
+{% endblock %}
+
 {% block body %}
     <section class="ta-topbar">
         <div>
@@ -13,11 +24,20 @@
     </section>
 
     <section class="ta-card team-show-identity">
-        {% if team.logo %}
-            <img src="{{ asset(team.logo) }}" alt="" class="ranking-team-logo">
-        {% else %}
-            <span class="ranking-team-logo-placeholder" aria-hidden="true">{{ team.name|first|upper }}</span>
-        {% endif %}
+        {% set team_logo_src = team.logo
+            ? (team.logo starts with 'http' ? team.logo : asset(team.logo))
+            : null %}
+        <div class="team-show-identity-visual">
+            {% include 'shared/_lpf_lightbox_trigger.html.twig' with {
+                src: team_logo_src,
+                title: 'Logo — ' ~ team.name,
+                alt: 'Logo de l’équipe ' ~ team.name,
+                img_class: 'team-show-team-logo',
+                btn_class: 'lpf-lightbox-trigger team-show-team-logo-btn',
+                placeholder: team.name|first|upper,
+                placeholder_class: 'team-show-team-logo-placeholder ranking-team-logo-placeholder',
+            } %}
+        </div>
         <div class="team-show-identity-text">
             {% if team.slogan %}
                 <p class="team-show-slogan">« {{ team.slogan }} »</p>
@@ -154,11 +174,29 @@
         {% else %}
             <div class="team-show-members">
                 {% for member in team_members %}
+                    {% set player_avatar_src = null %}
+                    {% if member.player and member.player.avatar %}
+                        {% set av = member.player.avatar %}
+                        {% set player_avatar_src = av starts with 'http' ? av : asset(av) %}
+                    {% endif %}
                     <div class="team-show-member-card">
-                        <p class="team-show-member-nick">{{ member.nickname }}</p>
-                        {% if member.player %}
-                            <p class="team-show-member-mail">{{ member.player.email }}</p>
-                        {% endif %}
+                        <div class="team-show-member-avatar-wrap">
+                            {% include 'shared/_lpf_lightbox_trigger.html.twig' with {
+                                src: player_avatar_src,
+                                title: member.nickname,
+                                alt: 'Avatar de ' ~ member.nickname,
+                                img_class: 'team-show-player-avatar',
+                                btn_class: 'lpf-lightbox-trigger team-show-player-avatar-btn',
+                                placeholder: member.nickname|first|upper,
+                                placeholder_class: 'team-show-player-avatar-placeholder ranking-team-logo-placeholder',
+                            } %}
+                        </div>
+                        <div class="team-show-member-text">
+                            <p class="team-show-member-nick">{{ member.nickname }}</p>
+                            {% if member.player %}
+                                <p class="team-show-member-mail">{{ member.player.email }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -217,4 +255,6 @@
             </div>
         {% endif %}
     </section>
+
+    {% include 'shared/_lpf_image_lightbox.html.twig' %}
 {% endblock %}

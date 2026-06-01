@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Phases finales | LPF 2026{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/knockout-fixtures.css') }}?v=14">
+{% endblock %}
+
+{% block body %}
+<div class="knockout-page">
+    <section class="ta-card p-5 knockout-intro">
+        <h1 class="ta-card-title">Phases finales</h1>
+        <p class="ta-card-text mb-0">
+            Tableau de la phase à élimination directe (16es → 8es → quarts → demi-finales → finale).
+            Les participants seront connus après la phase de groupes.
+            Calendrier indicatif&nbsp;: pas de pronostics LPF pour l’instant.
+        </p>
+        <p class="knockout-intro__source ta-card-text mb-0">
+            Source&nbsp;:
+            <a href="https://www.fifa.com/fr/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures" target="_blank" rel="noopener noreferrer">
+                calendrier FIFA
+            </a>
+            — heures en heure locale du stade.
+        </p>
+    </section>
+
+    <section class="ta-card mt-4 knockout-bracket-panel" aria-label="Tableau de compétition">
+        <p class="knockout-bracket-hint">
+            <i class="ti ti-arrows-horizontal" aria-hidden="true"></i>
+            Faites défiler horizontalement pour parcourir tout le tableau.
+        </p>
+
+        <div class="knockout-bracket-scroll">
+            <div class="knockout-bracket">
+                {% for column in knockout_bracket.columns %}
+                    <div class="knockout-bracket__col" data-round="{{ column.key }}" aria-label="{{ column.label }}">
+                        <div class="knockout-bracket__track">
+                            {% for match in column.matches %}
+                                {% include 'competition/_knockout_bracket_slot.html.twig' with { match: match } only %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="knockout-bracket__col knockout-bracket__col--finale" aria-label="Finale et match pour la troisième place">
+                    <div class="knockout-bracket__finale-stack">
+                        {% if knockout_bracket.final_match %}
+                            {% include 'competition/_knockout_bracket_slot.html.twig' with {
+                                match: knockout_bracket.final_match,
+                                highlight: true
+                            } only %}
+                        {% endif %}
+                    </div>
+
+                    <div class="knockout-bracket__third-stack">
+                        {% if knockout_bracket.third_place_match %}
+                            {% include 'competition/_knockout_bracket_slot.html.twig' with {
+                                match: knockout_bracket.third_place_match
+                            } only %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

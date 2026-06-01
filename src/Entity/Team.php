@@ -35,7 +35,7 @@ class Team
     /**
      * @var Collection<int, TeamMember>
      */
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMember::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMember::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $members;
 
     public function __construct()
@@ -147,6 +147,25 @@ class Team
         }
 
         return $this;
+    }
+
+    /**
+     * Libellé admin (index) : surnoms et e-mails des joueurs.
+     */
+    public function getMembresResume(): string
+    {
+        if ($this->members->isEmpty()) {
+            return '—';
+        }
+
+        $parts = [];
+        foreach ($this->members as $member) {
+            $nickname = trim((string) $member->getNickname());
+            $email = $member->getPlayer()?->getEmail() ?? '?';
+            $parts[] = ('' !== $nickname ? $nickname.' ('.$email.')' : $email);
+        }
+
+        return implode(' · ', $parts);
     }
 
     public function __toString(): string

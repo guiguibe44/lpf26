@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Service\LiveMatchSyncService;
 use App\Service\MatchPronosticReminderService;
+use App\Service\TeamRecapEmailService;
 use App\Service\TestMatchScenarioRunner;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,7 @@ final class CronController extends AbstractController
         private readonly ?string $cronSecret,
         private readonly LiveMatchSyncService $liveMatchSyncService,
         private readonly MatchPronosticReminderService $matchPronosticReminderService,
+        private readonly TeamRecapEmailService $teamRecapEmailService,
         private readonly TestMatchScenarioRunner $testMatchScenarioRunner,
     ) {
     }
@@ -48,6 +50,20 @@ final class CronController extends AbstractController
         }
 
         return $this->json($this->matchPronosticReminderService->processDueReminders());
+    }
+
+    #[Route('/team-recap', name: 'cron_team_recap', methods: ['GET', 'POST'])]
+    public function teamRecap(Request $request): JsonResponse
+    {
+        $denied = $this->denyUnlessValidToken($request);
+        if (null !== $denied) {
+            return $denied;
+        }
+
+        $dryRun = filter_var($request->query->get('dry_run', false), \FILTER_VALIDATE_BOOL);
+        $force = filter_var($request->query->get('force', false), \FILTER_VALIDATE_BOOL);
+
+        return $this->json($this->teamRecapEmailService->process(dryRun: $dryRun, force: $force));
     }
 
     /**

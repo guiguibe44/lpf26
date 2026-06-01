@@ -1,48 +1,20 @@
-{# Thèmes : sombre | clair | GTA (Miami masqué) #}
+{# Thèmes : par défaut (clair) | sombre | GTA #}
+{% set switcher_id = switcher_id|default('lpf-theme-switcher-label') %}
+{% set select_id = select_id|default(switcher_id ~ '-select') %}
+{% set show_legend = show_legend|default(modifier|default('') != 'sidebar') %}
 <div class="lpf-theme-switcher{% if modifier is defined and modifier %} lpf-theme-switcher--{{ modifier }}{% endif %}" data-lpf-theme-switcher>
-    <span class="lpf-theme-switcher__legend" id="{{ switcher_id|default('lpf-theme-switcher-label') }}">Thème</span>
-    <div
-        class="lpf-theme-switcher__track lpf-theme-switcher__track--triple"
-        role="group"
-        aria-labelledby="{{ switcher_id|default('lpf-theme-switcher-label') }}"
+    {% if show_legend %}
+        <label class="lpf-theme-switcher__legend" id="{{ switcher_id }}" for="{{ select_id }}">Thème</label>
+    {% endif %}
+    <select
+        id="{{ select_id }}"
+        class="lpf-theme-switcher__select"
+        data-lpf-theme-select
+        {% if show_legend %}aria-labelledby="{{ switcher_id }}"{% else %}aria-label="Thème du site"{% endif %}
+        title="Choisir le thème"
     >
-        <button
-            type="button"
-            class="lpf-theme-switcher__option"
-            data-lpf-theme-option="classic"
-            aria-pressed="false"
-            title="Thème sombre"
-        >
-            Sombre
-        </button>
-        <button
-            type="button"
-            class="lpf-theme-switcher__option lpf-theme-switcher__option--classic-light"
-            data-lpf-theme-option="classic-light"
-            aria-pressed="false"
-            title="Thème clair"
-        >
-            Clair
-        </button>
-        <button
-            type="button"
-            class="lpf-theme-switcher__option lpf-theme-switcher__option--gta"
-            data-lpf-theme-option="gta"
-            aria-pressed="false"
-            title="Thème GTA — gaming, vert néon"
-        >
-            GTA
-        </button>
-        <button
-            type="button"
-            class="lpf-theme-switcher__option lpf-theme-switcher__option--miami lpf-theme-switcher__option--hidden"
-            data-lpf-theme-option="miami"
-            aria-pressed="false"
-            aria-hidden="true"
-            tabindex="-1"
-            title="GTA clair Miami Vice"
-        >
-            Miami
-        </button>
-    </div>
+        <option value="classic-light">Par défaut</option>
+        <option value="classic">Sombre</option>
+        <option value="gta">GTA</option>
+    </select>
 </div>

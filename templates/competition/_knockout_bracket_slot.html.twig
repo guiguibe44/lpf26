@@ -1,0 +1,22 @@
+{# match: array, highlight: bool|false #}
+{% set highlight = highlight|default(false) %}
+<div class="knockout-bracket__cell">
+    <article class="knockout-bracket__slot{{ highlight ? ' knockout-bracket__slot--highlight' : '' }}">
+        {% if match.match_number %}
+            <span class="knockout-bracket__match-no">M{{ match.match_number }}</span>
+        {% endif %}
+        <div class="knockout-bracket__teams">
+            <div class="knockout-bracket__team" title="Participant à déterminer">
+                <span class="knockout-bracket__team-dot" aria-hidden="true"></span>
+                <span class="knockout-bracket__team-name">{{ match.home_label }}</span>
+            </div>
+            <div class="knockout-bracket__team">
+                <span class="knockout-bracket__team-dot" aria-hidden="true"></span>
+                <span class="knockout-bracket__team-name">{{ match.away_label }}</span>
+            </div>
+        </div>
+        <footer class="knockout-bracket__meta" title="{{ match.kickoff_label }}{% if match.city %} · {{ match.city }}{% endif %}">
+            <span class="knockout-bracket__datetime">{{ match.kickoff_short }}</span>{% if match.city %}<span class="knockout-bracket__venue">{{ match.city }}</span>{% endif %}
+        </footer>
+    </article>
+</div>

@@ -80,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = mb_strtolower(trim($email));
 
         return $this;
     }
@@ -292,7 +292,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __serialize(): array
     {
         $this->plainPassword = null;
-        $this->equipeRattachementAdmin = null;
+        // Ne pas effacer equipeRattachementAdmin : champ admin non mappé, utilisé à l’édition
+        // EasyAdmin ; le remettre à null supprimait le TeamMember à chaque sauvegarde (ex. cotisation).
 
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);

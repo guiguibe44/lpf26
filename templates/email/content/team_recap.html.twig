@@ -1,0 +1,163 @@
+<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">
+    Bonjour <strong>{{ nickname }}</strong>,
+</p>
+
+<p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:#2a2a2a;">
+    {{ recap.intro_line|raw }}
+</p>
+
+{# Joueur le moins de points sur la période — mise en avant #}
+{% if recap.laggard %}
+<div style="margin:0 0 24px;padding:20px 22px;background:linear-gradient(135deg,#fff1f2 0%,#fff 55%);border:2px solid #f97316;border-radius:12px;">
+    <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#c2410c;">
+        {{ recap.laggard.title }}
+    </p>
+    <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1b2d4f;line-height:1.3;">
+        {{ recap.laggard.nickname }}
+    </p>
+    <p style="margin:0 0 12px;font-size:15px;line-height:1.55;color:#2a2a2a;">
+        {{ recap.laggard.blurb|raw }}
+    </p>
+    <p style="margin:0;font-size:14px;color:#4b5563;">
+        <strong>{{ recap.laggard.points|number_format(0, ',', ' ') }} pt</strong> sur la période — le moins du duo
+        {% if recap.laggard.exact_scores > 0 %}
+            · {{ recap.laggard.exact_scores }} score{{ recap.laggard.exact_scores > 1 ? 's' : '' }} exact{{ recap.laggard.exact_scores > 1 ? 's' : '' }}
+        {% endif %}
+        {% if recap.laggard.good_results > 0 %}
+            · {{ recap.laggard.good_results }} bon{{ recap.laggard.good_results > 1 ? 's' : '' }} 1/N/2
+        {% endif %}
+    </p>
+    {% if recap.champion_tease %}
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:#6b7280;font-style:italic;">
+            {{ recap.champion_tease|raw }}
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+<p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">
+    Période · {{ recap.period_label }}
+</p>
+<p style="margin:0 0 20px;font-size:18px;font-weight:700;color:#1b2d4f;">
+    Équipe <strong>{{ recap.team_name }}</strong>
+    —
+    {% if recap.total_team_points > 0 %}
+        <span style="color:#16a34a;">+{{ recap.total_team_points|number_format(0, ',', ' ') }} pts</span>
+    {% else %}
+        <span style="color:#6b7280;">{{ recap.total_team_points|number_format(0, ',', ' ') }} pt</span>
+    {% endif %}
+    ({{ recap.matches_count }} match{{ recap.matches_count > 1 ? 's' : '' }})
+</p>
+
+{% if recap.ranking %}
+<div style="margin:0 0 20px;padding:14px 16px;background:#f0f4fa;border-radius:10px;border-left:4px solid #1b2d4f;">
+    <p style="margin:0 0 6px;font-size:15px;font-weight:600;color:#1b2d4f;">Classement</p>
+    {% if recap.ranking.before %}
+        <p style="margin:0 0 4px;font-size:14px;color:#4b5563;">
+            Avant : {{ recap.ranking.before.position }}<sup>e</sup> / {{ recap.ranking.before.teams_count }}
+            — {{ recap.ranking.before.total|number_format(0, ',', ' ') }} pts
+        </p>
+    {% endif %}
+    <p style="margin:0;font-size:15px;color:#2a2a2a;">
+        Maintenant : <strong>{{ recap.ranking.after.position }}<sup>e</sup></strong> / {{ recap.ranking.after.teams_count }}
+        — <strong>{{ recap.ranking.after.total|number_format(0, ',', ' ') }} pts</strong>
+    </p>
+    {% if recap.ranking_cheer %}
+        <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#2a2a2a;">
+            {{ recap.ranking_cheer|raw }}
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+<h2 style="margin:24px 0 12px;font-size:16px;color:#1b2d4f;">Matchs de la période</h2>
+
+{% for match in recap.matches %}
+<div style="margin:0 0 16px;padding:14px 16px;border:1px solid #e5e7eb;border-radius:10px;">
+    <p style="margin:0 0 4px;font-size:15px;font-weight:600;color:#1b2d4f;">
+        {{ match.label }} <span style="font-weight:400;color:#6b7280;">({{ match.score }})</span>
+    </p>
+    <p style="margin:0 0 10px;font-size:12px;color:#9ca3af;">{{ match.date }} · {{ match.team_points|number_format(0, ',', ' ') }} pts équipe</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:14px;color:#2a2a2a;">
+        {% for player in match.players %}
+        <tr>
+            <td style="padding:4px 8px 4px 0;vertical-align:top;width:38%;"><strong>{{ player.nickname }}</strong></td>
+            <td style="padding:4px 0;vertical-align:top;">
+                {% if player.prono %}
+                    {{ player.prono }}
+                    {% if player.points is not null %}
+                        · <span style="color:{% if player.outcome == 'score exact' %}#16a34a{% elseif player.outcome == 'bon 1/N/2' %}#2563eb{% else %}#6b7280{% endif %};">{{ player.points }} pts</span>
+                        <span style="color:#9ca3af;font-size:12px;">({{ player.outcome }})</span>
+                    {% endif %}
+                    {% if player.bigballs %}<span style="font-size:11px;color:#b45309;"> · {{ bigballs_term('badge') }}</span>{% endif %}
+                {% else %}
+                    <span style="color:#9ca3af;">—</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% if match.bigballs.attempted %}
+        <p style="margin:10px 0 0;font-size:12px;color:#b45309;">
+            {{ bigballs_term('name') }} : {% if match.bigballs.succeeded %}réussi ✅{% else %}tenté 🎲{% endif %}
+        </p>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% if recap.bigballs_summary.attempted > 0 %}
+<p style="margin:0 0 20px;font-size:14px;color:#4b5563;">
+    <strong>{{ bigballs_term('name_plural') }}</strong> sur la période :
+    {{ recap.bigballs_summary.succeeded }} réussi{{ recap.bigballs_summary.succeeded > 1 ? 's' : '' }}
+    / {{ recap.bigballs_summary.attempted }} tenté{{ recap.bigballs_summary.attempted > 1 ? 's' : '' }}.
+</p>
+{% endif %}
+
+{% if recap.goals is not empty %}
+<h2 style="margin:24px 0 12px;font-size:16px;color:#1b2d4f;">Buteurs qui ont fait vibrer le compteur ⚽</h2>
+<ul style="margin:0 0 20px;padding-left:1.25rem;font-size:14px;line-height:1.6;color:#2a2a2a;">
+    {% for goal in recap.goals %}
+        <li>
+            <strong>{{ goal.nickname }}</strong> ({{ goal.buteur }}) — {{ goal.match }}
+            {% if goal.minute %}· {{ goal.minute }}'{% endif %}
+            · <strong>+{{ goal.points }} pts</strong>
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if recap.jokers_placed is not empty or recap.jokers_suffered is not empty %}
+<h2 style="margin:24px 0 12px;font-size:16px;color:#1b2d4f;">Jokers 🃏</h2>
+{% if recap.jokers_placed is not empty %}
+<p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#2a2a2a;">Posés par votre équipe</p>
+<ul style="margin:0 0 14px;padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
+    {% for j in recap.jokers_placed %}
+        <li><strong>{{ j.name }}</strong> — {{ j.match }}{% if j.detail is defined %} ({{ j.detail }}){% endif %}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% if recap.jokers_suffered is not empty %}
+<p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#2a2a2a;">Subis (ou neutralisés)</p>
+<ul style="margin:0 0 20px;padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
+    {% for j in recap.jokers_suffered %}
+        <li>
+            <strong>{{ j.name }}</strong> via {{ j.from_team }} — {{ j.match }}
+            {% if j.blocked %}<span style="color:#16a34a;"> · bloqué 🛡️</span>{% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endif %}
+
+{% include 'email/content/_cta_button.html.twig' with {
+    actionUrl: teamShowUrl,
+    ctaLabel: 'Voir la fiche de mon équipe',
+} only %}
+
+<p style="margin:16px 0 0;font-size:14px;line-height:1.5;">
+    <a href="{{ rankingUrl }}" style="color:#1b2d4f;">Classement complet</a>
+</p>
+
+<p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#9ca3af;">
+    Pas envie de ce récap ? <a href="{{ accountNotificationsUrl }}" style="color:#6b7280;">Désactiver dans mes notifications</a>.
+</p>

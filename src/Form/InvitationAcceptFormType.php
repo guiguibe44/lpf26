@@ -16,7 +16,7 @@ class InvitationAcceptFormType extends AbstractType
     {
         $builder
             ->add('nickname', TextType::class, [
-                'label' => 'Votre surnom (joueur 2)',
+                'label' => $options['require_password'] ? 'Votre surnom (joueur 2)' : 'Votre surnom',
                 'constraints' => [
                     new NotBlank(message: 'Le surnom est obligatoire.'),
                     new Length(
@@ -26,8 +26,10 @@ class InvitationAcceptFormType extends AbstractType
                         maxMessage: 'Le surnom ne peut pas dépasser {{ limit }} caractères.',
                     ),
                 ],
-            ])
-            ->add('plainPassword', PasswordType::class, [
+            ]);
+
+        if ($options['require_password']) {
+            $builder->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
                 'label' => 'Mot de passe',
                 'attr' => ['autocomplete' => 'new-password'],
@@ -41,10 +43,13 @@ class InvitationAcceptFormType extends AbstractType
                     ),
                 ],
             ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'require_password' => true,
+        ]);
     }
 }

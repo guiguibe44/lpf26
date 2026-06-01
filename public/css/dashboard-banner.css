@@ -1,0 +1,71 @@
+/* Bannière dashboard — 100% largeur, 400px haut, fond centré haut */
+
+.ta-main > .dashboard-hero-banner {
+    --dashboard-banner-pad-x: 1.5rem;
+    --dashboard-banner-pad-top: 1.5rem;
+    --dashboard-banner-height: 400px;
+
+    position: relative;
+    width: calc(100% + 2 * var(--dashboard-banner-pad-x));
+    max-width: none;
+    height: var(--dashboard-banner-height);
+    margin:
+        calc(-1 * var(--dashboard-banner-pad-top))
+        calc(-1 * var(--dashboard-banner-pad-x))
+        1.25rem;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid rgb(148 163 184 / 20%);
+    border-radius: 0;
+    background: #0f172a;
+}
+
+.dashboard-hero-banner__bg {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+}
+
+html.lpf-classic-light .dashboard-hero-banner {
+    background: #e8eef5;
+}
+
+html.lpf-classic-light .dashboard-hero-banner__bg--light {
+    display: block;
+}
+
+html.dark .dashboard-hero-banner {
+    background: #0d0f12;
+}
+
+html.dark .dashboard-hero-banner__bg--dark {
+    display: block;
+}
+
+html.lpf-classic-light .ta-main > .dashboard-hero-banner {
+    border-bottom-color: #e2e8f0;
+}
+
+html.dark .ta-main > .dashboard-hero-banner {
+    border-bottom-color: rgb(148 163 184 / 15%);
+}
+
+@media (max-width: 1023px) {
+    .ta-main > .dashboard-hero-banner {
+        --dashboard-banner-pad-x: 1rem;
+        --dashboard-banner-pad-top: 6.75rem;
+    }
+
+    .front-body--cotisation-banner .ta-main > .dashboard-hero-banner {
+        --dashboard-banner-pad-top: 8rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .ta-main > .dashboard-hero-banner {
+        margin-bottom: 1rem;
+    }
+}

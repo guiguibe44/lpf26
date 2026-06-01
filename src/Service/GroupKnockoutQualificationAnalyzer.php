@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 /**
- * Détermine la qualification pour les 8es (top 2 + 8 meilleurs 3e) sur les classements de poule.
+ * Détermine la qualification pour les 16es de finale (top 2 + 8 meilleurs 3e) sur les classements de poule.
  */
 final class GroupKnockoutQualificationAnalyzer
 {

@@ -1,0 +1,124 @@
+.lpf-lightbox-trigger {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: zoom-in;
+    line-height: 0;
+    border-radius: inherit;
+}
+
+.lpf-lightbox-trigger:focus-visible {
+    outline: 2px solid var(--lpf-accent, #2563eb);
+    outline-offset: 3px;
+}
+
+.lpf-lightbox-trigger img {
+    display: block;
+    border-radius: inherit;
+}
+
+.lpf-image-lightbox {
+    width: min(96vw, 56rem);
+    max-width: 96vw;
+    max-height: 96vh;
+    margin: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+}
+
+.lpf-image-lightbox::backdrop {
+    background: rgb(15 23 42 / 82%);
+    backdrop-filter: blur(4px);
+}
+
+.lpf-image-lightbox__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 92vh;
+    padding: 2.75rem 1rem 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--lpf-surface, #fff);
+    box-shadow: 0 24px 48px rgb(15 23 42 / 28%);
+}
+
+.lpf-image-lightbox__close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--lpf-border, #e2e8f0);
+    border-radius: 999px;
+    background: var(--lpf-surface, #fff);
+    color: var(--lpf-text, #0f172a);
+    cursor: pointer;
+}
+
+.lpf-image-lightbox__close:hover {
+    background: var(--lpf-surface-muted, #f1f5f9);
+}
+
+.lpf-image-lightbox__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.lpf-image-lightbox__image {
+    display: block;
+    max-width: min(88vw, 50rem);
+    max-height: min(78vh, 42rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.35rem;
+}
+
+.lpf-image-lightbox__caption {
+    margin: 0;
+    max-width: 36rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--lpf-navy, var(--lpf-text, #0f172a));
+}
+
+html.dark .lpf-image-lightbox::backdrop {
+    background: rgb(2 6 23 / 88%);
+}
+
+html.dark .lpf-image-lightbox__panel {
+    background: var(--lpf-surface, #1e293b);
+    box-shadow: 0 24px 48px rgb(0 0 0 / 45%);
+}
+
+html.dark .lpf-image-lightbox__close {
+    background: rgb(30 41 59);
+    border-color: rgb(148 163 184 / 35%);
+    color: #f8fafc;
+}
+
+html.dark .lpf-image-lightbox__close:hover {
+    background: rgb(51 65 85);
+}
+
+html.dark .lpf-image-lightbox__caption {
+    color: #f1f5f9;
+}

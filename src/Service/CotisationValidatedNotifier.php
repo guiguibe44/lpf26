@@ -23,11 +23,11 @@ final class CotisationValidatedNotifier
     ) {
     }
 
-    public function notify(User $user): void
+    public function notify(User $user): bool
     {
         $email = trim((string) $user->getEmail());
         if ('' === $email) {
-            return;
+            return false;
         }
 
         $teamName = null;
@@ -53,11 +53,17 @@ final class CotisationValidatedNotifier
                     ->subject('Cotisation validée — accès complet LPF\'26')
                     ->html($html),
             );
+
+            $this->logger->info('E-mail cotisation validée envoyé.', ['user_email' => $email]);
+
+            return true;
         } catch (\Throwable $e) {
             $this->logger->error('Échec envoi e-mail cotisation validée.', [
                 'user_email' => $email,
                 'exception' => $e,
             ]);
+
+            return false;
         }
     }
 }

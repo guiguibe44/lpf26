@@ -4,9 +4,7 @@
 
 {% block body %}
     <div class="auth-grid ta-auth-grid">
-        <div class="auth-aside ta-auth-aside">
-            {% include 'auth/_aside_brand.html.twig' %}
-        </div>
+        {% include 'auth/_auth_aside.html.twig' %}
         <div class="ta-auth-form-wrap">
             {% for flash_error in app.flashes('reset_password_error') %}
                 <div class="flash flash-danger" role="alert" data-lpf-alert-dismiss="persist">{{ flash_error }}</div>

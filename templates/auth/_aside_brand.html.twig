@@ -1,28 +1,4 @@
-{# Logo + slogan (aléatoire). Remplace auth_slogans par ta liste définitive plus tard. #}
-{% set auth_slogans = [
-    "This ain't my first rodeo.",
-    "Ball don't lie.",
-    "Knock it out of the park.",
-    "Go big or go home.",
-    "Double-double, eh?",
-    "Keep your stick on the ice.",
-    "It's a beaut, eh?",
-    "Bonjour-hi!",
-    "Lâche pas la patate.",
-    "C'est l'fun en masse.",
-    "Faut pas se prendre au sérieux.",
-    "¡Qué onda!",
-    "Échale ganas.",
-    "Ni modo, así es esto.",
-    "Más vale tarde que nunca.",
-    "De aquí pal real.",
-] %}
-<div class="ta-auth-brand-block">
-    {% include '_lpf_brand_logo.html.twig' with {
-        img_class: 'ta-auth-logo',
-        width: 480,
-        height: 480,
-        loading: 'eager'
-    } %}
-    <p class="ta-auth-slogan">{{ random(auth_slogans) }}</p>
-</div>
+{# Citation pays (auth_bg.country) — coin bas droit, couleur selon thème #}
+<blockquote class="auth-aside__quote">
+    <p>{{ auth_bg.quote }}</p>
+</blockquote>

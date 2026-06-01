@@ -1,0 +1,259 @@
+/* Tableau de compétition — phases finales CDM 2026 */
+
+.knockout-intro__source {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+body.front-body .ta-main .knockout-page .knockout-bracket-panel {
+    width: calc(100% + 3rem);
+    max-width: none;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1rem 0.65rem 1.15rem;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.knockout-bracket-hint {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.85rem;
+    padding: 0 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.knockout-bracket-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.knockout-bracket {
+    --knockout-slot-bg: var(--lpf-surface-muted, #f8fafc);
+    --knockout-slot-border: var(--lpf-border, #cbd5e1);
+    --knockout-slot-height: 6.25rem;
+    --knockout-slot-gap: 0.55rem;
+    --bracket-lane-height: calc(16 * (var(--knockout-slot-height) + var(--knockout-slot-gap)) - var(--knockout-slot-gap));
+    --knockout-col-gap: clamp(0.5rem, 1.2vw, 1.25rem);
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+    gap: var(--knockout-col-gap);
+    width: 100%;
+    min-width: 0;
+    padding: 0.25rem 0.35rem 0.5rem;
+    box-sizing: border-box;
+}
+
+.knockout-bracket__col,
+.knockout-bracket__col--finale {
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.knockout-bracket__col--finale {
+    justify-content: center;
+}
+
+.knockout-bracket__track {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    flex: 1;
+    min-height: var(--bracket-lane-height);
+    gap: var(--knockout-slot-gap);
+    width: 100%;
+    padding: 0.15rem 0;
+    box-sizing: border-box;
+}
+
+.knockout-bracket__finale-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-height: var(--bracket-lane-height);
+    gap: var(--knockout-slot-gap);
+    width: 100%;
+    padding: 0.15rem 0;
+    box-sizing: border-box;
+}
+
+/* ——— Bloc match (même taille partout) ——— */
+
+.knockout-bracket__cell {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.knockout-bracket__col:not(:first-child) .knockout-bracket__cell {
+    margin-top: -45%;
+}
+
+.knockout-bracket__slot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.2rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: var(--knockout-slot-height);
+    min-height: var(--knockout-slot-height);
+    max-height: var(--knockout-slot-height);
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0.38rem 0.45rem 0.32rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--knockout-slot-border);
+    background: var(--knockout-slot-bg);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+    font-size: 0.72rem;
+    overflow: hidden;
+}
+
+.knockout-bracket__slot--highlight {
+    border-color: var(--lpf-primary, #22c55e);
+    background: var(--lpf-primary-muted, rgb(34 197 94 / 10%));
+    box-shadow: 0 0 0 1px var(--lpf-primary, #22c55e);
+}
+
+.knockout-bracket__match-no {
+    position: absolute;
+    top: 0.18rem;
+    right: 0.32rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    opacity: 0.55;
+}
+
+.knockout-bracket__teams {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.12rem;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.knockout-bracket__team {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.knockout-bracket__team-dot {
+    flex-shrink: 0;
+    width: 0.35rem;
+    height: 0.35rem;
+    margin-top: 0.3rem;
+    border-radius: 50%;
+    background: var(--lpf-primary, #22c55e);
+    opacity: 0.55;
+}
+
+.knockout-bracket__team-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: 500;
+    line-height: 1.12;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+.knockout-bracket__meta {
+    display: block;
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    line-height: 1.15;
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.knockout-bracket__datetime,
+.knockout-bracket__venue {
+    display: inline;
+}
+
+.knockout-bracket__venue::before {
+    content: ' · ';
+}
+
+/* ——— Thème sombre ——— */
+
+html.dark body.front-body .ta-main .knockout-bracket {
+    --knockout-slot-bg: rgb(30 41 59 / 55%);
+    --knockout-slot-border: rgb(71 85 105 / 75%);
+}
+
+html.dark body.front-body .ta-main .knockout-bracket__slot--highlight {
+    background: rgb(34 197 94 / 12%);
+}
+
+/* ——— Mobile : 5 colonnes égales en défilement ——— */
+
+@media (max-width: 1100px) {
+    body.front-body .ta-main .knockout-page .knockout-bracket-panel {
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+        margin-right: -1rem;
+    }
+
+    .knockout-bracket-hint {
+        display: flex;
+    }
+
+    .knockout-bracket {
+        grid-template-columns: repeat(5, minmax(10.25rem, 1fr));
+        min-width: 54rem;
+    }
+}
+
+@media (max-width: 767px) {
+    body.front-body .ta-main .knockout-page .knockout-bracket-panel {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        border-left: 1px solid #e2e8f0;
+        border-right: 1px solid #e2e8f0;
+        border-radius: 0.85rem;
+    }
+
+    html.dark body.front-body .ta-main .knockout-page .knockout-bracket-panel {
+        border-left-color: rgb(71 85 105 / 75%);
+        border-right-color: rgb(71 85 105 / 75%);
+    }
+
+    .knockout-bracket {
+        min-width: 50rem;
+        --knockout-slot-height: 6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .knockout-bracket {
+        min-width: 46rem;
+        grid-template-columns: repeat(5, minmax(9rem, 1fr));
+    }
+}

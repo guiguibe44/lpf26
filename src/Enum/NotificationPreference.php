@@ -16,6 +16,7 @@ enum NotificationPreference: string
     case ButeurGoalPush = 'buteur_goal_push';
     case AdminMessageEmail = 'admin_message_email';
     case AdminMessagePush = 'admin_message_push';
+    case TeamRecapEmail = 'team_recap_email';
 
     public function label(): string
     {
@@ -27,6 +28,7 @@ enum NotificationPreference: string
             self::ButeurGoalPush => 'But de mon buteur par notification push',
             self::AdminMessageEmail => 'Messages de l’organisateur par e-mail',
             self::AdminMessagePush => 'Messages de l’organisateur par push',
+            self::TeamRecapEmail => 'Récap d’équipe (tous les 2 jours)',
         };
     }
 
@@ -40,6 +42,7 @@ enum NotificationPreference: string
             self::ButeurGoalPush => 'Même alerte que l’e-mail buteur, en notification push sur cet appareil.',
             self::AdminMessageEmail => 'Annonces ou consignes envoyées manuellement par l’équipe LPF depuis l’administration.',
             self::AdminMessagePush => 'Même contenu que les messages organisateur, en notification push.',
+            self::TeamRecapEmail => 'Tous les 2 jours vers 9 h 30 (heure de Paris), si des matchs se sont terminés : bilan fun de votre équipe, star du pronostic, points, BigBalls, buteurs, classement et jokers.',
         };
     }
 
@@ -55,6 +58,7 @@ enum NotificationPreference: string
             self::ForumMentionPush => 'forum',
             self::ButeurGoalEmail, self::ButeurGoalPush => 'buteur',
             self::AdminMessageEmail, self::AdminMessagePush => 'organisateur',
+            self::TeamRecapEmail => 'recap',
         };
     }
 
@@ -65,6 +69,7 @@ enum NotificationPreference: string
             'forum' => 'Forum',
             'buteur' => 'Alertes buteur',
             'organisateur' => 'Messages organisateur',
+            'recap' => 'Récap d’équipe',
         };
     }
 
@@ -89,6 +94,6 @@ enum NotificationPreference: string
      */
     public static function categoryOrder(): array
     {
-        return ['pronostic', 'forum', 'buteur', 'organisateur'];
+        return ['pronostic', 'recap', 'forum', 'buteur', 'organisateur'];
     }
 }

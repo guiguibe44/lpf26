@@ -164,30 +164,26 @@
             </section>
             {% endif %}
 
-            {% if invitation_form and not has_team_member %}
+            {% if can_invite_teammate and invitation_form and not has_team_member %}
             <section id="invitation" class="account-card-invitation rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-2 text-lg font-semibold">Inviter mon partenaire</h2>
-                {% if team_is_full %}
-                    <p class="ta-card-text">Votre équipe est complète (2 joueurs).</p>
+                {% if pending_invitation %}
+                    <p class="ta-card-text mb-3">
+                        Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
+                        (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
+                    </p>
                 {% else %}
-                    {% if pending_invitation %}
-                        <p class="ta-card-text mb-3">
-                            Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
-                            (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
-                        </p>
-                    {% else %}
-                        <p class="ta-card-text mb-3">
-                            Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
-                        </p>
-                    {% endif %}
-                    {{ form_start(invitation_form, {'attr': {'class': 'space-y-3', 'data-turbo': 'false'}}) }}
-                        {{ form_row(invitation_form.teammateEmail) }}
-                        <button type="submit" class="btn btn-primary">
-                            {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
-                            <i class="ti ti-send" aria-hidden="true"></i>
-                        </button>
-                    {{ form_end(invitation_form) }}
+                    <p class="ta-card-text mb-3">
+                        Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
+                    </p>
                 {% endif %}
+                {{ form_start(invitation_form, {'attr': {'class': 'space-y-3', 'data-turbo': 'false'}}) }}
+                    {{ form_row(invitation_form.teammateEmail) }}
+                    <button type="submit" class="btn btn-primary">
+                        {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
+                        <i class="ti ti-send" aria-hidden="true"></i>
+                    </button>
+                {{ form_end(invitation_form) }}
             </section>
             {% endif %}
 
@@ -219,30 +215,26 @@
             </section>
             {% endif %}
 
-            {% if invitation_form and has_team_member %}
+            {% if can_invite_teammate and invitation_form and has_team_member %}
             <section id="invitation-equipe" class="account-card-invitation rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
                 <h2 class="mb-2 text-lg font-semibold">Inviter mon partenaire</h2>
-                {% if team_is_full %}
-                    <p class="ta-card-text">Votre équipe est complète (2 joueurs).</p>
+                {% if pending_invitation %}
+                    <p class="ta-card-text mb-3">
+                        Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
+                        (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
+                    </p>
                 {% else %}
-                    {% if pending_invitation %}
-                        <p class="ta-card-text mb-3">
-                            Invitation en attente pour <strong>{{ pending_invitation.invitedEmail }}</strong>
-                            (valable jusqu’au {{ pending_invitation.expiresAt|date('d/m/Y H:i') }}).
-                        </p>
-                    {% else %}
-                        <p class="ta-card-text mb-3">
-                            Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
-                        </p>
-                    {% endif %}
-                    {{ form_start(invitation_form, {'attr': {'class': 'space-y-3', 'data-turbo': 'false'}}) }}
-                        {{ form_row(invitation_form.teammateEmail) }}
-                        <button type="submit" class="btn btn-primary">
-                            {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
-                            <i class="ti ti-send" aria-hidden="true"></i>
-                        </button>
-                    {{ form_end(invitation_form) }}
+                    <p class="ta-card-text mb-3">
+                        Envoyez une invitation par e-mail à votre coéquipier pour qu’il crée son compte et rejoigne l’équipe.
+                    </p>
                 {% endif %}
+                {{ form_start(invitation_form, {'attr': {'class': 'space-y-3', 'data-turbo': 'false'}}) }}
+                    {{ form_row(invitation_form.teammateEmail) }}
+                    <button type="submit" class="btn btn-primary">
+                        {% if pending_invitation %}Renvoyer l’invitation{% else %}Envoyer l’invitation{% endif %}
+                        <i class="ti ti-send" aria-hidden="true"></i>
+                    </button>
+                {{ form_end(invitation_form) }}
             </section>
             {% endif %}
 

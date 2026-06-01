@@ -1,0 +1,34 @@
+{% set auth_bg = auth_login_backgrounds() %}
+<div class="auth-aside ta-auth-aside">
+    <picture class="auth-aside__bg auth-aside__bg--light" aria-hidden="true">
+        <source srcset="{{ asset(auth_bg.light_webp) }}" type="image/webp">
+        <img
+            src="{{ asset(auth_bg.light) }}"
+            alt=""
+            width="1200"
+            height="675"
+            loading="eager"
+            decoding="async"
+        >
+    </picture>
+    <picture class="auth-aside__bg auth-aside__bg--dark" aria-hidden="true">
+        <source srcset="{{ asset(auth_bg.dark_webp) }}" type="image/webp">
+        <img
+            src="{{ asset(auth_bg.dark) }}"
+            alt=""
+            width="1200"
+            height="675"
+            loading="eager"
+            decoding="async"
+        >
+    </picture>
+    <a href="{{ path('app_homepage') }}" class="auth-aside__logo-link" title="Accueil LPF'26">
+        {% include '_lpf_brand_logo.html.twig' with {
+            img_class: 'auth-aside__logo',
+            width: 112,
+            height: 74,
+            loading: 'eager',
+        } %}
+    </a>
+    {% include 'auth/_aside_brand.html.twig' with { auth_bg: auth_bg } only %}
+</div>

@@ -4,9 +4,7 @@
 
 {% block body %}
     <div class="auth-grid ta-auth-grid">
-        <div class="auth-aside ta-auth-aside">
-            {% include 'auth/_aside_brand.html.twig' %}
-        </div>
+        {% include 'auth/_auth_aside.html.twig' %}
         <div class="ta-auth-form-wrap">
             <h1 class="section-title ta-auth-title">Consulte ta boîte mail</h1>
             <p class="ta-auth-lead">Si un compte existe, un e-mail vient d'être envoyé avec un lien de réinitialisation.</p>

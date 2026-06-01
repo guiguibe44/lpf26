@@ -1,9 +1,10 @@
 /**
- * Bascule clair / sombre (sidebar) — compatible thème GTA via lpfTheme.
+ * Bascule clair / sombre (sidebar + pages auth).
  */
 (function () {
     const SITE_STORAGE_KEY = 'lpfSiteTheme';
     const THEME_STORAGE_KEY = 'lpfTheme';
+    const LEGACY_GTA_KEY = 'lpfGtaTheme';
     const BOUND_FLAG = 'lpfSiteThemeBound';
     const LIGHT = 'light';
     const DARK = 'dark';
@@ -13,24 +14,33 @@
         dark: '#09090b',
     };
 
-    function readLpfTheme() {
+    function migrateLegacyTheme() {
         try {
             const stored = localStorage.getItem(THEME_STORAGE_KEY);
-            if (stored === 'gta' || stored === 'miami') {
-                return stored;
+            const legacyGta = localStorage.getItem(LEGACY_GTA_KEY) === '1';
+            if (stored === 'gta' || stored === 'miami' || legacyGta) {
+                localStorage.setItem(THEME_STORAGE_KEY, 'classic-light');
+                localStorage.setItem(SITE_STORAGE_KEY, LIGHT);
+                localStorage.setItem(LEGACY_GTA_KEY, '0');
             }
         } catch (e) {
             /* ignore */
         }
-
-        return null;
     }
 
     function readStoredSiteTheme() {
+        migrateLegacyTheme();
         try {
             const stored = localStorage.getItem(SITE_STORAGE_KEY);
             if (stored === LIGHT || stored === DARK) {
                 return stored;
+            }
+            const lpf = localStorage.getItem(THEME_STORAGE_KEY);
+            if (lpf === 'classic') {
+                return DARK;
+            }
+            if (lpf === 'classic-light') {
+                return LIGHT;
             }
         } catch (e) {
             /* ignore */
@@ -40,25 +50,17 @@
     }
 
     function persistSiteTheme(theme) {
+        const resolved = theme === DARK ? DARK : LIGHT;
         try {
-            localStorage.setItem(SITE_STORAGE_KEY, theme);
-            localStorage.setItem(
-                THEME_STORAGE_KEY,
-                theme === DARK ? 'classic' : 'classic-light',
-            );
-            localStorage.setItem('lpfGtaTheme', '0');
+            localStorage.setItem(SITE_STORAGE_KEY, resolved);
+            localStorage.setItem(THEME_STORAGE_KEY, resolved === DARK ? 'classic' : 'classic-light');
+            localStorage.setItem(LEGACY_GTA_KEY, '0');
         } catch (e) {
             /* ignore */
         }
     }
 
-    function applyClassicTheme(theme) {
-        if (window.lpfTheme && typeof window.lpfTheme.applyTheme === 'function') {
-            window.lpfTheme.applyTheme(theme === DARK ? 'classic' : 'classic-light');
-
-            return;
-        }
-
+    function applyTheme(theme) {
         const resolved = theme === DARK ? DARK : LIGHT;
         const html = document.documentElement;
         const body = document.body;
@@ -85,6 +87,8 @@
         if (meta) {
             meta.setAttribute('content', META_COLOR[resolved]);
         }
+
+        syncToggleUi(resolved);
     }
 
     function syncToggleUi(theme) {
@@ -107,19 +111,9 @@
     }
 
     function toggleTheme() {
-        const lpf = readLpfTheme();
-        if (lpf === 'gta' || lpf === 'miami') {
-            if (window.lpfTheme && typeof window.lpfTheme.setTheme === 'function') {
-                window.lpfTheme.setTheme('classic-light');
-            }
-
-            return;
-        }
-
         const next = readStoredSiteTheme() === DARK ? LIGHT : DARK;
         persistSiteTheme(next);
-        applyClassicTheme(next);
-        syncToggleUi(next);
+        applyTheme(next);
     }
 
     function onClick(event) {
@@ -143,20 +137,9 @@
 
     function boot() {
         bindEventsOnce();
-
-        const lpf = readLpfTheme();
-        if (lpf === 'gta' || lpf === 'miami') {
-            if (window.lpfTheme && typeof window.lpfTheme.applyTheme === 'function') {
-                window.lpfTheme.applyTheme(lpf);
-            }
-
-            return;
-        }
-
         const site = readStoredSiteTheme();
         persistSiteTheme(site);
-        applyClassicTheme(site);
-        syncToggleUi(site);
+        applyTheme(site);
     }
 
     document.addEventListener('turbo:load', boot);
@@ -171,8 +154,7 @@
         setTheme: (theme) => {
             const resolved = theme === DARK ? DARK : LIGHT;
             persistSiteTheme(resolved);
-            applyClassicTheme(resolved);
-            syncToggleUi(resolved);
+            applyTheme(resolved);
         },
         toggle: toggleTheme,
     };

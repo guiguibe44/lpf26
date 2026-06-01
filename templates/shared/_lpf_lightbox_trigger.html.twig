@@ -1,0 +1,21 @@
+{# src : URL publique de l’image (null = placeholder sans lightbox) #}
+{% if src %}
+    <button
+        type="button"
+        class="lpf-lightbox-trigger {{ btn_class|default('') }}"
+        data-lpf-lightbox-open
+        data-lpf-lightbox-src="{{ src }}"
+        data-lpf-lightbox-title="{{ title|default('') }}"
+        aria-label="Agrandir {{ title|default('l’image') }}"
+    >
+        <img
+            src="{{ src }}"
+            alt="{{ alt|default('') }}"
+            class="{{ img_class|default('') }}"
+            loading="lazy"
+            decoding="async"
+        >
+    </button>
+{% else %}
+    <span class="lpf-lightbox-placeholder {{ placeholder_class|default('') }}" aria-hidden="true">{{ placeholder|default('?') }}</span>
+{% endif %}

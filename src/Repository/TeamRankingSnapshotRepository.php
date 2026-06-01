@@ -116,4 +116,36 @@ class TeamRankingSnapshotRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findLatestForTeamBefore(Team $team, \DateTimeImmutable $before): ?TeamRankingSnapshot
+    {
+        return $this->createQueryBuilder('s')
+            ->addSelect('m')
+            ->join('s.matchRef', 'm')
+            ->andWhere('s.team = :team')
+            ->andWhere('m.dateHeure < :before')
+            ->setParameter('team', $team)
+            ->setParameter('before', $before)
+            ->orderBy('m.dateHeure', 'DESC')
+            ->addOrderBy('m.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findLatestForTeamUpTo(Team $team, \DateTimeImmutable $upTo): ?TeamRankingSnapshot
+    {
+        return $this->createQueryBuilder('s')
+            ->addSelect('m')
+            ->join('s.matchRef', 'm')
+            ->andWhere('s.team = :team')
+            ->andWhere('m.dateHeure < :upTo')
+            ->setParameter('team', $team)
+            ->setParameter('upTo', $upTo)
+            ->orderBy('m.dateHeure', 'DESC')
+            ->addOrderBy('m.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

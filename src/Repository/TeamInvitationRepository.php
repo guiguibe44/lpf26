@@ -18,10 +18,17 @@ class TeamInvitationRepository extends ServiceEntityRepository
         parent::__construct($registry, TeamInvitation::class);
     }
 
-    public function findValidByToken(string $token): ?TeamInvitation
+    public function findByToken(string $token): ?TeamInvitation
     {
         /** @var TeamInvitation|null $invitation */
         $invitation = $this->findOneBy(['token' => $token]);
+
+        return $invitation;
+    }
+
+    public function findValidByToken(string $token): ?TeamInvitation
+    {
+        $invitation = $this->findByToken($token);
 
         if (null === $invitation || $invitation->isAccepted() || $invitation->isExpired()) {
             return null;

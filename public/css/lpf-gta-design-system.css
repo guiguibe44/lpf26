@@ -46,6 +46,8 @@ html.lpf-gta-theme {
     --lpf-muted: var(--text-secondary);
     --lpf-primary: var(--accent-green);
     --lpf-link: var(--accent-green);
+    --gta-wall-green: linear-gradient(165deg, #6ef064 0%, #4ade40 38%, #2f9e28 100%);
+    --gta-wall-crack: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Cg fill='none' stroke='%230a1408' stroke-opacity='0.4' stroke-width='1.4'%3E%3Cpath d='M0 52 Q45 48 78 56 T200 50'/%3E%3Cpath d='M8 78 Q90 74 140 80 T200 76'/%3E%3Cpath d='M42 8 L40 38 L46 62 L44 95'/%3E%3Cpath d='M118 4 L114 42 L122 68 L120 98'/%3E%3Cpath d='M165 12 L162 48 L168 88'/%3E%3C/g%3E%3Cg stroke='%231a3d14' stroke-opacity='0.28' stroke-width='0.9'%3E%3Cpath d='M72 22 L68 55 L74 82'/%3E%3Cpath d='M155 28 L150 58 L158 90'/%3E%3Cpath d='M25 35 L30 60 L22 85'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 html.lpf-gta-theme,
@@ -83,9 +85,11 @@ html.lpf-gta-theme .match-card {
 }
 
 html.lpf-gta-theme .ta-card:hover,
-html.lpf-gta-theme .match-card:hover {
-    border-color: var(--border-hover) !important;
-    box-shadow: 0 0 20px var(--accent-green-glow);
+html.lpf-gta-theme .match-card:hover,
+html.lpf-gta-theme .rounded-box:hover {
+    border-color: var(--border-default) !important;
+    box-shadow: var(--gta-shadow-card, 0 4px 16px rgb(0 0 0 / 35%)) !important;
+    transform: none !important;
 }
 
 /* Liens */
@@ -101,33 +105,62 @@ html.lpf-gta-theme .ta-main a:not(.btn):not(.ta-menu-link):hover {
     text-decoration: underline;
 }
 
-/* Boutons — design system */
-html.lpf-gta-theme .ta-shell .btn-primary,
-html.lpf-gta-theme .ta-main .btn-primary,
-html.lpf-gta-theme body.front-body--auth .btn-primary {
+/* Boutons — mur vert fissuré (surcharge premium + lpf-gta-buttons) */
+html.lpf-gta-theme .ta-shell .btn.btn-primary:not(.btn-sm):not(.btn-circle):not(.btn-square):not(.match-pronostic-submit):not(.btn-text),
+html.lpf-gta-theme .ta-main .btn.btn-primary:not(.btn-sm):not(.btn-circle):not(.btn-square):not(.match-pronostic-submit):not(.btn-text),
+html.lpf-gta-theme body.front-body--auth .btn-primary,
+html.lpf-gta-theme body.front-body--auth .ta-auth-submit,
+html.lpf-gta-theme body.front-body--auth .auth-wrap button[type="submit"],
+html.lpf-gta-theme .app-cotisation-banner-wrap .btn.btn-primary {
+    position: relative !important;
+    overflow: hidden !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 10px 16px !important;
+    min-height: 42px !important;
     font-family: var(--gta-font-display) !important;
-    font-size: 1.125rem !important;
+    font-size: 1rem !important;
     letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
-    color: var(--text-primary) !important;
-    background: var(--bg-secondary) !important;
-    border: 1.5px solid var(--border-light) !important;
+    color: #0a0f08 !important;
+    border: 1.5px solid #2d7a28 !important;
     border-radius: var(--gta-radius) !important;
-    padding: 12px 28px !important;
-    min-height: auto !important;
-    box-shadow: none !important;
-    transition: all 0.25s ease !important;
+    background-color: #4ade40 !important;
+    background-image: var(--gta-wall-crack), var(--gta-wall-green) !important;
+    background-size: 160% 160%, 100% 100% !important;
+    background-position: center, center !important;
+    background-repeat: no-repeat, no-repeat !important;
+    background-clip: border-box !important;
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 25%),
+        inset 0 -2px 6px rgb(0 0 0 / 18%),
+        0 3px 10px rgb(0 0 0 / 35%) !important;
+    transition:
+        filter 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease !important;
 }
 
-html.lpf-gta-theme .ta-shell .btn-primary:hover,
-html.lpf-gta-theme .ta-main .btn-primary:hover,
-html.lpf-gta-theme body.front-body--auth .btn-primary:hover {
-    background: var(--accent-green) !important;
-    border-color: var(--accent-green) !important;
-    color: #000 !important;
+html.lpf-gta-theme .ta-shell .btn.btn-primary:not(.btn-sm):not(.btn-circle):not(.btn-square):not(.match-pronostic-submit):not(.btn-text)::before,
+html.lpf-gta-theme body.front-body--auth .ta-auth-submit::before,
+html.lpf-gta-theme body.front-body--auth .auth-wrap button[type="submit"]::before {
+    display: none !important;
+}
+
+html.lpf-gta-theme .ta-shell .btn.btn-primary:not(.btn-sm):hover:not(:disabled),
+html.lpf-gta-theme .ta-main .btn.btn-primary:not(.btn-sm):hover:not(:disabled),
+html.lpf-gta-theme body.front-body--auth .btn-primary:hover,
+html.lpf-gta-theme body.front-body--auth .ta-auth-submit:hover:not(:disabled),
+html.lpf-gta-theme body.front-body--auth .auth-wrap button[type="submit"]:hover:not(:disabled) {
+    filter: brightness(1.06) saturate(1.05) !important;
+    transform: translateY(-1px) !important;
+    border-color: #3bc933 !important;
+    color: #050805 !important;
     box-shadow:
-        0 0 20px var(--accent-green-glow),
-        0 0 40px rgb(74 222 64 / 10%) !important;
+        inset 0 1px 0 rgb(255 255 255 / 30%),
+        inset 0 -2px 8px rgb(0 0 0 / 22%),
+        0 5px 14px rgb(0 0 0 / 4%) !important;
 }
 
 html.lpf-gta-theme .ta-shell .btn-outline,
@@ -135,26 +168,28 @@ html.lpf-gta-theme .ta-main .btn-outline,
 html.lpf-gta-theme .ta-shell .btn-secondary,
 html.lpf-gta-theme .ta-main .btn-secondary {
     font-family: var(--gta-font-display) !important;
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
     color: var(--text-primary) !important;
-    background: transparent !important;
+    background: var(--bg-secondary) !important;
     border: 1.5px solid var(--border-light) !important;
     border-radius: var(--gta-radius) !important;
-    padding: 10px 24px !important;
-    min-height: auto !important;
+    padding: 8px 14px !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
     box-shadow: none !important;
-    transition: all 0.25s ease !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
 }
 
 html.lpf-gta-theme .ta-shell .btn-outline:hover,
 html.lpf-gta-theme .ta-main .btn-outline:hover,
 html.lpf-gta-theme .ta-shell .btn-secondary:hover,
 html.lpf-gta-theme .ta-main .btn-secondary:hover {
-    border-color: var(--accent-green) !important;
-    color: var(--accent-green) !important;
-    box-shadow: 0 0 15px var(--accent-green-glow) !important;
+    border-color: var(--border-light) !important;
+    color: var(--text-primary) !important;
+    background: var(--bg-tertiary) !important;
+    box-shadow: none !important;
 }
 
 /* Badges titres */

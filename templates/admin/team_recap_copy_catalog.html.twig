@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Textes récap d’équipe · Admin{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-mail-forward" aria-hidden="true"></i>
+                Modèles de textes — récap d’équipe
+            </h1>
+            <p class="ta-page-subtitle">
+                E-mail bi-quotidien (9 h 30, Paris). Lecture seule des cas —
+                <a href="{{ path(catalog.edit_url) }}" class="font-semibold">modifier les phrases</a>
+                · <a href="{{ preview_url }}" target="_blank" rel="noopener">Aperçu HTML</a>
+            </p>
+        </div>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Planification</h2>
+        <ul class="ta-card-text" style="margin: 0; padding-left: 1.25rem;">
+            <li><strong>Fréquence :</strong> {{ catalog.schedule.interval }}</li>
+            <li><strong>Heure :</strong> {{ catalog.schedule.send_time }}</li>
+            <li><strong>Cron HTTP :</strong> <code>{{ catalog.schedule.cron_url }}</code> (cron-job.org, GET, quotidien à 9 h 30 — le serveur n’envoie que tous les 2 jours)</li>
+            <li><strong>CLI :</strong> <code>{{ catalog.schedule.command }}</code> (<code>--dry-run</code>, <code>--force</code>)</li>
+        </ul>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Objet de l’e-mail</h2>
+        <div class="admin-push-history-table-wrap">
+            <table class="admin-push-history-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cas</th>
+                        <th scope="col">Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in catalog.subjects %}
+                        <tr>
+                            <td>{{ row.condition }}</td>
+                            <td><code>{{ row.example }}</code></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Accroche d’ouverture (après « Bonjour {surnom} »)</h2>
+        <p class="ta-card-text"><em>{{ catalog.intro_pick_note }}</em></p>
+        {% for pool in catalog.intro_pools %}
+            <h3 class="text-base font-semibold mt-4 mb-2">{{ pool.label }} — <span class="font-normal text-base-content/70">{{ pool.condition }}</span></h3>
+            <ul class="ta-card-text" style="padding-left: 1.25rem;">
+                {% for line in pool.lines %}
+                    <li><code class="text-xs">{{ line.code }}</code> — {{ line.body|raw }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        {% if catalog.intro_extras is not empty %}
+            <h3 class="text-base font-semibold mt-4 mb-2">Ajout possible</h3>
+            <ul class="ta-card-text" style="padding-left: 1.25rem;">
+                {% for extra in catalog.intro_extras %}
+                    <li><strong>{{ extra.condition }}</strong> : {{ extra.line|raw }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">👆 Joueur le moins de points (mise en avant)</h2>
+        <p class="ta-card-text">On pointe le coéquipier qui a le <strong>moins gagné</strong> sur la période (pronos + buteurs), pas le meilleur.</p>
+        <div class="admin-push-history-table-wrap">
+            <table class="admin-push-history-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cas</th>
+                        <th scope="col">Titre</th>
+                        <th scope="col">Texte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in catalog.laggard_variants %}
+                        <tr>
+                            <td>{{ row.condition }}</td>
+                            <td><strong>{{ row.example.title }}</strong></td>
+                            <td colspan="1">{{ row.example.blurb|raw }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Rappel du meilleur coéquipier (sous l’encadré)</h2>
+        <div class="admin-push-history-table-wrap">
+            <table class="admin-push-history-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cas</th>
+                        <th scope="col">Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in catalog.champion_teases %}
+                        <tr>
+                            <td>{{ row.condition }}</td>
+                            <td><em>{{ row.example|raw }}</em></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Placeholders</h2>
+        <ul class="ta-card-text" style="margin:0;padding-left:1.25rem;">
+            {% for hint in catalog.placeholders %}
+                <li><code>{{ hint }}</code></li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Classement — phrase d’ambiance</h2>
+        <div class="admin-push-history-table-wrap">
+            <table class="admin-push-history-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cas</th>
+                        <th scope="col">Exemple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in catalog.ranking_cheers %}
+                        <tr>
+                            <td>{{ row.condition }}</td>
+                            <td>
+                                {% if row.example %}
+                                    {{ row.example|raw }}
+                                {% else %}
+                                    <span class="text-base-content/50">— (aucune phrase)</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="ta-card admin-recap-catalog" style="margin-bottom: 1.5rem;">
+        <h2 class="ta-card-title">Blocs structurels (données réelles)</h2>
+        {% for block in catalog.static_blocks %}
+            <h3 class="text-base font-semibold mt-3 mb-1">{{ block.title }}</h3>
+            <ul class="ta-card-text" style="padding-left: 1.25rem; margin-bottom: 0.75rem;">
+                {% for text in block.texts %}
+                    <li>{{ text }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </section>
+
+    <p class="admin-push-form__actions">
+        <a href="{{ path(catalog.edit_url) }}" class="btn btn-primary btn-sharp">
+            <i class="ti ti-edit" aria-hidden="true"></i>
+            Modifier les textes
+        </a>
+        <a href="{{ preview_url }}" class="btn btn-outline btn-primary btn-sharp" target="_blank" rel="noopener">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+            Ouvrir l’aperçu e-mail (exemple riche)
+        </a>
+        <a href="{{ path('admin') }}" class="admin-push-form__back" style="margin-left: 1rem;">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i>
+            Retour admin
+        </a>
+    </p>
+{% endblock %}

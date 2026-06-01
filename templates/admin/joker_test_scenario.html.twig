@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Scénario jokers · Admin{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin-qa-checklist.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/admin-joker-test-scenario.css') }}?v=1">
+{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar admin-qa-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-mask" aria-hidden="true"></i>
+                Scénario jokers (A / B / C)
+            </h1>
+            <p class="ta-page-subtitle">
+                3 matchs demain matin, jokers pré-posés. Avancez le déroulé étape par étape et contrôlez les points.
+            </p>
+        </div>
+        <div class="admin-qa-topbar__actions">
+            <a href="{{ path('admin_compet_checklist') }}" class="btn btn-outline btn-sm">Checklist compétition</a>
+            <a href="{{ path('admin') }}" class="btn btn-outline btn-sm">EasyAdmin</a>
+        </div>
+    </section>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash flash--{{ label }}" role="status">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    {% if not dashboard.initialized %}
+        <section class="ta-card joker-scenario-card">
+            <p>{{ dashboard.message }}</p>
+            <pre class="joker-scenario-cli">php bin/console app:joker-test:setup</pre>
+        </section>
+    {% else %}
+        <section class="ta-card joker-scenario-card joker-scenario-card--progress">
+            <div class="joker-scenario-progress">
+                <span class="joker-scenario-progress__label">
+                    Étape {{ dashboard.step_index + 1 }} / {{ dashboard.step_total }}
+                </span>
+                <strong>{{ dashboard.current_step.label }}</strong>
+                <p class="ta-card-text">{{ dashboard.current_step.description }}</p>
+            </div>
+            <div class="joker-scenario-card__actions">
+                {% if dashboard.can_advance %}
+                    <form method="post" action="{{ path('admin_joker_test_scenario_advance') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('joker_test_advance') }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-player-play" aria-hidden="true"></i>
+                            Étape suivante
+                            {% if dashboard.next_step %}({{ dashboard.next_step.label }}){% endif %}
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="joker-scenario-done"><i class="ti ti-circle-check" aria-hidden="true"></i> Scénario terminé.</p>
+                {% endif %}
+                <form method="post" action="{{ path('admin_joker_test_scenario_reset_progress') }}" onsubmit="return confirm('Remettre les matchs à SCHEDULED et l’index d’étape à 0 ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('joker_test_reset') }}">
+                    <button type="submit" class="btn btn-outline btn-sm">Réinitialiser la progression</button>
+                </form>
+            </div>
+            <p class="joker-scenario-meta ta-card-text">
+                Initialisé le {{ dashboard.seeded_at|date('d/m/Y H:i') }} —
+                relance complète : <code>php bin/console app:joker-test:setup</code>
+            </p>
+        </section>
+
+        <section class="ta-card joker-scenario-card">
+            <h2 class="joker-scenario-section-title">Comptes test</h2>
+            <p class="ta-card-text">Mot de passe commun : <strong>{{ constant('App\\Data\\JokerTestScenarioDefinition::DEFAULT_PASSWORD') }}</strong></p>
+            <table class="joker-scenario-table">
+                <thead>
+                    <tr><th>Équipe</th><th>E-mail</th></tr>
+                </thead>
+                <tbody>
+                    {% for account in dashboard.accounts %}
+                        <tr>
+                            <td>{{ account.team }}</td>
+                            <td><code>{{ account.email }}</code></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="ta-card joker-scenario-card">
+            <h2 class="joker-scenario-section-title">Plan jokers (avant CO)</h2>
+            <ul class="joker-scenario-plan">
+                {% for placement in dashboard.joker_plan %}
+                    <li>
+                        M{{ placement.match_index + 1 }} — <strong>{{ placement.team }}</strong> :
+                        <code>{{ placement.joker }}</code>
+                        {% if placement.target %} → {{ placement.target }}{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        {% for key, team in dashboard.teams %}
+            <section class="ta-card joker-scenario-card">
+                <h2 class="joker-scenario-section-title">Équipe {{ key }} — {{ team.name }}</h2>
+                {% if team.favorite_country %}
+                    <p class="ta-card-text">Équipe favorite : <strong>{{ team.favorite_country }}</strong></p>
+                {% endif %}
+                <ul>
+                    {% for member in team.members %}
+                        <li><code>{{ member.email }}</code> ({{ member.nickname }}) — buteur {{ member.buteur }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endfor %}
+
+        {% for index, match in dashboard.matches %}
+            <section class="ta-card joker-scenario-card">
+                <h2 class="joker-scenario-section-title">
+                    M{{ index + 1 }} — {{ match.label }}
+                    <span class="joker-scenario-badge joker-scenario-badge--{{ match.statut|lower }}">{{ match.statut }}</span>
+                </h2>
+                <p class="ta-card-text">
+                    {{ match.kickoff }} · Score <strong>{{ match.score }}</strong>
+                    · <a href="{{ match.live_url }}">Vue live</a>
+                </p>
+
+                {% if match.jokers|length > 0 %}
+                    <h3 class="joker-scenario-subtitle">Jokers</h3>
+                    <ul class="joker-scenario-jokers">
+                        {% for j in match.jokers %}
+                            <li>
+                                <strong>{{ j.team }}</strong> — {{ j.name }}
+                                {% if j.target %} → {{ j.target }}{% endif %}
+                                {% if j.effect_blocked %}
+                                    <span class="joker-scenario-tag joker-scenario-tag--blocked">effet bloqué</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <h3 class="joker-scenario-subtitle">Pronostics & points</h3>
+                <table class="joker-scenario-table">
+                    <thead>
+                        <tr>
+                            <th>Équipe</th>
+                            <th>Joueur</th>
+                            <th>Prono</th>
+                            <th>Pts joueur</th>
+                            <th>Pts équipe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in match.pronostics %}
+                            <tr>
+                                <td>{{ p.team }}</td>
+                                <td><code>{{ p.email }}</code></td>
+                                <td>{{ p.prono }}</td>
+                                <td>{{ p.points ?? '—' }}</td>
+                                <td>{{ p.points_equipe ?? '—' }}</td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="5">Aucun prono</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if match.rankings|length > 0 %}
+                    <h3 class="joker-scenario-subtitle">Classement équipes (snapshot)</h3>
+                    <table class="joker-scenario-table joker-scenario-table--compact">
+                        <thead>
+                            <tr><th>Pos.</th><th>Équipe</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for r in match.rankings %}
+                                <tr>
+                                    <td>{{ r.position }}</td>
+                                    <td>{{ r.team }}</td>
+                                    <td>{{ r.total_points }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </section>
+        {% endfor %}
+
+        <section class="ta-card joker-scenario-card">
+            <h2 class="joker-scenario-section-title">Timeline</h2>
+            <ol class="joker-scenario-timeline">
+                {% for step in dashboard.steps %}
+                    <li class="{{ loop.index0 < dashboard.step_index ? 'is-done' : (loop.index0 == dashboard.step_index ? 'is-current' : '') }}">
+                        <span class="joker-scenario-timeline__label">{{ step.label }}</span>
+                    </li>
+                {% endfor %}
+            </ol>
+        </section>
+    {% endif %}
+{% endblock %}

@@ -399,4 +399,27 @@ class GameMatchRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Matchs terminés (scores renseignés) dont la finalisation tombe dans la période [start, end[.
+     *
+     * @return list<GameMatch>
+     */
+    public function findFinishedFinalizedInPeriod(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        return $this->createQueryBuilder('m')
+            ->addSelect('hd', 'aw')
+            ->join('m.paysDomicile', 'hd')
+            ->join('m.paysExterieur', 'aw')
+            ->andWhere('m.scoreDomicile IS NOT NULL')
+            ->andWhere('m.scoreExterieur IS NOT NULL')
+            ->andWhere('COALESCE(m.liveScoresFinalizedAt, m.dateHeure) >= :start')
+            ->andWhere('COALESCE(m.liveScoresFinalizedAt, m.dateHeure) < :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('m.dateHeure', 'ASC')
+            ->addOrderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

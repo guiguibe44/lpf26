@@ -60,6 +60,8 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToRoute('Messages forum', 'fas fa-comments', 'admin_forum_post_index'),
                 MenuItem::linkToRoute('Messages manuels', 'fas fa-paper-plane', 'admin_manual_messages'),
                 MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history'),
+                MenuItem::linkToRoute('Textes récap d’équipe', 'fas fa-envelope-open-text', 'admin_team_recap_copy_index'),
+                MenuItem::linkToRoute('Catalogue récap (lecture)', 'fas fa-book-open', 'admin_team_recap_copy_catalog'),
             ]);
 
         yield MenuItem::linkToRoute('Checklist de recette', 'fas fa-list-check', 'admin_qa_checklist');

@@ -5,14 +5,19 @@
 
 {% block body %}
     <div class="auth-grid ta-auth-grid">
-        <div class="auth-aside ta-auth-aside">
-            {% include 'auth/_aside_brand.html.twig' %}
-        </div>
+        {% include 'auth/_auth_aside.html.twig' %}
         <div class="ta-auth-form-wrap">
             <h1 class="section-title ta-auth-title">Finaliser ton inscription</h1>
-            <p class="ta-auth-lead">Tu as ete invite a rejoindre l'equipe <strong>{{ invitation.team.name }}</strong> ({{ invitation.invitedEmail }}). Choisis un surnom visible par ton partenaire et un mot de passe pour acceder a ton compte.</p>
+            <p class="ta-auth-lead">
+                Tu as été invité à rejoindre l’équipe <strong>{{ invitation.team.name }}</strong> ({{ invitation.invitedEmail }}).
+                {% if existing_account|default(false) %}
+                    Choisis ton surnom pour rejoindre l’équipe (tu es déjà connecté).
+                {% else %}
+                    Choisis un surnom visible par ton partenaire et un mot de passe pour accéder à ton compte.
+                {% endif %}
+            </p>
 
-            <div class="ta-auth-separator">Compte joueur 2</div>
+            <div class="ta-auth-separator">{% if existing_account|default(false) %}Rejoindre l’équipe{% else %}Compte joueur 2{% endif %}</div>
 
             {% if form.vars.submitted and form.vars.errors|length > 0 %}
                 <div class="flash flash-danger mb-4" role="alert" data-lpf-alert-dismiss="persist">
@@ -29,10 +34,12 @@
                 {{ form_row(form.nickname, {'label': 'Surnom*'}) }}
                 {{ form_row(form.plainPassword, {'label': 'Mot de passe*'}) }}
                 <button type="submit" class="ta-auth-submit">
-                    Valider mon inscription
+                    {% if existing_account|default(false) %}Rejoindre l’équipe{% else %}Valider mon inscription{% endif %}
                     <i class="ti ti-check" aria-hidden="true"></i>
                 </button>
-                <p class="ta-auth-link-row">Deja un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+                {% if not existing_account|default(false) %}
+                <p class="ta-auth-link-row">Déjà un compte ? <a href="{{ path('app_login', {_target_path: app.request.requestUri}) }}">Se connecter</a></p>
+                {% endif %}
             {{ form_end(form) }}
         </div>
     </div>

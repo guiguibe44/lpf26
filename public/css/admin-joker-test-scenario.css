@@ -1,0 +1,127 @@
+/* Scénario jokers — page admin */
+
+.joker-scenario-card {
+    margin-bottom: 1.25rem;
+}
+
+.joker-scenario-card--progress {
+    display: grid;
+    gap: 1rem;
+}
+
+.joker-scenario-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.joker-scenario-progress__label {
+    display: block;
+    font-size: 0.875rem;
+    opacity: 0.85;
+    margin-bottom: 0.25rem;
+}
+
+.joker-scenario-cli {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 0.9rem;
+}
+
+.joker-scenario-meta code {
+    font-size: 0.85em;
+}
+
+.joker-scenario-section-title {
+    font-size: 1.125rem;
+    margin: 0 0 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.joker-scenario-subtitle {
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem;
+}
+
+.joker-scenario-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.joker-scenario-table th,
+.joker-scenario-table td {
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.joker-scenario-table--compact {
+    max-width: 20rem;
+}
+
+.joker-scenario-plan,
+.joker-scenario-jokers {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.joker-scenario-badge {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.joker-scenario-badge--scheduled {
+    background: rgba(100, 116, 139, 0.2);
+}
+
+.joker-scenario-badge--live {
+    background: rgba(34, 197, 94, 0.2);
+}
+
+.joker-scenario-badge--finished {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.joker-scenario-tag {
+    font-size: 0.75rem;
+    margin-left: 0.35rem;
+}
+
+.joker-scenario-tag--blocked {
+    color: #b45309;
+}
+
+.joker-scenario-timeline {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.joker-scenario-timeline li {
+    margin-bottom: 0.35rem;
+    opacity: 0.55;
+}
+
+.joker-scenario-timeline li.is-done {
+    opacity: 0.85;
+    text-decoration: line-through;
+}
+
+.joker-scenario-timeline li.is-current {
+    opacity: 1;
+    font-weight: 600;
+    list-style-type: disc;
+}
+
+.joker-scenario-done {
+    margin: 0;
+    font-weight: 600;
+}

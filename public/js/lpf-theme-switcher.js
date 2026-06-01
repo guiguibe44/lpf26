@@ -1,5 +1,5 @@
 /**
- * Thèmes LPF'26 : classique sombre | classique clair | GTA.
+ * Thèmes LPF'26 : par défaut (clair) | sombre | GTA.
  */
 (function () {
     const STORAGE_KEY = 'lpfTheme';
@@ -73,32 +73,9 @@
 
     function syncSwitcherUi(theme) {
         const uiTheme = PUBLIC_THEMES.includes(theme) ? theme : DEFAULT_THEME;
-        document.querySelectorAll('[data-lpf-theme-option]').forEach((btn) => {
-            if (btn.classList.contains('lpf-theme-switcher__option--hidden')) {
-                return;
-            }
-            const value = btn.getAttribute('data-lpf-theme-option');
-            const active = value === uiTheme;
-            btn.classList.toggle('is-active', active);
-            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-        });
-    }
-
-    function syncSiteThemeToggle(theme) {
-        const isDark = theme === 'classic' || theme === 'gta';
-        document.querySelectorAll('[data-lpf-site-theme-toggle]').forEach((btn) => {
-            btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-            btn.setAttribute(
-                'title',
-                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
-            );
-            btn.setAttribute(
-                'aria-label',
-                isDark ? 'Passer en mode clair' : 'Passer en mode sombre',
-            );
-            const icon = btn.querySelector('[data-lpf-site-theme-icon]');
-            if (icon) {
-                icon.className = isDark ? 'ti ti-sun' : 'ti ti-moon';
+        document.querySelectorAll('[data-lpf-theme-select]').forEach((select) => {
+            if (PUBLIC_THEMES.includes(uiTheme)) {
+                select.value = uiTheme;
             }
         });
     }
@@ -144,7 +121,6 @@
 
         setMetaThemeColor(resolved);
         syncSwitcherUi(resolved);
-        syncSiteThemeToggle(resolved);
     }
 
     function setTheme(theme) {
@@ -155,16 +131,13 @@
         applyTheme(theme);
     }
 
-    function onClick(event) {
-        const btn = event.target.closest('[data-lpf-theme-option]');
-        if (!btn || btn.classList.contains('lpf-theme-switcher__option--hidden')) {
+    function onSelectChange(event) {
+        const select = event.target.closest('[data-lpf-theme-select]');
+        if (!select) {
             return;
         }
 
-        event.preventDefault();
-        event.stopPropagation();
-
-        const value = btn.getAttribute('data-lpf-theme-option');
+        const value = select.value;
         if (PUBLIC_THEMES.includes(value)) {
             setTheme(value);
         }
@@ -181,7 +154,7 @@
         applyTheme(stored);
     }
 
-    document.addEventListener('click', onClick, true);
+    document.addEventListener('change', onSelectChange, true);
     document.addEventListener('DOMContentLoaded', init);
     document.addEventListener('turbo:load', init);
     document.addEventListener('turbo:render', init);

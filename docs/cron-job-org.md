@@ -31,6 +31,7 @@ Base du site prod : **`https://26.lotopotofoot.fr`** (sans `/l` — pas de préf
 | **Vider le cache Symfony après déploiement FTP** (ponctuel) | `https://26.lotopotofoot.fr/cron-cache-flush.php?token=VOTRE_SECRET` |
 | Synchro scores / buts (3 min) | `https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET` |
 | Relances pronostic (5 min) | `https://26.lotopotofoot.fr/cron/pronostic-reminders?token=VOTRE_SECRET` |
+| Récap d’équipe par e-mail (tous les 2 jours, **9 h 30** Paris) | `https://26.lotopotofoot.fr/cron/team-recap?token=VOTRE_SECRET` |
 | Match test manuel (ponctuel, **une URL par étape**) | `https://26.lotopotofoot.fr/cron/test-match-step?token=VOTRE_SECRET&match_id=ID&step=…` |
 
 Ne pas utiliser `lotopotofoot.fr` ni `www.lotopotofoot.fr` (redirection vers l’ancien site).
@@ -93,6 +94,16 @@ curl -sS "https://26.lotopotofoot.fr/cron/live-match-sync?token=VOTRE_SECRET"
 6. Enregistrer
 
 À chaque exécution, ce cron fait aussi le **coup d’envoi** des matchs encore « Programmé » dont l’heure est passée : statut **LIVE**, score **0-0**, pronos **0-0** pour les joueurs cotisés sans ligne. **Pas besoin** d’un cron `kickoff` séparé pour le match test si cette tâche est active.
+
+## 4 bis. cron-job.org — récap d’équipe (tous les 2 jours, 9 h 30 Paris)
+
+1. **Create cronjob**
+2. **Title** : `LPF26 — récap équipe e-mail`
+3. **URL** : `https://26.lotopotofoot.fr/cron/team-recap?token=VOTRE_SECRET`
+4. **Schedule** : **tous les jours à 9 h 30** (`30 9 * * *`), fuseau **Europe/Paris** — le serveur n’envoie que si **48 h** se sont écoulées depuis le dernier envoi réussi et s’il y a eu des matchs terminés sur la période.
+5. **GET**, activé
+
+Test sans envoi : `php bin/console app:email:team-recap --dry-run --force`
 
 ## 5. Vérifier les exécutions
 

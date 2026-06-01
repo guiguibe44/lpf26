@@ -7,6 +7,8 @@ use App\Entity\TeamMember;
 use App\Entity\User;
 use App\Repository\TeamMemberRepository;
 use App\Repository\TeamRepository;
+use App\Service\CotisationPayeeValue;
+use App\Service\CotisationValidatedNotifier;
 use App\Service\UploadedImageFinalizeService;
 use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +24,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -33,6 +37,8 @@ class UserCrudController extends AbstractAppCrudController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly UploadedImageFinalizeService $uploadedImageFinalize,
         private readonly TeamMemberRepository $teamMemberRepository,
+        private readonly RequestStack $requestStack,
+        private readonly CotisationValidatedNotifier $cotisationValidatedNotifier,
     ) {
     }
     public static function getEntityFqcn(): string
@@ -136,6 +142,8 @@ class UserCrudController extends AbstractAppCrudController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
+        $notifyCotisationValidated = $entityInstance instanceof User && $entityInstance->isCotisationPayee();
+
         if ($entityInstance instanceof User) {
             $this->applyPasswordAndRoles($entityInstance, true);
             $this->applyOptimizedAvatar($entityInstance);
@@ -147,12 +155,21 @@ class UserCrudController extends AbstractAppCrudController
             $this->syncTeamMemberFromAdminSelection($entityManager, $entityInstance);
             $this->syncNicknameToTeamMember($entityManager, $entityInstance);
             $entityManager->flush();
+
+            if ($notifyCotisationValidated && $this->cotisationValidatedNotifier->notify($entityInstance)) {
+                $this->addFlash('success', sprintf(
+                    'Cotisation validée. Un e-mail de confirmation a été envoyé à %s.',
+                    $entityInstance->getEmail(),
+                ));
+            }
         }
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof User) {
+        $notifyCotisationValidated = false;
+        if ($entityInstance instanceof User && null !== $entityInstance->getId()) {
+            $notifyCotisationValidated = $this->willCotisationBecomePaid($entityManager, $entityInstance);
             $this->applyPasswordAndRoles($entityInstance, false);
             $this->applyOptimizedAvatar($entityInstance);
         }
@@ -163,7 +180,41 @@ class UserCrudController extends AbstractAppCrudController
             $this->syncTeamMemberFromAdminSelection($entityManager, $entityInstance);
             $this->syncNicknameToTeamMember($entityManager, $entityInstance);
             $entityManager->flush();
+
+            if ($notifyCotisationValidated) {
+                if ($this->cotisationValidatedNotifier->notify($entityInstance)) {
+                    $this->addFlash('success', sprintf(
+                        'Cotisation validée. Un e-mail de confirmation a été envoyé à %s.',
+                        $entityInstance->getEmail(),
+                    ));
+                } else {
+                    $this->addFlash('warning', sprintf(
+                        'Cotisation enregistrée, mais l’e-mail de confirmation n’a pas pu être envoyé à %s (voir les logs).',
+                        $entityInstance->getEmail(),
+                    ));
+                }
+            }
         }
+    }
+
+    /**
+     * Détecte le passage à « cotisation payée » via le change set Doctrine (pas find() :
+     * l’entité en mémoire porte déjà les valeurs du formulaire).
+     */
+    private function willCotisationBecomePaid(EntityManagerInterface $entityManager, User $user): bool
+    {
+        $unitOfWork = $entityManager->getUnitOfWork();
+        $metadata = $entityManager->getClassMetadata(User::class);
+        $unitOfWork->computeChangeSet($metadata, $user);
+        $changeSet = $unitOfWork->getEntityChangeSet($user);
+
+        if (!isset($changeSet['cotisationPayee'])) {
+            return false;
+        }
+
+        [$oldValue, $newValue] = $changeSet['cotisationPayee'];
+
+        return CotisationPayeeValue::becamePaid($oldValue, $newValue);
     }
 
     private function hydrateFromTeamMember(object $entityInstance): void
@@ -183,7 +234,7 @@ class UserCrudController extends AbstractAppCrudController
         $member = $this->teamMemberRepository->findOneBy(['player' => $user]);
 
         if (null === $selectedTeam) {
-            if (null !== $member) {
+            if (null !== $member && $this->wasEquipeFieldExplicitlyCleared()) {
                 $entityManager->remove($member);
             }
 
@@ -337,6 +388,52 @@ class UserCrudController extends AbstractAppCrudController
         }
 
         $user->setRoles($roles);
+    }
+
+    /**
+     * Retire l’équipe seulement si l’admin a choisi « Aucune équipe » dans le formulaire,
+     * pas lorsque le champ virtuel est absent (ex. perte en session).
+     */
+    private function wasEquipeFieldExplicitlyCleared(): bool
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request instanceof Request) {
+            return false;
+        }
+
+        $payload = $this->extractSubmittedUserFormData($request);
+        if (!\array_key_exists('equipeRattachementAdmin', $payload)) {
+            return false;
+        }
+
+        $value = $payload['equipeRattachementAdmin'];
+
+        return null === $value || '' === $value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function extractSubmittedUserFormData(Request $request): array
+    {
+        foreach (['User', 'user', 'App\Entity\User'] as $key) {
+            $block = $request->request->all($key);
+            if (\is_array($block) && [] !== $block) {
+                return $block;
+            }
+        }
+
+        $ea = $request->request->all('ea');
+        if (\is_array($ea)) {
+            foreach (['new', 'edit'] as $mode) {
+                $block = $ea[$mode]['User'] ?? $ea[$mode]['user'] ?? null;
+                if (\is_array($block) && [] !== $block) {
+                    return $block;
+                }
+            }
+        }
+
+        return [];
     }
 
     private function applyOptimizedAvatar(User $user): void
