@@ -358,12 +358,10 @@ final class TeamRecapBuilder
                 $ownerId = (int) ($usage->getTeam()?->getId() ?? 0);
 
                 if ($ownerId === $teamId) {
-                    $line = ['name' => $jokerName, 'match' => $matchLabel];
-                    $target = $usage->getTargetTeam();
-                    if ($target instanceof Team && Joker::CODE_PIQUE_POINTS === $usage->getJoker()?->getCode()) {
-                        $line['detail'] = sprintf('cible : %s', (string) $target->getName());
-                    }
-                    $placed[] = $line;
+                    $placed[] = [
+                        'name' => $jokerName,
+                        'match' => $matchLabel,
+                    ];
                     continue;
                 }
 
@@ -372,7 +370,6 @@ final class TeamRecapBuilder
                     $blocked = $this->jokerDefenseService->isTeamProtectedOnMatch($team, $match);
                     $suffered[] = [
                         'name' => $jokerName,
-                        'from_team' => (string) ($usage->getTeam()?->getName() ?? 'Une équipe'),
                         'match' => $matchLabel,
                         'blocked' => $blocked,
                     ];
@@ -382,7 +379,6 @@ final class TeamRecapBuilder
             if ($this->jokerDefenseService->isTeamProtectedByFavoriteOnGroupMatch($team, $match)) {
                 $suffered[] = [
                     'name' => 'Équipe favorite (protection)',
-                    'from_team' => 'Poule',
                     'match' => $matchLabel,
                     'blocked' => true,
                 ];

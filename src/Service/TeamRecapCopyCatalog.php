@@ -92,7 +92,7 @@ final class TeamRecapCopyCatalog
                 ['name' => 'Double équipe', 'match' => 'France — Allemagne'],
             ],
             'jokers_suffered' => [
-                ['name' => 'Pique de points', 'from_team' => 'Les Faucons', 'match' => 'France — Allemagne', 'blocked' => true],
+                ['name' => 'Pique de points', 'match' => 'France — Allemagne', 'blocked' => true],
             ],
         ];
     }

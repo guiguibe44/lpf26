@@ -132,7 +132,7 @@
 <p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#2a2a2a;">Posés par votre équipe</p>
 <ul style="margin:0 0 14px;padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
     {% for j in recap.jokers_placed %}
-        <li><strong>{{ j.name }}</strong> — {{ j.match }}{% if j.detail is defined %} ({{ j.detail }}){% endif %}</li>
+        <li><strong>{{ j.name }}</strong> — {{ j.match }}</li>
     {% endfor %}
 </ul>
 {% endif %}
@@ -141,8 +141,8 @@
 <ul style="margin:0 0 20px;padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
     {% for j in recap.jokers_suffered %}
         <li>
-            <strong>{{ j.name }}</strong> via {{ j.from_team }} — {{ j.match }}
-            {% if j.blocked %}<span style="color:#16a34a;"> · bloqué 🛡️</span>{% endif %}
+            <strong>{{ j.name }}</strong> — {{ j.match }}
+            {% if j.blocked %}<span style="color:#16a34a;"> · neutralisé 🛡️</span>{% endif %}
         </li>
     {% endfor %}
 </ul>
