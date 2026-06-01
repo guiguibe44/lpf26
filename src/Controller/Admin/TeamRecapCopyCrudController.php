@@ -32,7 +32,7 @@ class TeamRecapCopyCrudController extends AbstractAppCrudController
             ->setEntityLabelInPlural('Textes récap d’équipe')
             ->setDefaultSort(['category' => 'ASC', 'sortOrder' => 'ASC', 'code' => 'ASC'])
             ->setPaginatorPageSize(100)
-            ->setHelp('index', 'Modifiez le corps des messages envoyés dans le récap bi-quotidien. Placeholders : {nickname}, {points}, {team_name}, {total_points}, {best_nickname}, {worst_nickname}, {best_points}, {gap}, {delta_positions}, {delta_points}, {delta_positions_abs}, {period_label}, {laggard_nickname}. HTML autorisé (&lt;strong&gt;, etc.).');
+            ->setHelp('index', 'Modifiez le corps des messages envoyés dans le récap bi-quotidien. Placeholders : {nickname}, {points}, {team_name}, {total_points}, {best_nickname}, {worst_nickname}, {best_points}, {gap}, {delta_positions}, {delta_points}, {delta_positions_abs}, {period_label}, {laggard_nickname}. HTML autorisé (&lt;strong&gt;, etc.). Les GIFs (objet d’e-mail et jokers) se gèrent dans « GIFs récap d’équipe ».');
     }
 
     protected function getAdminSearchFields(): array

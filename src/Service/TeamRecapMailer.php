@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\User;
+use App\TeamRecap\TeamRecapGifSlot;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -62,11 +63,7 @@ final class TeamRecapMailer
         $laggardNickname = $recap['laggard']['nickname'] ?? '…';
         $period = (string) ($recap['period_label'] ?? '');
 
-        $code = match (true) {
-            $points >= 50 => 'subject.hot',
-            $points > 0 => 'subject.positive',
-            default => 'subject.neutral',
-        };
+        $code = TeamRecapGifSlot::subjectCodeForTeamPoints($points);
 
         return $this->copyProvider->line($code, [
             'team_name' => $teamName,

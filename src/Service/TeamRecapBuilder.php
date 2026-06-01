@@ -16,6 +16,7 @@ use App\Repository\ButRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamRankingSnapshotRepository;
+use App\TeamRecap\TeamRecapGifSlot;
 
 /**
  * Construit le contexte Twig du récap d’équipe pour une période donnée.
@@ -32,6 +33,8 @@ final class TeamRecapBuilder
         private readonly TeamRecapMvpResolver $mvpResolver,
         private readonly TeamRecapFunCopy $funCopy,
         private readonly BiDailyRecapSchedule $schedule,
+        private readonly TeamRecapJokerGifResolver $jokerGifResolver,
+        private readonly TeamRecapGifPicker $teamRecapGifPicker,
     ) {
     }
 
@@ -151,6 +154,10 @@ final class TeamRecapBuilder
         }
 
         [$jokersPlaced, $jokersSuffered] = $this->buildJokerBlocks($team, $teamId, $matches);
+        $subjectGifSlot = TeamRecapGifSlot::subjectCodeForTeamPoints($totalTeamPoints);
+        $recapGifUrl = [] !== $jokersPlaced
+            ? $this->jokerGifResolver->resolveAbsoluteUrl($team, $matches, $teamPointsByMatchId)
+            : $this->teamRecapGifPicker->pickRandomAbsoluteUrl($subjectGifSlot);
 
         if (!$this->teamHadActivityOnPeriod($matchIds, $pronosticByMatchAndUser, $totalTeamPoints, $goalRows, $jokersPlaced, $jokersSuffered)) {
             return null;
@@ -174,6 +181,8 @@ final class TeamRecapBuilder
             'ranking_cheer' => $rankingCheer,
             'jokers_placed' => $jokersPlaced,
             'jokers_suffered' => $jokersSuffered,
+            'subject_gif_slot' => $subjectGifSlot,
+            'recap_gif_url' => $recapGifUrl,
         ];
     }
 

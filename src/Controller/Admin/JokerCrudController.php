@@ -34,6 +34,15 @@ class JokerCrudController extends AbstractAppCrudController
         return Joker::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->setHelp(
+                'index',
+                'Les GIFs du récap d’équipe (plusieurs par situation, tirage aléatoire) se gèrent dans Communication → GIFs récap d’équipe.',
+            );
+    }
+
     protected function getAdminSearchFields(): array
     {
         return [
