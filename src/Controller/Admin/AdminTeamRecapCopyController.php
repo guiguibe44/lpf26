@@ -150,6 +150,7 @@ final class AdminTeamRecapCopyController extends AbstractController
                 $recap['team_id'] = (int) $team->getId();
                 $recap['team_name'] = (string) ($team->getName() ?? $recap['team_name']);
                 $memberId = (int) $request->query->get('member_id', 0);
+                $firstMemberNickname = null;
 
                 foreach ($team->getMembers() as $member) {
                     if (!$member instanceof TeamMember) {
@@ -158,6 +159,9 @@ final class AdminTeamRecapCopyController extends AbstractController
 
                     $candidate = (string) ($member->getNickname() ?? '');
                     if ('' !== $candidate) {
+                        if (null === $firstMemberNickname) {
+                            $firstMemberNickname = $candidate;
+                        }
                         $otherNickname = $candidate;
                     }
 
@@ -169,6 +173,14 @@ final class AdminTeamRecapCopyController extends AbstractController
                         }
                     } elseif ('' !== $candidate) {
                         $otherNickname = $candidate;
+                    }
+                }
+
+                if ($memberId <= 0 && null !== $firstMemberNickname && '' !== trim($firstMemberNickname)) {
+                    $nickname = $firstMemberNickname;
+                    $selectedNickname = $firstMemberNickname;
+                    if (isset($recap['laggard']) && \is_array($recap['laggard'])) {
+                        $recap['laggard']['nickname'] = $nickname;
                     }
                 }
 
@@ -236,7 +248,11 @@ final class AdminTeamRecapCopyController extends AbstractController
         $jokers = (string) $request->query->get('jokers', 'both');
         $recap['jokers_placed'] = match ($jokers) {
             'none', 'suffered' => [],
-            default => [['name' => 'Double équipe', 'match' => 'France — Allemagne']],
+            default => [[
+                'name' => 'Double équipe',
+                'match' => 'France — Allemagne',
+                'team_points' => (int) ($recap['matches'][0]['team_points'] ?? 0),
+            ]],
         };
         $recap['jokers_suffered'] = match ($jokers) {
             'none', 'placed' => [],
