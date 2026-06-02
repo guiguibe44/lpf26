@@ -114,18 +114,18 @@ final class AdminTeamRecapCopyController extends AbstractController
         TeamRecapGifPicker $teamRecapGifPicker,
         TeamRepository $teamRepository,
     ): Response {
-        $user = $this->getUser();
-        if (!$user instanceof User || '' === trim((string) $user->getEmail())) {
-            $this->addFlash('danger', 'Impossible d’envoyer le test : utilisateur admin sans e-mail.');
+        $targetUser = $this->resolveSelectedPreviewUser($request, $teamRepository);
+        if (!$targetUser instanceof User || '' === trim((string) $targetUser->getEmail())) {
+            $this->addFlash('danger', 'Impossible d’envoyer le test : joueur sélectionné sans e-mail valide.');
 
             return $this->redirectToRoute('admin_team_recap_email_simulator', $request->query->all());
         }
 
         $recap = $catalog->buildSampleRecapContext();
         $nickname = $this->applyPreviewFilters($recap, $request, $teamRecapGifPicker, $teamRepository);
-        $mailer->send($user, $nickname, $recap);
+        $mailer->send($targetUser, $nickname, $recap);
 
-        $this->addFlash('success', 'Mail test envoyé à '.$user->getEmail().'.');
+        $this->addFlash('success', 'Mail test envoyé à '.$targetUser->getEmail().'.');
 
         return $this->redirectToRoute('admin_team_recap_email_simulator', $request->query->all());
     }
@@ -341,5 +341,38 @@ final class AdminTeamRecapCopyController extends AbstractController
         }
 
         return [$teamChoices, $memberChoicesByTeam];
+    }
+
+    private function resolveSelectedPreviewUser(Request $request, TeamRepository $teamRepository): ?User
+    {
+        $teamId = (int) $request->query->get('team_id', 0);
+        if ($teamId <= 0) {
+            return null;
+        }
+
+        $team = $teamRepository->findOneWithMembersAndPlayers($teamId);
+        if (!$team instanceof Team) {
+            return null;
+        }
+
+        $memberId = (int) $request->query->get('member_id', 0);
+        $firstUser = null;
+
+        foreach ($team->getMembers() as $member) {
+            if (!$member instanceof TeamMember) {
+                continue;
+            }
+
+            $player = $member->getPlayer();
+            if ($player instanceof User && null === $firstUser) {
+                $firstUser = $player;
+            }
+
+            if ($memberId > 0 && (int) $member->getId() === $memberId) {
+                return $player instanceof User ? $player : null;
+            }
+        }
+
+        return $firstUser;
     }
 }
