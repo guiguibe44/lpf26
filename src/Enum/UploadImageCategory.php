@@ -10,6 +10,7 @@ namespace App\Enum;
 enum UploadImageCategory: string
 {
     case Avatar = 'avatars';
+    case EditorialAuthor = 'editorial-authors';
     case TeamLogo = 'team-logos';
     case Joker = 'jokers';
     case Buteur = 'buteurs';
@@ -24,6 +25,7 @@ enum UploadImageCategory: string
     {
         return match ($this) {
             self::Avatar => 512,
+            self::EditorialAuthor => 256,
             self::TeamLogo => 640,
             self::Joker => 960,
             self::Buteur => 720,
@@ -35,6 +37,7 @@ enum UploadImageCategory: string
     {
         return match ($this) {
             self::Avatar => 512,
+            self::EditorialAuthor => 256,
             self::TeamLogo => 640,
             self::Joker => 960,
             self::Buteur => 720,

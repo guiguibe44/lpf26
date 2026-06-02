@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\EditorialAuthor;
 use App\Enum\EditorialAuthorCountry;
 use App\Service\UploadedImageFinalizeService;
+use App\Service\UploadPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -57,15 +58,14 @@ class EditorialAuthorCrudController extends AbstractAppCrudController
         yield ImageField::new('avatar', 'Avatar')
             ->setBasePath('/uploads/'.EditorialAuthor::UPLOAD_SUBDIR)
             ->setUploadDir('public/uploads/'.EditorialAuthor::UPLOAD_SUBDIR)
+            ->setHelp('Redimensionné et converti en WebP (256 px max) à l’enregistrement.')
             ->setRequired(false);
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof EditorialAuthor) {
-            $entityInstance->setAvatar(
-                $this->uploadedImageFinalize->finalize($entityInstance->getAvatar(), EditorialAuthor::UPLOAD_SUBDIR),
-            );
+            $this->applyOptimizedAvatar($entityInstance);
         }
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -74,11 +74,26 @@ class EditorialAuthorCrudController extends AbstractAppCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof EditorialAuthor) {
-            $entityInstance->setAvatar(
-                $this->uploadedImageFinalize->finalize($entityInstance->getAvatar(), EditorialAuthor::UPLOAD_SUBDIR),
-            );
+            $this->applyOptimizedAvatar($entityInstance);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function applyOptimizedAvatar(EditorialAuthor $author): void
+    {
+        $avatar = $author->getAvatar();
+        if (null === $avatar || '' === $avatar) {
+            return;
+        }
+
+        $finalized = $this->uploadedImageFinalize->finalize(
+            UploadPathHelper::normalizeStored($avatar, EditorialAuthor::UPLOAD_SUBDIR) ?? basename($avatar),
+            EditorialAuthor::UPLOAD_SUBDIR,
+        );
+
+        if (null !== $finalized && '' !== $finalized) {
+            $author->setAvatar($finalized);
+        }
     }
 }
