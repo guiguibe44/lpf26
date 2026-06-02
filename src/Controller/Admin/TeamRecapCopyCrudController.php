@@ -51,6 +51,10 @@ class TeamRecapCopyCrudController extends AbstractAppCrudController
             ->disable(Action::NEW, Action::DELETE)
             ->add(Crud::PAGE_INDEX, Action::new('catalog', 'Catalogue des cas')
                 ->linkToRoute('admin_team_recap_copy_catalog')
+                ->createAsGlobalAction())
+            ->add(Crud::PAGE_INDEX, Action::new('simulator', 'Simulateur e-mail')
+                ->linkToRoute('admin_team_recap_email_simulator')
+                ->setIcon('fa fa-sliders')
                 ->createAsGlobalAction());
     }
 

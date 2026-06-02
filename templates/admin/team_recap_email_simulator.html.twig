@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur e-mail récap · Admin{% endblock %}
+
+{% block body %}
+    <section class="ta-topbar">
+        <div>
+            <h1 class="ta-page-title">
+                <i class="ti ti-mail-search" aria-hidden="true"></i>
+                Simulateur d’aperçu — récap d’équipe
+            </h1>
+            <p class="ta-page-subtitle">
+                Générez un e-mail de test selon les cas de figure (objet, jokers, classement, GIF).
+            </p>
+        </div>
+    </section>
+
+    <section class="ta-card" style="margin-bottom: 1.5rem;">
+        <form method="get" action="{{ preview_url }}" target="_blank" rel="noopener">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+                <label>
+                    <span class="text-sm font-semibold">Objet / points équipe</span>
+                    <select class="ta-form-input mt-1" name="subject">
+                        <option value="hot" {% if query.subject == 'hot' %}selected{% endif %}>Hot (>= 50 pts)</option>
+                        <option value="positive" {% if query.subject == 'positive' %}selected{% endif %}>Positive (> 0 pt)</option>
+                        <option value="neutral" {% if query.subject == 'neutral' %}selected{% endif %}>Neutral (0 pt)</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Joueur mis en avant</span>
+                    <select class="ta-form-input mt-1" name="laggard">
+                        <option value="low" {% if query.laggard == 'low' %}selected{% endif %}>Faible score</option>
+                        <option value="zero" {% if query.laggard == 'zero' %}selected{% endif %}>0 point</option>
+                        <option value="default" {% if query.laggard == 'default' %}selected{% endif %}>Score standard</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Bloc classement</span>
+                    <select class="ta-form-input mt-1" name="ranking">
+                        <option value="up" {% if query.ranking == 'up' %}selected{% endif %}>Remonte</option>
+                        <option value="down" {% if query.ranking == 'down' %}selected{% endif %}>Descend</option>
+                        <option value="same" {% if query.ranking == 'same' %}selected{% endif %}>Stable (+ points)</option>
+                        <option value="none" {% if query.ranking == 'none' %}selected{% endif %}>Aucun bloc</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Section jokers</span>
+                    <select class="ta-form-input mt-1" name="jokers">
+                        <option value="both" {% if query.jokers == 'both' %}selected{% endif %}>Posés + subis</option>
+                        <option value="placed" {% if query.jokers == 'placed' %}selected{% endif %}>Posés seulement</option>
+                        <option value="suffered" {% if query.jokers == 'suffered' %}selected{% endif %}>Subis seulement</option>
+                        <option value="none" {% if query.jokers == 'none' %}selected{% endif %}>Aucun joker</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Buteurs</span>
+                    <select class="ta-form-input mt-1" name="goals">
+                        <option value="1" {% if query.goals == '1' %}selected{% endif %}>Avec buteurs</option>
+                        <option value="0" {% if query.goals == '0' %}selected{% endif %}>Sans buteur</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">BigBalls</span>
+                    <select class="ta-form-input mt-1" name="bigballs">
+                        <option value="1" {% if query.bigballs == '1' %}selected{% endif %}>Avec BigBalls</option>
+                        <option value="0" {% if query.bigballs == '0' %}selected{% endif %}>Sans BigBalls</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">GIF dans le mail</span>
+                    <select class="ta-form-input mt-1" name="gif">
+                        <option value="joker" {% if query.gif == 'joker' %}selected{% endif %}>Style joker</option>
+                        <option value="subject" {% if query.gif == 'subject' %}selected{% endif %}>Style objet</option>
+                        <option value="none" {% if query.gif == 'none' %}selected{% endif %}>Aucun GIF</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="admin-push-form__actions" style="margin-top:1rem;">
+                <button type="submit" class="btn btn-primary btn-sharp">
+                    <i class="ti ti-eye" aria-hidden="true"></i>
+                    Ouvrir l’aperçu e-mail
+                </button>
+                <a href="{{ path('admin_team_recap_copy_catalog') }}" class="admin-push-form__back" style="margin-left:1rem;">
+                    <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                    Retour catalogue
+                </a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

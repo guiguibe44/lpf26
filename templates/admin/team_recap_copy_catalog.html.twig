@@ -13,6 +13,7 @@
                 E-mail bi-quotidien (9 h 30, Paris). Lecture seule des cas —
                 <a href="{{ path(catalog.edit_url) }}" class="font-semibold">modifier les phrases</a>
                 · <a href="{{ preview_url }}" target="_blank" rel="noopener">Aperçu HTML</a>
+                · <a href="{{ simulator_url }}">Simulateur</a>
             </p>
         </div>
     </section>
@@ -174,6 +175,10 @@
         <a href="{{ preview_url }}" class="btn btn-outline btn-primary btn-sharp" target="_blank" rel="noopener">
             <i class="ti ti-eye" aria-hidden="true"></i>
             Ouvrir l’aperçu e-mail (exemple riche)
+        </a>
+        <a href="{{ simulator_url }}" class="btn btn-outline btn-primary btn-sharp">
+            <i class="ti ti-adjustments" aria-hidden="true"></i>
+            Simuler des cas
         </a>
         <a href="{{ path('admin') }}" class="admin-push-form__back" style="margin-left: 1rem;">
             <i class="ti ti-arrow-left" aria-hidden="true"></i>
