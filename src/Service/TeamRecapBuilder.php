@@ -85,6 +85,7 @@ final class TeamRecapBuilder
         $laggard = $rankedPlayers[\count($rankedPlayers) - 1] ?? null;
         $laggardBlock = null;
         $championTease = null;
+        $playerComparison = null;
 
         if (
             null !== $laggard
@@ -103,6 +104,13 @@ final class TeamRecapBuilder
                 $laggard['nickname'],
                 $champion['points'] - $laggard['points'],
             );
+            $playerComparison = [
+                'leader_nickname' => $champion['nickname'],
+                'leader_points' => $champion['points'],
+                'trailer_nickname' => $laggard['nickname'],
+                'trailer_points' => $laggard['points'],
+                'gap_points' => max(0, $champion['points'] - $laggard['points']),
+            ];
         }
 
         $matchRows = [];
@@ -178,6 +186,7 @@ final class TeamRecapBuilder
             'matches_count' => \count($matches),
             'laggard' => $laggardBlock,
             'champion_tease' => $championTease,
+            'player_comparison' => $playerComparison,
             'matches' => $matchRows,
             'bigballs_summary' => [
                 'attempted' => $bigballsAttempted,
