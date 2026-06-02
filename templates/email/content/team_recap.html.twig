@@ -5,28 +5,31 @@
 {% endif %}
 
 <p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
-    Bonjour <strong>{{ nickname }}</strong>,
+    Ola <strong>{{ nickname }}</strong>,
 </p>
 
 <p style="margin:0 0 12px;font-size:15px;line-height:1.5;color:#2a2a2a;">
-    {{ recap.intro_line|raw }}
+    {% if recap.player_comparison %}
+        t'as besoin d’une p'tite teq paf ou bien ? C'est <strong>{{ recap.player_comparison.leader_nickname }}</strong> qui tient la baraque.
+    {% else %}
+        {{ recap.intro_line|raw }}
+    {% endif %}
 </p>
 
 <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">
     Période · {{ recap.period_label }}
 </p>
 <p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
-    Équipe <strong>{{ recap.team_name }}</strong> :
     {% if recap.total_team_points > 0 %}
-        <strong style="color:#16a34a;">+{{ recap.total_team_points|number_format(0, ',', ' ') }} pts</strong>
+        +{{ recap.total_team_points|number_format(0, ',', ' ') }} pts sur {{ recap.matches_count }} match{{ recap.matches_count > 1 ? 's' : '' }} : <strong>Grosse perf' !</strong>
     {% else %}
-        <strong style="color:#6b7280;">{{ recap.total_team_points|number_format(0, ',', ' ') }} pt</strong>
+        {{ recap.total_team_points|number_format(0, ',', ' ') }} pt sur {{ recap.matches_count }} match{{ recap.matches_count > 1 ? 's' : '' }} : ça peut repartir très vite.
     {% endif %}
-    sur {{ recap.matches_count }} match{{ recap.matches_count > 1 ? 's' : '' }}.
+    <br>
+    Équipe <strong>{{ recap.team_name }}</strong>.
     {% if recap.player_comparison %}
-        {{ recap.player_comparison.leader_nickname }} mène avec <strong>{{ recap.player_comparison.leader_points }} pts</strong>,
-        devant {{ recap.player_comparison.trailer_nickname }} à <strong>{{ recap.player_comparison.trailer_points }} pts</strong>
-        (écart : {{ recap.player_comparison.gap_points }} pt{{ recap.player_comparison.gap_points > 1 ? 's' : '' }}).
+        {{ recap.player_comparison.leader_nickname }} est à {{ recap.player_comparison.leader_points }} pts,
+        {{ recap.player_comparison.trailer_nickname }} à {{ recap.player_comparison.trailer_points }} pts.
     {% endif %}
 </p>
 
@@ -41,28 +44,39 @@
 </p>
 
 <p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
-    <strong>Buteurs :</strong>
+    <strong>Au niveau des buteurs :</strong>
     {% if recap.goals is not empty %}
         {% for goal in recap.goals %}
-            {{ goal.nickname }} ({{ goal.buteur }}) sur {{ goal.match }}{% if goal.minute %} à la {{ goal.minute }}'{% endif %} (+{{ goal.points }} pts){% if not loop.last %} ; {% else %}.{% endif %}
+            {{ goal.buteur }} ({{ goal.nickname }}) vous rapporte {{ goal.points }} pts{% if goal.match %} sur {{ goal.match }}{% endif %}{% if not loop.last %} ; {% else %}, pas mal.{% endif %}
         {% endfor %}
     {% else %}
-        pas de points buteur sur cette période.
+        aucun buteur n'a scoré pour vous sur cette période.
     {% endif %}
 </p>
 
 <p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
-    <strong>Jokers :</strong>
-    {% if recap.jokers_placed is empty and recap.jokers_suffered is empty %}
-        aucun joker joué ou subi.
+    <strong>Jokers subis :</strong>
+    {% if recap.jokers_suffered is empty %}
+        aucun joker subi.
     {% else %}
-        {% if recap.jokers_placed is not empty %}
-            posés — {% for j in recap.jokers_placed %}{{ j.name }} ({{ j.match }}){% if not loop.last %}, {% else %}{% endif %}{% endfor %}
-        {% endif %}
-        {% if recap.jokers_suffered is not empty %}
-            {% if recap.jokers_placed is not empty %} ; {% endif %}
-            subis — {% for j in recap.jokers_suffered %}{{ j.name }} ({{ j.match }}){% if j.blocked %}, neutralisé{% endif %}{% if not loop.last %}, {% else %}{% endif %}{% endfor %}
-        {% endif %}.
+        {% for j in recap.jokers_suffered %}
+            Une équipe vous a posé {{ j.name }} sur {{ j.match }}.
+            {% if j.blocked %}Heureusement, il a été neutralisé.{% else %}Cette fois, il n'a pas été neutralisé.{% endif %}
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+    {% endif %}
+</p>
+
+<p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
+    <strong>Jokers posés :</strong>
+    {% if recap.jokers_placed is empty %}
+        aucun joker posé.
+    {% else %}
+        {% for j in recap.jokers_placed %}
+            Votre joker {{ j.name }} sur {{ j.match }}
+            {% if j.team_points is defined %}vous rapporte {{ j.team_points|number_format(0, ',', ' ') }} pts{% else %}a été joué{% endif %} : belle pioche !
+            {% if not loop.last %}<br>{% endif %}
+        {% endfor %}
     {% endif %}
 </p>
 
@@ -70,11 +84,18 @@
     <strong>Classement :</strong>
     {% if recap.ranking %}
         {% if recap.ranking.before %}
-            {{ recap.ranking.before.position }}<sup>e</sup> → {{ recap.ranking.after.position }}<sup>e</sup> / {{ recap.ranking.after.teams_count }},
-            total {{ recap.ranking.after.total|number_format(0, ',', ' ') }} pts.
+            Du coup, vous avez
+            {% if recap.ranking.delta_positions > 0 %}
+                grimpé de {{ recap.ranking.delta_positions }} place(s)
+            {% elseif recap.ranking.delta_positions < 0 %}
+                perdu {{ recap.ranking.delta_positions|abs }} place(s)
+            {% else %}
+                gardé la même place
+            {% endif %}
+            au classement ({{ recap.ranking.before.position }}<sup>e</sup> → {{ recap.ranking.after.position }}<sup>e</sup>,
+            {% if recap.ranking.delta_points >= 0 %}+{% endif %}{{ recap.ranking.delta_points|number_format(0, ',', ' ') }} pts au total). Chapeau !
         {% else %}
-            position actuelle {{ recap.ranking.after.position }}<sup>e</sup> / {{ recap.ranking.after.teams_count }},
-            total {{ recap.ranking.after.total|number_format(0, ',', ' ') }} pts.
+            Vous êtes actuellement {{ recap.ranking.after.position }}<sup>e</sup> / {{ recap.ranking.after.teams_count }}.
         {% endif %}
         {% if recap.ranking_cheer %} {{ recap.ranking_cheer|raw }}{% endif %}
     {% else %}

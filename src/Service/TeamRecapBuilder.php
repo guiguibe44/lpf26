@@ -161,7 +161,7 @@ final class TeamRecapBuilder
             );
         }
 
-        [$jokersPlaced, $jokersSuffered] = $this->buildJokerBlocks($team, $teamId, $matches);
+        [$jokersPlaced, $jokersSuffered] = $this->buildJokerBlocks($team, $teamId, $matches, $teamPointsByMatchId);
         $subjectGifSlot = TeamRecapGifSlot::subjectCodeForTeamPoints($totalTeamPoints);
         $recapGifUrl = null;
         if ([] !== $jokersPlaced) {
@@ -364,15 +364,19 @@ final class TeamRecapBuilder
     /**
      * @param list<GameMatch> $matches
      *
-     * @return array{0: list<array<string, string>>, 1: list<array<string, string>>}
+     * @param array<int, int> $teamPointsByMatchId
+     *
+     * @return array{0: list<array<string, mixed>>, 1: list<array<string, mixed>>}
      */
-    private function buildJokerBlocks(Team $team, int $teamId, array $matches): array
+    private function buildJokerBlocks(Team $team, int $teamId, array $matches, array $teamPointsByMatchId): array
     {
         $placed = [];
         $suffered = [];
 
         foreach ($matches as $match) {
             $matchLabel = $this->matchLabel($match);
+            $mid = (int) $match->getId();
+            $teamPointsOnMatch = (int) ($teamPointsByMatchId[$mid] ?? 0);
 
             foreach ($this->teamJokerUsageRepository->findByMatch($match) as $usage) {
                 if (!$usage instanceof TeamJokerUsage) {
@@ -386,6 +390,7 @@ final class TeamRecapBuilder
                     $placed[] = [
                         'name' => $jokerName,
                         'match' => $matchLabel,
+                        'team_points' => $teamPointsOnMatch,
                     ];
                     continue;
                 }
