@@ -4,15 +4,13 @@
         <article class="dashboard-editorial__card ta-card">
             <header class="dashboard-editorial__header">
                 {% if editorial_author and editorial_author.avatarPublicPath %}
-                    <img
-                        src="{{ asset(editorial_author.avatarPublicPath) }}"
-                        alt="{{ editorial_author.displayName }}"
-                        class="dashboard-editorial__avatar"
-                        width="56"
-                        height="56"
-                        loading="lazy"
-                        decoding="async"
-                    >
+                    {% include 'shared/_lpf_lightbox_trigger.html.twig' with {
+                        src: asset(editorial_author.avatarPublicPath),
+                        title: editorial_author.displayName,
+                        alt: editorial_author.displayName,
+                        img_class: 'dashboard-editorial__avatar',
+                        btn_class: 'lpf-lightbox-trigger dashboard-editorial__avatar-btn',
+                    } %}
                 {% endif %}
                 <div class="dashboard-editorial__meta">
                     <p class="dashboard-editorial__eyebrow">L'édito du moment</p>
@@ -31,4 +29,7 @@
             </div>
         </article>
     </section>
+    {% if editorial_author and editorial_author.avatarPublicPath %}
+        {% include 'shared/_lpf_image_lightbox.html.twig' %}
+    {% endif %}
 {% endif %}

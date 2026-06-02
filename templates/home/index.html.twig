@@ -2,6 +2,13 @@
 
 {% block title %}Accueil{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {% if dashboard_editorial and dashboard_editorial.author and dashboard_editorial.author.avatarPublicPath %}
+        <link rel="stylesheet" href="{{ asset('css/lpf-image-lightbox.css') }}?v=1">
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     {% include 'home/_dashboard_banner.html.twig' %}
     {% include 'home/_dashboard_editorial.html.twig' with { dashboard_editorial: dashboard_editorial } only %}
@@ -99,6 +106,9 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {% if dashboard_editorial and dashboard_editorial.author and dashboard_editorial.author.avatarPublicPath %}
+        <script src="{{ asset('js/lpf-image-lightbox.js') }}?v=1" defer></script>
+    {% endif %}
     {% if app.user %}
         <script src="{{ asset('js/joker-match.js') }}?v=21" defer></script>
         <script src="{{ asset('js/match-espion-intel.js') }}?v=2" defer></script>

@@ -15,13 +15,17 @@
     margin-bottom: 0.75rem;
 }
 
+.dashboard-editorial__avatar-btn {
+    flex: 0 0 auto;
+    border-radius: 9999px;
+}
+
 .dashboard-editorial__avatar {
     width: 56px;
     height: 56px;
     border-radius: 9999px;
     object-fit: cover;
     border: 2px solid rgba(148, 163, 184, 0.35);
-    flex: 0 0 auto;
 }
 
 .dashboard-editorial__meta {
@@ -72,7 +76,8 @@
         align-items: flex-start;
     }
 
-    .dashboard-editorial__avatar {
+    .dashboard-editorial__avatar-btn .dashboard-editorial__avatar,
+    .dashboard-editorial__avatar-btn img {
         width: 48px;
         height: 48px;
     }
