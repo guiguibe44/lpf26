@@ -8,6 +8,7 @@ use App\Entity\Team;
 use App\Entity\User;
 use App\Repository\ButeurRepository;
 use App\Repository\ButRepository;
+use App\Repository\DashboardEditorialRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
@@ -46,6 +47,7 @@ class HomeController extends AbstractController
         MatchEspionService $matchEspionService,
         PreCompetitionDashboardService $preCompetitionDashboard,
         TeamMatchPointsService $teamMatchPointsService,
+        DashboardEditorialRepository $dashboardEditorialRepository,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -125,6 +127,7 @@ class HomeController extends AbstractController
         $team_match_points_by_match_id = $team instanceof Team
             ? $teamMatchPointsService->buildPointsByMatchIdForTeam($team, $dashboardMatchList, $goalsByMatchId)
             : [];
+        $dashboardEditorial = $dashboardEditorialRepository->findLatestPublishedAt($now);
 
         return $this->render('home/index.html.twig', [
             'live_matches' => $liveMatches,
@@ -148,6 +151,7 @@ class HomeController extends AbstractController
             'goals_by_match_id' => $goalsByMatchId,
             'has_live_matches' => [] !== $liveMatches,
             'team_match_points_by_match_id' => $team_match_points_by_match_id,
+            'dashboard_editorial' => $dashboardEditorial,
         ]);
     }
 

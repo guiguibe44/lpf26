@@ -4,6 +4,7 @@
 
 {% block body %}
     {% include 'home/_dashboard_banner.html.twig' %}
+    {% include 'home/_dashboard_editorial.html.twig' with { dashboard_editorial: dashboard_editorial } only %}
 
     {% if competition_started and buteur_stats %}
         {% include 'buteur/_stats_summary.html.twig' with { buteur_stats: buteur_stats } only %}

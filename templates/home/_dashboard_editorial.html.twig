@@ -1,0 +1,31 @@
+{% if dashboard_editorial %}
+    {% set editorial_author = dashboard_editorial.author %}
+    <section class="dashboard-editorial mt-5">
+        <article class="dashboard-editorial__card ta-card">
+            <header class="dashboard-editorial__header">
+                {% if editorial_author and editorial_author.avatarPublicPath %}
+                    <img
+                        src="{{ asset(editorial_author.avatarPublicPath) }}"
+                        alt="{{ editorial_author.displayName }}"
+                        class="dashboard-editorial__avatar"
+                        loading="lazy"
+                    >
+                {% endif %}
+                <div class="dashboard-editorial__meta">
+                    <p class="dashboard-editorial__eyebrow">L'édito du moment</p>
+                    <h2 class="dashboard-editorial__title">{{ dashboard_editorial.title }}</h2>
+                    <p class="dashboard-editorial__byline">
+                        Par {{ editorial_author ? editorial_author.displayName : 'Rédaction LPF' }}
+                        {% if editorial_author %}
+                            — {{ editorial_author.country.label }}
+                        {% endif %}
+                        · publié le {{ dashboard_editorial.publishedAt|date('d/m/Y à H:i') }}
+                    </p>
+                </div>
+            </header>
+            <div class="dashboard-editorial__content">
+                {{ dashboard_editorial.content|raw }}
+            </div>
+        </article>
+    </section>
+{% endif %}

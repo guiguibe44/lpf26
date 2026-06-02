@@ -7,6 +7,8 @@ use App\Entity\TeamInvitation;
 use App\Entity\TeamMember;
 use App\Entity\Pronostic;
 use App\Entity\TeamRankingSnapshot;
+use App\Entity\DashboardEditorial;
+use App\Entity\EditorialAuthor;
 use App\Repository\CountryRepository;
 use App\Service\ApiFootballPlayerSyncStop;
 use App\Service\Wc2026SyncService;
@@ -60,6 +62,8 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToRoute('Messages forum', 'fas fa-comments', 'admin_forum_post_index'),
                 MenuItem::linkToRoute('Messages manuels', 'fas fa-paper-plane', 'admin_manual_messages'),
                 MenuItem::linkToRoute('Historique relances prono', 'fas fa-history', 'admin_pronostic_reminders_history'),
+                MenuItem::linkToRoute('Éditos dashboard', 'fas fa-newspaper', 'admin_dashboard_editorial_index'),
+                MenuItem::linkToRoute('Auteurs fictifs', 'fas fa-user-pen', 'admin_editorial_author_index'),
                 MenuItem::linkToRoute('Textes récap d’équipe', 'fas fa-envelope-open-text', 'admin_team_recap_copy_index'),
                 MenuItem::linkToRoute('GIFs récap d’équipe', 'fas fa-file-image', 'admin_team_recap_gif_index'),
                 MenuItem::linkToRoute('Catalogue récap (lecture)', 'fas fa-book-open', 'admin_team_recap_copy_catalog'),
