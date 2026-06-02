@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Joker;
 use App\Entity\Team;
 use App\Entity\TeamMember;
+use App\Entity\User;
 use App\Repository\TeamRepository;
 use App\Repository\TeamRecapGifRepository;
 use App\Service\LpfEmailRenderer;
@@ -95,7 +96,38 @@ final class AdminTeamRecapCopyController extends AbstractController
             'footerNote' => 'Aperçu admin — récap d’équipe LPF\'26.',
         ]);
 
-        return new Response($html);
+        $sendTestUrl = $this->generateUrl('admin_team_recap_email_send_test', $request->query->all());
+
+        return new Response(
+            '<div style="position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 14px;font-family:Arial,Helvetica,sans-serif;">'
+            .'<a href="'.$sendTestUrl.'" style="display:inline-block;background:#16a34a;color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600;">Envoyer un mail test (à moi)</a>'
+            .'</div>'
+            .$html,
+        );
+    }
+
+    #[Route('/admin/communication/recap-equipe-apercu/envoyer-test', name: 'admin_team_recap_email_send_test', methods: ['GET'])]
+    public function sendPreviewTestEmail(
+        Request $request,
+        TeamRecapCopyCatalog $catalog,
+        TeamRecapMailer $mailer,
+        TeamRecapGifPicker $teamRecapGifPicker,
+        TeamRepository $teamRepository,
+    ): Response {
+        $user = $this->getUser();
+        if (!$user instanceof User || '' === trim((string) $user->getEmail())) {
+            $this->addFlash('danger', 'Impossible d’envoyer le test : utilisateur admin sans e-mail.');
+
+            return $this->redirectToRoute('admin_team_recap_email_simulator', $request->query->all());
+        }
+
+        $recap = $catalog->buildSampleRecapContext();
+        $nickname = $this->applyPreviewFilters($recap, $request, $teamRecapGifPicker, $teamRepository);
+        $mailer->send($user, $nickname, $recap);
+
+        $this->addFlash('success', 'Mail test envoyé à '.$user->getEmail().'.');
+
+        return $this->redirectToRoute('admin_team_recap_email_simulator', $request->query->all());
     }
 
     /**
@@ -109,6 +141,8 @@ final class AdminTeamRecapCopyController extends AbstractController
     ): string
     {
         $nickname = 'Pilou';
+        $selectedNickname = 'Pilou';
+        $otherNickname = 'Zaza';
         $teamId = (int) $request->query->get('team_id', 0);
         if ($teamId > 0) {
             $team = $teamRepository->findOneWithMembersAndPlayers($teamId);
@@ -122,14 +156,22 @@ final class AdminTeamRecapCopyController extends AbstractController
                         continue;
                     }
 
+                    $candidate = (string) ($member->getNickname() ?? '');
+                    if ('' !== $candidate) {
+                        $otherNickname = $candidate;
+                    }
+
                     if ($memberId > 0 && (int) $member->getId() === $memberId) {
                         $nickname = (string) ($member->getNickname() ?? $nickname);
+                        $selectedNickname = $nickname;
                         if (isset($recap['laggard']) && \is_array($recap['laggard'])) {
                             $recap['laggard']['nickname'] = $nickname;
                         }
-                        break;
+                    } elseif ('' !== $candidate) {
+                        $otherNickname = $candidate;
                     }
                 }
+
             }
         }
 
@@ -218,8 +260,34 @@ final class AdminTeamRecapCopyController extends AbstractController
         if (null !== $slot && '' !== $slot) {
             $recap['recap_gif_url'] = $teamRecapGifPicker->pickRandomAbsoluteUrl($slot);
         }
+        if (null === $recap['recap_gif_url'] || '' === $recap['recap_gif_url']) {
+            $recap['recap_gif_url'] = $teamRecapGifPicker->pickRandomAbsoluteUrlAny();
+        }
+
+        $this->replaceSampleNames($recap, $selectedNickname, $otherNickname);
 
         return $nickname;
+    }
+
+    /**
+     * @param array<string, mixed> $recap
+     */
+    private function replaceSampleNames(array &$recap, string $selectedNickname, string $otherNickname): void
+    {
+        $selectedNickname = '' !== trim($selectedNickname) ? $selectedNickname : 'Pilou';
+        $otherNickname = '' !== trim($otherNickname) && $otherNickname !== $selectedNickname ? $otherNickname : 'Coéquipier';
+
+        array_walk_recursive($recap, static function (&$value) use ($selectedNickname, $otherNickname): void {
+            if (!\is_string($value)) {
+                return;
+            }
+
+            $value = str_replace(
+                ['Pilou', 'Zaza'],
+                [$selectedNickname, $otherNickname],
+                $value,
+            );
+        });
     }
 
     /**

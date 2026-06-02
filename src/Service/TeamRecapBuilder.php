@@ -162,6 +162,9 @@ final class TeamRecapBuilder
         if (null === $recapGifUrl || '' === $recapGifUrl) {
             $recapGifUrl = $this->teamRecapGifPicker->pickRandomAbsoluteUrl($subjectGifSlot);
         }
+        if (null === $recapGifUrl || '' === $recapGifUrl) {
+            $recapGifUrl = $this->teamRecapGifPicker->pickRandomAbsoluteUrlAny();
+        }
 
         if (!$this->teamHadActivityOnPeriod($matchIds, $pronosticByMatchAndUser, $totalTeamPoints, $goalRows, $jokersPlaced, $jokersSuffered)) {
             return null;

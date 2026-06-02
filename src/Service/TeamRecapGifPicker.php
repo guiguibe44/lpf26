@@ -25,4 +25,16 @@ final class TeamRecapGifPicker
 
         return $this->teamRecapGifUrlBuilder->toAbsoluteUrl($path);
     }
+
+    public function pickRandomAbsoluteUrlAny(): ?string
+    {
+        $paths = $this->teamRecapGifRepository->findAllActivePaths();
+        if ([] === $paths) {
+            return null;
+        }
+
+        $path = $paths[random_int(0, \count($paths) - 1)];
+
+        return $this->teamRecapGifUrlBuilder->toAbsoluteUrl($path);
+    }
 }
