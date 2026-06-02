@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\Joker;
+use App\Entity\Team;
+use App\Entity\TeamMember;
+use App\Repository\TeamRepository;
 use App\Repository\TeamRecapGifRepository;
 use App\Service\LpfEmailRenderer;
 use App\Service\TeamRecapCopyCatalog;
@@ -32,8 +35,19 @@ final class AdminTeamRecapCopyController extends AbstractController
     }
 
     #[Route('/admin/communication/recap-equipe-simulateur', name: 'admin_team_recap_email_simulator', methods: ['GET'])]
-    public function emailSimulator(Request $request, TeamRecapGifRepository $teamRecapGifRepository): Response
+    public function emailSimulator(
+        Request $request,
+        TeamRecapGifRepository $teamRecapGifRepository,
+        TeamRepository $teamRepository,
+    ): Response
     {
+        $teams = $teamRepository->findAllWithMembersAndPlayers();
+        [$teamChoices, $memberChoicesByTeam] = $this->buildTeamAndMemberChoices($teams);
+        $defaultTeamId = array_key_first($teamChoices);
+        $defaultMemberId = null !== $defaultTeamId
+            ? (array_key_first($memberChoicesByTeam[$defaultTeamId] ?? []) ?: null)
+            : null;
+
         $defaultQuery = [
             'subject' => 'hot',
             'laggard' => 'low',
@@ -43,6 +57,8 @@ final class AdminTeamRecapCopyController extends AbstractController
             'bigballs' => '1',
             'gif_mode' => 'auto',
             'gif_slot' => '',
+            'team_id' => null !== $defaultTeamId ? (string) $defaultTeamId : '',
+            'member_id' => null !== $defaultMemberId ? (string) $defaultMemberId : '',
         ];
 
         $query = array_merge($defaultQuery, $request->query->all());
@@ -51,6 +67,8 @@ final class AdminTeamRecapCopyController extends AbstractController
             'preview_url' => $this->generateUrl('admin_team_recap_email_preview'),
             'query' => $query,
             'gif_slots' => $teamRecapGifRepository->findActiveSlots(),
+            'team_choices' => $teamChoices,
+            'member_choices_by_team' => $memberChoicesByTeam,
         ]);
     }
 
@@ -62,13 +80,14 @@ final class AdminTeamRecapCopyController extends AbstractController
         TeamRecapMailer $mailer,
         UrlGeneratorInterface $urlGenerator,
         TeamRecapGifPicker $teamRecapGifPicker,
+        TeamRepository $teamRepository,
     ): Response {
         $recap = $catalog->buildSampleRecapContext();
-        $this->applyPreviewFilters($recap, $request, $teamRecapGifPicker);
+        $nickname = $this->applyPreviewFilters($recap, $request, $teamRecapGifPicker, $teamRepository);
 
         $html = $lpfEmailRenderer->render('email/content/team_recap.html.twig', [
             'pageTitle' => $mailer->buildSubject($recap),
-            'nickname' => 'Pilou',
+            'nickname' => $nickname,
             'recap' => $recap,
             'teamShowUrl' => $urlGenerator->generate('app_ranking', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'rankingUrl' => $urlGenerator->generate('app_ranking', [], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -82,8 +101,38 @@ final class AdminTeamRecapCopyController extends AbstractController
     /**
      * @param array<string, mixed> $recap
      */
-    private function applyPreviewFilters(array &$recap, Request $request, TeamRecapGifPicker $teamRecapGifPicker): void
+    private function applyPreviewFilters(
+        array &$recap,
+        Request $request,
+        TeamRecapGifPicker $teamRecapGifPicker,
+        TeamRepository $teamRepository,
+    ): string
     {
+        $nickname = 'Pilou';
+        $teamId = (int) $request->query->get('team_id', 0);
+        if ($teamId > 0) {
+            $team = $teamRepository->findOneWithMembersAndPlayers($teamId);
+            if ($team instanceof Team) {
+                $recap['team_id'] = (int) $team->getId();
+                $recap['team_name'] = (string) ($team->getName() ?? $recap['team_name']);
+                $memberId = (int) $request->query->get('member_id', 0);
+
+                foreach ($team->getMembers() as $member) {
+                    if (!$member instanceof TeamMember) {
+                        continue;
+                    }
+
+                    if ($memberId > 0 && (int) $member->getId() === $memberId) {
+                        $nickname = (string) ($member->getNickname() ?? $nickname);
+                        if (isset($recap['laggard']) && \is_array($recap['laggard'])) {
+                            $recap['laggard']['nickname'] = $nickname;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         $subject = (string) $request->query->get('subject', 'hot');
         $recap['total_team_points'] = match ($subject) {
             'neutral' => 0,
@@ -169,5 +218,44 @@ final class AdminTeamRecapCopyController extends AbstractController
         if (null !== $slot && '' !== $slot) {
             $recap['recap_gif_url'] = $teamRecapGifPicker->pickRandomAbsoluteUrl($slot);
         }
+
+        return $nickname;
+    }
+
+    /**
+     * @param list<Team> $teams
+     *
+     * @return array{0: array<int, string>, 1: array<int, array<int, string>>}
+     */
+    private function buildTeamAndMemberChoices(array $teams): array
+    {
+        $teamChoices = [];
+        $memberChoicesByTeam = [];
+
+        foreach ($teams as $team) {
+            if (!$team instanceof Team || null === $team->getId()) {
+                continue;
+            }
+
+            $tid = (int) $team->getId();
+            $teamChoices[$tid] = (string) ($team->getName() ?? 'Équipe #'.$tid);
+            $memberChoicesByTeam[$tid] = [];
+
+            foreach ($team->getMembers() as $member) {
+                if (!$member instanceof TeamMember || null === $member->getId()) {
+                    continue;
+                }
+
+                $mid = (int) $member->getId();
+                $email = trim((string) ($member->getPlayer()?->getEmail() ?? ''));
+                $label = trim((string) ($member->getNickname() ?? 'Joueur'));
+                if ('' !== $email) {
+                    $label .= ' ('.$email.')';
+                }
+                $memberChoicesByTeam[$tid][$mid] = $label;
+            }
+        }
+
+        return [$teamChoices, $memberChoicesByTeam];
     }
 }

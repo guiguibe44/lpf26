@@ -19,6 +19,26 @@
         <form method="get" action="{{ preview_url }}" target="_blank" rel="noopener">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
                 <label>
+                    <span class="text-sm font-semibold">Équipe existante</span>
+                    <select class="ta-form-input mt-1" name="team_id" id="sim_team_id">
+                        {% for teamId, teamName in team_choices %}
+                            <option value="{{ teamId }}" {% if query.team_id == (teamId ~ '') %}selected{% endif %}>{{ teamName }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Joueur existant</span>
+                    <select class="ta-form-input mt-1" name="member_id" id="sim_member_id">
+                        {% for teamId, members in member_choices_by_team %}
+                            {% for memberId, memberLabel in members %}
+                                <option value="{{ memberId }}" data-team-id="{{ teamId }}" {% if query.member_id == (memberId ~ '') %}selected{% endif %}>{{ memberLabel }}</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label>
                     <span class="text-sm font-semibold">Objet / points équipe</span>
                     <select class="ta-form-input mt-1" name="subject">
                         <option value="hot" {% if query.subject == 'hot' %}selected{% endif %}>Hot (>= 50 pts)</option>
@@ -107,4 +127,40 @@
             </div>
         </form>
     </section>
+
+    <script>
+        (function () {
+            const teamSelect = document.getElementById('sim_team_id');
+            const memberSelect = document.getElementById('sim_member_id');
+            if (!teamSelect || !memberSelect) {
+                return;
+            }
+
+            const allOptions = Array.from(memberSelect.querySelectorAll('option'));
+
+            const refreshMemberOptions = () => {
+                const teamId = teamSelect.value;
+                let selectedFound = false;
+
+                for (const option of allOptions) {
+                    const visible = option.dataset.teamId === teamId;
+                    option.hidden = !visible;
+                    option.disabled = !visible;
+                    if (visible && option.selected) {
+                        selectedFound = true;
+                    }
+                }
+
+                if (!selectedFound) {
+                    const firstVisible = allOptions.find((opt) => !opt.hidden && !opt.disabled);
+                    if (firstVisible) {
+                        firstVisible.selected = true;
+                    }
+                }
+            };
+
+            teamSelect.addEventListener('change', refreshMemberOptions);
+            refreshMemberOptions();
+        })();
+    </script>
 {% endblock %}
