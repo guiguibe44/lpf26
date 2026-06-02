@@ -33,15 +33,13 @@
     {% endif %}
 </p>
 
+{% if recap.bigballs_summary.attempted > 0 %}
 <p style="margin:0 0 10px;font-size:13px;line-height:1.4;color:#b45309;">
     <strong>{{ bigballs_term('name') }}</strong> = les 2 joueurs posent exactement le même prono sur un match.
-    {% if recap.bigballs_summary.attempted > 0 %}
-        Sur la période : {{ recap.bigballs_summary.succeeded }} réussi{{ recap.bigballs_summary.succeeded > 1 ? 's' : '' }}
-        / {{ recap.bigballs_summary.attempted }} tenté{{ recap.bigballs_summary.attempted > 1 ? 's' : '' }}.
-    {% else %}
-        Aucun {{ bigballs_term('name') }} tenté sur cette période.
-    {% endif %}
+    Sur la période : {{ recap.bigballs_summary.succeeded }} réussi{{ recap.bigballs_summary.succeeded > 1 ? 's' : '' }}
+    / {{ recap.bigballs_summary.attempted }} tenté{{ recap.bigballs_summary.attempted > 1 ? 's' : '' }}.
 </p>
+{% endif %}
 
 <p style="margin:0 0 10px;font-size:15px;line-height:1.5;color:#2a2a2a;">
     <strong>Au niveau des buteurs :</strong>
