@@ -42,7 +42,7 @@ class TeamRecapCopyCrudController extends AbstractAppCrudController
 
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters->add(ChoiceFilter::new('category')->setChoices(TeamRecapCopyCategory::choices()));
+        return $filters->add(ChoiceFilter::new('category')->setChoices($this->categoryChoices()));
     }
 
     public function configureActions(Actions $actions): Actions
@@ -65,7 +65,7 @@ class TeamRecapCopyCrudController extends AbstractAppCrudController
             ->setDisabled()
             ->setHelp('Identifiant stable — ne pas modifier.');
         yield ChoiceField::new('category', 'Catégorie')
-            ->setChoices(TeamRecapCopyCategory::choices())
+            ->setChoices($this->categoryChoices())
             ->setDisabled()
             ->formatValue(static fn (?TeamRecapCopyCategory $c): string => $c?->label() ?? '');
         yield TextField::new('adminLabel', 'Libellé admin')
@@ -82,5 +82,18 @@ class TeamRecapCopyCrudController extends AbstractAppCrudController
             ->setHelp('Variables entre accolades ; une variante est tirée au hasard (déterministe) par palier ou par code fixe.')
             ->setNumOfRows(5)
             ->renderAsHtml(false);
+    }
+
+    /**
+     * @return array<string, TeamRecapCopyCategory>
+     */
+    private function categoryChoices(): array
+    {
+        $choices = [];
+        foreach (TeamRecapCopyCategory::cases() as $case) {
+            $choices[$case->label()] = $case;
+        }
+
+        return $choices;
     }
 }
