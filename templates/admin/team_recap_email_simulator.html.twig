@@ -74,10 +74,23 @@
 
                 <label>
                     <span class="text-sm font-semibold">GIF dans le mail</span>
-                    <select class="ta-form-input mt-1" name="gif">
-                        <option value="joker" {% if query.gif == 'joker' %}selected{% endif %}>Style joker</option>
-                        <option value="subject" {% if query.gif == 'subject' %}selected{% endif %}>Style objet</option>
-                        <option value="none" {% if query.gif == 'none' %}selected{% endif %}>Aucun GIF</option>
+                    <select class="ta-form-input mt-1" name="gif_mode">
+                        <option value="auto" {% if query.gif_mode == 'auto' %}selected{% endif %}>Auto (logique réelle)</option>
+                        <option value="subject" {% if query.gif_mode == 'subject' %}selected{% endif %}>Objet (slot subject.*)</option>
+                        <option value="joker_useful" {% if query.gif_mode == 'joker_useful' %}selected{% endif %}>Joker utile</option>
+                        <option value="joker_not_useful" {% if query.gif_mode == 'joker_not_useful' %}selected{% endif %}>Joker pas utile</option>
+                        <option value="slot" {% if query.gif_mode == 'slot' %}selected{% endif %}>Slot personnalisé</option>
+                        <option value="none" {% if query.gif_mode == 'none' %}selected{% endif %}>Aucun GIF</option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="text-sm font-semibold">Slot GIF personnalisé</span>
+                    <select class="ta-form-input mt-1" name="gif_slot">
+                        <option value="">-- choisir --</option>
+                        {% for slot in gif_slots %}
+                            <option value="{{ slot }}" {% if query.gif_slot == slot %}selected{% endif %}>{{ slot }}</option>
+                        {% endfor %}
                     </select>
                 </label>
             </div>

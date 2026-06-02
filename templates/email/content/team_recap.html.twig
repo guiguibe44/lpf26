@@ -1,3 +1,9 @@
+{% if recap.recap_gif_url %}
+<p style="margin:0 0 16px;text-align:center;">
+    <img src="{{ recap.recap_gif_url }}" alt="" width="320" style="display:block;max-width:100%;height:auto;margin:0 auto;border-radius:10px;">
+</p>
+{% endif %}
+
 <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#2a2a2a;">
     Bonjour <strong>{{ nickname }}</strong>,
 </p>
@@ -138,7 +144,7 @@
 {% endif %}
 {% if recap.jokers_suffered is not empty %}
 <p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#2a2a2a;">Subis (ou neutralisés)</p>
-<ul style="margin:0 0 {% if recap.recap_gif_url %}14px{% else %}20px{% endif %};padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
+<ul style="margin:0 0 20px;padding-left:1.25rem;font-size:14px;line-height:1.55;color:#2a2a2a;">
     {% for j in recap.jokers_suffered %}
         <li>
             <strong>{{ j.name }}</strong> — {{ j.match }}
@@ -148,12 +154,6 @@
 </ul>
 {% endif %}
 {% endif %}
-{% if recap.recap_gif_url %}
-<p style="margin:0 0 20px;text-align:center;">
-    <img src="{{ recap.recap_gif_url }}" alt="" width="320" style="display:block;max-width:100%;height:auto;margin:0 auto;border-radius:10px;">
-</p>
-{% endif %}
-
 {% include 'email/content/_cta_button.html.twig' with {
     actionUrl: teamShowUrl,
     ctaLabel: 'Voir la fiche de mon équipe',

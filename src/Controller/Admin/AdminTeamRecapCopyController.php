@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Joker;
+use App\Repository\TeamRecapGifRepository;
 use App\Service\LpfEmailRenderer;
 use App\Service\TeamRecapCopyCatalog;
+use App\Service\TeamRecapGifPicker;
 use App\Service\TeamRecapMailer;
+use App\TeamRecap\TeamRecapGifSlot;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +32,7 @@ final class AdminTeamRecapCopyController extends AbstractController
     }
 
     #[Route('/admin/communication/recap-equipe-simulateur', name: 'admin_team_recap_email_simulator', methods: ['GET'])]
-    public function emailSimulator(Request $request): Response
+    public function emailSimulator(Request $request, TeamRecapGifRepository $teamRecapGifRepository): Response
     {
         $defaultQuery = [
             'subject' => 'hot',
@@ -37,7 +41,8 @@ final class AdminTeamRecapCopyController extends AbstractController
             'jokers' => 'both',
             'goals' => '1',
             'bigballs' => '1',
-            'gif' => 'joker',
+            'gif_mode' => 'auto',
+            'gif_slot' => '',
         ];
 
         $query = array_merge($defaultQuery, $request->query->all());
@@ -45,6 +50,7 @@ final class AdminTeamRecapCopyController extends AbstractController
         return $this->render('admin/team_recap_email_simulator.html.twig', [
             'preview_url' => $this->generateUrl('admin_team_recap_email_preview'),
             'query' => $query,
+            'gif_slots' => $teamRecapGifRepository->findActiveSlots(),
         ]);
     }
 
@@ -55,9 +61,10 @@ final class AdminTeamRecapCopyController extends AbstractController
         LpfEmailRenderer $lpfEmailRenderer,
         TeamRecapMailer $mailer,
         UrlGeneratorInterface $urlGenerator,
+        TeamRecapGifPicker $teamRecapGifPicker,
     ): Response {
         $recap = $catalog->buildSampleRecapContext();
-        $this->applyPreviewFilters($recap, $request);
+        $this->applyPreviewFilters($recap, $request, $teamRecapGifPicker);
 
         $html = $lpfEmailRenderer->render('email/content/team_recap.html.twig', [
             'pageTitle' => $mailer->buildSubject($recap),
@@ -75,7 +82,7 @@ final class AdminTeamRecapCopyController extends AbstractController
     /**
      * @param array<string, mixed> $recap
      */
-    private function applyPreviewFilters(array &$recap, Request $request): void
+    private function applyPreviewFilters(array &$recap, Request $request, TeamRecapGifPicker $teamRecapGifPicker): void
     {
         $subject = (string) $request->query->get('subject', 'hot');
         $recap['total_team_points'] = match ($subject) {
@@ -145,11 +152,22 @@ final class AdminTeamRecapCopyController extends AbstractController
             default => [['name' => 'Pique de points', 'match' => 'France — Allemagne', 'blocked' => true]],
         };
 
-        $gif = (string) $request->query->get('gif', 'joker');
-        $recap['recap_gif_url'] = match ($gif) {
+        $subjectSlot = TeamRecapGifSlot::subjectCodeForTeamPoints((int) $recap['total_team_points']);
+        $gifMode = (string) $request->query->get('gif_mode', 'auto');
+        $slot = match ($gifMode) {
             'none' => null,
-            'subject' => 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
-            default => 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif',
+            'subject' => $subjectSlot,
+            'joker_useful' => TeamRecapGifSlot::jokerUseful(Joker::CODE_DOUBLE_EQUIPE),
+            'joker_not_useful' => TeamRecapGifSlot::jokerNotUseful(Joker::CODE_PIQUE_POINTS),
+            'slot' => trim((string) $request->query->get('gif_slot', '')),
+            default => [] !== $recap['jokers_placed']
+                ? TeamRecapGifSlot::jokerUseful(Joker::CODE_DOUBLE_EQUIPE)
+                : $subjectSlot,
         };
+
+        $recap['recap_gif_url'] = null;
+        if (null !== $slot && '' !== $slot) {
+            $recap['recap_gif_url'] = $teamRecapGifPicker->pickRandomAbsoluteUrl($slot);
+        }
     }
 }

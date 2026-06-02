@@ -39,4 +39,23 @@ class TeamRecapGifRepository extends ServiceEntityRepository
 
         return array_values(array_filter($paths, static fn (string $path): bool => '' !== trim($path)));
     }
+
+    /**
+     * @return list<string>
+     */
+    public function findActiveSlots(): array
+    {
+        /** @var list<string> $slots */
+        $slots = $this->createQueryBuilder('g')
+            ->select('DISTINCT g.slot')
+            ->andWhere('g.active = true')
+            ->andWhere('g.slot IS NOT NULL')
+            ->andWhere('g.slot != :empty')
+            ->setParameter('empty', '')
+            ->orderBy('g.slot', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_values(array_filter($slots, static fn (string $slot): bool => '' !== trim($slot)));
+    }
 }
