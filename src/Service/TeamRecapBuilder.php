@@ -155,9 +155,13 @@ final class TeamRecapBuilder
 
         [$jokersPlaced, $jokersSuffered] = $this->buildJokerBlocks($team, $teamId, $matches);
         $subjectGifSlot = TeamRecapGifSlot::subjectCodeForTeamPoints($totalTeamPoints);
-        $recapGifUrl = [] !== $jokersPlaced
-            ? $this->jokerGifResolver->resolveAbsoluteUrl($team, $matches, $teamPointsByMatchId)
-            : $this->teamRecapGifPicker->pickRandomAbsoluteUrl($subjectGifSlot);
+        $recapGifUrl = null;
+        if ([] !== $jokersPlaced) {
+            $recapGifUrl = $this->jokerGifResolver->resolveAbsoluteUrl($team, $matches, $teamPointsByMatchId);
+        }
+        if (null === $recapGifUrl || '' === $recapGifUrl) {
+            $recapGifUrl = $this->teamRecapGifPicker->pickRandomAbsoluteUrl($subjectGifSlot);
+        }
 
         if (!$this->teamHadActivityOnPeriod($matchIds, $pronosticByMatchAndUser, $totalTeamPoints, $goalRows, $jokersPlaced, $jokersSuffered)) {
             return null;
