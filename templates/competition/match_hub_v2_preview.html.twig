@@ -1,0 +1,203 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hub match — aperçu{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/match-hub-v2.css') }}?v=1">
+    {% if is_live or is_finished %}
+        <link rel="stylesheet" href="{{ asset('css/match-live-joker-sticker.css') }}?v=4">
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="match-hub-v2" data-match-hub-v2>
+        {% include 'home/_ui_preview_banner.html.twig' with { back_route: 'app_homepage' } only %}
+
+        <header class="match-hub-v2-header ta-topbar">
+            <div>
+                <h1 class="ta-page-title">
+                    {{ country_short_label(match.paysDomicile) }} — {{ country_short_label(match.paysExterieur) }}
+                </h1>
+                <p class="ta-page-subtitle">
+                    {{ match.dateHeure|date('d/m/Y H:i') }}
+                    {% if match.phase %} · {{ match.phase }}{% endif %}
+                </p>
+            </div>
+            <a href="{{ path('app_homepage') }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                Accueil
+            </a>
+        </header>
+
+        <div class="match-hub-v2-scoreboard">
+            <div class="match-hub-v2-team">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: match.paysDomicile,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+                <span>{{ country_short_label(match.paysDomicile) }}</span>
+            </div>
+            <div class="match-hub-v2-center">
+                <p class="match-hub-v2-score">
+                    {% if is_upcoming %}
+                        <span style="font-size:1.1rem;font-weight:600">{{ match.dateHeure|date('H:i') }}</span>
+                    {% else %}
+                        {{ match.scoreDomicile ?? 0 }} - {{ match.scoreExterieur ?? 0 }}
+                    {% endif %}
+                </p>
+                {% if is_live %}
+                    <span class="ta-badge ta-badge-warning">{{ match_live_clock_label(match) }}</span>
+                {% elseif is_finished %}
+                    <span class="ta-badge ta-badge-success">Terminé</span>
+                {% else %}
+                    <span class="ta-badge ta-badge-warning">À venir</span>
+                {% endif %}
+                {% if live_view and live_view.viewerPronostic|default(null) %}
+                    {% include 'competition/_match_viewer_pronostic.html.twig' with { viewer_pronostic: live_view.viewerPronostic } only %}
+                {% elseif pronostic %}
+                    <p class="match-viewer-prono" style="margin:0.35rem 0 0;font-size:0.85rem">
+                        <span class="match-viewer-prono__label">Mon prono</span>
+                        <span class="match-viewer-prono__score">{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
+                    </p>
+                {% endif %}
+            </div>
+            <div class="match-hub-v2-team match-hub-v2-team--away">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: match.paysExterieur,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+                <span>{{ country_short_label(match.paysExterieur) }}</span>
+            </div>
+        </div>
+
+        <div class="match-hub-v2-tabs" role="tablist" aria-label="Sections du match">
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="recap" aria-selected="true">Récap</button>
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="buts" aria-selected="false">Buts</button>
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="chat" aria-selected="false">Fil du match</button>
+        </div>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="recap" role="tabpanel">
+            <div class="match-hub-v2-recap-grid">
+                <article class="match-hub-v2-recap-card">
+                    <h3>Avant le coup d’envoi</h3>
+                    {% if pronostic %}
+                        <p class="match-hub-v2-prono-line">
+                            Mon prono
+                            <span>{{ pronostic.scoreDomicile }} - {{ pronostic.scoreExterieur }}</span>
+                        </p>
+                    {% else %}
+                        <p class="ta-card-text">Prono par défaut 0-0 (modifiable avant le CO).</p>
+                    {% endif %}
+                    {% if partner_pronostics is not empty %}
+                        <ul class="match-hub-v2-partner-list" aria-label="Pronos partenaires">
+                            {% for pp in partner_pronostics %}
+                                {% set partner = pp.joueur %}
+                                <li>
+                                    {% if partner.avatar %}
+                                        <img src="{{ partner.avatar }}" alt="" width="28" height="28" loading="lazy" style="border-radius:50%">
+                                    {% else %}
+                                        <span class="match-partner-avatar--placeholder" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:0.75rem">{{ partner.email|first|upper }}</span>
+                                    {% endif %}
+                                    <span>{{ partner.email|split('@')|first }}</span>
+                                    <strong>{{ pp.scoreDomicile }} - {{ pp.scoreExterieur }}</strong>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if match_joker %}
+                        <p class="mt-2 mb-0" style="font-size:0.85rem">
+                            <i class="ti ti-sparkles" aria-hidden="true"></i>
+                            Joker : <strong>{{ match_joker.name|default(match_joker.code) }}</strong>
+                        </p>
+                    {% endif %}
+                </article>
+
+                <article class="match-hub-v2-recap-card">
+                    <h3>Résultat LPF</h3>
+                    {% if is_upcoming %}
+                        <p class="ta-card-text">Points et classement simulé disponibles après le coup d’envoi.</p>
+                        <p class="ta-card-text mb-0">Relance automatique si prono manquant (score 0-0 par défaut en base).</p>
+                    {% else %}
+                        {% if team_match_points is not null %}
+                            <p class="match-hub-v2-prono-line">
+                                Points équipe
+                                <span class="match-hub-v2-prono-pts">+{{ team_match_points }} pts</span>
+                            </p>
+                        {% endif %}
+                        {% if live_view and live_view.viewerPronostic|default(null) %}
+                            <p class="match-hub-v2-prono-line">
+                                Mes points match
+                                <span class="match-hub-v2-prono-pts">{{ live_view.viewerPronostic.points|number_format(0, ',', ' ') }} pts</span>
+                            </p>
+                        {% endif %}
+                        {% if is_live %}
+                            <p class="ta-card-text mt-2 mb-0">
+                                <a href="{{ path('app_match_live', { id: match.id }) }}">Simulateur live complet</a>
+                            </p>
+                        {% elseif is_finished %}
+                            <p class="ta-card-text mt-2 mb-0">
+                                <a href="{{ path('app_match_pronostics', { id: match.id }) }}">Vue pronostics actuelle</a>
+                            </p>
+                        {% endif %}
+                    {% endif %}
+                </article>
+            </div>
+
+            {% if live_view and (is_live or is_finished) %}
+                <div class="match-hub-v2-teams-compact ta-card mt-4">
+                    <h2 class="ta-card-title" style="font-size:0.95rem">Classement simulé (extrait)</h2>
+                    {% include 'competition/_match_live_teams.html.twig' with {
+                        teams: live_view.teams|slice(0, 5),
+                        cotes_visible: match_cotes_visible(match),
+                        viewer_pronostic: live_view.viewerPronostic|default(null),
+                    } only %}
+                </div>
+                {% if live_view.matchJokers|default([]) is not empty %}
+                    <div class="mt-3">
+                        {% include 'competition/_match_live_jokers_section.html.twig' with {
+                            match_jokers: live_view.matchJokers,
+                        } only %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </section>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="buts" role="tabpanel" hidden>
+            {% include 'competition/_match_hub_v2_goals_timeline.html.twig' with {
+                goals: match_goals,
+                match: match,
+            } only %}
+            {% if match_goals is not empty %}
+                <div class="match-goals-wrap mt-4" aria-hidden="true">
+                    {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="chat" role="tabpanel" hidden>
+            <p class="match-hub-v2-mock-note">
+                Fil du match : messages et buts (verts) mélangés chronologiquement (maquette).
+            </p>
+            <div class="match-hub-v2-chat">
+                {% include 'competition/_match_hub_v2_discussion_feed.html.twig' with {
+                    discussion_feed: discussion_feed|default([]),
+                } only %}
+                <form class="match-hub-v2-chat-form" action="#" method="post" onsubmit="return false;">
+                    <input type="text" class="ta-form-input" placeholder="Message sur ce match…" disabled aria-disabled="true">
+                    <button type="submit" class="btn btn-primary btn-sm" disabled>Envoyer</button>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/match-hub-v2-tabs.js') }}?v=1" defer></script>
+    {% if is_live %}
+        <script src="{{ asset('js/match-live.js') }}" defer></script>
+    {% endif %}
+{% endblock %}

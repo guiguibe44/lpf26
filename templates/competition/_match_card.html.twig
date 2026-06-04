@@ -152,7 +152,7 @@
                     <span class="match-live-clock" data-match-live-clock>{{ match_live_clock_label(match) }}</span>
                 </div>
                 <a
-                    href="{{ path('app_match_live', { id: match.id }) }}"
+                    href="{{ path('app_match_hub', { id: match.id }) }}"
                     class="btn btn-warning match-card-live-btn"
                     aria-label="Suivre en direct"
                 >
@@ -163,10 +163,10 @@
             <div class="match-finished-actions">
                 {% include 'competition/_match_card_score_inputs.html.twig' with { match: match, live: false } only %}
                 <a
-                    href="{{ path('app_match_pronostics', { id: match.id }) }}"
+                    href="{{ path('app_match_hub', { id: match.id }) }}"
                     class="btn btn-primary match-card-pronos-btn"
-                    aria-label="Voir tous les pronostics du match"
-                    title="Voir tous les pronostics"
+                    aria-label="Voir le match"
+                    title="Récap, buts et fil du match"
                 >
                     <i class="ti ti-list-details" aria-hidden="true"></i>
                 </a>

@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hub match — démo France / Allemagne{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/match-hub-v2.css') }}?v=1">
+{% endblock %}
+
+{% block body %}
+    <div class="match-hub-v2" data-match-hub-v2>
+        {% include 'home/_ui_preview_banner.html.twig' with { back_route: 'app_homepage' } only %}
+
+        <header class="match-hub-v2-header ta-topbar">
+            <div>
+                <h1 class="ta-page-title">
+                    {{ home_label }} — {{ away_label }}
+                </h1>
+                <p class="ta-page-subtitle">
+                    {{ match_date|date('d/m/Y H:i') }} · {{ match_phase }}
+                    {% if match_venue %} · {{ match_venue }}{% endif %}
+                </p>
+                <p class="ta-page-subtitle" style="margin-top:0.35rem;opacity:0.85">
+                    <strong>Données fictives</strong> — scénario de test, sans impact sur la base.
+                </p>
+            </div>
+            <a href="{{ path('app_homepage') }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-arrow-left" aria-hidden="true"></i>
+                Accueil
+            </a>
+        </header>
+
+        <nav class="match-hub-v2-demo-states" aria-label="État du match simulé">
+            {% for link in state_links %}
+                <a
+                    href="{{ path('app_match_hub_v2_demo', { etat: link.etat }) }}"
+                    class="btn btn-sm {{ demo_state == link.etat ? 'btn-primary' : 'btn-outline' }}"
+                >{{ link.label }}</a>
+            {% endfor %}
+        </nav>
+
+        <div class="match-hub-v2-scoreboard">
+            <div class="match-hub-v2-team">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: home_country,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+                <span>{{ home_label }}</span>
+            </div>
+            <div class="match-hub-v2-center">
+                <p class="match-hub-v2-score">
+                    {% if is_upcoming %}
+                        <span style="font-size:1.1rem;font-weight:600">{{ match_date|date('H:i') }}</span>
+                    {% else %}
+                        {{ score_home }} - {{ score_away }}
+                    {% endif %}
+                </p>
+                {% if is_live and clock_label %}
+                    <span class="ta-badge ta-badge-warning">{{ clock_label }}</span>
+                {% elseif is_finished %}
+                    <span class="ta-badge ta-badge-success">Terminé</span>
+                {% else %}
+                    <span class="ta-badge ta-badge-warning">À venir</span>
+                {% endif %}
+                {% include 'competition/_match_viewer_pronostic.html.twig' with { viewer_pronostic: viewer_pronostic } only %}
+            </div>
+            <div class="match-hub-v2-team match-hub-v2-team--away">
+                {% include 'components/_country_flag_img.html.twig' with {
+                    country: away_country,
+                    img_classes: 'match-live-score-flag',
+                    placeholder_class: 'match-live-score-flag match-flag-placeholder',
+                } only %}
+                <span>{{ away_label }}</span>
+            </div>
+        </div>
+
+        <div class="match-hub-v2-tabs" role="tablist" aria-label="Sections du match">
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="recap" aria-selected="true">Récap</button>
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="buts" aria-selected="false">Buts</button>
+            <button type="button" class="match-hub-v2-tab" role="tab" data-match-hub-tab="chat" aria-selected="false">Fil du match</button>
+        </div>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="recap" role="tabpanel">
+            <div class="match-hub-v2-recap-grid">
+                <article class="match-hub-v2-recap-card">
+                    <h3>Avant le coup d’envoi</h3>
+                    <p class="match-hub-v2-prono-line">
+                        Mon prono
+                        <span>{{ viewer_pronostic.pred_home }} - {{ viewer_pronostic.pred_away }}</span>
+                    </p>
+                    <ul class="match-hub-v2-partner-list" aria-label="Pronos partenaires">
+                        {% for pp in partner_pronostics %}
+                            <li>
+                                <span class="match-partner-avatar--placeholder" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-size:0.75rem">{{ pp.initial }}</span>
+                                <span>{{ pp.name }}</span>
+                                <strong>{{ pp.score_home }} - {{ pp.score_away }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if match_joker %}
+                        <p class="mt-2 mb-0" style="font-size:0.85rem">
+                            <i class="ti ti-sparkles" aria-hidden="true"></i>
+                            Joker : <strong>{{ match_joker.name }}</strong>
+                        </p>
+                    {% endif %}
+                </article>
+
+                <article class="match-hub-v2-recap-card">
+                    <h3>Résultat LPF</h3>
+                    {% if is_upcoming %}
+                        <p class="ta-card-text">Points et classement simulé disponibles après le coup d’envoi.</p>
+                        <p class="ta-card-text mb-0">Relance auto si prono manquant (0-0 par défaut en base).</p>
+                    {% else %}
+                        {% if team_match_points is not null %}
+                            <p class="match-hub-v2-prono-line">
+                                Points équipe
+                                <span class="match-hub-v2-prono-pts">+{{ team_match_points }} pts</span>
+                            </p>
+                        {% endif %}
+                        <p class="match-hub-v2-prono-line">
+                            Mes points match
+                            <span class="match-hub-v2-prono-pts">{{ viewer_pronostic.points|number_format(0, ',', ' ') }} pts</span>
+                        </p>
+                        {% if is_live %}
+                            <p class="ta-card-text mt-2 mb-0">Score et points évoluent en direct dans la version finale.</p>
+                        {% endif %}
+                    {% endif %}
+                </article>
+            </div>
+
+            {% if ranking_rows is not empty %}
+                <div class="match-hub-v2-teams-compact ta-card mt-4">
+                    <h2 class="ta-card-title" style="font-size:0.95rem">Classement simulé (fictif)</h2>
+                    {% include 'competition/_match_hub_v2_demo_ranking.html.twig' with { ranking_rows: ranking_rows } only %}
+                </div>
+            {% endif %}
+
+            {% if match_jokers is not empty %}
+                <div class="mt-3 ta-card" style="padding:0.85rem 1rem">
+                    <h3 class="ta-card-title" style="font-size:0.85rem">Jokers sur ce match</h3>
+                    {% for joker in match_jokers %}
+                        <p class="mb-1" style="font-size:0.85rem"><strong>{{ joker.name }}</strong></p>
+                        {% for story in joker.stories %}
+                            <p class="ta-card-text mb-0" style="font-size:0.8rem">{{ story }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="buts" role="tabpanel" hidden>
+            {% include 'competition/_match_hub_v2_goals_timeline.html.twig' with {
+                goals: match_goals,
+                home_label: home_label,
+                away_label: away_label,
+            } only %}
+            {% if match_goals is not empty %}
+                <div class="match-goals-wrap mt-4">
+                    {% include 'competition/_match_goals.html.twig' with { goals: match_goals } only %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="match-hub-v2-panel" data-match-hub-panel="chat" role="tabpanel" hidden>
+            <p class="match-hub-v2-mock-note">
+                Fil du match : <strong>buts en vert</strong>, messages joueurs, alertes <strong>bleues auto</strong> (pronos, cotes, buteurs).
+            </p>
+            <div class="match-hub-v2-chat">
+                {% include 'competition/_match_hub_v2_discussion_feed.html.twig' with { discussion_feed: discussion_feed } only %}
+                <form class="match-hub-v2-chat-form" action="#" method="post" onsubmit="return false;">
+                    <input type="text" class="ta-form-input" placeholder="Message sur ce match…" disabled aria-disabled="true">
+                    <button type="submit" class="btn btn-primary btn-sm" disabled>Envoyer</button>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/match-hub-v2-tabs.js') }}?v=1" defer></script>
+{% endblock %}

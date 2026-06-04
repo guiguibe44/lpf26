@@ -204,4 +204,35 @@ class TeamMemberRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Noms d’équipes ayant au moins un joueur cotisé avec ce buteur choisi.
+     *
+     * @return list<string>
+     */
+    public function findTeamNamesWithButeurChoisi(int $buteurId, int $limit = 6): array
+    {
+        if ($buteurId <= 0 || $limit <= 0) {
+            return [];
+        }
+
+        /** @var list<array{teamName: string}> $rows */
+        $rows = $this->createQueryBuilder('tm')
+            ->select('DISTINCT t.name AS teamName')
+            ->join('tm.team', 't')
+            ->join('tm.player', 'u')
+            ->andWhere('u.cotisationPayee = :paid')
+            ->andWhere('IDENTITY(u.buteurChoisi) = :buteurId')
+            ->setParameter('paid', true)
+            ->setParameter('buteurId', $buteurId)
+            ->orderBy('t.name', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_values(array_filter(array_map(
+            static fn (array $row): string => trim((string) ($row['teamName'] ?? '')),
+            $rows,
+        )));
+    }
 }

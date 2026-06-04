@@ -4,7 +4,7 @@
         {% for goal in goals %}
             {% if goal.side|default('home') == 'home' %}
                 <li class="match-goals-item">
-                    {% if goal.photo %}
+                    {% if goal.photo|default %}
                         <img
                             class="match-goals-photo"
                             src="{{ goal.photo starts with 'http' ? goal.photo : asset(goal.photo) }}"
@@ -31,7 +31,7 @@
         {% for goal in goals %}
             {% if goal.side|default('home') == 'away' %}
                 <li class="match-goals-item">
-                    {% if goal.photo %}
+                    {% if goal.photo|default %}
                         <img
                             class="match-goals-photo"
                             src="{{ goal.photo starts with 'http' ? goal.photo : asset(goal.photo) }}"

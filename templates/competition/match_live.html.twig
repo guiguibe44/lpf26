@@ -11,9 +11,9 @@
                 {{ match.dateHeure|date('d/m/Y H:i') }}
             </p>
         </div>
-        <a href="{{ path('app_matches') }}" class="btn btn-primary btn-sm">
+        <a href="{{ path('app_match_hub', { id: match.id }) }}" class="btn btn-primary btn-sm">
             <i class="ti ti-arrow-left" aria-hidden="true"></i>
-            Retour aux matchs
+            Hub match
         </a>
     </section>
 

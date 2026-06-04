@@ -1,0 +1,27 @@
+{# ranking_rows: list<{position, team_name, total, match_pts, prono1, prono2, is_viewer}> #}
+<div class="table-responsive">
+    <table class="table ta-table table-sm match-live-compact-table">
+        <thead>
+            <tr>
+                <th class="ta-num">#</th>
+                <th>Équipe</th>
+                <th class="ta-num">Total</th>
+                <th class="ta-num">Match</th>
+                <th class="ta-num">Prono 1</th>
+                <th class="ta-num">Prono 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in ranking_rows %}
+                <tr class="{{ row.is_viewer ? 'match-live-row--viewer' : '' }}">
+                    <td class="ta-num">#{{ row.position }}</td>
+                    <td>{{ row.team_name }}</td>
+                    <td class="ta-num">{{ row.total }}</td>
+                    <td class="ta-num"><strong>+{{ row.match_pts }}</strong></td>
+                    <td class="ta-num">{{ row.prono1 }}</td>
+                    <td class="ta-num">{{ row.prono2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,51 @@
+{# discussion_feed: list<{type: message|goal|system, minute?, author?, self?, text?, scorer?, team_label?, score_after?, side?}> #}
+<div class="match-hub-v2-feed" aria-live="polite">
+    {% for item in discussion_feed %}
+        {% if item.type == 'goal' %}
+            <article class="match-hub-v2-feed-item match-hub-v2-feed-item--goal" aria-label="But {{ item.scorer }}">
+                {% if item.minute is not null %}
+                    <span class="match-hub-v2-feed-item__minute">{{ item.minute }}'</span>
+                {% endif %}
+                <div class="match-hub-v2-feed-goal">
+                    <span class="match-hub-v2-feed-goal__icon" aria-hidden="true">
+                        <i class="ti ti-ball-football"></i>
+                    </span>
+                    <div class="match-hub-v2-feed-goal__body">
+                        <span class="match-hub-v2-feed-goal__label">But</span>
+                        <strong class="match-hub-v2-feed-goal__scorer">{{ item.scorer }}</strong>
+                        <span class="match-hub-v2-feed-goal__meta">{{ item.team_label }} · {{ item.score_after }}</span>
+                    </div>
+                </div>
+            </article>
+        {% elseif item.type == 'system' %}
+            <p class="match-hub-v2-feed-item match-hub-v2-feed-item--system">
+                <span class="match-hub-v2-feed-item__minute">{{ item.text }}</span>
+            </p>
+        {% elseif item.type == 'auto' %}
+            <article class="match-hub-v2-feed-item match-hub-v2-feed-item--auto">
+                {% if item.minute is not null %}
+                    <span class="match-hub-v2-feed-item__minute match-hub-v2-feed-item__minute--msg">{{ item.minute }}'</span>
+                {% endif %}
+                <div class="match-hub-v2-feed-auto">
+                    <span class="match-hub-v2-feed-auto__author">
+                        <i class="ti ti-chart-bar" aria-hidden="true"></i>
+                        {{ item.author }}
+                    </span>
+                    <p class="match-hub-v2-feed-auto__text">{{ item.text }}</p>
+                </div>
+            </article>
+        {% else %}
+            <article class="match-hub-v2-feed-item match-hub-v2-feed-item--message{{ item.self ? ' match-hub-v2-feed-item--self' : '' }}">
+                {% if item.minute is not null %}
+                    <span class="match-hub-v2-feed-item__minute match-hub-v2-feed-item__minute--msg">{{ item.minute }}'</span>
+                {% endif %}
+                <div class="match-hub-v2-chat-bubble{{ item.self ? ' match-hub-v2-chat-bubble--self' : '' }}">
+                    <span class="match-hub-v2-chat-bubble__author">{{ item.author }}</span>
+                    {{ item.text }}
+                </div>
+            </article>
+        {% endif %}
+    {% else %}
+        <p class="match-hub-v2-goals-empty">Aucun message pour l’instant.</p>
+    {% endfor %}
+</div>

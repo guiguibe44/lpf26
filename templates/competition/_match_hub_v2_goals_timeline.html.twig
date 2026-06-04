@@ -1,0 +1,23 @@
+{# goals: list<{name, minute, side}> #}
+{% if goals is empty %}
+    <p class="match-hub-v2-goals-empty">Aucun but enregistré pour l’instant.</p>
+{% else %}
+    {% set sorted = goals|sort((a, b) => (a.minute ?? 0) <=> (b.minute ?? 0)) %}
+    <ol class="match-hub-v2-timeline" aria-label="Chronologie des buts">
+        {% for goal in sorted %}
+            <li class="match-hub-v2-timeline-item">
+                {% if goal.minute %}
+                    <span class="match-hub-v2-timeline-minute">{{ goal.minute }}'</span>
+                {% endif %}
+                <span class="match-hub-v2-timeline-scorer">{{ goal.name }}</span>
+                <span class="match-hub-v2-timeline-side">
+                    {% if goal.side|default('home') == 'home' %}
+                        {{ home_label|default(match is defined and match ? country_short_label(match.paysDomicile) : 'Domicile') }}
+                    {% else %}
+                        {{ away_label|default(match is defined and match ? country_short_label(match.paysExterieur) : 'Extérieur') }}
+                    {% endif %}
+                </span>
+            </li>
+        {% endfor %}
+    </ol>
+{% endif %}

@@ -1,0 +1,13 @@
+<div class="ui-preview-banner" role="note">
+    <span>
+        <strong>Aperçu UI v2</strong> — maquette locale, non déployée en production.
+        {% if back_route is defined %}
+            <a href="{{ path(back_route) }}">Retour</a>
+        {% endif %}
+        ·
+        <a href="{{ path('app_match_hub_v2_demo') }}">Hub match démo</a>
+    </span>
+    {% if show_dashboard_v2_link|default(false) %}
+        <a href="{{ path('app_homepage_v2_preview') }}" class="btn btn-outline btn-sm">Dashboard v2</a>
+    {% endif %}
+</div>
