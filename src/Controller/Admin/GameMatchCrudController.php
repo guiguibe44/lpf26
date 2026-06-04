@@ -70,7 +70,11 @@ class GameMatchCrudController extends AbstractAppCrudController
             TextField::new('phase')->setRequired(false),
             BooleanField::new('isKdoMatch')->setLabel('Match KDO (cadeau)'),
             BooleanField::new('apiFootballSyncEnabled')->setLabel('Synchro API-Football'),
-            IntegerField::new('apiFootballFixtureId')->setRequired(false)->onlyOnDetail(),
+            IntegerField::new('apiFootballFixtureId')
+                ->setLabel('ID fixture API-Football')
+                ->setRequired(false)
+                ->setHelp('Obligatoire pour la synchro live (matchs amicaux, etc.). À récupérer sur api-football.com → Fixtures.')
+                ->hideOnIndex(),
             IntegerField::new('liveElapsedMinute')->setLabel('Minute live')->onlyOnDetail(),
             DateTimeField::new('liveScoresFinalizedAt')->setLabel('Scores finalisés le')->onlyOnDetail(),
             DateTimeField::new('apiFootballLastSyncedAt')->setLabel('Dernière synchro API')->onlyOnDetail(),
