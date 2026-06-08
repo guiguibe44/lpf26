@@ -45,6 +45,25 @@ final class ForumContentSanitizerTest extends TestCase
         self::assertStringNotContainsString('javascript:', $clean);
     }
 
+    public function testKeepsUnicodeEmojis(): void
+    {
+        $html = '<p>Bravo 🎉</p>';
+        $clean = $this->sanitizer->sanitize($html);
+
+        self::assertSame($html, $clean);
+        self::assertFalse($this->sanitizer->isEffectivelyEmpty($clean));
+    }
+
+    public function testConvertsEmojiImagesFromNativePicker(): void
+    {
+        $html = '<p><img class="Apple-emoji" alt="😂" src="blob:emoji"></p>';
+        $clean = $this->sanitizer->sanitize($html);
+
+        self::assertStringContainsString('😂', $clean);
+        self::assertStringNotContainsString('<img', $clean);
+        self::assertFalse($this->sanitizer->isEffectivelyEmpty($clean));
+    }
+
     #[DataProvider('emptyProvider')]
     public function testDetectsEmptyContent(string $html, bool $empty): void
     {

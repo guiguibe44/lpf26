@@ -18,6 +18,7 @@ final class ForumContentSanitizer
             return '';
         }
 
+        $html = HtmlEmojiImageNormalizer::normalize($html);
         $html = strip_tags($html, self::ALLOWED_TAGS);
         $html = preg_replace('/\s*on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/iu', '', $html) ?? $html;
         $html = preg_replace('/\s*style\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/iu', '', $html) ?? $html;
@@ -79,9 +80,15 @@ final class ForumContentSanitizer
 
     public function isEffectivelyEmpty(string $html): bool
     {
+        $html = HtmlEmojiImageNormalizer::normalize($html);
         $text = trim(html_entity_decode(strip_tags($html), \ENT_QUOTES | \ENT_HTML5, 'UTF-8'));
+        $withoutWhitespace = preg_replace('/\s+/u', '', $text) ?? '';
 
-        return '' === preg_replace('/\s+/u', '', $text);
+        if ('' !== $withoutWhitespace) {
+            return false;
+        }
+
+        return 1 !== preg_match('/\p{Extended_Pictographic}/u', $text);
     }
 
     private function unwrapElement(\DOMElement $element): void

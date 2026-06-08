@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\DashboardEditorialRepository;
+use App\Service\HtmlEmojiImageNormalizer;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -76,7 +77,7 @@ class DashboardEditorial
 
     public function setContent(string $content): static
     {
-        $this->content = $content;
+        $this->content = HtmlEmojiImageNormalizer::normalize($content);
 
         return $this;
     }
