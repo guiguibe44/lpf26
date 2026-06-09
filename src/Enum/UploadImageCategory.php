@@ -15,6 +15,7 @@ enum UploadImageCategory: string
     case Joker = 'jokers';
     case Buteur = 'buteurs';
     case Flag = 'drapeaux';
+    case Badge = 'badges';
 
     public static function tryFromSubdir(string $subdir): ?self
     {
@@ -30,6 +31,7 @@ enum UploadImageCategory: string
             self::Joker => 960,
             self::Buteur => 720,
             self::Flag => 320,
+            self::Badge => 512,
         };
     }
 
@@ -42,6 +44,7 @@ enum UploadImageCategory: string
             self::Joker => 960,
             self::Buteur => 720,
             self::Flag => 320,
+            self::Badge => 512,
         };
     }
 

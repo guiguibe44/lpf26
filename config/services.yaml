@@ -15,6 +15,10 @@ parameters:
     env(API_FOOTBALL_SQUAD_MAX_PLAYERS): '26'
     app.admin_notification_email_default: 'guigui@lotopotofoot.fr'
     app.admin_registration_notification_emails_default: 'guigui@lotopotofoot.fr,guillaume.bex44@gmail.com'
+    app.badges_enabled_default: false
+    app.badges_enabled: '%env(bool:default:app.badges_enabled_default:BADGES_ENABLED)%'
+    app.badges_ironic_enabled_default: true
+    app.badges_ironic_enabled: '%env(bool:default:app.badges_ironic_enabled_default:BADGES_IRONIC_ENABLED)%'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -34,6 +38,11 @@ services:
     App\Service\CompetitionStatus:
         arguments:
             $competitionStartAt: '%app.competition_start_at%'
+
+    App\Service\BadgeFeature:
+        arguments:
+            $badgesEnabled: '%app.badges_enabled%'
+            $badgesIronicEnabled: '%app.badges_ironic_enabled%'
 
     App\Service\WebPushService:
         arguments:

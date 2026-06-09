@@ -1,0 +1,105 @@
+================================================================================
+LPF 26 — BADGES JOUEURS & ÉQUIPES
+Shortlist v1 — noms provisoires (éditables en admin)
+================================================================================
+
+Admin : Compétition → Badges (catalogue) / Attributions badges
+Feature flag : BADGES_ENABLED=false par défaut (pas d’affichage public tant que désactivé)
+Badges ironiques : BADGES_IRONIC_ENABLED=true par défaut
+
+LÉGENDE
+  J     = Joueur
+  E     = Équipe
+  (i)   = Ironique / chambreur
+  (+)   = Résultat positif (jokers)
+  (−)   = Résultat négatif (jokers)
+
+================================================================================
+3. PRONOSTICS
+================================================================================
+
+Seul au Monde à Penser Ça          | Score unique sur un match                    | J
+Cote de Malade, Ego +1000          | Bon 1/N/2 à cote ≥ 3                         | J
+On Pronostique Ensemble ou On Se Dispute | Les 2 ont tout pronostiqué sur une journée | E
+0-0 Partout, Âme de Défenseur (i)  | ≥ 5 pronos 0-0                               | J
+4-3 à Chaque Fois, Âme d'Attaquant | ≥ 5 pronos avec 4+ buts d'un côté            | J
+
+================================================================================
+4. RÉSULTATS & POINTS
+================================================================================
+
+Hat-trick de Dingues           | 3 scores exacts sur une journée              | J
+Premier Exact du Tournoi       | 1er score exact de la compétition            | J
+Chasseur de Scores Exact       | 10 scores exacts cumulés                     | J
+Machine à 30 Points            | 25 scores exacts cumulés                     | J
+Légende du Barème              | 50 scores exacts cumulés                     | J
+VAR a Dit Non… Ah Si           | Exact malgré joker inverse score subi        | J
+Bouclier Anti-Humiliation (+)  | Joker adverse neutralisé                     | E
+5 Ratés d'Affilée, Chapeau Bas (i) | 5 pronos 0 pt consécutifs               | J
+But Contre Son Camp (i)        | Pire journée du championnat                  | J
+Remontada (+)                  | +20 pts vs journée précédente                | J
+Effondrement PSG (i)           | −20 pts vs journée précédente                | J
+
+================================================================================
+5. BIGBALLS
+================================================================================
+
+Même Prono, Même Délire        | 1er BigBalls tenté                           | E
+Télépathie de Vestiaire (+)    | BigBalls réussi                              | E
+Duo de Légende (ou pas) (+)    | 5 BigBalls réussis cumulés                   | E
+Double Mise, Double Honte (i)(−)| BigBalls tenté mais raté                    | E
+On a Osé, On a Gagné (+)       | BigBalls réussi sur un score exact           | E
+3 Fois d'Affilée (+)           | 3 BigBalls réussis consécutifs               | E
+
+================================================================================
+6. JOKERS — résultat positif ou négatif uniquement
+================================================================================
+
+Pickpocket de Points (+)       | Pique Points réussi                          | E
+Double Équipe, Double Peine (+)| Double Équipe réussi                         | E
+Bouclier Anti-Chambre (+)      | Bouclier / équipe favorite neutralise joker  | E
+Collecte de Taxes (+)          | Collecte Points rentable                     | E
+La Banque Gagne Toujours (+)   | +30 pts nets jokers sur un match             | E
+VAR Inversé (+)                | Inverse Score décisif (résultat favorable)   | E
+Joker dans le Mur (−)          | Joker posé, bilan net négatif sur le match   | E
+Victime Collatérale (i)(−)     | 3 jokers adverses subis                      | E
+
+================================================================================
+9. CLASSEMENT
+================================================================================
+
+Montée Express (+)             | +5 places en une journée                     | E
+Chute Libre (i)(−)             | −5 places en une journée                     | E
+Top 10 Régulier (+)            | Top 10 pendant 5 snapshots consécutifs       | E
+Outsider qui Fait Peur (+)     | Hors top 20 → top 10 en phase finale         | E
+Départagé au BigBalls (+)      | Place gagnée au tie-break BigBalls           | E
+On Vous Avait Dit (i)(−)       | A été 1er puis rechuté hors top 5            | E
+
+================================================================================
+10. VENDÉE
+================================================================================
+
+Préfou d'Or (+)                | 1ère place classement vendéen                | E
+
+================================================================================
+11. COMPÉTITION / MONDIAL
+================================================================================
+
+Pays Hôte, Prono Local (+)     | Exact sur match USA/CAN/MEX                  | J
+Tour des 3 Hôtes (+)           | Exact sur un match de chaque pays hôte       | J
+Phase de Groupes Survécu       | Pronos sur tous les matchs de groupes        | J
+Knockout, Genoux qui Flageolent (+) | Exact en élimination directe            | J
+Finale ou Rien                 | Prono posé sur la finale                     | J
+Buteur Choisi, Ballon d'Or Imaginaire (+) | Buteur choisi a marqué              | J
+Panenka sur le Prono (+)       | Exact audacieux (cote max du match)          | J
+Clean Sheet Obsession (+)      | 5 exacts 0-0 ou clean sheets               | J
+Zizou Mode (+)                 | 3 scores exacts consécutifs                  | J
+
+================================================================================
+NOTES TECHNIQUES
+================================================================================
+
+- 46 badges seedés (codes stables en base, noms éditables en admin)
+- Attribution automatique : à implémenter (BadgeFeature + BadgeEvaluator)
+- Attributions manuelles possibles en admin pour tests
+- BADGES_ENABLED=false → pas d’impact public ; admin catalogue toujours accessible
