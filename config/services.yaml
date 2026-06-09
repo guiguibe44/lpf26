@@ -19,6 +19,8 @@ parameters:
     app.badges_enabled: '%env(bool:default:app.badges_enabled_default:BADGES_ENABLED)%'
     app.badges_ironic_enabled_default: true
     app.badges_ironic_enabled: '%env(bool:default:app.badges_ironic_enabled_default:BADGES_IRONIC_ENABLED)%'
+    app.badges_admin_only_default: false
+    app.badges_admin_only: '%env(bool:default:app.badges_admin_only_default:BADGES_ADMIN_ONLY)%'
     app.vapid_public_key: '%env(VAPID_PUBLIC_KEY)%'
     app.vapid_private_key: '%env(VAPID_PRIVATE_KEY)%'
     app.vapid_subject: '%env(VAPID_SUBJECT)%'
@@ -43,6 +45,7 @@ services:
         arguments:
             $badgesEnabled: '%app.badges_enabled%'
             $badgesIronicEnabled: '%app.badges_ironic_enabled%'
+            $badgesAdminOnly: '%app.badges_admin_only%'
 
     App\Service\WebPushService:
         arguments:

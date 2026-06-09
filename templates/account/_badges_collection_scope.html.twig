@@ -1,0 +1,50 @@
+{# @var title string #}
+{# @var scope array #}
+{# @var scope_key string #}
+{% if scope.sections is not empty %}
+    <div class="badge-collection-scope" id="badge-collection-{{ scope_key }}">
+        <div class="badge-collection-scope__head">
+            <h3 class="badge-section-subtitle">{{ title }}</h3>
+            <p class="badge-collection-progress">
+                <span class="badge-collection-progress__value">{{ scope.earned }}/{{ scope.total }}</span>
+                débloqués
+            </p>
+        </div>
+
+        <ul class="badge-collection-grid">
+            {% for section in scope.sections %}
+                {% for slot in section.slots %}
+                    <li class="badge-slot{% if slot.earned %} badge-slot--earned{% else %} badge-slot--locked{% endif %}{% if slot.ironic %} badge-slot--ironic{% endif %}{% if slot.outcome == 'positive' %} badge-slot--positive{% elseif slot.outcome == 'negative' %} badge-slot--negative{% endif %}">
+                        {% if slot.earned %}
+                            <div class="badge-slot__media">
+                                {% if slot.image %}
+                                    <img src="{{ asset(slot.image) }}" alt="" class="badge-slot__image" width="72" height="72" loading="lazy">
+                                {% else %}
+                                    <span class="badge-slot__icon" aria-hidden="true">
+                                        <i class="ti {{ slot.icon ?? 'ti-medal' }}"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="badge-slot__body">
+                                <p class="badge-slot__name">{{ slot.name }}</p>
+                                {% if slot.flavorText %}
+                                    <p class="badge-slot__flavor">{{ slot.flavorText }}</p>
+                                {% endif %}
+                                {% if slot.awardedAt and not design_preview %}
+                                    <p class="badge-slot__meta">{{ slot.awardedAt|date('d/m/Y') }}</p>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="badge-slot__media badge-slot__media--locked" aria-hidden="true">
+                                <span class="badge-slot__lock"><i class="ti ti-lock"></i></span>
+                            </div>
+                            <div class="badge-slot__body badge-slot__body--locked">
+                                <p class="badge-slot__placeholder">Emplacement à débloquer</p>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

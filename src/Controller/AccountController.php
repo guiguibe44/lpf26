@@ -19,6 +19,7 @@ use App\Repository\CountryRepository;
 use App\Repository\TeamInvitationRepository;
 use App\Repository\TeamMemberRepository;
 use App\Repository\UserRepository;
+use App\Service\Badge\BadgeCollectionBuilder;
 use App\Service\ButeurGoalScoringService;
 use App\Service\ButeurPickContextFactory;
 use App\Service\CompetitionStatus;
@@ -58,6 +59,7 @@ class AccountController extends AbstractController
         ButRepository $butRepository,
         UserRepository $userRepository,
         ButeurGoalScoringService $buteurGoalScoringService,
+        BadgeCollectionBuilder $badgeCollectionBuilder,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -378,6 +380,8 @@ class AccountController extends AbstractController
             'team_joker_overview' => null !== $team && $hasTeamMember
                 ? $teamJokerService->buildOverviewForTeam($team)
                 : [],
+            'badges_show_tab' => $badgeCollectionBuilder->shouldShowAccountTab($user),
+            'badges_collection' => $badgeCollectionBuilder->buildAccountView($user, $team),
         ]);
     }
 

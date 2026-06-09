@@ -54,6 +54,7 @@ security:
         - { path: ^/api/buteurs/recherche, roles: IS_AUTHENTICATED }
         - { path: ^/api/matchs/live-feed, roles: IS_AUTHENTICATED }
         - { path: ^/api/notifications, roles: IS_AUTHENTICATED }
+        - { path: ^/api/badges, roles: IS_AUTHENTICATED }
         - { path: ^/api/forum, roles: IS_AUTHENTICATED }
         - { path: ^/admin/sync, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }

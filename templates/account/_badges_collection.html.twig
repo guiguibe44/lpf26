@@ -1,0 +1,34 @@
+{# @var badges_collection array #}
+<section class="account-card-badges-collection rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+    <div class="badge-section-head">
+        <div>
+            <h2 class="mb-2 text-lg font-semibold">Ma collection</h2>
+            <p class="ta-card-text mb-0">
+                {% if badges_collection.designPreview %}
+                    Aperçu design — catalogue complet (admin).
+                {% else %}
+                    Badges débloqués et emplacements restants à conquérir.
+                {% endif %}
+            </p>
+        </div>
+        {% if badges_collection.designPreview %}
+            <span class="badge-preview-pill">Preview design</span>
+        {% endif %}
+    </div>
+
+    {% include 'account/_badges_collection_scope.html.twig' with {
+        title: 'Joueur',
+        scope: badges_collection.player,
+        scope_key: 'player',
+        design_preview: badges_collection.designPreview,
+    } only %}
+
+    {% if team %}
+        {% include 'account/_badges_collection_scope.html.twig' with {
+            title: 'Équipe',
+            scope: badges_collection.team,
+            scope_key: 'team',
+            design_preview: badges_collection.designPreview,
+        } only %}
+    {% endif %}
+</section>

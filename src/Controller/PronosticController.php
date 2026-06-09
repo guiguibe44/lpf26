@@ -12,6 +12,7 @@ use App\Repository\PronosticRepository;
 use App\Service\DefaultPronosticService;
 use App\Service\MatchStatusResolver;
 use App\Service\PronosticScoringService;
+use App\Service\Badge\BadgeEvaluator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +30,7 @@ class PronosticController extends AbstractController
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
         DefaultPronosticService $defaultPronosticService,
+        BadgeEvaluator $badgeEvaluator,
         MatchStatusResolver $matchStatusResolver,
     ): Response {
         $user = $this->getUser();
@@ -44,6 +46,7 @@ class PronosticController extends AbstractController
                 $pronosticRepository,
                 $entityManager,
                 $pronosticScoringService,
+                $badgeEvaluator,
                 $matchStatusResolver,
             );
 
@@ -83,6 +86,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        BadgeEvaluator $badgeEvaluator,
         MatchStatusResolver $matchStatusResolver,
     ): Response {
         $user = $this->getUser();
@@ -101,6 +105,7 @@ class PronosticController extends AbstractController
             $pronosticRepository,
             $entityManager,
             $pronosticScoringService,
+            $badgeEvaluator,
             $matchStatusResolver,
         );
 
@@ -123,6 +128,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        BadgeEvaluator $badgeEvaluator,
         MatchStatusResolver $matchStatusResolver,
     ): array {
         $matchId = (int) $request->request->get('match_id');
@@ -139,6 +145,7 @@ class PronosticController extends AbstractController
             $pronosticRepository,
             $entityManager,
             $pronosticScoringService,
+            $badgeEvaluator,
             $matchStatusResolver,
         );
     }
@@ -153,6 +160,7 @@ class PronosticController extends AbstractController
         PronosticRepository $pronosticRepository,
         EntityManagerInterface $entityManager,
         PronosticScoringService $pronosticScoringService,
+        BadgeEvaluator $badgeEvaluator,
         MatchStatusResolver $matchStatusResolver,
     ): array {
         if (!$user->isCotisationPayee()) {
@@ -195,6 +203,7 @@ class PronosticController extends AbstractController
         $pronosticScoringService->scorePronostic($pronostic);
 
         $entityManager->flush();
+        $badgeEvaluator->evaluateOnPronosticSaved($user, $match);
 
         return [
             'ok' => true,

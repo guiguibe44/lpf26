@@ -84,6 +84,9 @@
             <link rel="stylesheet" href="{{ asset('css/forum.css') }}?v=3">
             <link rel="stylesheet" href="{{ asset('css/forum-panel.css') }}?v=4">
         <link rel="stylesheet" href="{{ asset('css/site-intro.css') }}?v=12">
+            {% if app.user and badges_active_for(app.user) %}
+            <link rel="stylesheet" href="{{ asset('css/badges.css') }}?v=4">
+            {% endif %}
             {# Dernier : surcharges dark ciblées (priorité sur tailadmin / thèmes) #}
             <link rel="stylesheet" href="{{ asset('lpf-app-dark-surfaces.css') }}?v={{ lpf_css_v }}">
         {% endif %}
@@ -158,6 +161,9 @@
         <script src="{{ asset('js/lpf-site-theme.js') }}?v=5"></script>
         {% if currentRoute in page_hero_banner_routes %}
             <script src="{{ asset('js/page-hero-banner.js') }}?v=2" defer></script>
+        {% endif %}
+        {% if isAppShellPage and app.user and badges_active_for(app.user) %}
+            <script src="{{ asset('js/badge-unlock.js') }}?v=4" defer></script>
         {% endif %}
         {% if isAppShellPage and app.user and site_intro_slides()|length > 0 %}
             <script src="{{ asset('js/site-intro.js') }}?v=7" defer></script>

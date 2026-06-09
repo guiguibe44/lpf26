@@ -40,6 +40,22 @@ class BadgeDefinitionRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return array<string, BadgeDefinition>
+     */
+    public function findActiveIndexedByCode(): array
+    {
+        $indexed = [];
+        foreach ($this->findActiveOrdered() as $definition) {
+            $code = $definition->getCode();
+            if (null !== $code && '' !== $code) {
+                $indexed[$code] = $definition;
+            }
+        }
+
+        return $indexed;
+    }
+
+    /**
      * @return list<BadgeDefinition>
      */
     public function findActiveByCategory(BadgeCategory $category): array

@@ -380,6 +380,7 @@ class CompetitionController extends AbstractController
         TeamRepository $teamRepository,
         PronosticRepository $pronosticRepository,
         TeamRankingSnapshotRepository $teamRankingSnapshotRepository,
+        \App\Service\Badge\BadgeDisplayBuilder $badgeDisplayBuilder,
     ): Response {
         $team = $teamRepository->findOneWithMembersAndPlayers($id);
         if (!$team instanceof Team) {
@@ -443,6 +444,9 @@ class CompetitionController extends AbstractController
             }
         }
 
+        $viewer = $this->getUser();
+        $viewerUser = $viewer instanceof User ? $viewer : null;
+
         return $this->render('competition/team_show.html.twig', [
             'team' => $team,
             'team_members' => $members,
@@ -451,6 +455,7 @@ class CompetitionController extends AbstractController
             'latest_ranking_teams_count' => count($latestRanking),
             'latest_ranking_match' => $latestRankingMatch,
             'ranking_evolution_by_day' => $this->buildRankingEvolutionByMatchDay($team, $teamRankingSnapshotRepository),
+            'team_badges' => $badgeDisplayBuilder->buildForTeam($team, $viewerUser),
         ]);
     }
 

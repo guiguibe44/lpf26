@@ -6,6 +6,9 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/lpf-image-lightbox.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('css/team-show.css') }}?v=1">
+    {% if app.user and badges_active_for(app.user) and team_badges|default([])|length > 0 %}
+        <link rel="stylesheet" href="{{ asset('css/badges.css') }}?v=4">
+    {% endif %}
 {% endblock %}
 
 {% block javascripts %}
@@ -46,6 +49,13 @@
             {% endif %}
         </div>
     </section>
+
+    {% if app.user and badges_active_for(app.user) and team_badges|default([])|length > 0 %}
+        {% include 'account/_badges_section.html.twig' with {
+            player_badges: [],
+            team_badges: team_badges,
+        } only %}
+    {% endif %}
 
     <section class="ta-card mt-5 team-show-ranking-card">
         <h2 class="ta-card-title">Classement actuel</h2>

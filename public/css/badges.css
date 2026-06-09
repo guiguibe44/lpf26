@@ -1,0 +1,441 @@
+.badge-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.badge-preview-pill {
+    flex-shrink: 0;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-warning-content, #422006);
+    background: color-mix(in srgb, var(--color-warning, #f59e0b) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-warning, #f59e0b) 35%, transparent);
+}
+
+.badge-section-subtitle {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
+}
+
+.badge-section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    margin-left: 0.35rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
+}
+
+.badge-grid {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+@media (min-width: 640px) {
+    .badge-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.badge-card {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--color-base-content) 12%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-base-200) 35%, transparent);
+}
+
+.badge-card--positive {
+    border-color: color-mix(in srgb, var(--color-success, #16a34a) 35%, transparent);
+    background: color-mix(in srgb, var(--color-success, #16a34a) 8%, transparent);
+}
+
+.badge-card--negative {
+    border-color: color-mix(in srgb, var(--color-error, #dc2626) 30%, transparent);
+    background: color-mix(in srgb, var(--color-error, #dc2626) 7%, transparent);
+}
+
+.badge-card--ironic .badge-card__flavor {
+    color: color-mix(in srgb, var(--color-warning, #f59e0b) 85%, var(--color-base-content));
+}
+
+@media (min-width: 1024px) {
+    .badge-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.badge-card__image {
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+    border-radius: 0.5rem;
+}
+
+.badge-card__icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-size: 1.5rem;
+}
+
+.badge-card__name {
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.badge-card__flavor {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--color-base-content) 70%, transparent);
+    font-style: italic;
+}
+
+.badge-card__meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
+}
+
+.team-show-badges {
+    margin-top: 1.25rem;
+}
+
+.team-show-badges .badge-grid {
+    margin-top: 0.75rem;
+}
+
+/* ——— Collection (onglet Badges) ——— */
+.badge-collection-scope + .badge-collection-scope {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+}
+
+.badge-collection-scope__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.badge-collection-progress {
+    margin: 0;
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--color-base-content) 65%, transparent);
+}
+
+.badge-collection-progress__value {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.badge-collection-category + .badge-collection-category {
+    margin-top: 1.25rem;
+}
+
+.badge-collection-category__title {
+    margin: 0 0 0.65rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
+}
+
+.badge-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.badge-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 10.5rem;
+    padding: 0.85rem 0.65rem;
+    border-radius: 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--color-base-content) 12%, transparent);
+    background: color-mix(in srgb, var(--color-base-200) 35%, transparent);
+}
+
+.badge-slot--earned {
+    background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.badge-slot--locked {
+    border-style: dashed;
+    opacity: 0.72;
+}
+
+.badge-slot--positive.badge-slot--earned {
+    border-color: color-mix(in srgb, var(--color-success, #16a34a) 35%, transparent);
+}
+
+.badge-slot--negative.badge-slot--earned {
+    border-color: color-mix(in srgb, var(--color-error, #dc2626) 30%, transparent);
+}
+
+.badge-slot__media {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-bottom: 0.55rem;
+}
+
+.badge-slot__media--locked {
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-base-content) 6%, transparent);
+}
+
+.badge-slot__image {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: contain;
+}
+
+.badge-slot__icon {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-size: 1.75rem;
+}
+
+.badge-slot__lock {
+    font-size: 1.5rem;
+    color: color-mix(in srgb, var(--color-base-content) 45%, transparent);
+}
+
+.badge-slot__name {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.badge-slot__flavor {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+}
+
+.badge-slot__meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.6875rem;
+    color: color-mix(in srgb, var(--color-base-content) 52%, transparent);
+}
+
+.badge-slot__placeholder {
+    margin: 0;
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--color-base-content) 48%, transparent);
+}
+
+/* ——— Menu + animation déblocage ——— */
+.ta-menu-link {
+    position: relative;
+}
+
+.ta-menu-badge-dot {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: var(--color-warning, #f59e0b);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-base-100) 80%, transparent);
+}
+
+.ta-menu-link--badge-landed {
+    animation: badge-menu-pulse 0.85s ease;
+}
+
+@keyframes badge-menu-pulse {
+    0%, 100% { transform: scale(1); }
+    35% { transform: scale(1.03); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-warning, #f59e0b) 55%, transparent); }
+}
+
+.badge-unlock-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, #020617 55%, transparent);
+    backdrop-filter: blur(3px);
+    pointer-events: auto;
+    transition: background 0.35s ease, backdrop-filter 0.35s ease;
+}
+
+.badge-unlock-overlay--flying {
+    background: transparent;
+    backdrop-filter: none;
+    pointer-events: none;
+}
+
+.badge-unlock-stage {
+    position: relative;
+    width: min(92vw, 22rem);
+}
+
+.badge-unlock-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.35rem 1rem;
+    border-radius: 1rem;
+    background: var(--color-base-100);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+    box-shadow: 0 18px 50px color-mix(in srgb, #000 28%, transparent);
+    animation: badge-unlock-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.badge-unlock-card__close {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
+    color: color-mix(in srgb, var(--color-base-content) 70%, transparent);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.badge-unlock-card__close:hover {
+    background: color-mix(in srgb, var(--color-base-content) 14%, transparent);
+    color: var(--color-base-content);
+    transform: scale(1.05);
+}
+
+.badge-unlock-card__close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+@keyframes badge-unlock-pop {
+    from { opacity: 0; transform: scale(0.82) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.badge-unlock-card__label {
+    margin: 0.75rem 0 0.15rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+
+.badge-unlock-card__name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.badge-unlock-card__category {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
+}
+
+.badge-unlock-flyer {
+    position: fixed;
+    z-index: 12001;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin: 0;
+    transform: translate(-50%, -50%) scale(1);
+    transition:
+        left 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+        top 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.85s ease;
+    pointer-events: none;
+}
+
+.badge-unlock-flyer__image,
+.badge-unlock-card .badge-unlock-flyer__image {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: contain;
+}
+
+.badge-unlock-flyer__icon,
+.badge-unlock-card .badge-unlock-flyer__icon {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 0.85rem;
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    color: var(--color-primary);
+    font-size: 2rem;
+}
+
+.badge-dev-simulate {
+    border: 1px dashed color-mix(in srgb, var(--color-warning, #f59e0b) 45%, transparent);
+    background: color-mix(in srgb, var(--color-warning, #f59e0b) 6%, transparent);
+}
+
+.badge-dev-simulate__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.badge-unlock-card .badge-unlock-flyer__image,
+.badge-unlock-card .badge-unlock-flyer__icon {
+    width: 5rem;
+    height: 5rem;
+    font-size: 2.25rem;
+}

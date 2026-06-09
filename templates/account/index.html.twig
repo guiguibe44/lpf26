@@ -18,6 +18,11 @@
 
 {% block title %}Compte et équipe{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/badges.css') }}?v=4">
+{% endblock %}
+
 {% block body %}
     <section class="ta-topbar">
         <div>
@@ -46,6 +51,11 @@
             <button type="button" role="tab" id="tab-btn-compte" class="tab tab-active" aria-selected="true" aria-controls="panel-compte" data-account-tab="compte">
                 Mon compte
             </button>
+            {% if badges_show_tab %}
+            <button type="button" role="tab" id="tab-btn-badges" class="tab" aria-selected="false" aria-controls="panel-badges" data-account-tab="badges">
+                Badges
+            </button>
+            {% endif %}
             {% if team %}
             <button type="button" role="tab" id="tab-btn-equipe" class="tab" aria-selected="false" aria-controls="panel-equipe" data-account-tab="equipe">
                 Mon équipe
@@ -190,6 +200,12 @@
             {% include 'account/_push_notifications_card.html.twig' %}
         </div>
 
+        {% if badges_show_tab %}
+        <div id="panel-badges" role="tabpanel" aria-labelledby="tab-btn-badges" class="account-tab-panel space-y-6" hidden>
+            {% include 'account/_badges_collection.html.twig' %}
+        </div>
+        {% endif %}
+
         {% set equipe_form_submitted = (team_form is defined and team_form and team_form.vars.submitted)
             or (invitation_form is defined and invitation_form and invitation_form.vars.submitted)
             or (favorite_country_form is defined and favorite_country_form and favorite_country_form.vars.submitted) %}
@@ -300,8 +316,10 @@
         (function initAccountPage() {
             const bindOnce = () => {
                 const btnCompte = document.getElementById('tab-btn-compte');
+                const btnBadges = document.getElementById('tab-btn-badges');
                 const btnEquipe = document.getElementById('tab-btn-equipe');
                 const panelCompte = document.getElementById('panel-compte');
+                const panelBadges = document.getElementById('panel-badges');
                 const panelEquipe = document.getElementById('panel-equipe');
                 if (!btnCompte || !panelCompte) {
                     return;
@@ -312,15 +330,26 @@
                 btnCompte.dataset.accountTabsBound = '1';
 
                 const showTab = (name) => {
+                    const isCompte = name === 'compte';
+                    const isBadges = name === 'badges' && btnBadges && panelBadges;
                     const isEquipe = name === 'equipe' && btnEquipe && panelEquipe;
-                    btnCompte.classList.toggle('tab-active', !isEquipe);
-                    if (btnEquipe) {
+
+                    btnCompte.classList.toggle('tab-active', isCompte);
+                    btnCompte.setAttribute('aria-selected', isCompte ? 'true' : 'false');
+                    panelCompte.toggleAttribute('hidden', !isCompte);
+
+                    if (btnBadges && panelBadges) {
+                        btnBadges.classList.toggle('tab-active', isBadges);
+                        btnBadges.setAttribute('aria-selected', isBadges ? 'true' : 'false');
+                        panelBadges.toggleAttribute('hidden', !isBadges);
+                        if (isBadges && window.LpfBadgeUnlock) {
+                            window.LpfBadgeUnlock.markAllSeen();
+                        }
+                    }
+
+                    if (btnEquipe && panelEquipe) {
                         btnEquipe.classList.toggle('tab-active', isEquipe);
                         btnEquipe.setAttribute('aria-selected', isEquipe ? 'true' : 'false');
-                    }
-                    btnCompte.setAttribute('aria-selected', isEquipe ? 'false' : 'true');
-                    panelCompte.toggleAttribute('hidden', isEquipe);
-                    if (panelEquipe) {
                         panelEquipe.toggleAttribute('hidden', !isEquipe);
                     }
                 };
@@ -336,6 +365,9 @@
 
                 const hashToTab = () => {
                     const h = (window.location.hash || '').toLowerCase();
+                    if (h === '#tab-badges' || h === '#badges') {
+                        return 'badges';
+                    }
                     if (
                         h === '#tab-equipe'
                         || h === '#equipe'
@@ -389,6 +421,12 @@
                     showTab('compte');
                     history.replaceState(null, '', '#tab-compte');
                 });
+                if (btnBadges) {
+                    btnBadges.addEventListener('click', () => {
+                        showTab('badges');
+                        history.replaceState(null, '', '#tab-badges');
+                    });
+                }
                 if (btnEquipe) {
                     btnEquipe.addEventListener('click', () => {
                         showTab('equipe');

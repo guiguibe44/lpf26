@@ -5,6 +5,7 @@ Shortlist v1 — noms provisoires (éditables en admin)
 
 Admin : Compétition → Badges (catalogue) / Attributions badges
 Feature flag : BADGES_ENABLED=false par défaut (pas d’affichage public tant que désactivé)
+Rollout prod : BADGES_ENABLED=true + BADGES_ADMIN_ONLY=true → visible et attribuable aux ROLE_ADMIN uniquement
 Badges ironiques : BADGES_IRONIC_ENABLED=true par défaut
 
 LÉGENDE
@@ -100,6 +101,7 @@ NOTES TECHNIQUES
 ================================================================================
 
 - 46 badges seedés (codes stables en base, noms éditables en admin)
-- Attribution automatique : à implémenter (BadgeFeature + BadgeEvaluator)
+- Attribution automatique : BadgeEvaluator + hooks prono / rescoring
 - Attributions manuelles possibles en admin pour tests
 - BADGES_ENABLED=false → pas d’impact public ; admin catalogue toujours accessible
+- BADGES_ENABLED=true + BADGES_ADMIN_ONLY=true → prod : admins seulement (passer ADMIN_ONLY=false pour ouverture à tous)

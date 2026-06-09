@@ -32,6 +32,9 @@ class BadgeAward
     #[ORM\Column]
     private \DateTimeImmutable $awardedAt;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $seenAt = null;
+
     /** @var array<string, mixed>|null */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $metadata = null;
@@ -92,6 +95,23 @@ class BadgeAward
         $this->awardedAt = $awardedAt;
 
         return $this;
+    }
+
+    public function getSeenAt(): ?\DateTimeImmutable
+    {
+        return $this->seenAt;
+    }
+
+    public function setSeenAt(?\DateTimeImmutable $seenAt): static
+    {
+        $this->seenAt = $seenAt;
+
+        return $this;
+    }
+
+    public function isSeen(): bool
+    {
+        return null !== $this->seenAt;
     }
 
     /**

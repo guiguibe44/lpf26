@@ -41,16 +41,14 @@ class BadgeDefinitionCrudController extends AbstractAppCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        $status = $this->badgeFeature->isEnabled()
-            ? 'activée (BADGES_ENABLED=true)'
-            : 'désactivée en prod (BADGES_ENABLED=false) — catalogue admin disponible';
+        $status = $this->badgeFeature->getPublicStatusLabel();
 
         return parent::configureCrud($crud)
             ->setEntityLabelInSingular('Badge')
             ->setEntityLabelInPlural('Badges (catalogue)')
             ->setDefaultSort(['category' => 'ASC', 'sortOrder' => 'ASC', 'name' => 'ASC'])
             ->setHelp('index', sprintf(
-                'Catalogue des badges joueurs et équipes. Fonctionnalité publique %s. '
+                'Catalogue des badges joueurs et équipes. Fonctionnalité publique : %s. '
                 .'Modifiez le nom, l’image, le texte chambreur et l’activation ; le code et le critère restent stables. '
                 .'Les badges ironiques peuvent être masqués via BADGES_IRONIC_ENABLED.',
                 $status,

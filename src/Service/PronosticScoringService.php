@@ -9,6 +9,8 @@ use App\Entity\Pronostic;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamJokerUsageRepository;
 use App\Repository\TeamMemberRepository;
+use App\Security\SuperAdminAuthorization;
+use App\Service\Badge\BadgeEvaluator;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class PronosticScoringService
@@ -26,6 +28,7 @@ final class PronosticScoringService
         private readonly PronosticScoreInversionService $pronosticScoreInversionService,
         private readonly JokerCollectePointsService $jokerCollectePointsService,
         private readonly MatchCoteService $matchCoteService,
+        private readonly BadgeEvaluator $badgeEvaluator,
     ) {
     }
 
@@ -41,7 +44,8 @@ final class PronosticScoringService
     {
         $this->defaultPronosticService->ensureDefaultsForMatch($match);
 
-        $pronostics = $this->pronosticRepository->findBy(['match' => $match]);
+        $allPronostics = $this->pronosticRepository->findBy(['match' => $match]);
+        $pronostics = SuperAdminAuthorization::filterCompetitionPronostics($allPronostics);
         $occurrencesByScore = [];
         $riskByPronosticId = [];
         $playerTeamMap = $this->teamMemberRepository->findPlayerTeamMap();
@@ -88,9 +92,11 @@ final class PronosticScoringService
         $realHome = $match->getScoreDomicile();
         $realAway = $match->getScoreExterieur();
         $hasFinalScore = null !== $realHome && null !== $realAway;
-        foreach ($pronostics as $pronostic) {
+        foreach ($allPronostics as $pronostic) {
             $pronosticId = $pronostic->getId();
-            if (null === $pronosticId || !isset($effectiveByPronosticId[$pronosticId])) {
+            if (SuperAdminAuthorization::excludesFromCompetitionPronostics($pronostic->getJoueur())
+                || null === $pronosticId
+                || !isset($effectiveByPronosticId[$pronosticId])) {
                 $pronostic
                     ->setPointsBase(null)
                     ->setCoteCoefficient(null)
@@ -163,5 +169,6 @@ final class PronosticScoringService
 
         $this->entityManager->flush();
         $this->teamRankingService->rebuildSnapshotsFromMatch($match);
+        $this->badgeEvaluator->evaluateAfterMatchRescore($match);
     }
 }
