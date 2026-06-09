@@ -96,8 +96,12 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToRoute('Classements equipes', 'fas fa-ranking-star', 'admin_team_ranking_snapshot_index'),
                 MenuItem::linkToRoute('Jokers', 'fas fa-wand-magic-sparkles', 'admin_joker_index'),
                 MenuItem::linkToRoute('Utilisations jokers', 'fas fa-hat-wizard', 'admin_team_joker_usage_index'),
-                MenuItem::linkToRoute('Badges (catalogue)', 'fas fa-medal', 'admin_badge_definition_index'),
-                MenuItem::linkToRoute('Attributions badges', 'fas fa-award', 'admin_badge_award_index'),
+            ]);
+
+        yield MenuItem::subMenu('Badges', 'fas fa-medal')
+            ->setSubItems([
+                MenuItem::linkToRoute('Catalogue', 'fas fa-list', 'admin_badge_definition_index'),
+                MenuItem::linkToRoute('Attributions', 'fas fa-award', 'admin_badge_award_index'),
             ]);
 
         yield MenuItem::subMenu('Synchro API-Football', 'fas fa-rotate')
