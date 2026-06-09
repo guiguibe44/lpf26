@@ -48,7 +48,7 @@ final class BadgeFeature
             return true;
         }
 
-        return $user->isAdministrator();
+        return $user->isAdministrator() || $user->isSuperAdmin();
     }
 
     /**
