@@ -22,7 +22,7 @@ class GameMatch
     #[ORM\JoinColumn(nullable: false)]
     private ?Country $paysExterieur = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'utc_datetime_immutable')]
     private ?\DateTimeImmutable $dateHeure = null;
 
     #[ORM\Column(nullable: true)]
