@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\DateTime\AppTimezone;
 use App\Entity\Buteur;
 use App\Entity\Country;
 use App\Entity\GameMatch;
@@ -211,12 +212,12 @@ final class AppExtension extends AbstractExtension
             'fr_FR',
             \IntlDateFormatter::NONE,
             \IntlDateFormatter::NONE,
-            $date->getTimezone(),
+            AppTimezone::zone(),
             \IntlDateFormatter::GREGORIAN,
             'EEEE d MMMM y',
         );
 
-        $formatted = $formatter->format($date);
+        $formatted = $formatter->format(AppTimezone::toLocal($date));
 
         return false !== $formatted ? $formatted : '';
     }
@@ -231,10 +232,10 @@ final class AppExtension extends AbstractExtension
             'fr_FR',
             \IntlDateFormatter::SHORT,
             \IntlDateFormatter::SHORT,
-            $date->getTimezone(),
+            AppTimezone::zone(),
         );
 
-        $formatted = $formatter->format($date);
+        $formatted = $formatter->format(AppTimezone::toLocal($date));
 
         return false !== $formatted ? $formatted : '';
     }

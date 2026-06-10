@@ -99,9 +99,14 @@ class GameMatchRepository extends ServiceEntityRepository
             return null;
         }
 
-        $date = $nextMatch->getDateHeure();
-        $start = $date->setTime(0, 0, 0);
-        $end = $start->modify('+1 day');
+        $dayKey = \App\Service\MatchdayKey::fromMatch($nextMatch);
+        $bounds = null !== $dayKey ? \App\Service\MatchdayKey::dayBounds($dayKey) : null;
+        if (null === $bounds) {
+            return null;
+        }
+
+        $start = $bounds['start'];
+        $end = $bounds['end'];
 
         $matches = $this->createQueryBuilder('m')
             ->addSelect('hd', 'aw')
@@ -158,7 +163,11 @@ class GameMatchRepository extends ServiceEntityRepository
             if (!$dateHeure instanceof \DateTimeImmutable) {
                 continue;
             }
-            $byDay[$dateHeure->format('Y-m-d')][] = $match;
+            $dayKey = \App\Service\MatchdayKey::fromMatch($match);
+            if (null === $dayKey) {
+                continue;
+            }
+            $byDay[$dayKey][] = $match;
         }
         krsort($byDay);
 
@@ -180,11 +189,10 @@ class GameMatchRepository extends ServiceEntityRepository
 
                     return $da <=> $db;
                 });
-                $firstDate = $matches[0]->getDateHeure();
-                if (!$firstDate instanceof \DateTimeImmutable) {
+                $start = \App\Service\MatchdayKey::dayStartForMatch($matches[0]);
+                if (!$start instanceof \DateTimeImmutable) {
                     return null;
                 }
-                $start = $firstDate->setTime(0, 0, 0);
 
                 return [
                     'date' => $start,
@@ -324,6 +332,17 @@ class GameMatchRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function countUnfinishedGroupStageMatches(): int
+    {
+        return (int) $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->andWhere('m.phase LIKE :groupPhase')
+            ->andWhere('m.scoreDomicile IS NULL OR m.scoreExterieur IS NULL')
+            ->setParameter('groupPhase', 'Group %')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function findMatchesForGroupStanding(): array

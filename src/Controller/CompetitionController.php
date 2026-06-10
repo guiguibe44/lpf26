@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DateTime\AppTimezone;
 use App\Entity\Country;
 use App\Entity\GameMatch;
 use App\Entity\Team;
@@ -22,6 +23,7 @@ use App\Service\MatchHubV2DemoPresenter;
 use App\Service\MatchHubV2DiscussionFeedBuilder;
 use App\Service\MatchLiveViewBuilder;
 use App\Service\MatchStatusResolver;
+use App\Service\MatchdayKey;
 use App\Service\MatchEspionService;
 use App\Service\TeamFavoriteCountryService;
 use App\Service\TeamMatchPointsService;
@@ -128,15 +130,16 @@ class CompetitionController extends AbstractController
 
                 continue;
             }
-            $key = $dateHeure->format('Y-m-d');
-            if (isset($seen[$key])) {
+            $key = MatchdayKey::fromMatch($match);
+            if (null === $key || isset($seen[$key])) {
                 continue;
             }
             $seen[$key] = true;
+            $dayBounds = MatchdayKey::dayBounds($key);
             $entries[] = [
                 'anchor' => 'journee-'.$key,
                 'date_key' => $key,
-                'date_for_label' => $dateHeure->setTime(0, 0, 0),
+                'date_for_label' => $dayBounds['start'] ?? null,
             ];
         }
 
@@ -154,14 +157,15 @@ class CompetitionController extends AbstractController
             return null;
         }
 
-        $todayKey = $now->format('Y-m-d');
+        $todayKey = AppTimezone::todayKey($now);
         foreach ($entries as $entry) {
             if ($entry['date_key'] === $todayKey) {
                 return $todayKey;
             }
         }
 
-        $todayStart = $now->setTime(0, 0, 0);
+        $todayBounds = MatchdayKey::dayBounds($todayKey);
+        $todayStart = $todayBounds['start'] ?? AppTimezone::toLocal($now)->setTime(0, 0, 0);
         foreach ($entries as $entry) {
             $day = $entry['date_for_label'];
             if ($day instanceof \DateTimeImmutable && $day >= $todayStart) {
@@ -481,7 +485,10 @@ class CompetitionController extends AbstractController
             if (!$match instanceof GameMatch || null === $match->getDateHeure()) {
                 continue;
             }
-            $dayKey = $match->getDateHeure()->format('Y-m-d');
+            $dayKey = MatchdayKey::fromMatch($match);
+            if (null === $dayKey) {
+                continue;
+            }
             $lastSnapshotByDay[$dayKey] = $snapshot;
         }
         ksort($lastSnapshotByDay);
@@ -496,7 +503,7 @@ class CompetitionController extends AbstractController
             $position = $snapshot->getPosition();
             $rows[] = [
                 'day' => $dayKey,
-                'date_display' => $match->getDateHeure()->setTime(0, 0, 0),
+                'date_display' => MatchdayKey::dayStartForMatch($match),
                 'position' => $position,
                 'total_points' => $snapshot->getTotalPoints(),
                 'teams_count' => $teamsCount,

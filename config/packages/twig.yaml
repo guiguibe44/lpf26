@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    date:
+        timezone: Europe/Paris
     globals:
         cotisation_wire_phone: '%app.cotisation_wire_phone%'
         prono_default_score_domicile: 0
