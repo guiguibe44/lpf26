@@ -12,8 +12,11 @@ use App\Repository\DashboardEditorialRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PronosticRepository;
 use App\Repository\TeamMemberRepository;
+use App\Repository\TeamRankingSnapshotRepository;
 use App\Repository\UserRepository;
+use App\Service\BadgeFeature;
 use App\Service\ButeurGoalScoringService;
+use App\Service\CompetitionStatsRandomPicker;
 use App\Service\PreCompetitionDashboardService;
 use App\Service\DefaultPronosticService;
 use App\Service\CompetitionStatus;
@@ -27,6 +30,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
@@ -48,12 +53,143 @@ class HomeController extends AbstractController
         PreCompetitionDashboardService $preCompetitionDashboard,
         TeamMatchPointsService $teamMatchPointsService,
         DashboardEditorialRepository $dashboardEditorialRepository,
+        CompetitionStatsRandomPicker $competitionStatsRandomPicker,
+        KernelInterface $kernel,
+        BadgeFeature $badgeFeature,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
         }
 
+        $context = $this->collectHomepageContext(
+            $user,
+            $gameMatchRepository,
+            $pronosticRepository,
+            $teamMemberRepository,
+            $competitionStatus,
+            $butRepository,
+            $userRepository,
+            $buteurGoalScoringService,
+            $defaultPronosticService,
+            $matchStatusResolver,
+            $teamJokerService,
+            $teamFavoriteCountryService,
+            $matchEspionService,
+            $preCompetitionDashboard,
+            $teamMatchPointsService,
+            $dashboardEditorialRepository,
+        );
+        $context['dashboard_random_stats'] = $competitionStatsRandomPicker->pickDailyMany(2);
+        $context['show_badge_simulate'] = 'dev' === $kernel->getEnvironment() && $badgeFeature->isEnabled();
+
+        return $this->render('home/index.html.twig', $context);
+    }
+
+    #[Route('/accueil/apercu-v2', name: 'app_homepage_v2_preview', methods: ['GET'])]
+    public function indexV2Preview(
+        KernelInterface $kernel,
+        GameMatchRepository $gameMatchRepository,
+        PronosticRepository $pronosticRepository,
+        TeamMemberRepository $teamMemberRepository,
+        CompetitionStatus $competitionStatus,
+        ButRepository $butRepository,
+        UserRepository $userRepository,
+        ButeurGoalScoringService $buteurGoalScoringService,
+        DefaultPronosticService $defaultPronosticService,
+        MatchStatusResolver $matchStatusResolver,
+        TeamJokerService $teamJokerService,
+        TeamFavoriteCountryService $teamFavoriteCountryService,
+        MatchEspionService $matchEspionService,
+        PreCompetitionDashboardService $preCompetitionDashboard,
+        TeamMatchPointsService $teamMatchPointsService,
+        DashboardEditorialRepository $dashboardEditorialRepository,
+        TeamRankingSnapshotRepository $teamRankingSnapshotRepository,
+    ): Response {
+        if ('dev' !== $kernel->getEnvironment()) {
+            throw new NotFoundHttpException();
+        }
+
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $context = $this->collectHomepageContext(
+            $user,
+            $gameMatchRepository,
+            $pronosticRepository,
+            $teamMemberRepository,
+            $competitionStatus,
+            $butRepository,
+            $userRepository,
+            $buteurGoalScoringService,
+            $defaultPronosticService,
+            $matchStatusResolver,
+            $teamJokerService,
+            $teamFavoriteCountryService,
+            $matchEspionService,
+            $preCompetitionDashboard,
+            $teamMatchPointsService,
+            $dashboardEditorialRepository,
+        );
+
+        $teamMember = $teamMemberRepository->findOneBy(['player' => $user]);
+        $team = $teamMember?->getTeam();
+        $teamRankingSnapshot = null;
+        $latestRankingTeamsCount = 0;
+        if ($team instanceof Team) {
+            $latestRanking = $teamRankingSnapshotRepository->findLatestRanking();
+            $latestRankingTeamsCount = \count($latestRanking);
+            foreach ($latestRanking as $snapshot) {
+                if ((int) $snapshot->getTeam()?->getId() === (int) $team->getId()) {
+                    $teamRankingSnapshot = $snapshot;
+                    break;
+                }
+            }
+        }
+
+        $userRankingPoints = null;
+        $userRankingPosition = null;
+        foreach ($context['ranking_summary'] as $position => $row) {
+            if ($row['email'] === $user->getEmail()) {
+                $userRankingPoints = $row['totalPoints'];
+                $userRankingPosition = $position + 1;
+                break;
+            }
+        }
+
+        $context['team'] = $team;
+        $context['team_ranking_snapshot'] = $teamRankingSnapshot;
+        $context['latest_ranking_teams_count'] = $latestRankingTeamsCount;
+        $context['user_ranking_points'] = $userRankingPoints;
+        $context['user_ranking_position'] = $userRankingPosition;
+        $context['ui_preview'] = true;
+
+        return $this->render('home/index_v2_preview.html.twig', $context);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function collectHomepageContext(
+        User $user,
+        GameMatchRepository $gameMatchRepository,
+        PronosticRepository $pronosticRepository,
+        TeamMemberRepository $teamMemberRepository,
+        CompetitionStatus $competitionStatus,
+        ButRepository $butRepository,
+        UserRepository $userRepository,
+        ButeurGoalScoringService $buteurGoalScoringService,
+        DefaultPronosticService $defaultPronosticService,
+        MatchStatusResolver $matchStatusResolver,
+        TeamJokerService $teamJokerService,
+        TeamFavoriteCountryService $teamFavoriteCountryService,
+        MatchEspionService $matchEspionService,
+        PreCompetitionDashboardService $preCompetitionDashboard,
+        TeamMatchPointsService $teamMatchPointsService,
+        DashboardEditorialRepository $dashboardEditorialRepository,
+    ): array {
         $now = new \DateTimeImmutable();
         $liveMatches = [];
         foreach ($gameMatchRepository->findCandidatesForLiveDisplay($now) as $candidate) {
@@ -112,11 +248,13 @@ class HomeController extends AbstractController
         $buteurChoisi = $user->getButeurChoisi();
         if ($buteurChoisi instanceof Buteur) {
             $buteurId = (int) $buteurChoisi->getId();
+            $selections = $userRepository->countWithButeurChoisiId($buteurId);
             $buteur_stats = [
                 'goals' => $butRepository->countForButeur($buteurChoisi),
                 'points' => $butRepository->sumPointsAttribuesForButeur($buteurChoisi),
                 'cote' => $buteurGoalScoringService->getCurrentCoefficientForButeur($buteurChoisi),
-                'selections' => $userRepository->countWithButeurChoisiId($buteurId),
+                'points_per_goal' => $buteurGoalScoringService->getPointsPerGoalForButeur($buteurChoisi),
+                'selections' => $selections,
                 'total_players' => $userRepository->countWithButeurChoisi(),
             ];
         }
@@ -127,9 +265,13 @@ class HomeController extends AbstractController
         $team_match_points_by_match_id = $team instanceof Team
             ? $teamMatchPointsService->buildPointsByMatchIdForTeam($team, $dashboardMatchList, $goalsByMatchId)
             : [];
-        $dashboardEditorial = $dashboardEditorialRepository->findLatestPublishedAt($now);
+        $publishedEditorials = $dashboardEditorialRepository->findPublishedAtOrBeforeOrdered($now);
+        $dashboardEditorial = $publishedEditorials[0] ?? null;
+        $dashboardEditorialsArchive = [] !== $publishedEditorials
+            ? \array_slice($publishedEditorials, 1)
+            : [];
 
-        return $this->render('home/index.html.twig', [
+        return [
             'live_matches' => $liveMatches,
             'last_completed_matchday' => $lastCompletedMatchday,
             'next_matchday' => $nextMatchday,
@@ -152,7 +294,8 @@ class HomeController extends AbstractController
             'has_live_matches' => [] !== $liveMatches,
             'team_match_points_by_match_id' => $team_match_points_by_match_id,
             'dashboard_editorial' => $dashboardEditorial,
-        ]);
+            'dashboard_editorials_archive' => $dashboardEditorialsArchive,
+        ];
     }
 
     #[Route('/accueil/buteur', name: 'app_dashboard_buteur_save', methods: ['POST'])]

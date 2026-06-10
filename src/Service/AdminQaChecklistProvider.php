@@ -541,7 +541,7 @@ final class AdminQaChecklistProvider
                 ],
                 [
                     'id' => 'points-buteur-goal',
-                    'label' => 'But du buteur choisi : arrondi(10 × cote à 2 décimales, plafond ×5).',
+                    'label' => 'But du buteur choisi : palier 50 / 40 / 30 / 20 / 10 pts selon le nombre de choix.',
                     'kind' => 'attention',
                 ],
                 [

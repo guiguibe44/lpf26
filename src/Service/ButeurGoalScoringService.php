@@ -11,14 +11,13 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Points par but marqué par le buteur choisi : arrondi(10 × cote de popularité à 2 décimales).
- * Cote = joueurs avec buteur / joueurs l’ayant choisi (plafond ×5).
+ * Points par but du buteur choisi : paliers fixes selon la popularité du choix.
+ *
+ *  1 joueur  → 50 pts | 2 → 40 | 3-4 → 30 | 5-7 → 20 | 8+ → 10
  */
 final class ButeurGoalScoringService
 {
     public const int DEFAULT_POINTS_BASE = 10;
-
-    public const float MAX_COTE_COEFFICIENT = 5.0;
 
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -27,9 +26,29 @@ final class ButeurGoalScoringService
     ) {
     }
 
+    /** Coefficient affiché (pts ÷ 10) : ×5 = 50 pts, ×1 = 10 pts. */
     public function getCurrentCoefficientForButeur(Buteur $buteur): float
     {
-        return $this->computeCoefficientForButeur($buteur);
+        $selections = $this->countSelectionsForButeur($buteur);
+
+        return round($this->getPointsPerGoalForSelections($selections) / self::DEFAULT_POINTS_BASE, 2);
+    }
+
+    public function getPointsPerGoalForButeur(Buteur $buteur): int
+    {
+        return $this->getPointsPerGoalForSelections($this->countSelectionsForButeur($buteur));
+    }
+
+    public function getPointsPerGoalForSelections(int $selections): int
+    {
+        return match (true) {
+            $selections <= 0 => 10,
+            1 === $selections => 50,
+            2 === $selections => 40,
+            $selections <= 4 => 30,
+            $selections <= 7 => 20,
+            default => 10,
+        };
     }
 
     public function scoreBut(But $but): void
@@ -44,12 +63,11 @@ final class ButeurGoalScoringService
             return;
         }
 
-        $coefficient = $this->computeCoefficientForButeur($buteur);
-        $base = self::DEFAULT_POINTS_BASE;
-        $points = (int) round($base * $coefficient);
+        $points = $this->getPointsPerGoalForButeur($buteur);
+        $coefficient = round($points / self::DEFAULT_POINTS_BASE, 2);
 
         $but
-            ->setPointsBase($base)
+            ->setPointsBase(self::DEFAULT_POINTS_BASE)
             ->setCoteCoefficient($coefficient)
             ->setPointsAttribues($points);
     }
@@ -72,17 +90,8 @@ final class ButeurGoalScoringService
         $this->entityManager->flush();
     }
 
-    private function computeCoefficientForButeur(Buteur $buteur): float
+    private function countSelectionsForButeur(Buteur $buteur): int
     {
-        $totalWithButeur = $this->userRepository->countWithButeurChoisi();
-        $selectionsForButeur = $this->userRepository->countWithButeurChoisiId((int) $buteur->getId());
-
-        if ($totalWithButeur <= 0 || $selectionsForButeur <= 0) {
-            return 1.0;
-        }
-
-        $coefficientBrut = $totalWithButeur / max(1, $selectionsForButeur);
-
-        return round(min($coefficientBrut, self::MAX_COTE_COEFFICIENT), 2);
+        return $this->userRepository->countWithButeurChoisiId((int) $buteur->getId());
     }
 }

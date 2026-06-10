@@ -10,31 +10,37 @@ use App\Repository\ButRepository;
 use App\Repository\UserRepository;
 use App\Service\ButeurGoalScoringService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ButeurGoalScoringServiceTest extends TestCase
 {
-    public function testPopularButeurGetsLowerCoefficient(): void
+    #[DataProvider('tierProvider')]
+    public function testPointsPerGoalForSelections(int $selections, int $expectedPoints, float $expectedCoefficient): void
     {
-        $buteur = (new Buteur())->setNom('Mbappé')->setPrenom('Kylian');
-        $service = $this->createService(totalWithButeur: 20, selectionsForButeur: 10);
+        $service = $this->createService(selectionsForButeur: max(1, $selections));
 
-        self::assertSame(2.0, $service->getCurrentCoefficientForButeur($buteur));
+        self::assertSame($expectedPoints, $service->getPointsPerGoalForSelections($selections));
     }
 
-    public function testRareButeurGetsHigherCoefficientCappedAtFive(): void
+    public static function tierProvider(): iterable
+    {
+        yield 'solo' => [1, 50, 5.0];
+        yield 'duo' => [2, 40, 4.0];
+        yield 'trio' => [3, 30, 3.0];
+        yield 'quatuor' => [4, 30, 3.0];
+        yield 'cinq' => [5, 20, 2.0];
+        yield 'sept' => [7, 20, 2.0];
+        yield 'huit' => [8, 10, 1.0];
+        yield 'tres populaire' => [12, 10, 1.0];
+        yield 'aucun choix' => [0, 10, 1.0];
+    }
+
+    public function testScoreButAppliesTierPoints(): void
     {
         $buteur = (new Buteur())->setNom('Rare')->setPrenom('Joueur');
-        $service = $this->createService(totalWithButeur: 20, selectionsForButeur: 1);
-
-        self::assertSame(5.0, $service->getCurrentCoefficientForButeur($buteur));
-    }
-
-    public function testScoreButAppliesBaseTimesCoefficient(): void
-    {
-        $buteur = (new Buteur())->setNom('Test')->setPrenom('A');
         $but = (new But())->setButeur($buteur);
-        $service = $this->createService(totalWithButeur: 10, selectionsForButeur: 2);
+        $service = $this->createService(selectionsForButeur: 1);
 
         $service->scoreBut($but);
 
@@ -43,10 +49,18 @@ final class ButeurGoalScoringServiceTest extends TestCase
         self::assertSame(50, $but->getPointsAttribues());
     }
 
-    private function createService(int $totalWithButeur, int $selectionsForButeur): ButeurGoalScoringService
+    public function testPopularButeurGetsTenPointsPerGoal(): void
+    {
+        $buteur = (new Buteur())->setNom('Mbappé')->setPrenom('Kylian');
+        $service = $this->createService(selectionsForButeur: 8);
+
+        self::assertSame(10, $service->getPointsPerGoalForButeur($buteur));
+        self::assertSame(1.0, $service->getCurrentCoefficientForButeur($buteur));
+    }
+
+    private function createService(int $selectionsForButeur): ButeurGoalScoringService
     {
         $userRepository = $this->createMock(UserRepository::class);
-        $userRepository->method('countWithButeurChoisi')->willReturn($totalWithButeur);
         $userRepository->method('countWithButeurChoisiId')->willReturn($selectionsForButeur);
 
         $butRepository = $this->createMock(ButRepository::class);

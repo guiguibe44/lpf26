@@ -75,7 +75,7 @@ class ButeurCrudController extends AbstractAppCrudController
                 return (string) $this->userRepository->countWithButeurChoisiId((int) $buteur->getId());
             });
 
-        yield TextField::new('photo', 'Cote')
+        yield TextField::new('photo', 'Pts/but')
             ->onlyOnIndex()
             ->setSortable(false)
             ->formatValue(function (mixed $value, ?Buteur $buteur): string {
@@ -83,7 +83,7 @@ class ButeurCrudController extends AbstractAppCrudController
                     return '—';
                 }
 
-                return '×'.number_format($this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur), 2, ',', ' ');
+                return $this->buteurGoalScoringService->getPointsPerGoalForButeur($buteur).' pts';
             });
 
         yield IntegerField::new('apiSportsPlayerId', 'ID API-Sports')

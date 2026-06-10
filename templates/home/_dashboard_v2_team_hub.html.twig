@@ -1,0 +1,61 @@
+<aside class="dashboard-v2-hub" aria-labelledby="dashboard-v2-hub-title">
+    <h2 class="dashboard-v2-hub__title" id="dashboard-v2-hub-title">Mon équipe</h2>
+
+    {% if team %}
+        <p class="dashboard-v2-hub__team-name">{{ team.name }}</p>
+        <dl class="dashboard-v2-stats">
+            {% if team_ranking_snapshot %}
+                <div class="dashboard-v2-stat">
+                    <dt class="dashboard-v2-stat__label">Classement équipes</dt>
+                    <dd class="dashboard-v2-stat__value">
+                        #{{ team_ranking_snapshot.position }}
+                        {% if latest_ranking_teams_count > 0 %}
+                            <span style="font-size:0.75rem;font-weight:500;opacity:0.75">/ {{ latest_ranking_teams_count }}</span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div class="dashboard-v2-stat">
+                    <dt class="dashboard-v2-stat__label">Points équipe</dt>
+                    <dd class="dashboard-v2-stat__value">{{ team_ranking_snapshot.totalPoints|number_format(0, ',', ' ') }}</dd>
+                </div>
+            {% endif %}
+            {% if user_ranking_points is not null %}
+                <div class="dashboard-v2-stat">
+                    <dt class="dashboard-v2-stat__label">Mes points (solo)</dt>
+                    <dd class="dashboard-v2-stat__value">{{ user_ranking_points|number_format(0, ',', ' ') }}</dd>
+                </div>
+            {% endif %}
+            {% if user_ranking_position is not null %}
+                <div class="dashboard-v2-stat">
+                    <dt class="dashboard-v2-stat__label">Rang joueurs</dt>
+                    <dd class="dashboard-v2-stat__value">#{{ user_ranking_position }}</dd>
+                </div>
+            {% endif %}
+        </dl>
+        {% if dashboard_partners is not empty %}
+            <ul class="dashboard-v2-partners" aria-label="Partenaires">
+                {% for partner in dashboard_partners %}
+                    <li>
+                        <i class="ti ti-users" aria-hidden="true"></i>
+                        {{ partner.email|split('@')|first }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <p>
+            <a href="{{ path('app_team_show', { id: team.id }) }}" class="btn btn-outline btn-sm">Fiche équipe</a>
+            <a href="{{ path('app_ranking') }}" class="btn btn-outline btn-sm">Classement</a>
+        </p>
+    {% else %}
+        <p class="ta-card-text">Rejoignez ou créez une équipe pour voir la synthèse ici.</p>
+    {% endif %}
+
+    {% if buteur_stats and app.user.buteurChoisi %}
+        <div class="dashboard-v2-buteur">
+            <strong>Buteur — {{ app.user.buteurChoisi.prenom }} {{ app.user.buteurChoisi.nom }}</strong>
+            {{ buteur_stats.goals }} but{{ buteur_stats.goals > 1 ? 's' : '' }} ·
+            {{ buteur_stats.points|number_format(0, ',', ' ') }} pts ·
+            {{ buteur_stats.points_per_goal }} pts/but
+        </div>
+    {% endif %}
+</aside>

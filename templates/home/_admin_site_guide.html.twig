@@ -42,8 +42,8 @@
             <div class="lpf-admin-guide__body">
                 <ul>
                     <li>Chaque joueur cotisé choisit un buteur (accueil ou compte) avant verrouillage au début de la compétition.</li>
-                    <li>À chaque but marqué par ce joueur (sync API ou saisie admin), points = <strong>10 pts de base × cote</strong> (cote arrondie à <strong>2 décimales</strong>, points arrondis à l’<strong>entier</strong>, plafond ×5).</li>
-                    <li><strong>Cote</strong> = joueurs avec buteur ÷ joueurs l’ayant choisi (choix rare = cote haute), plafond ×5.</li>
+                    <li>À chaque but : <strong>palier fixe</strong> selon le nombre de joueurs ayant choisi ce buteur — 1 → 50 pts, 2 → 40, 3-4 → 30, 5-7 → 20, 8+ → 10.</li>
+                    <li>Le palier est recalculé au moment du but (évolution possible tant que les choix ne sont pas verrouillés).</li>
                     <li>Les points buteur s’ajoutent au <strong>classement équipe</strong> (cumul des deux joueurs).</li>
                     <li>Recalcul : <code>php bin/console app:rescore:buteur-goals</code> après changement de sélections ou import de buts.</li>
                 </ul>

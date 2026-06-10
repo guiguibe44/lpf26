@@ -214,9 +214,8 @@ final class MatchLiveViewBuilder
         usort(
             $teamRows,
             static function (MatchLiveTeamRow $a, MatchLiveTeamRow $b): int {
-                return $b->matchPointsTotal() <=> $a->matchPointsTotal()
-                    ?: $b->simulatedTotalPoints <=> $a->simulatedTotalPoints
-                    ?: $a->simulatedRankingPosition <=> $b->simulatedRankingPosition
+                return $a->rankingPosition <=> $b->rankingPosition
+                    ?: $b->matchPointsTotal() <=> $a->matchPointsTotal()
                     ?: strcmp($a->teamName, $b->teamName);
             },
         );
@@ -534,7 +533,7 @@ final class MatchLiveViewBuilder
             }
 
             $coefficient = $this->buteurGoalScoringService->getCurrentCoefficientForButeur($buteur);
-            $pointsPerGoal = (float) round(ButeurGoalScoringService::DEFAULT_POINTS_BASE * $coefficient);
+            $pointsPerGoal = (float) $this->buteurGoalScoringService->getPointsPerGoalForButeur($buteur);
             if ($doubleButeurJoker) {
                 $pointsPerGoal *= 2.0;
             }

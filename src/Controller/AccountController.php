@@ -340,6 +340,7 @@ class AccountController extends AbstractController
                 'goals' => $butRepository->countForButeur($buteurChoisi),
                 'points' => $butRepository->sumPointsAttribuesForButeur($buteurChoisi),
                 'cote' => $buteurGoalScoringService->getCurrentCoefficientForButeur($buteurChoisi),
+                'points_per_goal' => $buteurGoalScoringService->getPointsPerGoalForButeur($buteurChoisi),
                 'selections' => $userRepository->countWithButeurChoisiId($buteurId),
                 'total_players' => $userRepository->countWithButeurChoisi(),
             ];
